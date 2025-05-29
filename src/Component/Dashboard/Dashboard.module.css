@@ -1,8 +1,9 @@
-.forSticky{
+.forSticky {
     position: sticky;
     top: 0;
     z-index: 1;
 }
+
 .profileSection {
     display: flex;
     align-items: center;
@@ -395,23 +396,35 @@
 }
 
 @media (max-width:424px) {
-  .agentInfo2 {
-    display: grid;
-    gap: 10px;
+    .agentInfo2 {
+        display: grid;
+        gap: 10px;
+        align-items: center;
+        text-align: center;
+        width: 50%;
+        justify-content: center;
+    }
+
+    .agentInfo {
+        display: grid;
+        gap: 10px;
+        align-items: center;
+        text-align: center;
+        width: 50%;
+        justify-content: center;
+    }
+
+    .agentCard hr {
+        height: 80px;
+    }
+}
+
+.logoutdiv {
+    margin-block: 5rem;
     align-items: center;
-    text-align: center;
-    width: 50%;
+    display: flex;
     justify-content: center;
-  }
-   .agentInfo {
-    display: grid;
-    gap: 10px;
-    align-items: center;
-    text-align: center;
-    width: 50%;
-    justify-content: center;
-  }
-  .agentCard hr{
-    height: 80px;
-  }
+    background-color: #d5d5d5;
+    padding: 13px;
+    cursor: pointer
 }

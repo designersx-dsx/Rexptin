@@ -148,7 +148,7 @@ const AgentDashboard = () => {
             </div>
             <div className={styles.address}>
               <img src='svg/location.svg' alt='location' />
-              <p>{agentData?.business?.address1 ||""} {agentData?.business?.address2||""},{agentData?.business?.city}, {agentData?.business?.country}</p>
+              <p>{agentData?.business?.address1 ||""} {agentData?.business?.address2||""},{agentData?.business?.city}</p>
             </div>
             <h4>Knowledge Base</h4>
           </div>

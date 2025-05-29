@@ -1,5 +1,6 @@
 .container {
-  padding: 20px;
+ padding-block: 0px;
+ padding-inline: 20px;
 
   text-align: center;
 
@@ -46,7 +47,9 @@
   gap: 16px;
   margin-top: 10px;
   padding-right: 10px;
+
   max-height: 500px;
+
   overflow: auto;
 }
 

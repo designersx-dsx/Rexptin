@@ -40,9 +40,10 @@ const Step4 = forwardRef(({ onNext, onBack, onValidationError,loading,setLoading
     return (
         <>
             <div className={styles.container}>
-                {loading ?
-                <AgentCreationLoader/>
-                :              
+                {
+                // loading ?
+                // <AgentCreationLoader/>
+                // :              
                 roles.map((role, index) => (
                     <label
                         key={index}

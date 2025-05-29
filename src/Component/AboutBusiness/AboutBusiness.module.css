@@ -3,11 +3,12 @@
     margin: 0 auto;
     max-width: 600px;
 }
+
 .inlineError {
-  color: #d93025;
-  font-size: 0.875rem;
-  margin-top: 4px;
-  margin-bottom: 10px;
+    color: #d93025;
+    font-size: 0.875rem;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 .header h1 {
@@ -61,7 +62,7 @@
     justify-content: center;
     align-items: center;
     min-height: 55px;
-    margin-top: 3rem;
+    /* margin-top: 1rem; */
     border: none;
     background: none;
     width: 100%;
@@ -82,4 +83,15 @@
     margin: 0;
     font-weight: 500;
     font-size: 19px;
+}
+
+.skipButton button {
+    display: flex;
+    float: right;
+    border: none;
+    background-color: white;
+    color: #bebebe;
+    font-size: 16px;
+
+
 }

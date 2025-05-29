@@ -1,3 +1,152 @@
+// import React, { useState, useRef, useEffect } from "react";
+// import styles from "../SignUp/SignUp.module.css";
+// import { useNavigate } from "react-router-dom";
+// import { LoginWithEmailOTP, verifyEmailOTP } from "../../Store/apiStore";
+// import PopUp from "../Popup/Popup";
+// import Loader from "../Loader/Loader";
+
+// const SignUp = () => {
+//   const navigate = useNavigate();
+//   const [otpSent, setOtpSent] = React.useState(false);
+//   const [email, setEmail] = React.useState("");
+//   const [emailError, setEmailError] = React.useState("");
+//   const [otp, setOtp] = React.useState(["", "", "", "", "", ""]);
+//   const [showPopup, setShowPopup] = useState(false);
+//   const [popupType, setPopupType] = useState(null);
+//   const [popupMessage, setPopupMessage] = useState("");
+//   const [isLoading, setLoading] = useState(false);
+//   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+//   const [emailTouched, setEmailTouched] = useState(false);
+//   const [emailSubmitted, setEmailSubmitted] = useState(false);
+//   const [verifiedUser, setVerifiedUser] = useState(false)
+//   const inputRefs = useRef([]);
+//   const validateEmail = (email) => {
+//     if (!email) {
+//       if (emailSubmitted) {
+//         return "Email is required.";
+//       }
+//       return "";
+//     }
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     if (!emailRegex.test(email)) return "Please enter a valid email address.";
+//     return "";
+//   };
+
+
+//   const handleEmailChange = (e) => {
+//     const val = e.target.value;
+//     setEmail(val);
+//     // setEmailTouched(true);
+//     // if (emailSubmitted) {
+//     //   setEmailError(validateEmail(val));
+//     // } else {
+//     //   setEmailError("");
+//     // }
+//   };
+
+//   const handleLoginClick = async () => {
+//     const fullOtp = otp.join("");
+//     if (fullOtp.length !== 6) {
+//       setShowPopup(true);
+//       setPopupType("failed");
+//       setPopupMessage("Please enter a valid 6-digit OTP.");
+//       return;
+//     }
+//     setIsVerifyingOtp(true);
+//     try {
+//       const response = await verifyEmailOTP(email, fullOtp);
+
+//       if (response?.status === 200) {
+//         localStorage.setItem("token", response.data.token);
+//         sessionStorage.clear();
+//         setPopupType("success");
+//         setShowPopup(true);
+//         setPopupMessage("OTP Verified successfully!");
+//         if (verifiedUser) {
+//           navigate("/dashboard")
+//         }
+//         else {
+//           navigate("/details");
+//         }
+
+//       } else {
+//         console.error("Failed to send OTP");
+//         setPopupType("failed");
+//         setShowPopup(true);
+//         setPopupMessage(
+//           "Failed to send OTP. Please try again." || "Internal Server Error"
+//         );
+//       }
+//     } catch (error) {
+//       setPopupType("failed");
+//       setShowPopup(true);
+//       setPopupMessage(error?.response?.data.error || "Internal Server Error");
+//       console.error("Error sending OTP:", error);
+//     } finally {
+//       setIsVerifyingOtp(false);
+//     }
+//   };
+
+//   const handleSendOTP = async () => {
+//     setEmailTouched(true);
+//     const emailValidationMsg = validateEmail(email);
+//     setEmailError(emailValidationMsg);
+//     if (emailValidationMsg) {
+//       return;
+//     }
+//     setEmailError("");
+//     // setIsVerifyingOtp(true);
+//     try {
+
+//       const response = await LoginWithEmailOTP(email)
+//       console.log(response)
+
+//       if (response?.status === 200) {
+
+//         setVerifiedUser(response.data.verifiedStatus)
+//         setShowPopup(true);
+//         setPopupType("success");
+//         setPopupMessage("OTP sent successfully!");
+//         setOtpSent(true);
+//       } else {
+//         console.error("Failed to send OTP");
+//         setShowPopup(true);
+//         setPopupType("failed");
+//         setPopupMessage("Failed to send OTP. Please try again.");
+//       }
+//     } catch (error) {
+//       setShowPopup(true);
+//       setPopupType("failed");
+//       setPopupMessage(error?.response?.data.error || "Internal Server Error");
+//       console.error("Error sending OTP:", error);
+//     } finally {
+//       // setIsVerifyingOtp(false);
+//     }
+//   };
+
+//   const handleOtpChange = (value, index) => {
+//     const newOtp = [...otp];
+//     newOtp[index] = value;
+//     setOtp(newOtp);
+//     if (value && index < 5) {
+//       const nextInput = document.getElementById(`otp-${index + 1}`);
+//       if (nextInput) nextInput.focus();
+//     }
+//   };
+
+//   const handleKeyDown = (e, index) => {
+//     if (e.key === "Backspace" && !otp[index] && index > 0) {
+//       inputRefs.current[index - 1].focus();
+//     }
+//   };
+//   useEffect(() => {
+//     if (showPopup && popupType === "success" && popupMessage === "OTP sent successfully!") {
+//       const timer = setTimeout(() => {
+//         setShowPopup(false);
+//       }, 1000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [showPopup, popupType, popupMessage]);
 import React, { useState, useRef, useEffect } from "react";
 import styles from "../SignUp/SignUp.module.css";
 import { useNavigate } from "react-router-dom";
@@ -18,103 +167,116 @@ const SignUp = () => {
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [emailSubmitted, setEmailSubmitted] = useState(false);
+   const [verifiedUser, setVerifiedUser] = useState(false)
   const inputRefs = useRef([]);
-  const validateEmail = (email) => {
-    if (!email) {
-      if (emailSubmitted) {
-        return "Email is required.";
-      }
-      return "";
+
+const validateEmail = (email) => {
+  if (!email) {
+    if (!emailTouched || emailSubmitted) {
+      return "Email is required.";
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return "Please enter a valid email address.";
     return "";
-  };
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) return "Please enter a valid email address.";
+  return "";
+};
 
+const handleEmailChange = (e) => {
+  const val = e.target.value;
+  setEmail(val);
+  setEmailTouched(true);
 
-  const handleEmailChange = (e) => {
-    const val = e.target.value;
-    setEmail(val);
-    setEmailTouched(true);
-    if (emailSubmitted) {
-      setEmailError(validateEmail(val));
-    } else {
-      setEmailError("");
-    }
-  };
+  if (showPopup) setShowPopup(false);
 
-  const handleLoginClick = async () => {
-    const fullOtp = otp.join("");
-    if (fullOtp.length !== 6) {
-      setShowPopup(true);
-      setPopupType("failed");
-      setPopupMessage("Please enter a valid 6-digit OTP.");
-      return;
-    }
-    setIsVerifyingOtp(true);
-    try {
-      const response = await verifyEmailOTP(email, fullOtp);
-
-      if (response?.status === 200) {
-        localStorage.setItem("token", response.data.token);
-        sessionStorage.clear();
-        setPopupType("success");
-        setShowPopup(true);
-        setPopupMessage("OTP Verified successfully!");
-        navigate("/details");
-      } else {
-        console.error("Failed to send OTP");
-
-        setPopupType("failed");
-        setShowPopup(true);
-        setPopupMessage(
-          "Failed to send OTP. Please try again." || "Internal Server Error"
-        );
-      }
-    } catch (error) {
-      setPopupType("failed");
-      setShowPopup(true);
-      setPopupMessage(error?.response?.data.error || "Internal Server Error");
-      console.error("Error sending OTP:", error);
-    } finally {
-      setIsVerifyingOtp(false);
-    }
-  };
-
-  const handleSendOTP = async () => {
-    setEmailSubmitted(true);
-    const emailValidationMsg = validateEmail(email);
-    setEmailError(emailValidationMsg);
-    if (emailValidationMsg) {
-      return;
-    }
+  if (emailSubmitted) {
+    setEmailError(validateEmail(val));
+  } else {
     setEmailError("");
-    setIsVerifyingOtp(true);
-    try {
+  }
+};
 
-      const response = await LoginWithEmailOTP(email)
-      console.log(response)
+const handleLoginClick = async () => {
+  const emailValidationMsg = validateEmail(email);
+  setEmailError(emailValidationMsg);
 
-      if (response?.status === 200) {
-        setShowPopup(true);
-        setPopupType("success");
-        setPopupMessage("OTP sent successfully!");
-        setOtpSent(true);
-      } else {
-        console.error("Failed to send OTP");
-        setShowPopup(true);
-        setPopupType("failed");
-        setPopupMessage("Failed to send OTP. Please try again.");
-      }
-    } catch (error) {
+  if (emailValidationMsg) {
+    // Return early, no popup for email validation error
+    return;
+  }
+
+  const fullOtp = otp.join("");
+  if (fullOtp.length !== 6) {
+    setShowPopup(true);
+    setPopupType("failed");
+    setPopupMessage("Please enter a valid 6-digit OTP.");
+    return;
+  }
+
+  setIsVerifyingOtp(true);
+  try {
+    const response = await verifyEmailOTP(email, fullOtp);
+
+    if (response?.status === 200) {
+      localStorage.setItem("token", response.data.token);
+      sessionStorage.clear();
+      setPopupType("success");
+      setShowPopup(true);
+      setPopupMessage("OTP Verified successfully!");
+           if (verifiedUser) {
+          navigate("/dashboard")
+        }
+        else {
+          navigate("/details");
+        }
+    } else {
+      setPopupType("failed");
+      setShowPopup(true);
+      setPopupMessage("Failed to verify OTP. Please try again.");
+    }
+  } catch (error) {
+    setPopupType("failed");
+    setShowPopup(true);
+    setPopupMessage(error?.response?.data.error || "Internal Server Error");
+  } finally {
+    setIsVerifyingOtp(false);
+  }
+};
+ const handleSendOTP = async () => {
+  setEmailTouched(true);
+  setEmailSubmitted(true);
+  const emailValidationMsg = validateEmail(email);
+  setEmailError(emailValidationMsg);
+
+  if (emailValidationMsg) {
+    // Return early, no popup
+    return;
+  }
+
+  setEmailError("");
+  setIsVerifyingOtp(true);
+  try {
+    const response = await LoginWithEmailOTP(email);
+    if (response?.status === 200) {
+      setVerifiedUser(response.data.verifiedStatus)
+      setShowPopup(true);
+      setPopupType("success");
+      setPopupMessage("OTP sent successfully!");
+      setOtpSent(true);
+    } else {
       setShowPopup(true);
       setPopupType("failed");
-      setPopupMessage(error?.response?.data.error || "Internal Server Error");
-      console.error("Error sending OTP:", error);
-    } finally {
-      setIsVerifyingOtp(false);
+      setPopupMessage("Failed to send OTP. Please try again.");
     }
-  };
+  } catch (error) {
+    setShowPopup(true);
+    setPopupType("failed");
+    setPopupMessage(error?.response?.data.error || "Internal Server Error");
+  } finally {
+    setIsVerifyingOtp(false);
+  }
+};
+
 
   const handleOtpChange = (value, index) => {
     const newOtp = [...otp];
@@ -131,11 +293,11 @@ const SignUp = () => {
       inputRefs.current[index - 1].focus();
     }
   };
-  useEffect(() => {
+ useEffect(() => {
     if (showPopup && popupType === "success" && popupMessage === "OTP sent successfully!") {
       const timer = setTimeout(() => {
         setShowPopup(false);
-      }, 1000);
+      }, 1000); 
       return () => clearTimeout(timer);
     }
   }, [showPopup, popupType, popupMessage]);
@@ -274,7 +436,7 @@ const SignUp = () => {
           </div>
         </div>
 
-        {showPopup && !isLoading && (
+        {showPopup && (
           <PopUp
             type={popupType}
             onClose={() => setShowPopup(false)}

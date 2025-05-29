@@ -46,11 +46,11 @@ function AboutBusiness() {
   const isValidUrl = (url) => {
     const pattern = new RegExp(
       "^(https?:\\/\\/)?" +
-        "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
-        "((\\d{1,3}\\.){3}\\d{1,3}))" +
-        "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
-        "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
-        "(\\#[-a-zA-Z\\d_]*)?$",
+      "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
+      "((\\d{1,3}\\.){3}\\d{1,3}))" +
+      "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
+      "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
+      "(\\#[-a-zA-Z\\d_]*)?$",
       "i"
     );
     return !!pattern.test(url);
@@ -80,21 +80,21 @@ function AboutBusiness() {
 
   const validateForm = () => {
     const urlError = validateBusinessUrl(businessUrl);
-    const listingError = validateGoogleListing(googleListing);
-    const aboutError = validateAboutBusiness(aboutBusiness);
-    const fileErr = validateFiles(files);
+    // const listingError = validateGoogleListing(googleListing);
+    // const aboutError = validateAboutBusiness(aboutBusiness);
+    // const fileErr = validateFiles(files);
 
     setBusinessUrlError(urlError);
-    setGoogleListingError(listingError);
-    setAboutBusinessError(aboutError);
-    setFilesError(fileErr);
+    // setGoogleListingError(listingError);
+    // setAboutBusinessError(aboutError);
+    // setFilesError(fileErr);
 
-    return !urlError && !listingError && !aboutError && !fileErr;
+    return !urlError
+    // && !listingError && !aboutError && !fileErr;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setBusinessUrlSubmitted(true);
     setGoogleListingSubmitted(true);
     setAboutBusinessSubmitted(true);
@@ -104,7 +104,7 @@ function AboutBusiness() {
 
     const business = JSON.parse(sessionStorage.getItem("businessDetails"));
 
-    const mergedUrls = [businessUrl.trim(), googleListing.trim()];
+    const mergedUrls = [businessUrl.trim()];
 
     const formData = new FormData();
     const today = new Date().toISOString().split("T")[0];
@@ -113,11 +113,11 @@ function AboutBusiness() {
     formData.append("knowledge_base_name", knowledgeBaseName);
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
     // formData.append("knowledge_base_texts", JSON.stringify(aboutBusiness)); // Optional
-
+    console.log(knowledgeBaseName, JSON.stringify(mergedUrls))
     files.forEach((file) => {
       formData.append("knowledge_base_files", file);
     });
-
+    console.log(formData, "formData")
     try {
       setLoading(true);
       const response = await axios.post(
@@ -147,7 +147,9 @@ function AboutBusiness() {
       setLoading(false);
     }
   };
-
+  const handleSkip=()=>{
+    navigate("/steps")
+  }
   return (
     <>
       <div>
@@ -170,10 +172,11 @@ function AboutBusiness() {
                       setBusinessUrlError(validateBusinessUrl(e.target.value));
                   }}
                 />
-                {businessUrlSubmitted && businessUrlError && (
-                  <p className={styles.inlineError}>{businessUrlError}</p>
-                )}
+
               </div>
+              {businessUrlSubmitted && businessUrlError && (
+                <p className={styles.inlineError}>{businessUrlError}</p>
+              )}
 
               <div className={styles.formGroup}>
                 <label htmlFor="google-listing">Google Listing</label>
@@ -188,11 +191,11 @@ function AboutBusiness() {
                       setGoogleListingError(validateGoogleListing(e.target.value));
                   }}
                 />
-                {googleListingSubmitted && googleListingError && (
-                  <p className={styles.inlineError}>{googleListingError}</p>
-                )}
-              </div>
 
+              </div>
+              {googleListingSubmitted && googleListingError && (
+                <p className={styles.inlineError}>{googleListingError}</p>
+              )}
               <div className={styles.formGroup}>
                 <label htmlFor="about-business">More About your Business</label>
                 <input
@@ -206,11 +209,11 @@ function AboutBusiness() {
                       setAboutBusinessError(validateAboutBusiness(e.target.value));
                   }}
                 />
-                {aboutBusinessSubmitted && aboutBusinessError && (
-                  <p className={styles.inlineError}>{aboutBusinessError}</p>
-                )}
-              </div>
 
+              </div>
+              {aboutBusinessSubmitted && aboutBusinessError && (
+                <p className={styles.inlineError}>{aboutBusinessError}</p>
+              )}
               <div className={styles.formGroup}>
                 <label htmlFor="file-upload">File Upload</label>
                 <input
@@ -219,11 +222,11 @@ function AboutBusiness() {
                   multiple
                   onChange={handleFileChange}
                 />
-                {filesSubmitted && filesError && (
-                  <p className={styles.inlineError}>{filesError}</p>
-                )}
-              </div>
 
+              </div>
+              {filesSubmitted && filesError && (
+                <p className={styles.inlineError}>{filesError}</p>
+              )}
               <div className={styles.formGroup}>
                 <label htmlFor="additional-note">Additional Note</label>
                 <textarea
@@ -235,7 +238,9 @@ function AboutBusiness() {
                   onChange={(e) => setNote(e.target.value)}
                 ></textarea>
               </div>
-
+              <div onClick={handleSkip} className={styles.skipButton}>
+                <button>Skip for now</button>
+              </div>
               <div>
                 <button type="submit" className={styles.btnTheme} disabled={loading}>
                   <img src="images/svg-theme.svg" alt="" />
