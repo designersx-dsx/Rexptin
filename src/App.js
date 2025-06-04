@@ -15,9 +15,11 @@ import Dashboard from './Component/Dashboard/Dashboard';
 import RexAgent from './Component/RexAgent/RexAgent';
 import Plans from './Component/Plans/Plans';
 import SubscriptionFlow from './Component/Checkout/SubscriptionFlow';
+import SubscriptionFlow_ from './Component/stripeCheckout/SubscriptionFlow';
 import Calendar from './Component/Celender/Calendar';
 import BusinessServices from './Component/BusinessServices/BusinessServices';
 import TotalsCallsList from './Component/TotalsCallsList/TotalsCallsList'
+import Plan from './Component/stripePlans/Plans';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -58,7 +60,13 @@ function App() {
           <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
           <Route path="/rex-agent" element={<SecureRoute><RexAgent/></SecureRoute>} />
           <Route path="/plans" element={<Plans/>} />
+          <Route path="/rplans" element={<Plan/>} />
+
+          
           <Route path="/checkout" element={<SubscriptionFlow />} />
+          <Route path="/rcheckout" element={<SubscriptionFlow_ />} />
+
+
           <Route path="/calendar" element={<SecureRoute><Calendar /></SecureRoute>} />
           <Route path="/totalcall-list" element={<TotalsCallsList />} />
 

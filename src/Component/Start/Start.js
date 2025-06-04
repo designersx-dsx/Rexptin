@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../Start/Start.module.css';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 function Start() {
     const navigate = useNavigate();
     const [step, setStep] = useState(0);
@@ -12,7 +12,7 @@ function Start() {
         setTimeout(() => setStep(4), 450);
         setTimeout(() => setStep(5), 650);
         setTimeout(() => {
-            navigate('/plans');
+            navigate(!ipData?.country === "India" ? "/plans" : "/rlans");
         }, 700);
     };
     useEffect(() => {
@@ -26,7 +26,25 @@ function Start() {
 
         return () => window.removeEventListener('resize', setVH);
     }, []);
+const [countryCode, setCountryCode] = useState('');
+  const [ipData, setIpData] = useState({});
 
+useEffect(() => {
+    const fetchCountryCode = async () => {
+      try {
+        const res = await axios.get('https://ipwho.is/');
+        const data = res?.data;
+        if (data && data.country_code) {
+          setIpData(data);
+          setCountryCode(data.country_code.toLowerCase());
+        }
+      } catch (err) {
+        console.error('Failed to fetch IP location:', err);
+      }
+    };
+    fetchCountryCode();
+  }, []);
+console.log(ipData)
     return (
         <div>
             <div className={styles.StartMain}>

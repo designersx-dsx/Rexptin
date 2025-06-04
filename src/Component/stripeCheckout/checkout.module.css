@@ -1,0 +1,144 @@
+/* YourModule.module.css */
+
+.container {
+  max-width: 85%;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  margin: 12px 0 20px 0;
+  border: 1.8px solid #ccc;
+  border-radius: 6px;
+  font-size: 10px;
+  transition: border-color 0.3s ease;
+  outline-offset: 2px;
+}
+
+.input:focus {
+  border-color: #5a38b1;
+  outline: none;
+  box-shadow: 0 0 8px rgba(103, 114, 229, 0.4);
+}
+
+.button {
+  width: 100%;
+  padding: 14px 0;
+  background-color: #5a38b1;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover:not(:disabled) {
+  background-color: #5a38b1;
+}
+
+.button:disabled {
+  background-color: #5a38b1
+  ;
+  cursor: not-allowed;
+}
+
+.message {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  color: #333;
+  min-height: 24px;
+  user-select: none;
+  text-align: center;
+}
+/* Container for entire form */
+.checkoutForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #fafafa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Labels */
+.checkoutForm label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #333;
+}
+
+/* Name input */
+.input {
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  border-color: #4a90e2;
+  outline: none;
+}
+
+/* Stripe Elements box (CardNumberElement etc) */
+.cardBox {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  transition: border-color 0.2s ease;
+}
+
+.cardBox:focus-within {
+  border-color: #4a90e2;
+}
+
+/* Stripe element input */
+.cardInput {
+  font-size: 10px !important;
+}
+.ElementsApp input{
+      font-size: 10px !important;
+}
+/* Submit button */
+.button {
+  padding: 12px;
+  background-color: #5a38b1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button:disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
+}
+
+.button:hover:not(:disabled) {
+  background-color: #357ab8;
+}
+
+/* Message text */
+.message {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+}
