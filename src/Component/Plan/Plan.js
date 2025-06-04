@@ -1,35 +1,33 @@
-import React, { useState, useEffect } from "react";
-import styles from "./Plan.module.css";
-import { useNavigate } from "react-router-dom";
-import Loader2 from "../Loader2/Loader2";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './Plan.module.css';
+import Loader from '../Loader/Loader';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Plan = () => {
-  const [products, setProducts] = useState([]);
+  const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [selected, setSelected] = useState("free-trial");
+  const [error, setError] = useState('');
+  const [selected, setSelected] = useState(null);
   const [open, setOpen] = useState(null);
+  const [billingInterval, setBillingInterval] = useState('monthly'); // 'monthly' or 'yearly'
   const navigate = useNavigate();
 
+  // Fetch plans dynamically from API
   useEffect(() => {
-    fetch(`${API_BASE}/products`)
-      .then((res) => res.json())
-      .then((data) => {
-        // Map products to expected structure (with metadata)
-        const productsWithMetadata = data.map((product) => {
-          const matchedData = product.data?.data?.find((p) => p.id === product.id);
-          return {
-            ...product,
-            metadata: matchedData?.metadata || {},
-          };
-        });
-        setProducts(productsWithMetadata);
+    fetch(`${API_BASE}/plans`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.items) {
+          setPlans(data.items);
+        } else {
+          setError('No plans found');
+        }
         setLoading(false);
       })
       .catch(() => {
-        setError("Failed to load plans.");
+        setError('Failed to load plans.');
         setLoading(false);
       });
   }, []);
@@ -38,30 +36,19 @@ const Plan = () => {
     setOpen(open === id ? null : id);
   };
 
-  const handleContinue = () => {
-    if (!selected) {
-      alert("Please select a plan first");
-      return;
-    }
-    if (selected === "free-trial") {
-      navigate("/signup");
-      return;
-    }
-    // Find selected product for price id
-    const selectedProduct = products.find((p) => p.id === selected);
-    if (selectedProduct && selectedProduct.prices.length > 0) {
-      navigate("/checkout", { state: { priceId: selectedProduct.prices[0].id } });
-    } else {
-      alert("No price available for selected plan");
-    }
+  // Filter plans by billingInterval (monthly or yearly)
+  const filteredPlans = plans.filter((plan) => plan.period === billingInterval);
+
+  // Calculate monthly price for yearly plans
+  const getMonthlyPrice = (plan) => {
+    return billingInterval === 'yearly' ? plan.item.amount / 12 : plan.item.amount;
   };
 
-    if (loading) return <div className={styles.status}><Loader2 /></div>;
+  if (loading) return <p className={styles.status}><Loader /></p>;
   if (error) return <p className={styles.statusError}>{error}</p>;
 
   return (
     <div className={styles.container}>
-      {/* Header */}
       <div className={styles.header}>
         <div className={styles.icon}>
           <img src="images/inlogo.png" alt="inlogo" />
@@ -72,112 +59,110 @@ const Plan = () => {
         </div>
       </div>
 
-      {/* Free Trial Plan */}
-      {/* <div
-        className={`${styles.planBox} ${selected === "free-trial" ? styles.selected : ""}`}
-        onClick={() => setSelected("free-trial")}
-      >
-        <div className={styles.part1}>
-          <label className={styles.radioLabel}>
-            <input
-              type="radio"
-              name="plan"
-              value="free-trial"
-              checked={selected === "free-trial"}
-              onChange={() => setSelected("free-trial")}
-            />
-            <div className={styles.planContent}>
-              <div className={styles.planTitle}>
-                <div>
-                  <p>Free Trial</p>
-                  <span className={styles.description}>
-                    Try all features free — includes 10 minutes
-                  </span>
-                </div>
-              </div>
-            </div>
-          </label>
-        </div>
-      </div> */}
+      {/* Tabs for Monthly / Yearly */}
+      <div className={styles.tabs}>
+        <button
+          className={billingInterval === 'monthly' ? styles.activeTab : ''}
+          onClick={() => setBillingInterval('monthly')}
+        >
+          Monthly
+        </button>
+        <button
+          className={billingInterval === 'yearly' ? styles.activeTab : ''}
+          onClick={() => setBillingInterval('yearly')}
+        >
+          Yearly
+        </button>
+      </div>
 
-      {/* Dynamic Plans from API */}
-      {products.map((product) => (
+      {/* Display Plans */}
+      {filteredPlans.map((plan) => (
         <div
-          key={product.id}
-          className={`${styles.planBox} ${selected === product.id ? styles.selected : ""}`}
-          onClick={() => setSelected(product.id)}
+          key={plan.id}
+          className={`${styles.planBox} ${selected === plan.id ? styles.selected : ''}`}
         >
           <div className={styles.part1}>
             <label className={styles.radioLabel}>
               <input
                 type="radio"
                 name="plan"
-                value={product.id}
-                checked={selected === product.id}
-                onChange={() => setSelected(product.id)}
+                value={plan.id}
+                checked={selected === plan.id}
+                onChange={() => setSelected(plan.id)}
               />
               <div className={styles.planContent}>
                 <div className={styles.planTitle}>
                   <div>
-                    <p>{product.name}</p>
-                    <span className={styles.description}>{product.description}</span>
+                    <p>{plan.item.name}</p>
+                    <span className={styles.description}>{plan.item.description.trim()}</span>
                   </div>
-                  {product.metadata.badge && (
-                    <span className={styles.badge}>{product.metadata.badge}</span>
+                  {plan.metadata && plan.metadata.badge && (
+                    <span className={styles.badge}>{plan.metadata.badge}</span>
                   )}
+                </div>
+                <div className={styles.planData}>
+                  <p>
+                    Price: <strong>{(getMonthlyPrice(plan) / 100).toFixed(2)} {plan.item.currency}</strong> /{' '}
+                    {billingInterval}
+                  </p>
+                  <p>
+                    <strong>{plan.notes?.minutes}</strong> minutes included
+                  </p>
                 </div>
               </div>
             </label>
+
             <img
-              src={open === product.id ? "/svg/up.svg" : "/svg/down.svg"}
+              src={open === plan.id ? '/svg/up.svg' : '/svg/down.svg'}
               alt="Toggle Arrow"
-              className={`${styles.arrowIcon} ${open === product.id ? styles.rotated : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleAccordion(product.id);
-              }}
+              className={`${styles.arrowIcon} ${open === plan.id ? styles.rotated : ''}`}
+              onClick={() => toggleAccordion(plan.id)}
             />
           </div>
 
-          <div className={`${styles.accordion} ${open === product.id ? styles.open : ""}`}>
-            {product.metadata.minutes && (
-              <p>
-                Includes <strong>{product.metadata.minutes}</strong> minutes
-              </p>
+          <div className={`${styles.accordion} ${open === plan.id ? styles.open : ''}`}>
+            {plan.notes?.minutes && (
+              <p>Includes <strong>{plan.notes.minutes}</strong> minutes</p>
             )}
             <div className={styles.pricesContainer}>
-              {product.prices.map((price) => (
-                <div
-                  key={price.id}
-                  className={styles.priceOption}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate("/checkout", { state: { priceId: price.id } });
-                  }}
-                >
-                  {(price.unit_amount / 100).toFixed(2)} {price.currency.toUpperCase()} / {price.interval}
-                </div>
-              ))}
+              <div
+                className={styles.priceOption}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/checkout', { state: { priceId: plan.id } });
+                }}
+              >
+                {(getMonthlyPrice(plan) / 100).toFixed(2)} {plan.item.currency} / {billingInterval}
+              </div>
             </div>
           </div>
         </div>
       ))}
 
       {/* Continue button */}
-      <div className={styles.btnTheme} onClick={handleContinue}>
+      <div
+        className={styles.btnTheme}
+        onClick={() => {
+          if (selected) {
+            navigate('/checkout', { state: { priceId: selected } });
+          } else {
+            alert('Please select a plan first');
+          }
+        }}
+      >
         <img src="svg/svg-theme.svg" alt="" />
         <p>Continue</p>
       </div>
 
       {/* Login link */}
-      {/* <div className={styles.loginBox}>
+      <div className={styles.loginBox}>
         <p>
-          Already have an account?{" "}
-          <span className={styles.loginLink} onClick={() => navigate("/login")}>
+          Already have an account?{' '}
+          <span className={styles.loginLink} onClick={() => navigate('/login')}>
             Login
           </span>
         </p>
-      </div> */}
+      </div>
     </div>
   );
 };
