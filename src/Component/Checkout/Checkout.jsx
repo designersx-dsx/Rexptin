@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 import styles from "./checkout.module.css";
 import PopUp from "../Popup/Popup";
+import { useLocation, useNavigate } from "react-router-dom";
+import CountdownPopup from "../CountDownPopup/CountdownPopup";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-
-
 function Checkout({
   customerId,
-  priceId,     // <-- expect priceId as prop now
+  priceId, // <-- expect priceId as prop now
   email,
   onSubscriptionSuccess,
   userId,
   disabled,
+  agentId,
 }) {
   // Step state (1 or 2)
   const [step, setStep] = useState(1);
+  console.log("lstSTep", agentId);
+  const navigate = useNavigate();
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -42,13 +45,14 @@ function Checkout({
   // Validate step 1 fields before going next
   const validateStep1 = () => {
     const newErrors = {};
-    if (!addressLine1.trim()) newErrors.addressLine1 = "Address Line 1 is required.";
+    if (!addressLine1.trim())
+      newErrors.addressLine1 = "Address Line 1 is required.";
     if (!city.trim()) newErrors.city = "City is required.";
     if (!state.trim()) newErrors.state = "State / Province is required.";
     if (!postalCode.trim()) newErrors.postalCode = "Postal Code is required.";
     if (!country.trim()) {
       newErrors.country = "Country is required.";
-    } 
+    }
     // else if (!VALID_COUNTRY_CODES.has(country.trim().toUpperCase())) {
     //   newErrors.country = "Please enter a valid 2-letter ISO country code.";
     // }
@@ -64,10 +68,64 @@ function Checkout({
     }
   };
 
+  const [showCountdownPopup, setShowCountdownPopup] = useState(false);
+
+  const handlePopupClose = () => {
+    setShowCountdownPopup(false);
+  };
+
+  const handlePopupFinish = async () => {
+    setShowCountdownPopup(false);
+    setMessage("Subscription successful!");
+    setPopupType("success");
+    setPopupMessage("Subscription successful!");
+    // Call next API here and navigate to the dashboard
+    await callNextApiAndRedirect();
+  };
+
+  // Call the next API to finish user subscription and navigate to the dashboard
+  const callNextApiAndRedirect = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/agent/updateFreeAgent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          agentId, // Send agentId along with userId as per your API
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // After successful API call, navigate to the dashboard
+        setPopupType("success");
+        setPopupMessage("Agent Upgraged successfully!");
+        navigate("/dashboard");
+      } else {
+        setMessage("Error completing subscription.");
+        setPopupType("failed");
+        setPopupMessage("Error completing subscription.");
+      }
+    } catch (error) {
+      console.error("Error calling next API:", error);
+      setMessage("Error completing subscription.");
+      setPopupType("failed");
+      setPopupMessage("Error completing subscription.");
+    }
+  };
+
+  // Use useLocation to get the current location path
+  const location = useLocation();
+  console.log("Current path:", location.pathname);
+
   // Handle subscription payment via Razorpay
   const handleSubmit = async () => {
     const newErrors = {};
-    if (!billingName.trim()) newErrors.billingName = "Name on card is required.";
+    if (!billingName.trim())
+      newErrors.billingName = "Name on card is required.";
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
       return;
@@ -118,7 +176,7 @@ function Checkout({
       const subscription = await res.json();
 
       if (!subscription.id) {
-        setMessage('Subscription creation failed: Missing subscription id');
+        setMessage("Subscription creation failed: Missing subscription id");
         setLoading(false);
         return;
       }
@@ -135,7 +193,7 @@ function Checkout({
           name: billingName,
         },
         handler: async function (response) {
-          console.log(response  ,"ressss")
+          console.log(response, "ressss");
           setMessage("Verifying payment...");
           try {
             const verifyRes = await fetch(`${API_BASE_URL}/verify-payment`, {
@@ -151,11 +209,17 @@ function Checkout({
             const verifyData = await verifyRes.json();
 
             if (verifyData.success) {
-              setMessage(" Subscription successful!");
-              setPopupType("success");
-              setPopupMessage("Subscription successful!");
+              // Show the countdown popup
+              if (location.pathname === "/checkout") {
+                setShowCountdownPopup(true);
+              } else {
+                setMessage("Subscription successful!");
+                setPopupType("success");
+                setPopupMessage("Subscription successful!");
+              }
+              // Show the countdown popup
             } else {
-              setMessage(" Payment verification failed.");
+              setMessage("Payment verification failed.");
               setPopupType("failed");
               setPopupMessage("Payment verification failed.");
             }
@@ -173,7 +237,6 @@ function Checkout({
 
       const rzp = new window.Razorpay(options);
       rzp.open();
-
     } catch (err) {
       setMessage(` ${err.message}`);
       setPopupType("failed");
@@ -186,7 +249,9 @@ function Checkout({
     <div className={styles.checkoutForm}>
       {step === 1 && (
         <>
-          <h3 className={styles.billingNameH3}>Billing Address & Company Details</h3>
+          <h3 className={styles.billingNameH3}>
+            Billing Address & Company Details
+          </h3>
 
           <label>Address Line 1 *</label>
           <input
@@ -196,7 +261,9 @@ function Checkout({
             className={styles.input2}
             required
           />
-          {errors.addressLine1 && <p className={styles.errorMsg}>{errors.addressLine1}</p>}
+          {errors.addressLine1 && (
+            <p className={styles.errorMsg}>{errors.addressLine1}</p>
+          )}
 
           <label>Address Line 2</label>
           <input
@@ -234,7 +301,9 @@ function Checkout({
             className={styles.input}
             required
           />
-          {errors.postalCode && <p className={styles.errorMsg}>{errors.postalCode}</p>}
+          {errors.postalCode && (
+            <p className={styles.errorMsg}>{errors.postalCode}</p>
+          )}
 
           <label>Country *</label>
           <input
@@ -245,7 +314,9 @@ function Checkout({
             required
             placeholder="ISO country code, e.g. US"
           />
-          {errors.country && <p className={styles.errorMsg}>{errors.country}</p>}
+          {errors.country && (
+            <p className={styles.errorMsg}>{errors.country}</p>
+          )}
 
           <button
             type="button"
@@ -270,7 +341,9 @@ function Checkout({
             className={styles.input}
             required
           />
-          {errors.billingName && <p className={styles.errorMsg}>{errors.billingName}</p>}
+          {errors.billingName && (
+            <p className={styles.errorMsg}>{errors.billingName}</p>
+          )}
 
           {/* Razorpay uses hosted checkout modal; no card fields here */}
 
@@ -292,9 +365,20 @@ function Checkout({
         onClose={() => {
           setPopupType("");
           setPopupMessage("");
-          if (popupType === "success") onSubscriptionSuccess?.();
+          // Check if the current path is /checkout, if not, call onSubscriptionSuccess
+          if (popupType === "success" && location.pathname !== "/checkout") {
+            onSubscriptionSuccess?.();
+          }
         }}
       />
+
+      {/* Show the countdown popup if needed */}
+      {showCountdownPopup && (
+        <CountdownPopup
+          onClose={handlePopupClose}
+          onFinish={handlePopupFinish}
+        />
+      )}
 
       {message && !popupMessage && <p className={styles.message}>{message}</p>}
     </div>

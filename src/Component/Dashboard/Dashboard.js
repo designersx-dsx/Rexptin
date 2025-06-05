@@ -18,6 +18,8 @@ import Popup from "../Popup/Popup";
 import CaptureProfile from "../Popup/profilePictureUpdater/CaptureProfile";
 import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
 import AssignNumberModal from "../AgentDetails/AssignNumberModal";
+import Modal from "../Modal/Modal";
+import Plan from "../Plan/Plan";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
@@ -36,6 +38,8 @@ function Dashboard() {
   const decodeTokenData = decodeToken(token);
   const userIdFromToken = decodeTokenData?.id || "";
   const [userId, setUserId] = useState(userIdFromToken);
+
+  const [agentId, setagentId] = useState()
 
   // Agents and UI states
   const [localAgents, setLocalAgents] = useState([]);
@@ -86,11 +90,14 @@ function Dashboard() {
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
+  // upgrade
+  const [open, setOpen] = useState(false);
 
 
-const handleAssignNumberClick = (agent, e) => {
-  e.stopPropagation();
-  const planName = agent?.subscription?.product_name || "Free";
+
+  const handleAssignNumberClick = (agent, e) => {
+    e.stopPropagation();
+    const planName = agent?.subscription?.product_name || "Free";
 
 
     if (planName.toLowerCase() === "free") {
@@ -178,7 +185,7 @@ const handleAssignNumberClick = (agent, e) => {
       try {
         const res = await fetchDashboardDetails(userId);
 
-        console.log(res,hasFetched,"HELOE")
+        console.log(res, hasFetched, "HELOE")
         let agentsWithCalKeys = res.agents || [];
         const calApiAgents = await fetchCalApiKeys(userId);
         const calApiKeyMap = {};
@@ -356,9 +363,12 @@ const handleAssignNumberClick = (agent, e) => {
     setOpenDropdown(null);
   };
 
-  const handleUpgrade = (id) => {
-    alert(`Upgrade clicked for card ${id}`);
-    setOpenDropdown(null);
+   const handleUpgradeClick = (agent) => {
+  
+     console.log({agent})
+    setagentId(agent);
+    // Then open the modal
+    setOpen(true);
   };
 
   const handleOpencanvas = () => {
@@ -479,7 +489,7 @@ const handleAssignNumberClick = (agent, e) => {
     setUploadedImage(image);
     closeUploadModal();
   };
-  console.log('URSER',localAgents.subscription)
+  console.log('URSER', localAgents.subscription)
   return (
     <div>
       <div className={styles.forSticky}>
@@ -499,7 +509,7 @@ const handleAssignNumberClick = (agent, e) => {
                   }
                   alt="Profile"
                   className={styles.profilePic}
-                   onError={(e) => { e.target.src = "images/camera-icon.avif"; }}
+                  onError={(e) => { e.target.src = "images/camera-icon.avif"; }}
                 />
               </button>
             </div>
@@ -507,13 +517,13 @@ const handleAssignNumberClick = (agent, e) => {
               <p className={styles.greeting}>Hello!</p>
               <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
             </div>
-               {isUploadModalOpen && (
-            <UploadProfile
-              onClose={closeUploadModal}
-              onUpload={handleUpload}
-              currentProfile={uploadedImage || user?.profile || "images/camera-icon.avif"}
-            />
-          )}
+            {isUploadModalOpen && (
+              <UploadProfile
+                onClose={closeUploadModal}
+                onUpload={handleUpload}
+                currentProfile={uploadedImage || user?.profile || "images/camera-icon.avif"}
+              />
+            )}
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationIcon}>
@@ -603,9 +613,9 @@ const handleAssignNumberClick = (agent, e) => {
 
       <div className={styles.main}>
         {localAgents?.map((agent) => {
-                 const planStyles = ['MiniPlan', 'ProPlan', 'Maxplan'];
-                    const randomPlan = `${agent?.subscription?.product_name}Plan`;
-                    // console.log('randomPlan',randomPlan)
+          const planStyles = ['MiniPlan', 'ProPlan', 'Maxplan'];
+          const randomPlan = `${agent?.subscription?.product_name}Plan`;
+          // console.log('randomPlan',randomPlan)
           let assignedNumbers = [];
           if (agent.voip_numbers) {
             try {
@@ -625,7 +635,7 @@ const handleAssignNumberClick = (agent, e) => {
 
 
 
-                  {agent?.subscription?.product_name ||  "Free"}{" Plan"}
+                  {agent?.subscription?.product_name || "Free"}{" Plan"}
 
 
 
@@ -690,7 +700,8 @@ const handleAssignNumberClick = (agent, e) => {
                       </div>
                       <div
                         className={styles.OptionItem}
-                        onClick={() => handleUpgrade(agent.agent_id)}
+                        // onClick={() => setagentId(agent.agent_id)}
+                        onClick={() => handleUpgradeClick(agent.agent_id)}
                       >
                         Upgrade
                       </div>
@@ -990,7 +1001,7 @@ const handleAssignNumberClick = (agent, e) => {
               onClick={closeAssignNumberModal}
               style={{ width: "100%" }}
             >
-              Got it!    
+              Got it!
             </button>
           </div>
         </div>
@@ -1043,6 +1054,10 @@ const handleAssignNumberClick = (agent, e) => {
           onClose={() => setPopupMessage("")}
         />
       )}
+
+      <Modal isOpen={open}  onClose={() => setOpen(false)}>
+        <Plan agentID={agentId}/>
+      </Modal>
 
       <Footer />
     </div>
