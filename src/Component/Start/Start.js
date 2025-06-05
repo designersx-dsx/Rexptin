@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 function Start() {
     const navigate = useNavigate();
+    const [ipData, setIpData] = useState({});
+    console.log("ipD",ipData.country)
     const [step, setStep] = useState(0);
     const handleClick = () => {
         setTimeout(() => setStep(1), 150);
@@ -12,7 +14,7 @@ function Start() {
         setTimeout(() => setStep(4), 450);
         setTimeout(() => setStep(5), 650);
         setTimeout(() => {
-            navigate(!ipData?.country === "India" ? "/plans" : "/rlans");
+            navigate(ipData?.country === "India" ? "/plans" : "/rplans");
         }, 700);
     };
     useEffect(() => {
@@ -26,25 +28,24 @@ function Start() {
 
         return () => window.removeEventListener('resize', setVH);
     }, []);
-const [countryCode, setCountryCode] = useState('');
-  const [ipData, setIpData] = useState({});
+    const [countryCode, setCountryCode] = useState('');
 
-useEffect(() => {
-    const fetchCountryCode = async () => {
-      try {
-        const res = await axios.get('https://ipwho.is/');
-        const data = res?.data;
-        if (data && data.country_code) {
-          setIpData(data);
-          setCountryCode(data.country_code.toLowerCase());
-        }
-      } catch (err) {
-        console.error('Failed to fetch IP location:', err);
-      }
-    };
-    fetchCountryCode();
-  }, []);
-console.log(ipData)
+    useEffect(() => {
+        const fetchCountryCode = async () => {
+            try {
+                const res = await axios.get('https://ipwho.is/');
+                const data = res?.data;
+                if (data && data.country_code) {
+                    setIpData(data);
+                    setCountryCode(data.country_code.toLowerCase());
+                }
+            } catch (err) {
+                console.error('Failed to fetch IP location:', err);
+            }
+        };
+        fetchCountryCode();
+    }, []);
+    // console.log(ipData)
     return (
         <div>
             <div className={styles.StartMain}>
