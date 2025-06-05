@@ -14,11 +14,15 @@ function Checkout({
   userId,
   disabled,
   agentId,
+  locationPath
 }) {
   // Step state (1 or 2)
   const [step, setStep] = useState(1);
-  console.log("lstSTep", agentId);
+  // console.log("lstSTep", agentId);
   const navigate = useNavigate();
+  console.log("locationPath",locationPath)
+  console.log("userId",userId)
+  console.log("agentId",agentId)
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -85,6 +89,8 @@ function Checkout({
 
   // Call the next API to finish user subscription and navigate to the dashboard
   const callNextApiAndRedirect = async () => {
+    console.log("agentID",agentId)
+    console.log("userId",userId)
     try {
       const res = await fetch(`${API_BASE_URL}/agent/updateFreeAgent`, {
         method: "POST",
@@ -210,7 +216,7 @@ function Checkout({
 
             if (verifyData.success) {
               // Show the countdown popup
-              if (location.pathname === "/checkout") {
+              if (locationPath === "/dashboard") {
                 setShowCountdownPopup(true);
               } else {
                 setMessage("Subscription successful!");
@@ -366,7 +372,7 @@ function Checkout({
           setPopupType("");
           setPopupMessage("");
           // Check if the current path is /checkout, if not, call onSubscriptionSuccess
-          if (popupType === "success" && location.pathname !== "/checkout") {
+          if (popupType === "success" && locationPath !== "/dashboard") {
             onSubscriptionSuccess?.();
           }
         }}
