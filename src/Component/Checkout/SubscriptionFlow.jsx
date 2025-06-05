@@ -9,7 +9,10 @@ export default function SubscriptionFlow() {
   const navigate = useNavigate();
 
   const priceId = location.state?.priceId;
-  const agentId = location.state.agentId.agentID
+  const agentId = location.state?.agentId || null
+  console.log("agentId-----",location)
+  const locationPath = location.state?.locationPath1 || null
+  console.log("locationPath",locationPath)
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
   const [email, setEmail] = useState('');
@@ -203,6 +206,7 @@ export default function SubscriptionFlow() {
             onSubscriptionSuccess={() => setSubscriptionSuccess(true)}
             disabled={!otpVerified}
             agentId={agentId}
+            locationPath={locationPath}
           />
         </div>
       )}

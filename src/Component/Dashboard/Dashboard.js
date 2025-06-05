@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   EndWebCallUpdateAgentMinutesLeft,
   fetchDashboardDetails,
@@ -40,6 +40,10 @@ function Dashboard() {
   const [userId, setUserId] = useState(userIdFromToken);
 
   const [agentId, setagentId] = useState()
+  const location = useLocation();
+
+  const locationPath = location.pathname
+  console.log("loca",locationPath)
 
   // Agents and UI states
   const [localAgents, setLocalAgents] = useState([]);
@@ -1056,7 +1060,7 @@ function Dashboard() {
       )}
 
       <Modal isOpen={open}  onClose={() => setOpen(false)}>
-        <Plan agentID={agentId}/>
+        <Plan agentID={agentId} locationPath={locationPath} />
       </Modal>
 
       <Footer />
