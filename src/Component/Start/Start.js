@@ -12,7 +12,7 @@ function Start() {
         setTimeout(() => setStep(4), 450);
         setTimeout(() => setStep(5), 650);
         setTimeout(() => {
-            navigate(!ipData?.country === "India" ? "/plans" : "/rlans");
+            navigate(!ipData?.country === "India" ? "/plans" : "/rplans");
         }, 700);
     };
     useEffect(() => {

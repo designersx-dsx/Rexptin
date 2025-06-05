@@ -12,11 +12,13 @@
     gap: 1rem;
     margin-bottom: 1rem;
 }
-.headercontent h3{
+
+.headercontent h3 {
     font-size: 22px;
     color: #24252C;
 }
-.headercontent p{
+
+.headercontent p {
     font-size: 14px;
     color: #9A9A9A;
 
@@ -24,7 +26,7 @@
 
 .icon {
     width: 50px;
-    height:50px;
+    height: 50px;
     background: #eae9ff;
     border-radius: 50%;
     display: flex;
@@ -54,8 +56,9 @@
 
 .radioLabel {
     display: flex;
+    gap: 10px;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
     width: 100%;
     cursor: pointer;
 }
@@ -66,11 +69,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-inline: 10px;
+    padding: 10px;
 }
 
 .planContent {
-    padding: 10px;
+
     flex-grow: 1;
 }
 
@@ -79,12 +82,14 @@
     align-items: center;
     gap: 10px;
 }
-.planTitle p{
+
+.planTitle p {
     font-size: 18px;
     color: #24252C;
     font-weight: 600;
 }
-.planTitle span{
+
+.planTitle span {
     font-size: 16px;
     color: #A3AED0;
     font-weight: 300;
@@ -134,7 +139,7 @@
 .open {
     max-height: 200px;
     opacity: 1;
-    padding-bottom: 1rem;
+
 }
 
 .btnTheme {
@@ -145,8 +150,9 @@
     justify-content: center;
     align-items: center;
     min-height: 55px;
-    margin-top: 3rem;
+    margin-top: 1rem;
 }
+
 .btnTheme img {
     position: absolute;
     width: 100%;
@@ -183,24 +189,79 @@
     color: #5a38b1;
     text-decoration: underline;
 }
-.loginBox p{
+
+.loginBox p {
     text-align: center;
     font-size: 18px;
 }
-.hero_sec{
-    margin-top: 5rem;
+
+.hero_sec {
+    padding: 20px;
 }
-.status{
-    height: 100vh;
+
+.status {
+
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.status2{
+
+.status2 {
     height: 200px;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/* Ankush CSS Start  */
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    border-radius: 8px;
+    justify-content: left;
+    margin-bottom: 1rem;
+    width: 100%;
+    padding-right: 10px;
+}
+
+.tabButton {
+    padding: 10px 20px;
+    border: none;
+    background-color: white;
+    border: 1px solid #E0E5F2;
+    color: #24252C;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    width: 50%;
+}
+
+.activeTab {
+    background-color: #6524EB;
+    color: white;
+}
+
+.PlanDiv {
+    max-height: 300px;
+    padding-right: 10px;
+    overflow: auto;
+}
+
+/* Custom scrollbar */
+.PlanDiv::-webkit-scrollbar {
+    width: 4px;
+}
+
+.PlanDiv::-webkit-scrollbar-thumb {
+    background-color: #6524EB;
+    border-radius: 8px;
+}
+
+.PlanDiv::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
 }
