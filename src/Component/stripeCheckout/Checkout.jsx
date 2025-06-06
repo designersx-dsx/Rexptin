@@ -323,7 +323,7 @@ function CheckoutForm({
         onClose={() => {
           setPopupType("");
           setPopupMessage("");
-          // if (popupType === "success") onSubscriptionSuccess?.();
+          if (popupType === "success") onSubscriptionSuccess?.();
         }}
       />
 
