@@ -20,6 +20,7 @@ import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
 import AssignNumberModal from "../AgentDetails/AssignNumberModal";
 import Modal from "../Modal/Modal";
 import Plan from "../Plan/Plan";
+import axios from "axios";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
@@ -32,6 +33,7 @@ function Dashboard() {
   const [openCallModal, setOpenCallModal] = useState(false);
   const [agentDetails, setAgentDetails] = useState(null);
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
+
 
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
@@ -96,6 +98,25 @@ function Dashboard() {
 
   // upgrade
   const [open, setOpen] = useState(false);
+
+  const [countryCode, setCountryCode] = useState('');
+  const [ipData, setIpData] = useState({});
+
+  useEffect(() => {
+    const fetchCountryCode = async () => {
+      try {
+        const res = await axios.get('https://ipwho.is/');
+        const data = res?.data;
+        if (data && data.country_code) {
+          setIpData(data);
+          setCountryCode(data.country_code.toLowerCase());
+        }
+      } catch (err) {
+        console.error('Failed to fetch IP location:', err);
+      }
+    };
+    fetchCountryCode();
+  }, []);
 
 
 
@@ -367,9 +388,9 @@ function Dashboard() {
     setOpenDropdown(null);
   };
 
-   const handleUpgradeClick = (agent) => {
-  
-     console.log({agent})
+  const handleUpgradeClick = (agent) => {
+
+    console.log({ agent })
     setagentId(agent);
     // Then open the modal
     setOpen(true);
@@ -1059,7 +1080,7 @@ function Dashboard() {
         />
       )}
 
-      <Modal isOpen={open}  onClose={() => setOpen(false)}>
+      <Modal isOpen={open} onClose={() => setOpen(false)}>
         <Plan agentID={agentId} locationPath={locationPath} />
       </Modal>
 
