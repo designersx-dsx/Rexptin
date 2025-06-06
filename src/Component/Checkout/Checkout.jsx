@@ -14,15 +14,15 @@ function Checkout({
   userId,
   disabled,
   agentId,
-  locationPath
+  locationPath,
 }) {
   // Step state (1 or 2)
   const [step, setStep] = useState(1);
   // console.log("lstSTep", agentId);
   const navigate = useNavigate();
-  console.log("locationPath",locationPath)
-  console.log("userId",userId)
-  console.log("agentId",agentId)
+  // console.log("locationPath",locationPath)
+  // console.log("userId",userId)
+  // console.log("agentId",agentId)
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -89,8 +89,8 @@ function Checkout({
 
   // Call the next API to finish user subscription and navigate to the dashboard
   const callNextApiAndRedirect = async () => {
-    console.log("agentID",agentId)
-    console.log("userId",userId)
+    console.log("agentID", agentId);
+    console.log("userId", userId);
     try {
       const res = await fetch(`${API_BASE_URL}/agent/updateFreeAgent`, {
         method: "POST",
@@ -109,7 +109,9 @@ function Checkout({
         // After successful API call, navigate to the dashboard
         setPopupType("success");
         setPopupMessage("Agent Upgraged successfully!");
-        navigate("/dashboard");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 2000);
       } else {
         setMessage("Error completing subscription.");
         setPopupType("failed");
@@ -125,7 +127,7 @@ function Checkout({
 
   // Use useLocation to get the current location path
   const location = useLocation();
-  console.log("Current path:", location.pathname);
+  // console.log("Current path:", location.pathname);
 
   // Handle subscription payment via Razorpay
   const handleSubmit = async () => {

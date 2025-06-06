@@ -43,7 +43,7 @@ function Dashboard() {
   const location = useLocation();
 
   const locationPath = location.pathname
-  console.log("loca",locationPath)
+  // console.log("loca",locationPath)
 
   // Agents and UI states
   const [localAgents, setLocalAgents] = useState([]);

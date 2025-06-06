@@ -7,7 +7,7 @@ import axios from 'axios';
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Plan = ({agentID,locationPath}) => {
-  console.log("plannnagent",agentID)
+  // console.log("plannnagent",agentID)
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

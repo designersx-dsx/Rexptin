@@ -10,7 +10,7 @@ export default function SubscriptionFlow() {
 
   const priceId = location.state?.priceId;
   const agentId = location.state?.agentId || null
-  console.log("agentId-----",location)
+  // console.log("agentId-----",location)
   const locationPath = location.state?.locationPath1 || null
   console.log("locationPath",locationPath)
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
@@ -103,6 +103,7 @@ export default function SubscriptionFlow() {
       });
 
       const customerData = await customerRes.json();
+      console.log("cuss",customerData)
 
       if (customerData.error) {
         setMessage(` Customer error: ${customerData.error}`);
