@@ -42,6 +42,7 @@ const Plan = ({agentID,locationPath}) => {
       if (countryCode !== 'in') {
         apiUrl = `${API_BASE}/products`; // API endpoint for non-India-specific products
       }
+      console.log("apiUrl",apiUrl)
 
       try {
         const response = await fetch(apiUrl);

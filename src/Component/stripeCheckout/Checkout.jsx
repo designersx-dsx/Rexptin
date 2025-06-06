@@ -11,6 +11,8 @@ import {
 import styles from "./checkout.module.css";
 import { API_BASE_URL } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
+import CountdownPopup from "../CountDownPopup/CountdownPopup";
+import { useNavigate } from "react-router-dom";
 
 const stripePromise = loadStripe(
   "pk_test_51RQodQ4T6s9Z2zBzHe6xifROxlIMVsodSNxf2MnmDX3AwkI44JT3AjDuyQZEoZq9Zha69WiA8ecnXZZ2sw9iY5sP007jJUxE52"
@@ -23,12 +25,16 @@ function CheckoutForm({
   onSubscriptionSuccess,
   userId,
   disabled,
+  agentId,
+  locationPath,
 }) {
   const stripe = useStripe();
   const elements = useElements();
 
   // Step state (1 or 2)
   const [step, setStep] = useState(1);
+
+  const navigate = useNavigate();
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -53,40 +59,273 @@ function CheckoutForm({
   const [popupMessage, setPopupMessage] = useState("");
 
   const VALID_COUNTRY_CODES = new Set([
-  "AF","AX","AL","DZ","AS","AD","AO","AI","AQ","AG","AR","AM","AW","AU","AT","AZ",
-  "BS","BH","BD","BB","BY","BE","BZ","BJ","BM","BT","BO","BQ","BA","BW","BV","BR",
-  "IO","BN","BG","BF","BI","KH","CM","CA","CV","KY","CF","TD","CL","CN","CX","CC",
-  "CO","KM","CG","CD","CK","CR","CI","HR","CU","CW","CY","CZ","DK","DJ","DM","DO",
-  "EC","EG","SV","GQ","ER","EE","SZ","ET","FK","FO","FJ","FI","FR","GF","PF","TF",
-  "GA","GM","GE","DE","GH","GI","GR","GL","GD","GP","GU","GT","GG","GN","GW","GY",
-  "HT","HM","VA","HN","HK","HU","IS","IN","ID","IR","IQ","IE","IM","IL","IT","JM",
-  "JP","JE","JO","KZ","KE","KI","KP","KR","KW","KG","LA","LV","LB","LS","LR","LY",
-  "LI","LT","LU","MO","MG","MW","MY","MV","ML","MT","MH","MQ","MR","MU","YT","MX",
-  "FM","MD","MC","MN","ME","MS","MA","MZ","MM","NA","NR","NP","NL","NC","NZ","NI",
-  "NE","NG","NU","NF","MK","MP","NO","OM","PK","PW","PS","PA","PG","PY","PE","PH",
-  "PN","PL","PT","PR","QA","RE","RO","RU","RW","BL","SH","KN","LC","MF","PM","VC",
-  "WS","SM","ST","SA","SN","RS","SC","SL","SG","SX","SK","SI","SB","SO","ZA","GS",
-  "SS","ES","LK","SD","SR","SJ","SE","CH","SY","TW","TJ","TZ","TH","TL","TG","TK",
-  "TO","TT","TN","TR","TM","TC","TV","UG","UA","AE","GB","US","UM","UY","UZ","VU",
-  "VE","VN","VG","VI","WF","EH","YE","ZM","ZW"
-]);
+    "AF",
+    "AX",
+    "AL",
+    "DZ",
+    "AS",
+    "AD",
+    "AO",
+    "AI",
+    "AQ",
+    "AG",
+    "AR",
+    "AM",
+    "AW",
+    "AU",
+    "AT",
+    "AZ",
+    "BS",
+    "BH",
+    "BD",
+    "BB",
+    "BY",
+    "BE",
+    "BZ",
+    "BJ",
+    "BM",
+    "BT",
+    "BO",
+    "BQ",
+    "BA",
+    "BW",
+    "BV",
+    "BR",
+    "IO",
+    "BN",
+    "BG",
+    "BF",
+    "BI",
+    "KH",
+    "CM",
+    "CA",
+    "CV",
+    "KY",
+    "CF",
+    "TD",
+    "CL",
+    "CN",
+    "CX",
+    "CC",
+    "CO",
+    "KM",
+    "CG",
+    "CD",
+    "CK",
+    "CR",
+    "CI",
+    "HR",
+    "CU",
+    "CW",
+    "CY",
+    "CZ",
+    "DK",
+    "DJ",
+    "DM",
+    "DO",
+    "EC",
+    "EG",
+    "SV",
+    "GQ",
+    "ER",
+    "EE",
+    "SZ",
+    "ET",
+    "FK",
+    "FO",
+    "FJ",
+    "FI",
+    "FR",
+    "GF",
+    "PF",
+    "TF",
+    "GA",
+    "GM",
+    "GE",
+    "DE",
+    "GH",
+    "GI",
+    "GR",
+    "GL",
+    "GD",
+    "GP",
+    "GU",
+    "GT",
+    "GG",
+    "GN",
+    "GW",
+    "GY",
+    "HT",
+    "HM",
+    "VA",
+    "HN",
+    "HK",
+    "HU",
+    "IS",
+    "IN",
+    "ID",
+    "IR",
+    "IQ",
+    "IE",
+    "IM",
+    "IL",
+    "IT",
+    "JM",
+    "JP",
+    "JE",
+    "JO",
+    "KZ",
+    "KE",
+    "KI",
+    "KP",
+    "KR",
+    "KW",
+    "KG",
+    "LA",
+    "LV",
+    "LB",
+    "LS",
+    "LR",
+    "LY",
+    "LI",
+    "LT",
+    "LU",
+    "MO",
+    "MG",
+    "MW",
+    "MY",
+    "MV",
+    "ML",
+    "MT",
+    "MH",
+    "MQ",
+    "MR",
+    "MU",
+    "YT",
+    "MX",
+    "FM",
+    "MD",
+    "MC",
+    "MN",
+    "ME",
+    "MS",
+    "MA",
+    "MZ",
+    "MM",
+    "NA",
+    "NR",
+    "NP",
+    "NL",
+    "NC",
+    "NZ",
+    "NI",
+    "NE",
+    "NG",
+    "NU",
+    "NF",
+    "MK",
+    "MP",
+    "NO",
+    "OM",
+    "PK",
+    "PW",
+    "PS",
+    "PA",
+    "PG",
+    "PY",
+    "PE",
+    "PH",
+    "PN",
+    "PL",
+    "PT",
+    "PR",
+    "QA",
+    "RE",
+    "RO",
+    "RU",
+    "RW",
+    "BL",
+    "SH",
+    "KN",
+    "LC",
+    "MF",
+    "PM",
+    "VC",
+    "WS",
+    "SM",
+    "ST",
+    "SA",
+    "SN",
+    "RS",
+    "SC",
+    "SL",
+    "SG",
+    "SX",
+    "SK",
+    "SI",
+    "SB",
+    "SO",
+    "ZA",
+    "GS",
+    "SS",
+    "ES",
+    "LK",
+    "SD",
+    "SR",
+    "SJ",
+    "SE",
+    "CH",
+    "SY",
+    "TW",
+    "TJ",
+    "TZ",
+    "TH",
+    "TL",
+    "TG",
+    "TK",
+    "TO",
+    "TT",
+    "TN",
+    "TR",
+    "TM",
+    "TC",
+    "TV",
+    "UG",
+    "UA",
+    "AE",
+    "GB",
+    "US",
+    "UM",
+    "UY",
+    "UZ",
+    "VU",
+    "VE",
+    "VN",
+    "VG",
+    "VI",
+    "WF",
+    "EH",
+    "YE",
+    "ZM",
+    "ZW",
+  ]);
 
   // Validate step 1 fields before going next
   const validateStep1 = () => {
-  const newErrors = {};
-  if (!addressLine1.trim()) newErrors.addressLine1 = "Address Line 1 is required.";
-  if (!city.trim()) newErrors.city = "City is required.";
-  if (!state.trim()) newErrors.state = "State / Province is required.";
-  if (!postalCode.trim()) newErrors.postalCode = "Postal Code is required.";
-  if (!country.trim()) {
-    newErrors.country = "Country is required.";
-  } else if (!VALID_COUNTRY_CODES.has(country.toUpperCase())) {
-    newErrors.country = "Please enter a valid 2-letter ISO country code.";
-  }
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
-
+    const newErrors = {};
+    if (!addressLine1.trim())
+      newErrors.addressLine1 = "Address Line 1 is required.";
+    if (!city.trim()) newErrors.city = "City is required.";
+    if (!state.trim()) newErrors.state = "State / Province is required.";
+    if (!postalCode.trim()) newErrors.postalCode = "Postal Code is required.";
+    if (!country.trim()) {
+      newErrors.country = "Country is required.";
+    } else if (!VALID_COUNTRY_CODES.has(country.toUpperCase())) {
+      newErrors.country = "Please enter a valid 2-letter ISO country code.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   // Handle next button on step 1
   const handleNext = () => {
@@ -96,10 +335,64 @@ function CheckoutForm({
     }
   };
 
+  const [showCountdownPopup, setShowCountdownPopup] = useState(false);
+
+  const handlePopupClose = () => {
+    setShowCountdownPopup(false);
+  };
+
+  const handlePopupFinish = async () => {
+    setShowCountdownPopup(false);
+    setMessage("Subscription successful!");
+    setPopupType("success");
+    setPopupMessage("Subscription successful!");
+    // Call next API here and navigate to the dashboard
+    await callNextApiAndRedirect();
+  };
+
+  // Call the next API to finish user subscription and navigate to the dashboard
+  const callNextApiAndRedirect = async () => {
+    console.log("agentID", agentId);
+    console.log("userId", userId);
+    try {
+      const res = await fetch(`${API_BASE_URL}/agent/updateFreeAgent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          agentId, // Send agentId along with userId as per your API
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // After successful API call, navigate to the dashboard
+        setPopupType("success");
+        setPopupMessage("Agent Upgraged successfully!");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 2000);
+      } else {
+        setMessage("Error completing subscription.");
+        setPopupType("failed");
+        setPopupMessage("Error completing subscription.");
+      }
+    } catch (error) {
+      console.error("Error calling next API:", error);
+      setMessage("Error completing subscription.");
+      setPopupType("failed");
+      setPopupMessage("Error completing subscription.");
+    }
+  };
+
   // Handle subscription payment
   const handleSubmit = async () => {
     const newErrors = {};
-    if (!billingName.trim()) newErrors.billingName = "Name on card is required.";
+    if (!billingName.trim())
+      newErrors.billingName = "Name on card is required.";
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
       return;
@@ -171,9 +464,18 @@ function CheckoutForm({
         setPopupType("failed");
         setPopupMessage(data.error);
       } else {
-        setMessage("✅ Subscription successful!");
-        setPopupType("success");
-        setPopupMessage("Subscription successful!");
+        // Show the countdown popup if locationPath is "/dashboard" and agentId is neither undefined nor null
+        if (
+          locationPath === "/dashboard" &&
+          agentId !== undefined &&
+          agentId !== null
+        ) {
+          setShowCountdownPopup(true);
+        } else {
+          setMessage("Subscription successful!");
+          setPopupType("success");
+          setPopupMessage("Subscription successful!");
+        }
       }
     } catch (err) {
       setMessage("❌ Failed to subscribe.");
@@ -198,7 +500,9 @@ function CheckoutForm({
             className={styles.input}
             required
           />
-          {errors.addressLine1 && <p className={styles.errorMsg}>{errors.addressLine1}</p>}
+          {errors.addressLine1 && (
+            <p className={styles.errorMsg}>{errors.addressLine1}</p>
+          )}
 
           <label>Address Line 2</label>
           <input
@@ -236,7 +540,9 @@ function CheckoutForm({
             className={styles.input}
             required
           />
-          {errors.postalCode && <p className={styles.errorMsg}>{errors.postalCode}</p>}
+          {errors.postalCode && (
+            <p className={styles.errorMsg}>{errors.postalCode}</p>
+          )}
 
           <label>Country *</label>
           <input
@@ -247,7 +553,9 @@ function CheckoutForm({
             required
             placeholder="ISO country code, e.g. US"
           />
-          {errors.country && <p className={styles.errorMsg}>{errors.country}</p>}
+          {errors.country && (
+            <p className={styles.errorMsg}>{errors.country}</p>
+          )}
 
           <label>Company Name</label>
           <input
@@ -288,7 +596,9 @@ function CheckoutForm({
             className={styles.input}
             required
           />
-          {errors.billingName && <p className={styles.errorMsg}>{errors.billingName}</p>}
+          {errors.billingName && (
+            <p className={styles.errorMsg}>{errors.billingName}</p>
+          )}
 
           <label>Card Number</label>
           <div className={styles.cardBox}>
@@ -323,9 +633,19 @@ function CheckoutForm({
         onClose={() => {
           setPopupType("");
           setPopupMessage("");
-          if (popupType === "success") onSubscriptionSuccess?.();
+          if (popupType === "success" && locationPath !== "/dashboard") {
+            onSubscriptionSuccess?.();
+          }
         }}
       />
+
+      {/* Show the countdown popup if needed */}
+      {showCountdownPopup && (
+        <CountdownPopup
+          onClose={handlePopupClose}
+          onFinish={handlePopupFinish}
+        />
+      )}
 
       {message && !popupMessage && <p className={styles.message}>{message}</p>}
     </div>

@@ -20,6 +20,7 @@ import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
 import AssignNumberModal from "../AgentDetails/AssignNumberModal";
 import Modal from "../Modal/Modal";
 import Plan from "../Plan/Plan";
+import Plans from "../stripePlans/Plans"
 import axios from "axios";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -100,6 +101,7 @@ function Dashboard() {
   const [open, setOpen] = useState(false);
 
   const [countryCode, setCountryCode] = useState('');
+  console.log("cccc", countryCode)
   const [ipData, setIpData] = useState({});
 
   useEffect(() => {
@@ -514,7 +516,7 @@ function Dashboard() {
     setUploadedImage(image);
     closeUploadModal();
   };
-  console.log('URSER', localAgents.subscription)
+  // console.log('URSER', localAgents.subscription)
   return (
     <div>
       <div className={styles.forSticky}>
@@ -657,8 +659,6 @@ function Dashboard() {
             >
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
-
-
 
                   {agent?.subscription?.product_name || "Free"}{" Plan"}
 
@@ -1081,8 +1081,13 @@ function Dashboard() {
       )}
 
       <Modal isOpen={open} onClose={() => setOpen(false)}>
-        <Plan agentID={agentId} locationPath={locationPath} />
+        {countryCode === 'IN' ? (
+          <Plan agentID={agentId} locationPath={locationPath} />
+        ) : (
+          <Plans agentID={agentId} locationPath={locationPath} />
+        )}
       </Modal>
+
 
       <Footer />
     </div>

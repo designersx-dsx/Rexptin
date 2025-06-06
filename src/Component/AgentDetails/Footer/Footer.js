@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './Footer.module.css'
 import { useNavigate } from 'react-router-dom';
 import Modal from '../../Modal/Modal';
 import ModalChat from '../../ModalChat/ModalChat';
 import Plan from '../../Plan/Plan'
+import Plans from "../../stripePlans/Plans"
 import ChatBox from '../../ChatBox/ChatBox';
+import axios from 'axios';
 
 function Footer() {
   const [open, setOpen] = useState(false);
@@ -20,6 +22,25 @@ function Footer() {
   const celender = () => {
     navigate('/calendar');
   };
+
+  const [countryCode, setCountryCode] = useState('');
+  const [ipData, setIpData] = useState({});
+
+  useEffect(() => {
+    const fetchCountryCode = async () => {
+      try {
+        const res = await axios.get('https://ipwho.is/');
+        const data = res?.data;
+        if (data && data.country_code) {
+          setIpData(data);
+          setCountryCode(data.country_code.toLowerCase());
+        }
+      } catch (err) {
+        console.error('Failed to fetch IP location:', err);
+      }
+    };
+    fetchCountryCode();
+  }, []);
 
   return (
     <div className={styles.footerContainerFix} >
@@ -62,7 +83,11 @@ function Footer() {
       </div>
       {/* Plan Modal Start */}
       <Modal isOpen={open} onClose={() => setOpen(false)}>
-        <Plan />
+        {countryCode === 'IN' ? (
+          <Plan  />
+        ) : (
+          <Plans  />
+        )}
       </Modal>
       {/* Plan Modal End */}
 
