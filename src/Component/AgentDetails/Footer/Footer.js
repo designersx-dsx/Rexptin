@@ -83,7 +83,7 @@ function Footer() {
       </div>
       {/* Plan Modal Start */}
       <Modal isOpen={open} onClose={() => setOpen(false)}>
-        {countryCode === 'IN' ? (
+        {countryCode === 'in' ? (
           <Plan  />
         ) : (
           <Plans  />

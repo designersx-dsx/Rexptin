@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "../Plan/Plan.module.css";
+import styles from "./Plans.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader from "../Loader/Loader";
 
@@ -177,7 +177,9 @@ const Plan = ({agentID,locationPath}) => {
 
           {/* Continue button */}
           <div
-            className={styles.btnTheme}
+                  className={styles.bottomBtn}>
+                  <div
+                    className={styles.btnTheme}
             onClick={() => {
               if (selected) {
                 if (selected === "free-trial") {
@@ -200,6 +202,7 @@ const Plan = ({agentID,locationPath}) => {
           >
             <img src="svg/svg-theme.svg" alt="" />
             <p>Continue</p>
+          </div>
           </div>
 
           {/* Login link */}

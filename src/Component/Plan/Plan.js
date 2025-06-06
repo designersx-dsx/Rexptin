@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
-const Plan = ({agentID,locationPath}) => {
+const Plan = ({ agentID, locationPath }) => {
   // console.log("plannnagent",agentID)
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ const Plan = ({agentID,locationPath}) => {
       if (countryCode !== 'in') {
         apiUrl = `${API_BASE}/products`; // API endpoint for non-India-specific products
       }
-      console.log("apiUrl",apiUrl)
+      console.log("apiUrl", apiUrl)
 
       try {
         const response = await fetch(apiUrl);
@@ -94,7 +94,7 @@ const Plan = ({agentID,locationPath}) => {
   };
 
   // Filter plans by billingInterval (monthly or yearly) for India users only
-  const filteredPlans = plans.filter((plan) => countryCode === 'in' || plan.period === 'monthly');
+  const filteredPlans = plans.filter(plan => plan.period === billingInterval);
 
   const getMonthlyPrice = (plan) => {
     return plan.price; // No division needed for non-India products, they are already monthly
@@ -192,18 +192,22 @@ const Plan = ({agentID,locationPath}) => {
 
       {/* Continue button */}
       <div
-        className={styles.btnTheme}
-        onClick={() => {
-          if (selected) {
-            navigate('/checkout', { state: { priceId: selected , agentId:agentID,locationPath1:locationPath} });
-          } else {
-            alert('Please select a plan first');
-          }
-        }}
-      >
-        <img src="svg/svg-theme.svg" alt="" />
-        <p>Continue</p>
+        className={styles.bottomBtn}>
+        <div
+          className={styles.btnTheme}
+          onClick={() => {
+            if (selected) {
+              navigate('/checkout', { state: { priceId: selected, agentId: agentID, locationPath1: locationPath } });
+            } else {
+              alert('Please select a plan first');
+            }
+          }}
+        >
+          <img src="svg/svg-theme.svg" alt="" />
+          <p>Continue</p>
+        </div>
       </div>
+
 
     </div>
   );

@@ -1,65 +1,206 @@
 .container {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 1rem;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 12px;
 }
 
-.planCard {
-  flex: 1 1 280px;
-  border: 2px solid #6772e5;
-  border-radius: 10px;
-  padding: 1.5rem;
-  cursor: pointer;
-  transition: box-shadow 0.3s ease;
-  background: white;
-  box-shadow: 0 2px 6px rgb(103 114 229 / 0.2);
+.header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.headercontent h3{
+    font-size: 22px;
+    color: #24252C;
+}
+.headercontent p{
+    font-size: 14px;
+    color: #9A9A9A;
+
 }
 
-.planCard:hover {
-  box-shadow: 0 8px 20px rgb(103 114 229 / 0.5);
+.icon {
+    width: 50px;
+    height:50px;
+    background: #eae9ff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
-.planName {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: #32325d;
+.icon img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
 }
 
-.planDesc {
-  font-size: 1rem;
-  color: #6b7c93;
-  margin-bottom: 1rem;
+.planBox {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+    overflow: hidden;
+    min-height: 55px;
 }
 
-.planPrice {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #6772e5;
+.selected {
+    border: 1px solid #7a4eff;
 }
 
-.priceOption {
-  margin-top: 8px;
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-weight: 600;
-  color: #32325d;
-  cursor: pointer;
-  max-width: fit-content;
-  transition: background-color 0.2s ease;
+.radioLabel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
 }
 
-.priceOption:hover {
-  background-color: #f0f3ff;
-}
-/* existing styles... */
+.radioLabel input {}
 
-.metaMinutes {
-  font-size: 0.9rem;
-  color: #555;
-  margin: 0.25rem 0 0.75rem 0;
-  font-style: italic;
+.part1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-inline: 10px;
+}
+
+.planContent {
+    padding: 10px;
+    flex-grow: 1;
+}
+
+.planTitle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.planTitle p{
+    font-size: 18px;
+    color: #24252C;
+    font-weight: 600;
+}
+.planTitle span{
+    font-size: 16px;
+    color: #A3AED0;
+    font-weight: 300;
+}
+
+.badge {
+    font-size: 12px !important;
+    background: #e3dbff;
+    color: #6524EB !important;
+    padding: 2px 6px;
+    border-radius: 6px;
+    white-space: nowrap;
+    position: relative;
+    top: -10px;
+}
+
+.description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 4px;
+    display: block;
+}
+
+.arrowIcon {
+    width: 20px;
+    height: 20px;
+    margin-right: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.rotated {
+    transform: rotate(180deg);
+}
+
+/* Accordion animation */
+.accordion {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+    background: #f9f9f9;
+    padding: 0 1rem;
+    border-radius: 0 0 12px 12px;
+}
+
+.open {
+    max-height: 200px;
+    opacity: 1;
+    padding-bottom: 1rem;
+}
+
+.btnTheme {
+    position: relative;
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 55px;
+    margin-top: 3rem;
+}
+.btnTheme img {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.btnTheme p {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-weight: 500;
+    font-size: 19px;
+
+}
+
+.loginBox {
+    text-align: right;
+    margin-bottom: 4rem;
+    padding: 0 1rem;
+    margin-top: 2rem;
+}
+
+.loginLink {
+    color: #7b4fdd;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.loginLink:hover {
+    color: #5a38b1;
+    text-decoration: underline;
+}
+.loginBox p{
+    text-align: center;
+    font-size: 18px;
+}
+.hero_sec{
+    margin-top: 5rem;
+}
+.status{
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.status2{
+    height: 200px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
