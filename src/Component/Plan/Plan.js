@@ -1,67 +1,110 @@
-import React, { useState, useEffect } from "react";
-import styles from "./Plan.module.css";
-import { useNavigate } from "react-router-dom";
-import Loader2 from "../Loader2/Loader2";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './Plan.module.css';
+import Loader from '../Loader/Loader';
+import axios from 'axios';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
-const Plan = () => {
-  const [products, setProducts] = useState([]);
+const Plan = ({ agentID, locationPath }) => {
+  // console.log("plannnagent",agentID)
+  const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [selected, setSelected] = useState("free-trial");
-  const [open, setOpen] = useState(null);
+  const [error, setError] = useState('');
+  const [selected, setSelected] = useState(null);
+  const [selectedAccordion, setSelectedAccordion] = useState(null); // Renamed `open` to `selectedAccordion`
+  const [billingInterval, setBillingInterval] = useState('monthly'); // Only used for India
+  const [countryCode, setCountryCode] = useState(''); // To store country code
   const navigate = useNavigate();
 
+  // Fetch country code from IP-based API
   useEffect(() => {
-    fetch(`${API_BASE}/products`)
-      .then((res) => res.json())
-      .then((data) => {
-        // Map products to expected structure (with metadata)
-        const productsWithMetadata = data.map((product) => {
-          const matchedData = product.data?.data?.find((p) => p.id === product.id);
-          return {
-            ...product,
-            metadata: matchedData?.metadata || {},
-          };
-        });
-        setProducts(productsWithMetadata);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to load plans.");
-        setLoading(false);
-      });
+    const fetchCountryCode = async () => {
+      try {
+        const res = await axios.get('https://ipwho.is/');
+        const data = res.data;
+        if (data && data.country_code) {
+          setCountryCode(data.country_code.toLowerCase()); // Get and store country code
+        }
+      } catch (err) {
+        console.error('Failed to fetch IP location:', err);
+      }
+    };
+    fetchCountryCode();
   }, []);
 
+  // Fetch plans dynamically from API based on the country code
+  useEffect(() => {
+    const fetchPlans = async () => {
+      let apiUrl = `${API_BASE}/plans`; // Default API URL for India users
+
+      // If country is not India, fetch plans specifically for non-India (products)
+      if (countryCode !== 'in') {
+        apiUrl = `${API_BASE}/products`; // API endpoint for non-India-specific products
+      }
+      console.log("apiUrl", apiUrl)
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        console.log("Fetched data: ", data); // Check what the data looks like
+
+        // Handle response based on country
+        if (countryCode === 'in') {
+          // Handle India API response (plans)
+          const plans = data.items.map(plan => ({
+            id: plan.id,
+            name: plan.item.name,
+            description: plan.item.description,
+            price: (plan.item.amount / 100).toFixed(2), // Convert price to INR
+            currency: plan.item.currency,
+            minutes: plan.notes?.minutes,
+            period: plan.period,
+          }));
+          setPlans(plans);
+        } else {
+          // Handle Non-India API response (products)
+          const products = data.map(product => ({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            price: (product.prices[0].unit_amount / 100).toFixed(2), // Only taking the first price (monthly)
+            currency: product.prices[0].currency.toUpperCase(),
+            minutes: product.metadata?.minutes,
+          }));
+          setPlans(products);
+        }
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching data:", err); // Log error if API request fails
+        setError('Failed to load plans.');
+        setLoading(false);
+      }
+    };
+
+    if (countryCode) {
+      fetchPlans(); // Trigger fetching plans when countryCode is set
+    }
+  }, [countryCode]);
+
+  // Accordion toggle function
   const toggleAccordion = (id) => {
-    setOpen(open === id ? null : id);
+    setSelectedAccordion(selectedAccordion === id ? null : id); // Use the new state `selectedAccordion`
   };
 
-  const handleContinue = () => {
-    if (!selected) {
-      alert("Please select a plan first");
-      return;
-    }
-    if (selected === "free-trial") {
-      navigate("/signup");
-      return;
-    }
-    // Find selected product for price id
-    const selectedProduct = products.find((p) => p.id === selected);
-    if (selectedProduct && selectedProduct.prices.length > 0) {
-      navigate("/checkout", { state: { priceId: selectedProduct.prices[0].id } });
-    } else {
-      alert("No price available for selected plan");
-    }
+  // Filter plans by billingInterval (monthly or yearly) for India users only
+  const filteredPlans = plans.filter(plan => plan.period === billingInterval);
+
+  const getMonthlyPrice = (plan) => {
+    return plan.price; // No division needed for non-India products, they are already monthly
   };
 
-    if (loading) return <div className={styles.status}><Loader2 /></div>;
+  if (loading) return <p className={styles.status}><Loader /></p>;
   if (error) return <p className={styles.statusError}>{error}</p>;
 
   return (
     <div className={styles.container}>
-      {/* Header */}
       <div className={styles.header}>
         <div className={styles.icon}>
           <img src="images/inlogo.png" alt="inlogo" />
@@ -72,112 +115,100 @@ const Plan = () => {
         </div>
       </div>
 
-      {/* Free Trial Plan */}
-      {/* <div
-        className={`${styles.planBox} ${selected === "free-trial" ? styles.selected : ""}`}
-        onClick={() => setSelected("free-trial")}
-      >
-        <div className={styles.part1}>
-          <label className={styles.radioLabel}>
-            <input
-              type="radio"
-              name="plan"
-              value="free-trial"
-              checked={selected === "free-trial"}
-              onChange={() => setSelected("free-trial")}
-            />
-            <div className={styles.planContent}>
-              <div className={styles.planTitle}>
-                <div>
-                  <p>Free Trial</p>
-                  <span className={styles.description}>
-                    Try all features free — includes 10 minutes
-                  </span>
-                </div>
-              </div>
-            </div>
-          </label>
+      {/* Only show tabs for Monthly / Yearly if country is India */}
+      {countryCode === 'in' && (
+        <div className={styles.tabs}>
+          <button
+            className={`${styles.tabButton} ${billingInterval === 'monthly' ? styles.activeTab : ''}`}
+            onClick={() => setBillingInterval('monthly')}
+          >
+            Monthly
+          </button>
+          <button
+            className={`${styles.tabButton} ${billingInterval === 'yearly' ? styles.activeTab : ''}`}
+            onClick={() => setBillingInterval('yearly')}
+          >
+            Yearly
+          </button>
         </div>
-      </div> */}
+      )}
 
-      {/* Dynamic Plans from API */}
-      {products.map((product) => (
-        <div
-          key={product.id}
-          className={`${styles.planBox} ${selected === product.id ? styles.selected : ""}`}
-          onClick={() => setSelected(product.id)}
-        >
-          <div className={styles.part1}>
-            <label className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="plan"
-                value={product.id}
-                checked={selected === product.id}
-                onChange={() => setSelected(product.id)}
-              />
-              <div className={styles.planContent}>
-                <div className={styles.planTitle}>
-                  <div>
-                    <p>{product.name}</p>
-                    <span className={styles.description}>{product.description}</span>
+      {/* Display Plans based on the country */}
+      <div className={styles.PlanDiv}>
+        {filteredPlans.map((plan) => (
+          <div
+            key={plan.id}
+            className={`${styles.planBox} ${selected === plan.id ? styles.selected : ''}`}
+          >
+            <div className={styles.part1}>
+              <label className={styles.radioLabel}>
+                <input
+                  type="radio"
+                  name="plan"
+                  value={plan.id}
+                  checked={selected === plan.id}
+                  onChange={() => setSelected(plan.id)}
+                />
+                <div className={styles.planContent}>
+                  <div className={styles.planTitle}>
+                    <div>
+                      <p>{plan.name}</p>
+                      <span className={styles.description}>{plan.description.trim()}</span>
+                    </div>
                   </div>
-                  {product.metadata.badge && (
-                    <span className={styles.badge}>{product.metadata.badge}</span>
-                  )}
+                  <div className={styles.planData}>
+                    <p>
+                      Price: <strong>{getMonthlyPrice(plan)} {plan.currency}</strong> /{' '}
+                      {countryCode === 'in' ? billingInterval : 'monthly'}
+                    </p>
+                    <p>
+                      <strong>{plan.minutes}</strong> minutes included
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </label>
-            <img
-              src={open === product.id ? "/svg/up.svg" : "/svg/down.svg"}
-              alt="Toggle Arrow"
-              className={`${styles.arrowIcon} ${open === product.id ? styles.rotated : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleAccordion(product.id);
-              }}
-            />
-          </div>
+              </label>
+            </div>
 
-          <div className={`${styles.accordion} ${open === product.id ? styles.open : ""}`}>
-            {product.metadata.minutes && (
-              <p>
-                Includes <strong>{product.metadata.minutes}</strong> minutes
-              </p>
-            )}
-            <div className={styles.pricesContainer}>
-              {product.prices.map((price) => (
+            {/* Accordion for extra details */}
+            <div className={`${styles.accordion} ${selectedAccordion === plan.id ? styles.open : ''}`}>
+              {plan.minutes && (
+                <p>Includes <strong>{plan.minutes}</strong> minutes</p>
+              )}
+              <div className={styles.pricesContainer}>
                 <div
-                  key={price.id}
                   className={styles.priceOption}
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate("/checkout", { state: { priceId: price.id } });
+                    navigate('/checkout', { state: { priceId: plan.id } });
                   }}
                 >
-                  {(price.unit_amount / 100).toFixed(2)} {price.currency.toUpperCase()} / {price.interval}
+                  {getMonthlyPrice(plan)} {plan.currency} / {countryCode === 'in' ? billingInterval : 'monthly'}
                 </div>
-              ))}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
-
-      {/* Continue button */}
-      <div className={styles.btnTheme} onClick={handleContinue}>
-        <img src="svg/svg-theme.svg" alt="" />
-        <p>Continue</p>
+        ))}
       </div>
 
-      {/* Login link */}
-      {/* <div className={styles.loginBox}>
-        <p>
-          Already have an account?{" "}
-          <span className={styles.loginLink} onClick={() => navigate("/login")}>
-            Login
-          </span>
-        </p>
-      </div> */}
+      {/* Continue button */}
+      <div
+        className={styles.bottomBtn}>
+        <div
+          className={styles.btnTheme}
+          onClick={() => {
+            if (selected) {
+              navigate('/checkout', { state: { priceId: selected, agentId: agentID, locationPath1: locationPath } });
+            } else {
+              alert('Please select a plan first');
+            }
+          }}
+        >
+          <img src="svg/svg-theme.svg" alt="" />
+          <p>Continue</p>
+        </div>
+      </div>
+
+
     </div>
   );
 };
