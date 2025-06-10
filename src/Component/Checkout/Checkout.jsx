@@ -86,7 +86,6 @@ function Checkout({
     // Call next API here and navigate to the dashboard
     await callNextApiAndRedirect();
   };
-
   // Call the next API to finish user subscription and navigate to the dashboard
   const callNextApiAndRedirect = async () => {
     console.log("agentID", agentId);
@@ -124,7 +123,6 @@ function Checkout({
       setPopupMessage("Error completing subscription.");
     }
   };
-
   // Use useLocation to get the current location path
   const location = useLocation();
   // console.log("Current path:", location.pathname);
