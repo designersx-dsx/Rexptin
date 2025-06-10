@@ -1081,7 +1081,7 @@ function Dashboard() {
       )}
 
       <Modal isOpen={open} onClose={() => setOpen(false)}>
-        {countryCode === 'IN' ? (
+        {countryCode === 'in' ? (
           <Plan agentID={agentId} locationPath={locationPath} />
         ) : (
           <Plans agentID={agentId} locationPath={locationPath} />

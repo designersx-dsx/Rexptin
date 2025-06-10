@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import styles from "./checkout.module.css";
 import PopUp from "../Popup/Popup";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -8,11 +8,11 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function Checkout({
   customerId,
-  priceId, // <-- expect priceId as prop now
+  priceId,
   email,
   onSubscriptionSuccess,
   userId,
-  disabled,
+  
   agentId,
   locationPath,
 }) {
@@ -20,11 +20,7 @@ function Checkout({
   const [step, setStep] = useState(1);
   // console.log("lstSTep", agentId);
   const navigate = useNavigate();
-  // console.log("locationPath",locationPath)
-  // console.log("userId",userId)
-  // console.log("agentId",agentId)
 
-  // Billing & company state
   const [companyName, setCompanyName] = useState("");
   const [gstNumber, setGstNumber] = useState("");
   const [addressLine1, setAddressLine1] = useState("");
@@ -45,24 +41,29 @@ function Checkout({
   const [message, setMessage] = useState("");
   const [popupType, setPopupType] = useState("");
   const [popupMessage, setPopupMessage] = useState("");
-
+const [disabled, setDisabled] = useState(true); 
   // Validate step 1 fields before going next
   const validateStep1 = () => {
     const newErrors = {};
-    if (!addressLine1.trim())
-      newErrors.addressLine1 = "Address Line 1 is required.";
+
+    if (!addressLine1.trim()) newErrors.addressLine1 = "Address Line 1 is required.";
     if (!city.trim()) newErrors.city = "City is required.";
     if (!state.trim()) newErrors.state = "State / Province is required.";
     if (!postalCode.trim()) newErrors.postalCode = "Postal Code is required.";
     if (!country.trim()) {
       newErrors.country = "Country is required.";
     }
-    // else if (!VALID_COUNTRY_CODES.has(country.trim().toUpperCase())) {
-    //   newErrors.country = "Please enter a valid 2-letter ISO country code.";
-    // }
+
+    // If there are errors, disable the Next button
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setDisabled(Object.keys(newErrors).length > 0);
+    return Object.keys(newErrors).length === 0; // Return true if no errors
   };
+
+  // Trigger validation on form field change
+  useEffect(() => {
+    validateStep1(); // Run validation whenever the fields change
+  }, [addressLine1, city, state, postalCode, country]);
 
   // Handle next button on step 1
   const handleNext = () => {

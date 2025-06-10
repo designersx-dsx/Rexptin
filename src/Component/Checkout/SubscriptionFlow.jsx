@@ -3,16 +3,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { LoginWithEmailOTP, verifyEmailOTP } from "../../Store/apiStore";
 import CustomCheckout from './Checkout';
 import styles from './checkout.module.css';
-
+import decodeToken from '../../lib/decodeToken';
 export default function SubscriptionFlow() {
   const location = useLocation();
   const navigate = useNavigate();
 
   const priceId = location.state?.priceId;
-  const agentId = location.state?.agentId || null
-  // console.log("agentId-----",location)
-  const locationPath = location.state?.locationPath1 || null
-  console.log("locationPath",locationPath)
+  const agentId = location.state?.agentId || null;
+  const locationPath = location.state?.locationPath1 || null;
+  console.log("locationPath", locationPath);
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
   const [email, setEmail] = useState('');
@@ -22,16 +21,24 @@ export default function SubscriptionFlow() {
   const [otpVerified, setOtpVerified] = useState(false);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-
+const [userVerified , setUserVerified] = useState(false)
   const [customerId, setCustomerId] = useState('');
   const [userId, setUserId] = useState('');
 
   const [subscriptionSuccess, setSubscriptionSuccess] = useState(false);
-
+console.log({otpVerified})
   // Auto redirect after payment success
   useEffect(() => {
     if (subscriptionSuccess) navigate('/business-details');
   }, [subscriptionSuccess, navigate]);
+let token = localStorage.getItem("token")
+const [userDetails , setUserDetails] = useState()
+useEffect(()=>{
+ const result =  decodeToken(token)
+ setUserDetails(result)
+ console.log({result})
+} , [])
+
 
   // Check subscription after OTP verified and customerId available
   useEffect(() => {
@@ -56,7 +63,6 @@ export default function SubscriptionFlow() {
     checkSubscription();
   }, [otpVerified, customerId, priceId]);
 
-  // Send OTP to email (login)
   const sendOtp = async () => {
     if (!email) return setMessage('Enter email first');
     if (!contact) return setMessage('Enter contact number first');
@@ -77,50 +83,61 @@ export default function SubscriptionFlow() {
     }
   };
 
-  // Verify OTP and handle customer creation or retrieval in Razorpay
   const verifyOtp = async () => {
-    if (!otp) return setMessage('⚠️ Enter OTP');
-    setMessage('Verifying...');
-    setLoading(true);
+    setMessage('Verifying...'); 
+    
     try {
-      const verifyRes = await verifyEmailOTP(email, otp);
+      setLoading(true);
+      if (locationPath !== "/dashboard") {
+        if (!otp) return setMessage('⚠️ Enter OTP');
+        const verifyRes = await verifyEmailOTP(email, otp);
 
-      const verifiedUserId = verifyRes?.data?.user?.id;
-      if (!verifiedUserId) {
-        setMessage('Invalid OTP');
-        setLoading(false);
-        return;
+        const verifiedUserId = verifyRes?.data?.user?.id;
+        if (!verifiedUserId) {
+          setMessage('Invalid OTP');
+          setLoading(false);
+          return;
+        }
+
+        setUserId(verifiedUserId);
+        localStorage.setItem("token", verifyRes.data.token);
+
+        setOtpVerified(true);
+        setMessage('OTP verified and customer ready!');
+      } else {
+        setLoading(true);
+        const customerRes = await fetch(`${API_BASE}/create-customer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, contact }),
+        });
+        if(customerRes){
+ setUserVerified(true)
+ setMessage('Customer verified');
+    
+        }
+        
+        const customerData = await customerRes.json();
+        console.log("customer data:", customerData);
+
+        if (customerData.error) {
+          setMessage(` Customer error: ${customerData.error}`);
+          setLoading(false);
+          return;
+        }
+
+        if (!customerData.id && !customerData.customerId) {
+          setMessage('Could not get or create customer ID');
+          setLoading(false);
+        
+          return;
+        }
+        if (customerData.id) {
+          setLoading(false);
+        }
+
+        setCustomerId(customerData.id || customerData.customerId);
       }
-
-      setUserId(verifiedUserId);
-      localStorage.setItem("token", verifyRes.data.token);
-
-      // Now check or create Razorpay customer with email + contact
-      const customerRes = await fetch(`${API_BASE}/create-customer`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, contact }),
-      });
-
-      const customerData = await customerRes.json();
-      console.log("cuss",customerData)
-
-      if (customerData.error) {
-        setMessage(` Customer error: ${customerData.error}`);
-        setLoading(false);
-        return;
-      }
-
-      if (!customerData.id && !customerData.customerId) {
-        setMessage('Could not get or create customer ID');
-        setLoading(false);
-        return;
-      }
-
-      // Prefer id or customerId key
-      setCustomerId(customerData.id || customerData.customerId);
-      setOtpVerified(true);
-      setMessage('OTP verified and customer ready!');
     } catch (err) {
       setMessage(' Verification failed');
       console.error(err);
@@ -143,7 +160,7 @@ export default function SubscriptionFlow() {
       <h2>Complete Your Payment</h2>
 
       {/* Email and Contact Inputs */}
-      <div className={styles.inputMain} >
+      <div className={styles.inputMain}>
         <label>Email</label>
         <input
           type="email"
@@ -151,7 +168,7 @@ export default function SubscriptionFlow() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={styles.input}
-          disabled={otpSent}
+          disabled={otpSent || otpVerified}
         />
         <label>Phone</label>
         <input
@@ -160,8 +177,7 @@ export default function SubscriptionFlow() {
           value={contact}
           onChange={(e) => setContact(e.target.value)}
           className={styles.input}
-          disabled={otpSent}
-
+          disabled={otpSent || otpVerified}
         />
         {otpSent && !otpVerified && (
           <button onClick={handleEditEmail} className={styles.button}>
@@ -179,17 +195,18 @@ export default function SubscriptionFlow() {
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             className={styles.input}
+            disabled={otpVerified} // Disable OTP input once verified
           />
-          <button onClick={verifyOtp} className={styles.button} disabled={loading}>
-            {loading ? 'Verifying...' : 'Verify OTP'}
+          <button onClick={verifyOtp} className={styles.button} disabled={otpVerified}>
+            {loading ? 'Verifying...' : otpVerified ? 'Verified' : 'Verify OTP'}
           </button>
         </div>
       )}
 
       {/* Send OTP button */}
       {!otpSent && (
-        <button onClick={sendOtp} className={styles.button} disabled={loading || !email || !contact}>
-          {loading ? 'Sending...' : 'Send OTP'}
+        <button onClick={locationPath === "/dashboard" ? verifyOtp : sendOtp} className={styles.button} disabled={loading || !email || !contact || otpVerified ||userVerified}>
+          {loading ? 'Sending...' : locationPath === "/dashboard" ? "Verify Customer" : "Send Otp"}
         </button>
       )}
 
@@ -197,7 +214,7 @@ export default function SubscriptionFlow() {
       {message && <p className={styles.message2}>{message}</p>}
 
       {/* Payment form after OTP verified */}
-      {otpVerified && customerId && (
+      {(otpVerified || customerId) && (
         <div style={{ marginTop: '2rem' }}>
           <CustomCheckout
             email={email}
