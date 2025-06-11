@@ -140,6 +140,9 @@ const [disabled, setDisabled] = useState(true);
     setErrors({});
     setMessage("");
     setLoading(true);
+    console.log("priceId",priceId)
+    console.log("customerId",customerId)
+    console.log("email",email)
 
     if (!priceId || !customerId || !email) {
       setMessage("Missing required data to proceed with payment.");
