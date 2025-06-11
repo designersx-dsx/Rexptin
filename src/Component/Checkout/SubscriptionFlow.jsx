@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { LoginWithEmailOTP, verifyEmailOTP } from "../../Store/apiStore";
-import CustomCheckout from "./Checkout";
-import styles from "./checkout.module.css";
-import decodeToken from "../../lib/decodeToken";
+import CustomCheckout from './Checkout';
+import styles from './checkout.module.css';
+import decodeToken from '../../lib/decodeToken';
 export default function SubscriptionFlow() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -14,31 +14,32 @@ export default function SubscriptionFlow() {
   console.log("locationPath", location);
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
-  const [email, setEmail] = useState("");
-  const [contact, setContact] = useState("");
+  const [email, setEmail] = useState('');
+  const [contact, setContact] = useState('');
   const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState('');
   const [otpVerified, setOtpVerified] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [userVerified, setUserVerified] = useState(false);
-  const [customerId, setCustomerId] = useState("");
-  const [userId, setUserId] = useState("");
+const [userVerified , setUserVerified] = useState(false)
+  const [customerId, setCustomerId] = useState('');
+  const [userId, setUserId] = useState('');
 
   const [subscriptionSuccess, setSubscriptionSuccess] = useState(false);
-  console.log({ otpVerified });
+console.log({otpVerified})
   // Auto redirect after payment success
   useEffect(() => {
-    if (subscriptionSuccess) navigate("/business-details");
+    if (subscriptionSuccess) navigate('/business-details');
   }, [subscriptionSuccess, navigate]);
-  let token = localStorage.getItem("token");
-  const [userDetails, setUserDetails] = useState();
-  useEffect(() => {
-    const result = decodeToken(token);
-    setUserDetails(result);
-    console.log({ result });
-  }, []);
+let token = localStorage.getItem("token")
+const [userDetails , setUserDetails] = useState()
+useEffect(()=>{
+ const result =  decodeToken(token)
+ setUserDetails(result)
+ console.log({result})
+} , [])
 
+console.log(locationPath !== "/dashboard" && locationPath!=="/dsbd" , "randi ka bacha asss")
   // Check subscription after OTP verified and customerId available
   useEffect(() => {
     if (!otpVerified || !customerId) return;
@@ -49,13 +50,13 @@ export default function SubscriptionFlow() {
         const data = await res.json();
 
         const isActive =
-          (data?.status === "active" || data?.status === "trialing") &&
+          (data?.status === 'active' || data?.status === 'trialing') &&
           data?.price?.id === priceId;
 
-        if (isActive)
-          setMessage("You already have an active subscription for this plan.");
+        if (isActive) setMessage("You already have an active subscription for this plan.");
+
       } catch (err) {
-        console.error(" Subscription check failed:", err);
+        console.error(' Subscription check failed:', err);
       }
     };
 
@@ -63,9 +64,9 @@ export default function SubscriptionFlow() {
   }, [otpVerified, customerId, priceId]);
 
   const sendOtp = async () => {
-    if (!email) return setMessage("Enter email first");
-    if (!contact) return setMessage("Enter contact number first");
-    setMessage("Sending OTP...");
+    if (!email) return setMessage('Enter email first');
+    if (!contact) return setMessage('Enter contact number first');
+    setMessage('Sending OTP...');
     setLoading(true);
     try {
       const res = await LoginWithEmailOTP(email);
@@ -73,27 +74,27 @@ export default function SubscriptionFlow() {
         setMessage(` ${res.error}`);
       } else {
         setOtpSent(true);
-        setMessage(" OTP sent to your email");
+        setMessage(' OTP sent to your email');
       }
     } catch {
-      setMessage(" Failed to send OTP");
+      setMessage(' Failed to send OTP');
     } finally {
       setLoading(false);
     }
   };
 
   const verifyOtp = async () => {
-    setMessage("Verifying...");
-
+    setMessage('Verifying...'); 
+    
     try {
       setLoading(true);
-      if (locationPath !== "/dashboard") {
-        if (!otp) return setMessage("⚠️ Enter OTP");
+      if (locationPath !== "/dashboard" && locationPath!=="/dsbd") {
+        if (!otp) return setMessage('⚠️ Enter OTP');
         const verifyRes = await verifyEmailOTP(email, otp);
 
         const verifiedUserId = verifyRes?.data?.user?.id;
         if (!verifiedUserId) {
-          setMessage("Invalid OTP");
+          setMessage('Invalid OTP');
           setLoading(false);
           return;
         }
@@ -103,7 +104,6 @@ export default function SubscriptionFlow() {
         localStorage.setItem("token", verifyRes.data.token);
 
         setOtpVerified(true);
-
         setMessage('OTP verified and customer ready!');
 
          const customerRes = await fetch(`${API_BASE}/create-customer`, {
@@ -137,19 +137,19 @@ export default function SubscriptionFlow() {
         }
 
         setCustomerId(customerData.id || customerData.customerId);
-
       } else {
         setLoading(true);
         const customerRes = await fetch(`${API_BASE}/create-customer`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, contact }),
         });
-        if (customerRes) {
-          setUserVerified(true);
-          setMessage("Customer verified");
+        if(customerRes){
+ setUserVerified(true)
+ setMessage('Customer verified');
+    
         }
-
+        
         const customerData = await customerRes.json();
         console.log("customer data:", customerData);
 
@@ -160,9 +160,9 @@ export default function SubscriptionFlow() {
         }
 
         if (!customerData.id && !customerData.customerId) {
-          setMessage("Could not get or create customer ID");
+          setMessage('Could not get or create customer ID');
           setLoading(false);
-
+        
           return;
         }
         if (customerData.id) {
@@ -172,7 +172,7 @@ export default function SubscriptionFlow() {
         setCustomerId(customerData.id || customerData.customerId);
       }
     } catch (err) {
-      setMessage(" Verification failed");
+      setMessage(' Verification failed');
       console.error(err);
     } finally {
       setLoading(false);
@@ -181,11 +181,11 @@ export default function SubscriptionFlow() {
 
   const handleEditEmail = () => {
     setOtpSent(false);
-    setOtp("");
+    setOtp('');
     setOtpVerified(false);
-    setCustomerId("");
-    setUserId("");
-    setMessage("");
+    setCustomerId('');
+    setUserId('');
+    setMessage('');
   };
   useEffect(() => {
   if (!token) return;
@@ -228,7 +228,7 @@ export default function SubscriptionFlow() {
 
       {/* OTP Input */}
       {otpSent && !otpVerified && (
-        <div style={{ marginBottom: "1rem", maxWidth: 400 }}>
+        <div style={{ marginBottom: '1rem', maxWidth: 400 }}>
           <input
             type="text"
             placeholder="Enter OTP"
@@ -237,30 +237,16 @@ export default function SubscriptionFlow() {
             className={styles.input}
             disabled={otpVerified} // Disable OTP input once verified
           />
-          <button
-            onClick={verifyOtp}
-            className={styles.button}
-            disabled={otpVerified}
-          >
-            {loading ? "Verifying..." : otpVerified ? "Verified" : "Verify OTP"}
+          <button onClick={verifyOtp} className={styles.button} disabled={otpVerified}>
+            {loading ? 'Verifying...' : otpVerified ? 'Verified' : 'Verify OTP'}
           </button>
         </div>
       )}
 
       {/* Send OTP button */}
       {!otpSent && (
-        <button
-          onClick={locationPath === "/dashboard" ? verifyOtp : sendOtp}
-          className={styles.button}
-          disabled={
-            loading || !email || !contact || otpVerified || userVerified
-          }
-        >
-          {loading
-            ? "Sending..."
-            : locationPath === "/dashboard"
-            ? "Verify Customer"
-            : "Send Otp"}
+        <button onClick={locationPath === "/dashboard" || locationPath === "/dsbd" ? verifyOtp : sendOtp} className={styles.button} disabled={loading || !email || !contact || otpVerified ||userVerified}>
+          {loading ? 'Sending...' : locationPath === "/dashboard" || locationPath === "/dsbd"? "Verify Customer" : "Send Otp"}
         </button>
       )}
 
@@ -269,7 +255,7 @@ export default function SubscriptionFlow() {
 
       {/* Payment form after OTP verified */}
       {(otpVerified || customerId) && (
-        <div style={{ marginTop: "2rem" }}>
+        <div style={{ marginTop: '2rem' }}>
           <CustomCheckout
             email={email}
             customerId={customerId}
