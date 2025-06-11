@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./checkout.module.css";
 import PopUp from "../Popup/Popup";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -12,7 +12,7 @@ function Checkout({
   email,
   onSubscriptionSuccess,
   userId,
-  
+
   agentId,
   locationPath,
 }) {
@@ -41,12 +41,13 @@ function Checkout({
   const [message, setMessage] = useState("");
   const [popupType, setPopupType] = useState("");
   const [popupMessage, setPopupMessage] = useState("");
-const [disabled, setDisabled] = useState(true); 
+  const [disabled, setDisabled] = useState(true);
   // Validate step 1 fields before going next
   const validateStep1 = () => {
     const newErrors = {};
 
-    if (!addressLine1.trim()) newErrors.addressLine1 = "Address Line 1 is required.";
+    if (!addressLine1.trim())
+      newErrors.addressLine1 = "Address Line 1 is required.";
     if (!city.trim()) newErrors.city = "City is required.";
     if (!state.trim()) newErrors.state = "State / Province is required.";
     if (!postalCode.trim()) newErrors.postalCode = "Postal Code is required.";
@@ -140,9 +141,7 @@ const [disabled, setDisabled] = useState(true);
     setErrors({});
     setMessage("");
     setLoading(true);
-    console.log("priceId",priceId)
-    console.log("customerId",customerId)
-    console.log("email",email)
+
 
     if (!priceId || !customerId || !email) {
       setMessage("Missing required data to proceed with payment.");

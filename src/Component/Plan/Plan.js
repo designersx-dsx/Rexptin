@@ -197,7 +197,7 @@ const Plan = ({ agentID, locationPath }) => {
           className={styles.btnTheme}
           onClick={() => {
             if (selected) {
-              navigate('/checkout', { state: { priceId: selected, agentId: agentID, locationPath1: "/dashboard" } });
+              navigate('/checkout', { state: { priceId: selected, agentId: agentID } });
             } else {
               alert('Please select a plan first');
             }
