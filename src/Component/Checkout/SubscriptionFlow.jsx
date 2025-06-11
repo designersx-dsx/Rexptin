@@ -11,7 +11,7 @@ export default function SubscriptionFlow() {
   const priceId = location.state?.priceId;
   const agentId = location.state?.agentId || null;
   const locationPath = location.state?.locationPath1 || null;
-  console.log("locationPath", locationPath);
+  console.log("locationPath", location);
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
   const [email, setEmail] = useState("");
@@ -97,12 +97,47 @@ export default function SubscriptionFlow() {
           setLoading(false);
           return;
         }
+        
 
         setUserId(verifiedUserId);
         localStorage.setItem("token", verifyRes.data.token);
 
         setOtpVerified(true);
-        setMessage("OTP verified and customer ready!");
+
+        setMessage('OTP verified and customer ready!');
+
+         const customerRes = await fetch(`${API_BASE}/create-customer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, contact }),
+        });
+        if(customerRes){
+ setUserVerified(true)
+ setMessage('Customer verified');
+    
+        }
+        
+        const customerData = await customerRes.json();
+        console.log("customer data:", customerData);
+
+        if (customerData.error) {
+          setMessage(` Customer error: ${customerData.error}`);
+          setLoading(false);
+          return;
+        }
+
+        if (!customerData.id && !customerData.customerId) {
+          setMessage('Could not get or create customer ID');
+          setLoading(false);
+        
+          return;
+        }
+        if (customerData.id) {
+          setLoading(false);
+        }
+
+        setCustomerId(customerData.id || customerData.customerId);
+
       } else {
         setLoading(true);
         const customerRes = await fetch(`${API_BASE}/create-customer`, {
@@ -152,6 +187,13 @@ export default function SubscriptionFlow() {
     setUserId("");
     setMessage("");
   };
+  useEffect(() => {
+  if (!token) return;
+  const result = decodeToken(token);
+  setUserDetails(result);
+  if (result?.email) setEmail(result.email);
+  if (result?.contact || result?.phone) setContact(result.contact || result.phone);
+}, []);
 
   return (
     <div className={styles.container}>

@@ -25,7 +25,23 @@ const SignUp = () => {
   const [resendTimer, setResendTimer] = useState(0);
   const [isResendDisabled, setIsResendDisabled] = useState(false);
 
+// const navigate = useNavigate();
 
+  useEffect(() => {
+    // Push dummy state to prevent actual back
+    window.history.pushState(null, '', window.location.href);
+
+    const handlePopState = () => {
+      // Instead of going back, force redirect
+      navigate('/', { replace: true }); // Or use any public page
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
   useEffect(() => {
     let timerInterval = null;
 
