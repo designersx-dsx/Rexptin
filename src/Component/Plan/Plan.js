@@ -179,7 +179,7 @@ const Plan = ({ agentID, locationPath }) => {
                   className={styles.priceOption}
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate('/checkout', { state: { priceId: plan.id } });
+                    navigate('/checkout', { state: { priceId: plan.id  , locationPath1: locationPath  } });
                   }}
                 >
                   {getMonthlyPrice(plan)} {plan.currency} / {countryCode === 'in' ? billingInterval : 'monthly'}
@@ -197,7 +197,7 @@ const Plan = ({ agentID, locationPath }) => {
           className={styles.btnTheme}
           onClick={() => {
             if (selected) {
-              navigate('/checkout', { state: { priceId: selected, agentId: agentID, locationPath1: locationPath } });
+              navigate('/checkout', { state: { priceId: selected, agentId: agentID, locationPath1: "/dashboard" } });
             } else {
               alert('Please select a plan first');
             }

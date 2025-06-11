@@ -411,10 +411,15 @@ function Dashboard() {
     localStorage.removeItem("agents");
     localStorage.clear();
     sessionStorage.clear();
-    window.location.href = "/signup";
+      window.location.replace('/signup');
   };
 
-  // Retell Web Client initializationcxcxc
+useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+          window.location.replace('/signup'); 
+    }
+  }, []);
   useEffect(() => {
     const client = new RetellWebClient();
     client.on("call_started", () => setIsCallActive(true));
