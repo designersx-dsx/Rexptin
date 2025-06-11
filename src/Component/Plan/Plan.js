@@ -190,7 +190,7 @@ const Plan = ({ agentID, locationPath }) => {
         ))}
       </div>
 
-      {/* Continue button */}
+      {/* Continue button  cudo*/}
       <div
         className={styles.bottomBtn}>
         <div
