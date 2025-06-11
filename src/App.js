@@ -20,6 +20,8 @@ import Calendar from './Component/Celender/Calendar';
 import BusinessServices from './Component/BusinessServices/BusinessServices';
 import TotalsCallsList from './Component/TotalsCallsList/TotalsCallsList'
 import Plan from './Component/stripePlans/Plans';
+import PayPalPlans from './Component/PayPalPlans/PayPalPlans';
+import PaypalCheckout from './Component/PaypalCheckout/PaypalCheckout';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -61,10 +63,12 @@ function App() {
           <Route path="/rex-agent" element={<SecureRoute><RexAgent/></SecureRoute>} />
           <Route path="/plans" element={<Plans/>} />
           <Route path="/rplans" element={<Plan/>} />
+          <Route path="/pplans" element={<PayPalPlans/>} />
 
           
           <Route path="/checkout" element={<SubscriptionFlow />} />
           <Route path="/rcheckout" element={<SubscriptionFlow_ />} />
+          <Route path="/pcheckout" element={<PaypalCheckout />} />
 
 
           <Route path="/calendar" element={<SecureRoute><Calendar /></SecureRoute>} />
