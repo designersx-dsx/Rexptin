@@ -203,6 +203,7 @@ const Plan = ({ agentID, locationPath }) => {
             }
           }}
         >
+        {/* hlo */}
           <img src="svg/svg-theme.svg" alt="" />
           <p>Continue</p>
         </div>
