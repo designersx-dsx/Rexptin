@@ -801,13 +801,13 @@ const handleSubmit = async () => {
   setErrors({});
 
   // Optional: Validate required fields (like billingName, email, etc.)
-  const newErrors = {};
-  if (!billingName.trim()) newErrors.billingName = "Name on card is required.";
-  if (Object.keys(newErrors).length) {
-    setErrors(newErrors);
-    setLoading(false);
-    return;
-  }
+  // const newErrors = {};
+  // if (!billingName.trim()) newErrors.billingName = "Name on card is required.";
+  // if (Object.keys(newErrors).length) {
+  //   setErrors(newErrors);
+  //   setLoading(false);
+  //   return;
+  // }
   let url = ''
   if(subscriptionId || locationPath==="/update"){
    
