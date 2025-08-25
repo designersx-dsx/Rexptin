@@ -12,6 +12,7 @@ import { listAgents } from '../../Store/apiStore';
 import FreeTrialModal from '../FreeTrialModal/FreeTrialModal';
 import decodeToken from "../../lib/decodeToken";
 import PopUp from '../Popup/Popup';
+import axios from 'axios'
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Planss = () => {
@@ -25,10 +26,13 @@ const Planss = () => {
     const [userCurrency, setUserCurrency] = useState("usd");
     const [agentCount, setAgentCount] = useState()
     const [expanded, setExpanded] = useState(false);
+    
+    const [expandedz, setExpandedz] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [freeTrial, setFreeTrial] = useState(false);
     const token = localStorage.getItem("token") || "";
     const decodeTokenData = decodeToken(token);
+    console.log({decodeTokenData})
     const userIdFromToken = decodeTokenData?.id || "";
     const [userId, setUserId] = useState(userIdFromToken)
     const navigate = useNavigate();
@@ -43,6 +47,7 @@ const Planss = () => {
 
     const [activeCount, setactiveCount] = useState(null)
     const [PaygSubscriptionId, setPaygSubscriptionId] = useState(null)
+     const [value, setValue] = useState(0);
     // console.log("activeCount", activeCount)
     // console.log("PaygSubscriptionId", PaygSubscriptionId)
 
@@ -81,9 +86,32 @@ const Planss = () => {
         'Custom Greeting Message',
         'User Management',
     ];
+
+
+    const [freeTrailz , setFreeTrialz] = useState(false)
+    const [modalOpenz,setIsModalOpenz]= useState(false)
+    const handleClick2 = () => {
+        setFreeTrialz(!freeTrailz);
+        setIsModalOpenz(true);
+    };
+    const features2 = [
+        '5464564564620 minutes FREE Usage on Us',
+        'No VOIP Number',
+        'Agent Characterization',
+        'Starter Package Feature',
+        'No Call Recording',
+        'Priority Email Support',
+        'Analytics Dashboard',
+        'Custom Greeting Message',
+        'User Management',
+    ];
     const visibleFeatures = expanded ? features : features.slice(0, 5);
+     const visibleFeatures2 = expandedz ? features2 : features2.slice(0, 5);
     const handleToggle = () => {
         setExpanded((prev) => !prev);
+    };
+        const handleToggle2 = () => {
+        setExpandedz((prev) => !prev);
     };
     const settings = {
         infinite: false,
@@ -567,6 +595,44 @@ const Planss = () => {
     }, [agentID]);
 
 
+
+    // tier custom plan 
+
+const tierCheckout = async () => {
+  try {
+    const res = await axios.post(`${API_BASE}/tier/checkout`, {
+      customerId: decodeTokenData?.customerId
+,
+      presetUnits: value,
+      minUnits: 0,
+      maxUnits: 200,
+      successUrl: window.location.origin + "/thankyou", // origin + path
+      cancelUrl: window.location.origin + "/cancel"
+    });
+
+    if (res?.data?.url) {
+      window.location.href = res.data.url; // redirect user
+    }
+  } catch (error) {
+    console.error("Checkout error:", error);
+  }
+};
+
+
+    // 
+
+
+
+
+
+
+
+
+
+
+
+
+
     if (loading)
         return (
             <p className={styles.status}>
@@ -604,6 +670,15 @@ const Planss = () => {
                         )}
                     </span>
                 </label> : null}
+
+                <label className={styles.freeTrialBtn} onChange={handleClick2}>
+                    Custom Plan
+                    <input
+                        type="checkbox"
+                        checked={freeTrailz}
+                        onChange={() => setFreeTrialz(!freeTrailz)}
+                    />
+                    </label>
 
                 {/* Show Payg toggle button */}
                 {/* {(subscriptionID || isPayg === "true") && (
@@ -920,6 +995,37 @@ const Planss = () => {
                         <p>No Cost to Try Our Agents</p>
                         <text>Explore our agents and viability for your business at <b className={styles.boldText}>“NO COST”.</b></text>
                     </div>
+                      <div className={styles.featureList}>
+                        <div className={styles.listdata}>
+                            {visibleFeatures.map((text, index) => {
+                                const isNegative = text.toLowerCase().includes('no');
+                                return (
+                                    <div className={styles.liData} key={index}>
+                                        <img
+                                            src={isNegative ? '/svg/cross-svg.svg' : '/svg/tick-svg.svg'}
+                                            alt={isNegative ? 'cross icon' : 'tick icon'}
+                                        />
+                                        <p>{text}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <p className={styles.toggleText} onClick={handleToggle}>
+                            ~ {expanded ? 'Hide Features' : 'See All Features'}
+                        </p>
+                        <p className={styles.toggleText} onClick={handleToggle2}>
+                            ~ {expanded ? 'Hide Features' : 'See All Features'}
+                        </p>
+                        <AnimatedButton label='Subscribe' position={{ position: "relative" }}
+                            onClick={() => navigate('/steps', {
+                                state: {
+                                    value: "chatke"
+                                }
+                            })}
+                        />
+
+                    </div>
                     <div className={styles.featureList}>
                         <div className={styles.listdata}>
                             {visibleFeatures.map((text, index) => {
@@ -952,6 +1058,8 @@ const Planss = () => {
                 </div>
 
             </FreeTrialModal>
+
+
             <div className={styles.MianFooteer}>
 
 
@@ -1017,6 +1125,63 @@ const Planss = () => {
                 //   onConfirm={handleLogoutConfirm}
                 />
             )}
+
+
+
+
+
+
+            
+             <FreeTrialModal isOpen={modalOpenz} onClose={() => setIsModalOpenz(false)}>
+                <div className={styles.freeTrialMain}>
+                    <div className={styles.Topsection}>
+                        <h1>FREE TRIAL</h1>
+                        <p>No Cost to Try Our Agents</p>
+                        <text>Explore our agents and viability for your business at <b className={styles.boldText}>“NO COST”.</b></text>
+                    </div>
+                      <div className={styles.featureList}>
+                        <div className={styles.listdata}>
+                            {visibleFeatures2.map((text, index) => {
+                                const isNegative = text.toLowerCase().includes('no');
+                                return (
+                                    <div className={styles.liData} key={index}>
+                                        <img
+                                            src={isNegative ? '/svg/cross-svg.svg' : '/svg/tick-svg.svg'}
+                                            alt={isNegative ? 'cross icon' : 'tick icon'}
+                                        />
+                                        <p>{text}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <p className={styles.toggleText} onClick={handleToggle}>
+                            ~ {expandedz ? 'Hide Features' : 'See All Features'}
+                        </p>
+                        <div style={{ padding: "20px" }}>
+      <label>
+        Value: <strong>{value}</strong>
+      </label>
+      <br />
+      <input
+        type="range"
+        min="0"
+        max="200"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    </div>
+                     
+                        <AnimatedButton label='Subscribe' position={{ position: "relative" }}
+                            onClick={tierCheckout}
+                        />
+
+                    </div>
+                
+
+                </div>
+
+            </FreeTrialModal>
 
         </div>
     );

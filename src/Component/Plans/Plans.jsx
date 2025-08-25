@@ -60,7 +60,14 @@ const Plan = ({ agentID, locationPath }) => {
           prices: [],
           metadata: { minutes: 20 },
         };
+const customPan = {
+    id: "free-trial",
+          name: "Custom Plan",
+          description: "Try all features free — includes 20 minutes",
+          prices: [],
+          metadata: { minutes: 20 },
 
+}
         const currencyFilteredProducts = data.map((product) => {
           const matchedData = product.data?.data?.find(
             (p) => p.id === product.id
@@ -100,7 +107,7 @@ const Plan = ({ agentID, locationPath }) => {
           };
         });
 
-        setProducts([freeTrial, ...currencyFilteredProducts]);
+        setProducts([freeTrial, customPan,...currencyFilteredProducts]);
         setLoading(false);
       })
       .catch(() => {
@@ -262,7 +269,8 @@ const Plan = ({ agentID, locationPath }) => {
                     Includes <strong>{product.prices[0].metadata}</strong> minutes / month
                   </p>
                 )}
-
+{/* 
+hhh hsyyry  */}
               <div className={styles.pricesContainer}>
                 {product.prices.map((price) => (
                   <div
