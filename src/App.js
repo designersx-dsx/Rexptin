@@ -138,51 +138,52 @@ function App() {
     }
   }, [userID,token]);
 
+// useEffect(() => {
+//   const handleBeforeInstallPrompt = (e) => {
+//     const alreadyShown = localStorage.getItem("installPromptShown");
+//     if (alreadyShown) return;  // only block if already shown
+
+//     e.preventDefault();
+//     console.log("📱 beforeinstallprompt fired");
+//     setDeferredPrompt(e);
+//     setShowPopup(true);  // show your popup
+//   };
+
+//   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+//   return () => {
+//     window.removeEventListener(
+//       "beforeinstallprompt",
+//       handleBeforeInstallPrompt
+//     );
+//   };
+// }, []);
+
+// const handleInstall = async () => {
+//   if (!deferredPrompt) return;
+
+//   deferredPrompt.prompt();
+//   const { outcome } = await deferredPrompt.userChoice;
+
+//   if (outcome === "accepted") {
+//     console.log("✅ User accepted install");
+//   } else {
+//     console.log("❌ User dismissed install");
+//   }
+
+//   // mark as shown no matter what
+//   localStorage.setItem("installPromptShown", "true"); 
+//   setDeferredPrompt(null);
+//   setShowPopup(false);
+// };
+
+
+//   const handleClose = () => {
+//     localStorage.setItem("installPromptShown", "true"); // save flag
+//     setShowPopup(false);
+//   };
+  
 useEffect(() => {
-  const handleBeforeInstallPrompt = (e) => {
-    const alreadyShown = localStorage.getItem("installPromptShown");
-    if (alreadyShown) return;  // only block if already shown
-
-    e.preventDefault();
-    console.log("📱 beforeinstallprompt fired");
-    setDeferredPrompt(e);
-    setShowPopup(true);  // show your popup
-  };
-
-  window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-  return () => {
-    window.removeEventListener(
-      "beforeinstallprompt",
-      handleBeforeInstallPrompt
-    );
-  };
-}, []);
-
-const handleInstall = async () => {
-  if (!deferredPrompt) return;
-
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-
-  if (outcome === "accepted") {
-    console.log("✅ User accepted install");
-  } else {
-    console.log("❌ User dismissed install");
-  }
-
-  // mark as shown no matter what
-  localStorage.setItem("installPromptShown", "true"); 
-  setDeferredPrompt(null);
-  setShowPopup(false);
-};
-
-
-  const handleClose = () => {
-    localStorage.setItem("installPromptShown", "true"); // save flag
-    setShowPopup(false);
-  };
-  useEffect(() => {
     const count = notifications?.filter((n) => n?.status === "unread")?.length;
     setUnreadCount(count);
     // console.log("Notifications:", notifications);
@@ -264,7 +265,7 @@ const handleInstall = async () => {
         </div>
         <div className="ForMobile">
 
-     {showPopup && (
+     {/* {showPopup && (
         <div
           style={{
             position: "fixed",
@@ -322,7 +323,7 @@ const handleInstall = async () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
    
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
