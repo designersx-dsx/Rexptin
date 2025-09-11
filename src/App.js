@@ -40,10 +40,7 @@ import EditBusinessDetail from "./Component/EditBusinessDetail/EditBusinessDetai
 import EditLanguage from "./Component/EditLanguage/EditLanguage"
 import EditGender from "./Component/EditGender/EditGender"
 import EditNameAvtar from "./Component/EditNameAvtar/EditNameAvtar"
-
 //... Edit Screen End ....//
-
-
 import { useEffect, useState } from "react";
 import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
 import WidgetGuidePage from "./Component/WidgetGuidePage/WidgetGuidePage";
@@ -52,10 +49,8 @@ import Test from "./utils/Test";
 import CallSetting from "./Component/CallSetting/CallSetting";
 import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAPI";
 import AssignNumber from "./Component/AssignNumber/AssignNumber";
-
 import Thankyou from "./Component/ThankyouPage/Thankyou";
 import CancelPage from "./Component/CancelPage/CancelPage";
-
 import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent"
 import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp"
 import Plan from "./Component/Plans/Plans";
@@ -63,22 +58,14 @@ import Planss from "./Component/Plan/Plan";
 import Documentation from "./Component/Documentation/Documentation";
 import RedirectHandler from "./utils/RedirectHandler ";
 import PreventPullToRefresh from "./Component/PreventPullToRefresh/PreventPullToRefresh";
-
 import Thankyou2 from "./Component/ThankyouPage2/Thankyou2";
-
 import Number from "./Component/assign/Number";
 import CallRecording from "./Component/CallRecording/CallRecording";
 import RaiseTickets from "./Component/Tickets/RaiseTickets";
 import CreateTicketModal from "./Component/Tickets/CreateTicketModal";
 import CreateTicket from "./Component/Tickets/CreateTicket";
-
-
 import Fileinfo from "./Component/AgentDetails/FileInfo/Fileinfo";
-
 import ForcePortraitOnly from "./utils/ForcePortraitOnly";
-
-
-
 import decodeToken from "./lib/decodeToken";
 import { initNotificationSocket } from "./utils/initNotificationSocket";
 import { getUserNotifications } from "./Store/apiStore";
@@ -264,7 +251,6 @@ useEffect(() => {
 
         </div>
         <div className="ForMobile">
-
      {/* {showPopup && (
         <div
           style={{
@@ -324,7 +310,6 @@ useEffect(() => {
           </div>
         </div>
       )} */}
-   
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
             <div className="App" key={refreshKey}>
@@ -548,5 +533,4 @@ useEffect(() => {
     </>
   );
 }
-
 export default App; 

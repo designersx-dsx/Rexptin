@@ -234,7 +234,7 @@ function Dashboard() {
       setTourElevateDropdown(false);
     });
   };
-
+sessionStorage.removeItem("isUser")
   useEffect(() => {
     if (!userId) return;
     let cancelled = false;
@@ -3102,7 +3102,7 @@ function Dashboard() {
 
                         // expiry = created + 15 days
                         const expiry = new Date(createdDateOnly);
-                        expiry.setDate(expiry.getDate() + 14);
+                        expiry.setDate(expiry.getDate() + 15);
 
                         const msPerDay = 1000 * 60 * 60 * 24;
                         const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);

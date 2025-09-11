@@ -32,8 +32,9 @@ const ifFreePlanAddBranding = (agentName, businessName) => {
 const ifFreePlanAddBrandingCallCut = (businessName) => {
   const message = `
 # Call End Protocol
-Thanks for calling ${businessName}. Powered by Recept.
-You can also create your own AI receptionist by visiting r-x-p-t dot u-s
+At the end of every call, the agent must say this exact line before disconnecting:
+“We appreciate your call to ${businessName}. Learn more about creating your own AI receptionist at r-x-p-t dot u-s. Goodbye!”
+
 `;
   return message.trim();
 }

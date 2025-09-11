@@ -3,7 +3,7 @@ import styles from '../AssignNumber/AssignNumber.module.css';
 import HeaderBar from '../HeaderBar/HeaderBar';
 import Modal2 from '../Modal2/Modal2';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { createNumberOrder, fetchAgentDetailById, fetchAvailablePhoneNumberByCountry, getAgentById, updateAgent } from '../../Store/apiStore';
 import Loader2 from '../Loader2/Loader2';
 import axios from 'axios';
@@ -35,6 +35,7 @@ const AssignNumber = () => {
     const requestVersion = useRef(0)
     const popupShownRef = useRef(false);
     const token = localStorage.getItem("token")
+    const navigate=useNavigate()
     const languages = [
         {
             name: "English (US)",
@@ -198,19 +199,22 @@ const AssignNumber = () => {
         try {
             setLoading(true)
             const response = await createNumberOrder(selectedNumber, agent_id)
-            await updateAgent(agent_id, { 
-                voip_numbers: [selectedNumber], 
+            await updateAgent(agent_id, {
+                voip_numbers: [selectedNumber],
                 voip_numbers_created: new Date(),
-                assignNumFree:1,
-                isNumActivated:1
-             });
+                assignNumFree: 1,
+                isNumActivated: 1
+            });
             setShowPopup(true)
             setPopupType("success")
             setPopupMessage("Number assigned successfully")
+
             setLoading(false)
             fetchAgentDetailsById()
             setHasFetched(false)
-
+            setTimeout(() => {
+                navigate("/dashboard")
+            }, 2000);
         } catch (error) {
             console.log(error)
         }

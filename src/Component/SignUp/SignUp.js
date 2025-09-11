@@ -33,6 +33,7 @@ const SignUp = () => {
   const tempReferral = sessionStorage.getItem("referredBy") || "";
   const tempLandingSelectedPlan = sessionStorage.getItem("selectedPlan") || "";
   const tempReferredByName = sessionStorage.getItem("referredByName") || "";
+  const isUser = sessionStorage.getItem("isUser") || "";
   const [customerId, setCustomerId] = useState();
   const [renderHtml, setRenderHtml] = useState(false);
 
@@ -108,6 +109,8 @@ const SignUp = () => {
         sessionStorage.setItem("referredBy", tempReferral);
         sessionStorage.setItem("selectedPlan", tempLandingSelectedPlan);
         sessionStorage.setItem("referredByName", tempReferredByName);
+        sessionStorage.setItem("isUser", isUser);
+
         if (response?.data?.paymentDone) {
           localStorage.setItem("paymentDone", true);
         }

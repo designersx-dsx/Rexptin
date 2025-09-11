@@ -241,32 +241,25 @@ function Thankyou2() {
       setIsLoadingRequest(false); // End loading
     }
   };
+  useEffect(() => {
+    if (loading || isSubscriptionDetailsLoading) return;
+    if (!sessionData || !subcriptionId) return;
 
+      window.gtag("event", "conversion", {
+        send_to: "AW-17437749926/M6gmCJzi-v8aEKbl-_pA",
+        value: Number(setSubscriptionDetails.planAmount || 1.0),
+        currency: (setSubscriptionDetails.currency || "USD").toUpperCase(),
+        transaction_id:
+          setSubscriptionDetails.subscriptionId ||
+          `null`, // unique id to prevent double counting
+      });
 
-  // useEffect(() => {
-  //   if (loading || isSubscriptionDetailsLoading) return;
-  //   if (!sessionData || !subcriptionId) return;
-
-  //     window.gtag("event", "conversion", {
-  //       send_to: "AW-17437749926/M6gmCJzi-v8aEKbl-_pA",
-  //       value: Number(setSubscriptionDetails.planAmount || 1.0),
-  //       currency: (setSubscriptionDetails.currency || "USD").toUpperCase(),
-  //       transaction_id:
-  //         setSubscriptionDetails.subscriptionId ||
-  //         `null`, // unique id to prevent double counting
-  //     });
-
-
-  // }, [setSubscriptionDetails])
+  }, [setSubscriptionDetails])
 
   // If the page is still loading, show a loader
   if (loading || isSubscriptionDetailsLoading) {
     return <Loader2 />; // Or any custom loading component you want to show
   }
-
-  
-
-
   return (
     <>
       {subcriptionId ? (
