@@ -429,7 +429,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     };
 
     run();
-  }, [key, subscriptionId, agentId, userId, subsid]);
+  }, [key, subscriptionId, agentId, userId, subsid , isAdmin]);
+ 
   const formatCurrency = (amount, currency) => {
     const upperCurrency = currency?.toUpperCase() || "USD";
 
