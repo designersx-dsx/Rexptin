@@ -218,7 +218,7 @@ const Planss = () => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -1236,7 +1236,7 @@ const Planss = () => {
 
 
 
-
+{/* 
             <FreeTrialModal isOpen={modalOpenz} onClose={() => setIsModalOpenz(false)}>
                 <div className={styles.freeTrialMain}>
                     <div className={styles.Topsection}>
@@ -1300,7 +1300,7 @@ const Planss = () => {
 
                 </div>
 
-            </FreeTrialModal>
+            </FreeTrialModal> */}
 
         </div>
     );
