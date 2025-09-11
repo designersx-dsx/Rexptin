@@ -1295,70 +1295,7 @@ const Planss = () => {
                 </div>
 
             </FreeTrialModal> */}
-            // <FreeTrialModal isOpen={modalOpenz} onClose={() => setIsModalOpenz(false)}>
-            //     <div className={styles.freeTrialMain}>
-            //         <div className={styles.Topsection}>
-            //             <h1>FREE TRIAL</h1>
-            //             <p>No Cost to Try Our Agents</p>
-            //             <text>Explore our agents and viability for your business at <b className={styles.boldText}>“NO COST”.</b></text>
-            //         </div>
-            //         <div className={styles.featureList}>
-            //             <div className={styles.listdata}>
-            //                 {visibleFeatures2.map((text, index) => {
-            //                     const isNegative = text.toLowerCase().includes('no');
-            //                     return (
-            //                         <div className={styles.liData} key={index}>
-            //                             <img
-            //                                 src={isNegative ? '/svg/cross-svg.svg' : '/svg/tick-svg.svg'}
-            //                                 alt={isNegative ? 'cross icon' : 'tick icon'}
-            //                             />
-            //                             <p>{text}</p>
-            //                         </div>
-            //                     );
-            //                 })}
-            //             </div>
-
-            //             <p className={styles.toggleText} onClick={handleToggle}>
-            //                 ~ {expandedz ? 'Hide Features' : 'See All Features'}
-            //             </p>
-            //             <div style={{ padding: "20px" }}>
-            //                 <label>
-            //                     Value: <strong>{value}</strong>
-            //                 </label>
-            //                 <br />
-            //                 <input
-            //                     type="range"
-            //                     min="0"
-            //                     max="200"
-            //                     value={value}
-            //                     onChange={(e) => setValue(e.target.value)}
-            //                 />
-            //             </div>
-
-            //             <AnimatedButton label='Subscribe' position={{ position: "relative" }}
-            //                 onClick={() => {
-            //                     if (locationPath === "/dashboard") {
-
-            //                         tierCheckout()
-            //                     }
-            //                     else {
-            //                         navigate('/steps', {
-            //                             state: {
-            //                                 plan: "tierPlan",
-            //                                 value: value
-            //                             }
-            //                         })
-            //                     }
-
-            //                 }}
-            //             />
-
-            //         </div>
-
-
-            //     </div>
-
-            // </FreeTrialModal>
+           
         </div>
     );
 };
