@@ -633,18 +633,52 @@ const Planss = () => {
         }
     };
 
+    const [reactNativeStatus, setreactNativeStatus] = useState(false)
+    // console.log("reactNativeStatus",reactNativeStatus)
 
-    // 
+    useEffect(() => {
+        const handleNativeMessage = (event) => {
+            try {
+                // console.log("event",event.data)
+                const raw = typeof event?.data === "string" ? event.data : null;
+                if (!raw) return;
 
+                const data = JSON.parse(raw);
+                console.log("data?.type", data?.type)
 
+                if (data?.type === "IAP_STARTED") {
+                    console.log("✅ Native IAP started for", data.productId);
+                    // flag to skip web checkout
+                    window.skipCheckout = true;
+                }
 
+                if (data?.type === "IAP_SUCCESS") {
+                    console.log("🎉 Purchase success", data.receipt);
+                    // handle success flow...
+                }
 
+                if (data?.type === "IAP_FAILED") {
+                    console.warn("❌ Purchase failed", data.reason);
+                    // handle failure flow...
+                }
+            } catch (err) {
+                console.error("Invalid message from app:", err);
+            }
+        };
 
+        // Only attach when inside RN WebView
+        if (window.ReactNativeWebView) {
+            // console.log("React Native RUnning",window)
+            setreactNativeStatus(true)
+            document.addEventListener("message", handleNativeMessage); // Android
+            window.addEventListener("message", handleNativeMessage);    // iOS
+        }
 
-
-
-
-
+        return () => {
+            document.removeEventListener("message", handleNativeMessage);
+            window.removeEventListener("message", handleNativeMessage);
+        };
+    }, []);
 
 
 
@@ -657,18 +691,45 @@ const Planss = () => {
     if (error) return <p className={styles.statusError}>{error}</p>;
 
 
-    const handleBuyPlan = (productId) => {
+    const handleBuyPlan = (data) => {
+        // console.log({ data });
+
+        const plansFromApple = {
+            starter_month: "com.rexpt.starter.monthly",
+            starter_year: "com.rexpt.starter.yearly",
+            scaler_month: "com.rexpt.scaler.monthly",
+            scaler_year: "com.rexpt.scaler.yearly",
+            growth_month: "com.rexpt.growth.monthly",
+            growth_year: "com.rexpt.growth.yearly",
+            corporate_month: "com.rexpt.corporate.monthly",
+            corporate_year: "com.rexpt.corporate.yearly"
+        };
+
+        // Normalize name + interval into a key (lowercased to match dictionary)
+        const key = `${data.planName.toLowerCase()}_${data.interval.toLowerCase()}`;
+
+        // Lookup product ID from Apple mapping
+        const appleProductId = plansFromApple[key];
+
+        if (!appleProductId) {
+            console.warn("⚠️ No matching Apple product found for:", key);
+            return;
+        }
+
+        // console.log("appleProductId",appleProductId)
+
         if (window.ReactNativeWebView) {
             window.ReactNativeWebView.postMessage(
                 JSON.stringify({
                     type: "BUY",
-                    productId: productId,
+                    productId: appleProductId,
                 })
             );
         } else {
-            console.warn("ReactNativeWebView not available — running in browser?");
+            console.warn("ReactNativeWebView not available — running in browser");
         }
     };
+
 
 
 
@@ -945,9 +1006,19 @@ const Planss = () => {
                                                 if (priceForInterval) {
                                                     // console.log("plan", plan)
                                                     sessionStorage.setItem("selectedPlan", plan?.name)
-                                                    handleBuyPlan(priceForInterval.id)
+                                                    sessionStorage.setItem("selectedPlanInterval", interval)
+
                                                     if (agentID) {
-                                                        navigate(`/checkout`, { state: { priceId: priceForInterval.id, agentId: agentID, subscriptionId: subscriptionID, locationPath1: "/update", price: (priceForInterval.unit_amount / 100).toFixed(2) } }, sessionStorage.setItem("priceId", priceForInterval.id), sessionStorage.setItem("price", (priceForInterval.unit_amount / 100).toFixed(2)), sessionStorage.setItem("agentId", agentID), sessionStorage.setItem("subscriptionID", subscriptionID))
+                                                        if (reactNativeStatus) {
+                                                            handleBuyPlan({
+                                                                priceId: priceForInterval.id,
+                                                                planName: plan.name ?? plan.title,
+                                                                interval,
+                                                            });
+                                                            console.log("Skipping web checkout because native IAP is in progress");
+                                                        } else {
+                                                            navigate(`/checkout`, { state: { priceId: priceForInterval.id, agentId: agentID, subscriptionId: subscriptionID, locationPath1: "/update", price: (priceForInterval.unit_amount / 100).toFixed(2) } }, sessionStorage.setItem("priceId", priceForInterval.id), sessionStorage.setItem("price", (priceForInterval.unit_amount / 100).toFixed(2)), sessionStorage.setItem("agentId", agentID), sessionStorage.setItem("subscriptionID", subscriptionID))
+                                                        }
                                                     }
 
                                                     else {
@@ -1159,13 +1230,71 @@ const Planss = () => {
                 //   onConfirm={handleLogoutConfirm}
                 />
             )}
+{/* 
+            <FreeTrialModal isOpen={modalOpenz} onClose={() => setIsModalOpenz(false)}>
+                <div className={styles.freeTrialMain}>
+                    <div className={styles.Topsection}>
+                        <h1>FREE TRIAL</h1>
+                        <p>No Cost to Try Our Agents</p>
+                        <text>Explore our agents and viability for your business at <b className={styles.boldText}>“NO COST”.</b></text>
+                    </div>
+                    <div className={styles.featureList}>
+                        <div className={styles.listdata}>
+                            {visibleFeatures2.map((text, index) => {
+                                const isNegative = text.toLowerCase().includes('no');
+                                return (
+                                    <div className={styles.liData} key={index}>
+                                        <img
+                                            src={isNegative ? '/svg/cross-svg.svg' : '/svg/tick-svg.svg'}
+                                            alt={isNegative ? 'cross icon' : 'tick icon'}
+                                        />
+                                        <p>{text}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <p className={styles.toggleText} onClick={handleToggle}>
+                            ~ {expandedz ? 'Hide Features' : 'See All Features'}
+                        </p>
+                        <div style={{ padding: "20px" }}>
+                            <label>
+                                Value: <strong>{value}</strong>
+                            </label>
+                            <br />
+                            <input
+                                type="range"
+                                min="0"
+                                max="200"
+                                value={value}
+                                onChange={(e) => setValue(e.target.value)}
+                            />
+                        </div>
+
+                        <AnimatedButton label='Subscribe' position={{ position: "relative" }}
+                            onClick={() => {
+                                if (locationPath === "/dashboard") {
+
+                                    tierCheckout()
+                                }
+                                else {
+                                    navigate('/steps', {
+                                        state: {
+                                            plan: "tierPlan",
+                                            value: value
+                                        }
+                                    })
+                                }
+
+                            }}
+                        />
+
+                    </div>
 
 
+                </div>
 
-
-
-
-
+            </FreeTrialModal> */}
             // <FreeTrialModal isOpen={modalOpenz} onClose={() => setIsModalOpenz(false)}>
             //     <div className={styles.freeTrialMain}>
             //         <div className={styles.Topsection}>
@@ -1230,7 +1359,6 @@ const Planss = () => {
             //     </div>
 
             // </FreeTrialModal>
-
         </div>
     );
 };

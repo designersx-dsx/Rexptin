@@ -317,13 +317,13 @@ sessionStorage.removeItem("isUser")
           "Welcome! This is your profile. Click here to manage your account details, subscription, and billing information.",
         position: "right",
       },
-      {
-        element: "#tour-footer-create",
-        title: "Guide Tour",
-        intro:
-          "This is where the magic happens! Click 'Create' to build and customize your AI Receptionist.",
-        position: "top",
-      },
+      // {
+      //   element: "#tour-footer-create",
+      //   title: "Guide Tour",
+      //   intro:
+      //     "This is where the magic happens! Click 'Create' to build and customize your AI Receptionist.",
+      //   position: "top",
+      // },
       {
         element: "#tour-assign-number",
         title: "Guide Tour",
@@ -2975,10 +2975,13 @@ sessionStorage.removeItem("isUser")
                           : "Deactivate Agent"}
                       </div>
 
-                      {((agent?.subscription &&
-                        agent?.subscription?.plan_name?.toLowerCase() !==
-                        "free") || assignNumberPaid && agent?.isDeactivated === 0
-                      ) && (
+                      {(
+  agent?.subscription?.subscription_status !== 9 && (
+    (agent?.subscription &&
+      agent?.subscription?.plan_name?.toLowerCase() !== "free") ||
+    (assignNumberPaid && agent?.isDeactivated === 0)
+  )
+) && (
                           <>
                             <div>
                               <div

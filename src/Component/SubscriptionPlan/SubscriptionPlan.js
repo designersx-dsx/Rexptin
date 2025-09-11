@@ -22,12 +22,12 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     const [expandedPlans, setExpandedPlans] = useState({});
     const [expanded, setExpanded] = useState(false);
 
- const [expandedCustom, setExpandedCustom] = useState(false);
+    const [expandedCustom, setExpandedCustom] = useState(false);
     const [toggleStates, setToggleStates] = useState({}); // { planId: true/false }
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [freeTrial, setFreeTrial] = useState(false);
-    const [customPlan , setCustomPlan]  = useState(false)
+    const [customPlan, setCustomPlan] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [error, setError] = useState("");
     const [userCurrency, setUserCurrency] = useState("usd");
@@ -35,8 +35,8 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     const decodeTokenData = decodeToken(token);
     const userIdFromToken = decodeTokenData?.id || "";
     const [userId, setUserId] = useState(userIdFromToken)
-    const [hasCustomPlan  , setHasCustomPlan] = useState()
- const [value, setValue] = useState(0);
+    const [hasCustomPlan, setHasCustomPlan] = useState()
+    const [value, setValue] = useState(0);
     const [agentCount, setAgentCount] = useState()
 
 
@@ -46,9 +46,9 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         setFreeTrial(!freeTrial);
         setIsModalOpen(true);
     };
-    const [modalOpenCustom  , setIsModalOpenCustom] = useState(false)
+    const [modalOpenCustom, setIsModalOpenCustom] = useState(false)
 
-        const handleClickCustom = () => {
+    const handleClickCustom = () => {
         setCustomPlan(!customPlan);
         setIsModalOpenCustom(true);
     };
@@ -72,14 +72,14 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         ],
     };
 
-        const checkCustom =async()=>{
-           let res = await customPlanCheck(decodeTokenData?.id)
-    // console.log(res?.data?.hasCustomPlan)
-    setHasCustomPlan(res?.data?.hasCustomPlan)
-    } 
-    useEffect(()=>{
-      checkCustom()  
-    },[])
+    const checkCustom = async () => {
+        let res = await customPlanCheck(decodeTokenData?.id)
+        // console.log(res?.data?.hasCustomPlan)
+        setHasCustomPlan(res?.data?.hasCustomPlan)
+    }
+    useEffect(() => {
+        checkCustom()
+    }, [])
 
     const toggleExpand = (index) => {
         setExpandedPlans((prev) => ({
@@ -304,6 +304,53 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         // sessionStorage.removeItem("checkPage")
     }, [])
 
+    const [reactNativeStatus, setreactNativeStatus] = useState(false)
+    // console.log("reactNativeStatus", reactNativeStatus)
+
+    useEffect(() => {
+        const handleNativeMessage = (event) => {
+            try {
+                // console.log("event", event.data)
+                const raw = typeof event?.data === "string" ? event.data : null;
+                if (!raw) return;
+
+                const data = JSON.parse(raw);
+                console.log("data?.type", data?.type)
+
+                if (data?.type === "IAP_STARTED") {
+                    console.log("✅ Native IAP started for", data.productId);
+                    // flag to skip web checkout
+                    window.skipCheckout = true;
+                }
+
+                if (data?.type === "IAP_SUCCESS") {
+                    console.log("🎉 Purchase success", data.receipt);
+                    // handle success flow...
+                }
+
+                if (data?.type === "IAP_FAILED") {
+                    console.warn("❌ Purchase failed", data.reason);
+                    // handle failure flow...
+                }
+            } catch (err) {
+                console.error("Invalid message from app:", err);
+            }
+        };
+
+        // Only attach when inside RN WebView
+        if (window.ReactNativeWebView) {
+            // console.log("React Native RUnning", window)
+            setreactNativeStatus(true)
+            document.addEventListener("message", handleNativeMessage); // Android
+            window.addEventListener("message", handleNativeMessage);    // iOS
+        }
+
+        return () => {
+            document.removeEventListener("message", handleNativeMessage);
+            window.removeEventListener("message", handleNativeMessage);
+        };
+    }, []);
+
 
     if (loading)
         return (
@@ -331,7 +378,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         setExpanded((prev) => !prev);
     };
 
-        const featuresCustom = [
+    const featuresCustom = [
         '20 minutes FREE Usage on Us',
         'No VOIP Number',
         'Agent Characterization',
@@ -347,41 +394,43 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     const handleToggleCustom = () => {
         setExpandedCustom((prev) => !prev);
     };
- 
+
     const tierCheckout = async () => {
 
 
-      try {
-        let url 
-           const queryParams = new URLSearchParams();
-             const origin = window.location.origin;
-      queryParams.append("mode", "create");
-      if (userId) queryParams.append("userId", userId);
+        try {
+            let url
+            const queryParams = new URLSearchParams();
+            const origin = window.location.origin;
+            queryParams.append("mode", "create");
+            if (userId) queryParams.append("userId", userId);
 
-  
-      url = `${origin}/steps?${queryParams.toString()}`;
-        const res = await axios.post(`${API_BASE}/tier/checkout`, {
-          customerId: decodeTokenData?.customerId
-    ,
-          presetUnits: value,
-          minUnits: 0,
-          maxUnits: 200,
-          successUrl: url, // origin + path
-          cancelUrl: window.location.origin + "/cancel" , 
-          userId : userId
-        });
-    
-        if (res?.data?.url) {
-          window.location.href = res.data.url; // redirect user
+
+            url = `${origin}/steps?${queryParams.toString()}`;
+            const res = await axios.post(`${API_BASE}/tier/checkout`, {
+                customerId: decodeTokenData?.customerId
+                ,
+                presetUnits: value,
+                minUnits: 0,
+                maxUnits: 200,
+                successUrl: url, // origin + path
+                cancelUrl: window.location.origin + "/cancel",
+                userId: userId
+            });
+
+            if (res?.data?.url) {
+                window.location.href = res.data.url; // redirect user
+            }
+        } catch (error) {
+            console.error("Checkout error:", error);
         }
-      } catch (error) {
-        console.error("Checkout error:", error);
-      }
     };
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat('en-IN').format(price);
     };
+
+
 
     const handleBuyPlan = (data) => {
         // console.log({ data });
@@ -422,6 +471,8 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         }
     };
 
+
+
     return (
         <div className={styles.MainPlanDiv}>
             <div className={styles.firstdiv}>
@@ -451,7 +502,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     </span>
                 </label>
                     : null}
-{/* {!hasCustomPlan ? 
+                {/* {!hasCustomPlan ? 
 
  <label className={styles.freeTrialBtn} onClick={handleClickCustom}>
                     Custom Plan
@@ -478,15 +529,15 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     </span>
                 </label>
 : null} */}
-                    
+
             </div>
 
 
 
-              
 
 
-            
+
+
             <div>
                 <div className={styles.sectionPart}>
                     <h2>Subscriptions Plans </h2>
@@ -771,9 +822,9 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
             </FreeTrialModal>
 
-{/* Modal for custom plan  */}
+            {/* Modal for custom plan  */}
 
-    <FreeTrialModal
+            <FreeTrialModal
                 isOpen={modalOpenCustom}
                 onClose={() => {
                     setIsModalOpenCustom(false);
@@ -785,17 +836,17 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                         <p>No Cost to Try Our Agents</p>
                         <text>Explore our agents and viability for your business at <b className={styles.boldText}>“NO COST”.</b></text>
                     </div>
-                     <input
-        type="range"
-        min="0"
-        max="200"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
-      <label>
-        Value: <strong>{value}</strong>
-      </label>
-      <br />
+                    <input
+                        type="range"
+                        min="0"
+                        max="200"
+                        value={value}
+                        onChange={(e) => setValue(e.target.value)}
+                    />
+                    <label>
+                        Value: <strong>{value}</strong>
+                    </label>
+                    <br />
                     <div className={styles.featureList}>
                         <div className={styles.listdata}>
                             {visibleFeaturesCustom.map((text, index) => {

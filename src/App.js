@@ -125,51 +125,52 @@ function App() {
     }
   }, [userID,token]);
 
+// useEffect(() => {
+//   const handleBeforeInstallPrompt = (e) => {
+//     const alreadyShown = localStorage.getItem("installPromptShown");
+//     if (alreadyShown) return;  // only block if already shown
+
+//     e.preventDefault();
+//     console.log("📱 beforeinstallprompt fired");
+//     setDeferredPrompt(e);
+//     setShowPopup(true);  // show your popup
+//   };
+
+//   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+//   return () => {
+//     window.removeEventListener(
+//       "beforeinstallprompt",
+//       handleBeforeInstallPrompt
+//     );
+//   };
+// }, []);
+
+// const handleInstall = async () => {
+//   if (!deferredPrompt) return;
+
+//   deferredPrompt.prompt();
+//   const { outcome } = await deferredPrompt.userChoice;
+
+//   if (outcome === "accepted") {
+//     console.log("✅ User accepted install");
+//   } else {
+//     console.log("❌ User dismissed install");
+//   }
+
+//   // mark as shown no matter what
+//   localStorage.setItem("installPromptShown", "true"); 
+//   setDeferredPrompt(null);
+//   setShowPopup(false);
+// };
+
+
+//   const handleClose = () => {
+//     localStorage.setItem("installPromptShown", "true"); // save flag
+//     setShowPopup(false);
+//   };
+  
 useEffect(() => {
-  const handleBeforeInstallPrompt = (e) => {
-    const alreadyShown = localStorage.getItem("installPromptShown");
-    if (alreadyShown) return;  // only block if already shown
-
-    e.preventDefault();
-    console.log("📱 beforeinstallprompt fired");
-    setDeferredPrompt(e);
-    setShowPopup(true);  // show your popup
-  };
-
-  window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-  return () => {
-    window.removeEventListener(
-      "beforeinstallprompt",
-      handleBeforeInstallPrompt
-    );
-  };
-}, []);
-
-const handleInstall = async () => {
-  if (!deferredPrompt) return;
-
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-
-  if (outcome === "accepted") {
-    console.log("✅ User accepted install");
-  } else {
-    console.log("❌ User dismissed install");
-  }
-
-  // mark as shown no matter what
-  localStorage.setItem("installPromptShown", "true"); 
-  setDeferredPrompt(null);
-  setShowPopup(false);
-};
-
-
-  const handleClose = () => {
-    localStorage.setItem("installPromptShown", "true"); // save flag
-    setShowPopup(false);
-  };
-  useEffect(() => {
     const count = notifications?.filter((n) => n?.status === "unread")?.length;
     setUnreadCount(count);
     // console.log("Notifications:", notifications);
@@ -250,9 +251,65 @@ const handleInstall = async () => {
 
         </div>
         <div className="ForMobile">
-
-   
-   
+     {/* {showPopup && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              background: "white",
+              padding: "20px",
+              borderRadius: "10px",
+              textAlign: "center",
+              width: "300px",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+            }}
+          >
+            <h3>Add Rexpt to Home Screen</h3>
+            <p>Install this app for a faster and better experience.</p>
+            <div style={{ marginTop: "15px", display: "flex", gap: "10px", justifyContent: "center" }}>
+              <button
+                onClick={handleInstall}
+                style={{
+                  padding: "10px 16px",
+                  background: "#6524EB",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                Install
+              </button>
+              <button
+                onClick={handleClose}
+                style={{
+                  padding: "10px 16px",
+                  background: "#e0e0e0",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                Later
+              </button>
+            </div>
+          </div>
+        </div>
+      )} */}
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
             <div className="App" key={refreshKey}>

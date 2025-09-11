@@ -6,13 +6,16 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
-import { API_BASE_URL, token } from "../../Store/apiStore";
+import { API_BASE_URL, token, verifyOrCreateUser } from "../../Store/apiStore";
 import { useRef } from "react";
 import Loader2 from "../Loader2/Loader2";
 import LottieAnimation from "../../lib/LottieAnimation";
+import useUser from "../../Store/Context/UserContext";
 
 function Thankyou({ onSubmit, isAgentCreated }) {
   const [animationData, setAnimationData] = useState(null);
+  const { user, setUser } = useUser();
+
 
   if (isAgentCreated === true) {
     localStorage.setItem("agentCeated", true)
@@ -45,6 +48,9 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   const agentId = getQueryParam("agentId");
   const userId = getQueryParam("userId");
   const subsid = getQueryParam("subscriptionId"); // 👈 Old subscription to cancel
+  const agentName1 = getQueryParam("agentName"); // 👈 Old subscription to cancel
+  const agentCode1 = getQueryParam("agentCode"); // 👈 Old subscription to cancel
+  const businessName1 = getQueryParam("businessName"); // 👈 Old subscription to cancel
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
   const [currencySymbol, setCurrencySymbol] = useState("");
 
@@ -54,6 +60,100 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   const [agentCode, setAgentCode] = useState("XXXXXX");
   const [businessName, setBusinessName] = useState("Your Business");
   const [showAnimation, setShowAnimation] = useState(false)
+
+  // Admin Logic
+  // near other useState hooks
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [isLoadingRequest, setIsLoadingRequest] = useState(false);
+
+
+  const isAdmin = ((searchParams.get("isAdmin") || "").toLowerCase() === "true");
+  // add this function
+  const adminHandleClick = async () => {
+    try {
+      setIsButtonDisabled(true);
+      setIsLoadingRequest(true);
+      const resp = await fetch(
+        `${API_BASE_URL}/admin-checkout-user-details`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId }),
+        }
+      );
+      // const sessionData = getSessionData();
+      const payload1 = await resp.json();
+      const email = payload1?.data?.email;
+      const customerId = payload1?.data?.customerId;
+      const fullOtp = "notRequired";
+
+
+      if (!email || !customerId) {
+        console.warn("Missing required info to verify.");
+        return;
+      }
+      const data = await verifyOrCreateUser(email, fullOtp, customerId);
+
+      if (data?.res1) {
+        const verifyStatus = data?.res1?.data?.verifiedStatus === true;
+
+        if (verifyStatus === true) {
+          const userData = {
+            name: data?.res?.data?.user?.name || "",
+            profile:
+              `${API_BASE_URL?.split("/api")[0]}${(data?.res?.data?.profile || "").split("public")[1] || ""
+              }` || "images/camera-icon.avif",
+            subscriptionDetails: {},
+          };
+          setUser(userData)
+          // if you have a setter/context, call it here
+          localStorage.setItem("onboardComplete", "true");
+          localStorage.setItem("token", data.res?.data?.token);
+          localStorage.setItem("onboardComplete", true);
+          localStorage.setItem("paymentDone", true);
+          // localStorage.setItem("subcriptionIdUrl", subcriptionId);
+        }
+
+        navigate("/dashboard");
+        return;
+      }
+
+      navigate("/dashboard", { replace: true });
+    } catch (err) {
+      console.error("Error during admin verification:", err);
+    } finally {
+      setIsButtonDisabled(false);
+      setIsLoadingRequest(false);
+    }
+  };
+
+  const defaultHandleClick = () => {
+    if (key !== "create") {
+      localStorage.removeItem("selectedPlanData");
+      localStorage.removeItem("allPlans");
+      navigate("/dashboard", { state: { currentLocation } });
+    } else {
+      setShowAnimation(true);
+      localStorage.removeItem("selectedPlanData");
+      localStorage.removeItem("allPlans");
+      setTimeout(() => {
+        navigate("/dashboard", { replace: true });
+      }, 6000);
+    }
+  };
+
+  const onDashboardClick = async () => {
+    if (isAdmin) {
+      await adminHandleClick();
+    } else {
+      defaultHandleClick();
+    }
+  };
+
+
+
   useEffect(() => {
     const storedDashboard = sessionStorage.getItem("dashboard-session-storage");
     const storedBusinessDetails = sessionStorage.getItem("businessDetails");
@@ -397,7 +497,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
       {showAnimation ?
         <>
           <div className={styles.container}>
-            <br/> <br/>
+            <br /> <br />
             <div className={styles.Logo}>
               <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
             </div>
@@ -435,15 +535,19 @@ function Thankyou({ onSubmit, isAgentCreated }) {
                 <div className={styles.row}>
                   <span>Business Name:</span>{" "}
                   <div className={styles.Right50}>
-                    {businessName || "ACME Construction Services"}
+                    {isAdmin ? businessName1 : (businessName || "ACME Construction Services")}
                   </div>
                 </div>
                 <div className={styles.row}>
                   <span>Agent Name & ID:</span>
                   <div className={styles.Right50}>
-                    {agentName && agentCode
-                      ? `${agentName} (${agentCode})`
-                      : "Oliver (HS23D4)"}
+                    {isAdmin
+                      ? agentName1 && agentCode1
+                        ? `${agentName1} (${agentCode1})`
+                        : "Oliver (HS23D4)"
+                      : agentName && agentCode
+                        ? `${agentName} (${agentCode})`
+                        : "Oliver (HS23D4)"}
                   </div>
                 </div>
                 <div className={styles.row}>
@@ -527,39 +631,17 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
                 <div className={styles.ButtonTakeME}>
                   <button
-                    onClick={() => {
-
-                      if (key !== "create") {
-                        localStorage.removeItem("selectedPlanData");
-                        localStorage.removeItem("allPlans");
-                        navigate("/dashboard", {
-                          state: { currentLocation },
-                        });
-                      }
-                      else {
-                        setShowAnimation(true)
-                        localStorage.removeItem("selectedPlanData");
-                        localStorage.removeItem("allPlans");
-                        // navigate("/steps", {
-                        //   state: { locationPath: "/checkout" },
-                        // });
-                        setTimeout(() => {
-                          navigate("/dashboard", { replace: true });
-                        }, 6000);
-
-
-                      }
-                    }}
+                    onClick={onDashboardClick}
                     className={styles.dashboardBtn}
-                    // disabled={key === "create" ? true : false}
-                    disabled={key === "create" ? !isAgentCreated : false}
+                    disabled={isButtonDisabled || isLoadingRequest || (key === "create" ? !isAgentCreated : false)}
                   >
-                    {key === "create"
-                      ? isAgentCreated
-                        ? "Take me to Dashboard"
-                        : "Loading..."
-                      : "Take me to Dashboard"}{" "}
+                    {isLoadingRequest
+                      ? "Redirecting..."
+                      : key === "create"
+                        ? (isAgentCreated ? "Take me to Dashboard" : "Loading...")
+                        : "Take me to Dashboard"}
                   </button>
+
                 </div>
               </div>
             )}

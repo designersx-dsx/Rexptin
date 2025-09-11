@@ -28,7 +28,7 @@ import Thankyou from "../ThankyouPage/Thankyou";
 import getTimezoneFromState from "../../lib/timeZone";
 import Modal2 from "../Modal2/Modal2";
 import LottieAnimation from "../../lib/LottieAnimation";
-import {appointmentBooking, getBusinessSpecificFields} from "../../lib/post_Call_analysis"
+import { appointmentBooking, getBusinessSpecificFields } from "../../lib/post_Call_analysis"
 const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
@@ -67,10 +67,10 @@ const businessTypes = [
     { name: "Car Repair & Garage", code: "car_rep" },
     { name: "Boat Repair & Maintenance", code: "boa_rep" },
     { name: "Spa & Wellness Center", code: "spa_wel" },
-    { name: "Print Shop" , code: "pri_sho" },
-    { name: "School" , code : "scho" },
-    {name: "Colleges & Universities" , code : "coll_uni" },
-    {name: "Training Center" , code : "tra_ce" },
+    { name: "Print Shop", code: "pri_sho" },
+    { name: "School", code: "scho" },
+    { name: "Colleges & Universities", code: "coll_uni" },
+    { name: "Training Center", code: "tra_ce" },
     { name: "Educational Institute", code: "edu_ins" },
 ];
 const Step = () => {
@@ -106,6 +106,53 @@ const Step = () => {
     });
     const [customLoader, setCustomeLoader] = useState(false)
     const [isAgentCreated, setIsAgentCreated] = useState(false);
+
+    const [reactNativeStatus, setreactNativeStatus] = useState(false)
+    // console.log("reactNativeStatus",reactNativeStatus)
+
+    useEffect(() => {
+        const handleNativeMessage = (event) => {
+            try {
+                // console.log("event",event.data)
+                const raw = typeof event?.data === "string" ? event.data : null;
+                if (!raw) return;
+
+                const data = JSON.parse(raw);
+                console.log("data?.type", data?.type)
+
+                if (data?.type === "IAP_STARTED") {
+                    console.log("✅ Native IAP started for", data.productId);
+                    // flag to skip web checkout
+                    window.skipCheckout = true;
+                }
+
+                if (data?.type === "IAP_SUCCESS") {
+                    console.log("🎉 Purchase success", data.receipt);
+                    // handle success flow...
+                }
+
+                if (data?.type === "IAP_FAILED") {
+                    console.warn("❌ Purchase failed", data.reason);
+                    // handle failure flow...
+                }
+            } catch (err) {
+                console.error("Invalid message from app:", err);
+            }
+        };
+
+        // Only attach when inside RN WebView
+        if (window.ReactNativeWebView) {
+            // console.log("React Native RUnning",window)
+            setreactNativeStatus(true)
+            document.addEventListener("message", handleNativeMessage); // Android
+            window.addEventListener("message", handleNativeMessage);    // iOS
+        }
+
+        return () => {
+            document.removeEventListener("message", handleNativeMessage);
+            window.removeEventListener("message", handleNativeMessage);
+        };
+    }, []);
 
     const checkPaymentDone = localStorage.getItem("paymentDone")
     const subsID = localStorage.getItem("subcriptionIdUrl")
@@ -479,7 +526,7 @@ const Step = () => {
             timeZone: { key: "TIMEZONE", value: timeZone?.timezoneId || "" },
 
         });
-      
+
         // const isValid = step8BRef.current.validate()
         //creation here
         if (localStorage.getItem("UpdationMode") != "ON") {
@@ -765,7 +812,7 @@ const Step = () => {
                                 "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
 
                         },
-                      
+
                         ...appointmentBooking(businessType),
                         ...getBusinessSpecificFields(businessType)
                     ],
@@ -825,7 +872,7 @@ const Step = () => {
                                 name: "lead_type",
                                 description: "Feedback given by the customer about the call.",
                                 choices: getLeadTypeChoices(),
-                            },              
+                            },
                             {
                                 type: "string",
                                 name: "name",
@@ -976,7 +1023,7 @@ const Step = () => {
                 setPopupMessage("LLM creation failed. Please try again.");
                 setShowPopup(true);
                 setLoading(false)
-               
+
             }
             setLoading(false)
             // setCustomeLoader(false)
@@ -1122,33 +1169,28 @@ const Step = () => {
     useEffect(() => {
         sessionStorage.setItem("completedSteps", JSON.stringify(completedSteps));
     }, [completedSteps]);
-    
-const tierCheckout = async () => {
-  try {
-    const res = await axios.post(`${API_BASE_URL}/tier/checkout`, {
-      customerId: decodeTokenData?.customerId
-,
-      presetUnits: location?.state?.value,
-      minUnits: 0,
-      maxUnits: 200,
-      successUrl: window.location.origin + `/steps?mode=create&userId=${decodeTokenData?.id}`, // origin + path
-      cancelUrl: window.location.origin + "/cancel" , 
-      userId : decodeTokenData?.id
-    });
+    const tierCheckout = async () => {
+        try {
+            const res = await axios.post(`${API_BASE_URL}/tier/checkout`, {
+                customerId: decodeTokenData?.customerId
+                ,
+                presetUnits: location?.state?.value,
+                minUnits: 0,
+                maxUnits: 200,
+                successUrl: window.location.origin + `/steps?mode=create&userId=${decodeTokenData?.id}`, // origin + path
+                cancelUrl: window.location.origin + "/cancel",
+                userId: decodeTokenData?.id
+            });
 
-
-    if (res?.data?.url) {
-      window.location.href = res.data.url; // redirect user
-    }
-  } catch (error) {
-    console.error("Checkout error:", error);
-  }
-};
-
-
+            if (res?.data?.url) {
+                window.location.href = res.data.url; // redirect user
+            }
+        } catch (error) {
+            console.error("Checkout error:", error);
+        }
+    };
     let isUser = sessionStorage.getItem("isUser")
     // console.log({isUser})
-
     const handleSubmit = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.value
@@ -1170,13 +1212,22 @@ const tierCheckout = async () => {
                 const isStep3Valid = step8ARef.current?.validate?.();
                 const isStep4Valid = step8BRef.current?.validate?.();
                 if (!isStep3Valid || !isStep4Valid) return;
-                navigate("/checkout")
+                handleBuyPlan({
+                    priceId: priceId,
+                    planName: plan,
+                    interval: sessionStorage.getItem("selectedPlanInterval"),
+                });
+                if (reactNativeStatus) {
+                    console.log("Skipping web checkout because native IAP is in progress");
+                } else {
+                    navigate("/checkout")
+                }
             }
 
         }
-        else if(isTiered ==="tierPlan"){
+        else if (isTiered === "tierPlan") {
             tierCheckout()
-                                  
+
         }
         else if (locationPath !== "/checkout" && !priceId) {
 
@@ -1299,9 +1350,9 @@ const tierCheckout = async () => {
         handleContinue();
     }
     //site map 
-    useEffect(()=>{
+    useEffect(() => {
         handleSelectAll();
-    },[showSiteMapModal,showSiteMapUrls])
+    }, [showSiteMapModal, showSiteMapUrls])
     // Select all handler
     const handleSelectAll = () => {
         let updated;
@@ -1310,8 +1361,8 @@ const tierCheckout = async () => {
         //     // Deselect all
         //     updated = [];
         // } else {
-            // Select all
-            updated = [...showSiteMapUrls];
+        // Select all
+        updated = [...showSiteMapUrls];
         // }
 
         setSelectedUrls(updated);
@@ -1351,6 +1402,46 @@ const tierCheckout = async () => {
             return updated;
         });
     };
+
+    const handleBuyPlan = (data) => {
+        // console.log({ data });
+
+        const plansFromApple = {
+            starter_month: "com.rexpt.starter.monthly",
+            starter_year: "com.rexpt.starter.yearly",
+            scaler_month: "com.rexpt.scaler.monthly",
+            scaler_year: "com.rexpt.scaler.yearly",
+            growth_month: "com.rexpt.growth.monthly",
+            growth_year: "com.rexpt.growth.yearly",
+            corporate_month: "com.rexpt.corporate.monthly",
+            corporate_year: "com.rexpt.corporate.yearly"
+        };
+
+        // Normalize name + interval into a key (lowercased to match dictionary)
+        const key = `${data.planName.toLowerCase()}_${data.interval.toLowerCase()}`;
+
+        // Lookup product ID from Apple mapping
+        const appleProductId = plansFromApple[key];
+
+        if (!appleProductId) {
+            console.warn("⚠️ No matching Apple product found for:", key);
+            return;
+        }
+
+        // console.log("appleProductId",appleProductId)
+
+        if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    type: "CHECKOUT",
+                    productId: appleProductId,
+                })
+            );
+        } else {
+            console.warn("ReactNativeWebView not available — running in browser");
+        }
+    };
+
 
     useEffect(() => {
         const sessionSelected = JSON.parse(sessionStorage.getItem("selectedSiteMapUrls"));
