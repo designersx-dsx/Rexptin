@@ -3001,14 +3001,15 @@ sessionStorage.removeItem("isUser")
 
                               </>
                             )}
-                          {/* {(
+                          {(
 
-                            // (agent?.subscription) ||
-                            // &&
-                              // agent?.subscription?.plan_name?.toLowerCase() !== "free") ||
-                            // (assignNumberPaid && agent?.isDeactivated === 0) 
+                            (agent?.subscription
+                            //  ||
+                            &&
+                              agent?.subscription?.plan_name?.toLowerCase() !== "free") ||
+                            (assignNumberPaid && agent?.isDeactivated === 0) 
 
-                          ) && ( */}
+                          ) && (
                           <>
                             <div>
                               <div
@@ -3034,7 +3035,7 @@ sessionStorage.removeItem("isUser")
                             </div>
 
                           </>
-                          {/* )} */}
+                           )} 
 
                         </div>
 
