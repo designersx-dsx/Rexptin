@@ -40,7 +40,7 @@ At the end of every call, the agent must say this exact line before disconnectin
 export const ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails = () => {
   const message = `
 # Branding Message
-After you have successfully collected the caller's necessary details (like name, phone number, and email), and before moving to the next step, you must say: "By the way, you can also create your own AI receptionist by visiting r-x-p-t dot u-s." Do not repeat this message again in the conversation.
+After you have successfully collected the caller's necessary details (like name, phone number, and email), and before moving to the next step, you must say: "By the way, you can also create your own AI receptionist by visiting r-x-p-t dot u-s." **Do not repeat this message again in the conversation**.
 `;
   return message.trim();
 }
