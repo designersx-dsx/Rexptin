@@ -75,6 +75,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import NotificationView from "./Component/Notifications/NotificationView";
+import OwnPlan from './Component/OwnPlan/OwnPlan'
 // import Test from "./utils/Test";
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -486,6 +487,7 @@ useEffect(() => {
                 <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
                 <Route path="/test-other" element={<Test />} />
 
+                <Route path="/own-plan" element={<OwnPlan />} />
 
 
 

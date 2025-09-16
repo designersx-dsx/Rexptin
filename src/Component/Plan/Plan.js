@@ -13,6 +13,7 @@ import FreeTrialModal from '../FreeTrialModal/FreeTrialModal';
 import decodeToken from "../../lib/decodeToken";
 import PopUp from '../Popup/Popup';
 
+
 import axios from 'axios'
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
@@ -73,6 +74,10 @@ const Planss = () => {
     }, [])
 
 
+
+    const CustomhandleClick = () => {
+        navigate("/own-plan");
+    };
 
     const handleClick = () => {
         setFreeTrial(!freeTrial);
@@ -397,6 +402,8 @@ const Planss = () => {
     };
 
     const [paygEnabled, setPaygEnabled] = useState(localStorage.getItem("isPayg") || false);
+
+
 
     // Handle the Payg enable/disable toggle change
     const handlePaygToggle = async () => {
@@ -797,6 +804,10 @@ const Planss = () => {
 
             </div>
             <div className={styles.sectionPart}>
+                <div className={styles.cutomPlan} onClick={CustomhandleClick}>
+                    <div><img src='svg/edit-custom-plan.svg' alt='edit-custom-plan' /></div>
+                    <p>Custom Plan</p>
+                </div>
                 <h2>Subscriptions Plans </h2>
                 <p>Choose a suitable plan for your agent & business case</p>
             </div>
@@ -1230,7 +1241,7 @@ const Planss = () => {
                 //   onConfirm={handleLogoutConfirm}
                 />
             )}
-{/* 
+            {/* 
             <FreeTrialModal isOpen={modalOpenz} onClose={() => setIsModalOpenz(false)}>
                 <div className={styles.freeTrialMain}>
                     <div className={styles.Topsection}>
@@ -1295,7 +1306,7 @@ const Planss = () => {
                 </div>
 
             </FreeTrialModal> */}
-           
+
         </div>
     );
 };
