@@ -16,7 +16,6 @@ import {
   listSiteMap,
   validateWebsite,
 } from "../../Store/apiStore";
-import ConfirmModal from "../AboutBusiness/ConfirmModal";
 import decodeToken from "../../lib/decodeToken";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
@@ -41,6 +40,7 @@ const AboutBusiness = forwardRef(
       onStepChange,
       onSiteMap,
       selectedSiteMapUrls,
+      onRequestNoGMBConfirm,
     },
     ref
   ) => {
@@ -98,7 +98,6 @@ const AboutBusiness = forwardRef(
       useCheckAgentCreationLimit(userId);
 
     const [selectedUrls, setSelectedUrls] = useState([]);
-    const [showNoGMBModal, setShowNoGMBModal] = useState(false);
 
     const companyKeywords = [
       "about",
@@ -130,6 +129,57 @@ const AboutBusiness = forwardRef(
     ];
     const prevPlaceIdRef = useRef(null);
     const lastAutoFilledUrlRef = useRef("");
+
+    const askParentForNoGMBConfirm = () => {
+      onRequestNoGMBConfirm?.({
+        onConfirm: () => {
+          // user confirmed → set checked and clear GMB data
+          setNoGoogleListing(true);
+
+          const form = JSON.parse(
+            sessionStorage.getItem("aboutBusinessForm") || "{}"
+          );
+          form.noGoogleListing = true;
+          sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
+          setGoogleListing("");
+          setDisplayBusinessName("");
+          sessionStorage.removeItem("googleListing");
+          sessionStorage.removeItem("displayBusinessName");
+
+          const form1 = JSON.parse(
+            sessionStorage.getItem("placeDetailsExtract") || "{}"
+          );
+          const clearedGoogleData = {
+            name: "",
+            address: "",
+            phone: "",
+            internationalPhone: "",
+            website: "",
+            rating: "",
+            totalRatings: "",
+            hours: [],
+            businessStatus: "",
+            categories: [],
+            aboutBussiness: form1?.aboutBusiness || form1?.aboutBussiness || "",
+            businessName: "",
+          };
+          const updatedForm = { ...form1, ...clearedGoogleData };
+          sessionStorage.setItem(
+            "placeDetailsExtract",
+            JSON.stringify(updatedForm)
+          );
+        },
+        onCancel: () => {
+          // user cancelled → keep it unchecked
+          setNoGoogleListing(false);
+          const form = JSON.parse(
+            sessionStorage.getItem("aboutBusinessForm") || "{}"
+          );
+          form.noGoogleListing = false;
+          sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
+        },
+      });
+    };
 
     const normalizeWebsite = (raw) => {
       if (!raw) return "";
@@ -712,8 +762,10 @@ const AboutBusiness = forwardRef(
                         const checked = e.target.checked;
 
                         if (checked) {
-                          setShowNoGMBModal(true);
+                          // Ask parent to open the confirm modal
+                          askParentForNoGMBConfirm();
                         } else {
+                          // direct uncheck → just clear flag
                           setNoGoogleListing(false);
                           const form = JSON.parse(
                             sessionStorage.getItem("aboutBusinessForm") || "{}"
@@ -854,65 +906,6 @@ const AboutBusiness = forwardRef(
               onConfirm={confirmSkip}
             />
           )}
-          <ConfirmModal
-            open={showNoGMBModal}
-            title="Continue without a Google Business Profile?"
-            message="This step is important for setting up your agent. Your Google Business Profile helps the agent understand your business and provide better results. If you have one, please add it. Do you want to continue without a listing?"
-            cancelText="Go back"
-            confirmText="Continue"
-            onClose={() => {
-              // User cancelled → keep it unchecked
-              setShowNoGMBModal(false);
-              setNoGoogleListing(false);
-              const form = JSON.parse(
-                sessionStorage.getItem("aboutBusinessForm") || "{}"
-              );
-              form.noGoogleListing = false;
-              sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
-            }}
-            onConfirm={() => {
-              // User confirmed → set checked and clear GMB data
-              setShowNoGMBModal(false);
-              setNoGoogleListing(true);
-
-              const form = JSON.parse(
-                sessionStorage.getItem("aboutBusinessForm") || "{}"
-              );
-              form.noGoogleListing = true;
-              sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
-
-              setGoogleListing("");
-              setDisplayBusinessName("");
-              sessionStorage.removeItem("googleListing");
-              sessionStorage.removeItem("displayBusinessName");
-
-              const form1 = JSON.parse(
-                sessionStorage.getItem("placeDetailsExtract") || "{}"
-              );
-
-              const clearedGoogleData = {
-                name: "",
-                address: "",
-                phone: "",
-                internationalPhone: "",
-                website: "",
-                rating: "",
-                totalRatings: "",
-                hours: [],
-                businessStatus: "",
-                categories: [],
-                aboutBussiness:
-                  form1?.aboutBusiness || form1?.aboutBussiness || "",
-                businessName: "",
-              };
-
-              const updatedForm = { ...form1, ...clearedGoogleData };
-              sessionStorage.setItem(
-                "placeDetailsExtract",
-                JSON.stringify(updatedForm)
-              );
-            }}
-          />
         </div>
       </>
     );
