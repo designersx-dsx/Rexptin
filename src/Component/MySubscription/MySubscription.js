@@ -112,7 +112,7 @@ const MySubscription = ({ agents }) => {
 
                 // ✅ Deferred plan condition
                 const isDeferredPlan =
-                    sub?.status?.toLowerCase() === 'active' && sub?.subscription_id === 'byAdmin' && agent?.agentPlan !== "Pay-As-You-Go";
+                    sub?.status?.toLowerCase() === 'active' && sub?.subscription_id === 'byAdmin' && agent?.agentPlan !== "Pay-As-You-Go" &&agent?.agentPlan !== "free";
 
                 const isPaygPlan = agent?.agentPlan === "Pay-As-You-Go"
                 // && agent?.latestSubscription?.status ==="inactive"
