@@ -11,10 +11,12 @@ import { getUserAgentMergedDataForAgentUpdate } from "../../Store/apiStore";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
 import Loader from "../Loader/Loader";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
+import { businessTypes } from "../../lib/businessCategories"
 const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepChange }, ref) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [businessType, setBusinessType] = useState("");
+  const [subType, setSubType] = useState("")
   const [businessName, setBusinessName] = useState("");
   const [businessSize, setBusinessSize] = useState("");
   const [showPopup, setShowPopup] = useState(false);
@@ -48,233 +50,6 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
   const [customBuisness, setcustomBuisness] = useState("");
   const [prevBuisnessType, setprevBuisnessType] = useState("");
   const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
-  const location = useLocation();
-  const businessTypes = [
-    {
-      type: "Real Estate Broker",
-      subtype: "Property Transaction Facilitator",
-      icon: "svg/Estate-icon.svg",
-    },
-    {
-      type: "Restaurant",
-      subtype: "Food Service Establishment",
-      icon: "svg/Landscaping-icon.svg",
-    },
-    {
-      type: "Interior Designer",
-      subtype: "Indoor Space Beautifier",
-      icon: "svg/Interior-Designer-icon.svg",
-    },
-    {
-      type: "Salon",
-      subtype: "Hair Styling & Grooming",
-      icon: "svg/Saloon-icon.svg",
-    },
-    {
-      type: "Landscaping Company",
-      subtype: "Outdoor Space Beautification",
-      icon: "svg/Landscaping-icon.svg",
-    },
-    {
-      type: "Dentist",
-      subtype: "Dental Care Provider",
-      icon: "svg/Dentist-Office-icon.svg",
-    },
-    {
-      type: "Doctor's Clinic",
-      subtype: "Medical Consultation & Treatment",
-      icon: "svg/Doctor-clinic-icon.svg",
-    },
-    {
-      type: "Gym & Fitness Center",
-      subtype: "Exercise Facility & Training",
-      icon: "svg/Gym-icon.svg",
-    },
-
-    {
-      type: "Personal Trainer",
-      subtype: "Individual Fitness Coaching",
-      icon: "svg/Personal-Trainer-icon.svg",
-    },
-    {
-      type: "Web Design Agency",
-      subtype: "Website Creation & Development",
-      icon: "svg/Web-Design-Agency-icon.svg",
-    },
-    {
-      type: "Architect",
-      subtype: "Building Design Expert",
-      icon: "svg/Architect-icon.svg",
-    },
-    {
-      type: "Property Rental & Leasing Service",
-      subtype: "Property Rental Management",
-      icon: "svg/Property Rental & Leasing Service.svg",
-    },
-    {
-      type: "Construction Services",
-      subtype: "Building Construction & Repair",
-      icon: "svg/Construction Services.svg",
-    },
-    {
-      type: "Insurance Agency",
-      subtype: "Risk Protection Provider",
-      icon: "svg/Insurance Agency.svg",
-    },
-    {
-      type: "Old Age Home",
-      subtype: "Senior Living Facility",
-      icon: "svg/Old Age Home.svg",
-    },
-    {
-      type: "Travel Agency",
-      subtype: "Trip Planning & Booking",
-      icon: "svg/Travel Agency.svg",
-    },
-    {
-      type: "Ticket Booking",
-      subtype: "Travel Ticket Provider",
-      icon: "svg/Ticket Booking.svg",
-    },
-    {
-      type: "Accounting Services",
-      subtype: "Financial Record Management",
-      icon: "svg/Accounting Services.svg",
-    },
-    {
-      type: "Financial Planners",
-      subtype: "Wealth Management Advice",
-      icon: "svg/Financial Planners.svg",
-    },
-    {
-      type: "Beauty Parlour",
-      subtype: "Cosmetic Beauty Services",
-      icon: "svg/Beauty Parlour.svg",
-    },
-    {
-      type: "Nail Salon",
-      subtype: "Manicure/Pedicure Services",
-      icon: "svg/Nail Saloon.svg",
-    },
-    {
-      type: "Barber Studio/Shop",
-      subtype: "Men's Hair Grooming",
-      icon: "svg/Barber.svg",
-    },
-    {
-      type: "Hair Stylist",
-      subtype: "Professional Hair Care",
-      icon: "svg/Hair Stylist.svg",
-    },
-    {
-      type: "Bakery",
-      subtype: "Baked Goods Producer",
-      icon: "svg/Bakery.svg",
-    },
-    {
-      type: "Dry Cleaners",
-      subtype: "Garment Cleaning & Care",
-      icon: "svg/Dry Cleaner.svg",
-    },
-    {
-      type: "Cleaning and Janitorial Services",
-      subtype: "Professional Cleaning Solutions",
-      icon: "svg/Cleaning Janitorial Service.svg",
-    },
-    {
-      type: "Tour Guides",
-      subtype: "Local Experience Experts",
-      icon: "svg/Tour-Guides.svg",
-    },
-    {
-      type: "Deli Shop",
-      subtype: "Fresh Meats & Gourmet Foods",
-      icon: "svg/Deli shop.svg"
-    },
-    {
-      type: "Marketing Agency",
-      subtype: "Your Journey Begins Here",
-      icon: "svg/Marketing Agency.svg",
-    },
-        {
-      type: "Digital Marketing Agency",
-      subtype: "Grow Your Brand Online",
-      icon: "svg/Digital-marketing-Agency.svg",
-    },
-    {
-      type: "Car Repair & Garage",
-      subtype: "Quality Repairs, Every Time",
-      icon: "svg/Car Repair & Garage.svg",
-    },
-    {
-      type: "Boat Repair",
-      subtype: "Marine Care & Repair Experts",
-      icon: "svg/Boat Repair & Maintenance.svg"
-
-    },
-    {
-      type: "Car & Bus Services",
-      subtype: "Quality Repairs, Every Time",
-      icon: "svg/Car & Bus Services.svg",
-
-    },
-    {
-      type: "Taxi, Cab & Limo Booking",
-      subtype: "Reliable Rides, Anytime, Anywhere",
-      icon: "svg/Taxi.svg",
-
-    },
-    {
-      type: "Movers and Packers",
-      subtype: "Safe & Hassle-Free Relocation Services",
-      icon: "svg/Movers and Packers.svg",
-
-    },
-    {
-      type: "Trucking Company",
-      subtype: "Efficient Freight & Logistics Solutions",
-      icon: "svg/Trucking Company.svg",
-    },
-    {
-      type: "Spa & Wellness Center",
-      subtype: "Relaxation & Health Services",
-      icon: "svg/Hair Stylist.svg",
-    },
-    {
-      type: "Print Shop",
-      subtype: "Your Printing Solutions Partner",
-      icon: "svg/Hair Stylist.svg",
-    },
-    {
-      type: "School",
-      subtype: "Education for a Brighter Future",
-      icon: "svg/Hair Stylist.svg",
-    },
-    {
-      type: "Colleges & Universities",
-      subtype: "Higher Learning Institution",
-      icon: "svg/Hair Stylist.svg",
-    },
-    {
-      type: "Training Center",
-      subtype: "Skill Development Hub",
-      icon: "svg/Hair Stylist.svg",
-    },
-    {
-      type: "Educational Institute",
-      subtype: "Knowledge Empowerment Center",
-      icon: "svg/Hair Stylist.svg",
-    }
-
-,
-
-    {
-      type: "Other",
-      subtype: "More Ideas, More Impact",
-      icon: "svg/Web-Design-Agency-icon.svg",
-    }
-  ];
-  const stored = sessionStorage.getItem("businessDetails");
   useEffect(() => {
     try {
       const stored = sessionStorage.getItem("businessDetails");
@@ -320,36 +95,20 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
     setBusinessSize(e.target.value);
   };
 
-  const handleBusinessTypeChange = (e) => {
-    setBusinessType(e.target.value);
-    // if (prevBuisnessType != businessType) {
-    //   sessionStorage.removeItem("selectedServices");
-    //   sessionStorage.removeItem("selectedCustomServices");
-    //   const raw = sessionStorage.getItem("businesServices");
-    //   let previous = {};
-    //   try {
-    //     previous = raw ? JSON.parse(raw) : {};
-    //   } catch (err) {
-    //     console.error("Failed to parse businesServices:", err);
-    //   }
+  const handleBusinessTypeChange = (item) => {
+    setSubType(item.subType)
+    setBusinessType(item.businessType);
+    sessionStorage.setItem("subType", item.subType);
 
-    //   const updatedBusinessServices = {
-    //     selectedService: [],
-    //     email: previous.email,
-    //   };
-    //   sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
-    // }
-    if (e.target.value !== "Other") {
+    if (item.businessType !== "Other") {
       setcustomBuisness(""); // Clear textbox if not "Other"
-      updateSessionBusinessDetails("businessType", e.target.value);
+      updateSessionBusinessDetails("businessType", item.businessType);
       sessionStorage.removeItem("showInput");
     }
-    updateSessionBusinessDetails("businessType", e.target.value);
+    updateSessionBusinessDetails("businessType", item.businessType);
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
     }
-
-
   };
   const updateSessionBusinessDetails = (key, value) => {
     let existing = {};
@@ -376,11 +135,57 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
-  const filteredBusinessTypes = businessTypes.filter(
-    (item) =>
-      item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.subtype.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // const filteredBusinessTypes = businessTypes.filter(
+  //   (item) =>
+  //     item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     item.subtype.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+  const filteredBusinessTypes = (searchTerm) => {
+    if (!searchTerm) {
+      // Agar search empty hai, to sirf selected show karna hai
+      if (subType && businessType) {
+        const selected = businessTypes.find((bt) =>
+          (bt.subtypes || []).includes(subType)
+        );
+        if (selected) {
+          return [{
+            businessType: selected.type,
+            subType,
+            icon: selected.icon,
+          }];
+        }
+      }
+      return [];
+    }
+
+
+    let results = [];
+
+    businessTypes.forEach((item) => {
+      // search in subtype (main description)
+
+      // search in subtypes array
+      (item.subtypes || []).forEach((sub) => {
+        if (sub.toLowerCase().includes(searchTerm.toLowerCase())) {
+          results.push({
+            businessType: item.type,
+            subType: sub,
+            icon: item.icon
+          });
+        }
+      });
+
+      // search in type itself
+      if (item.type.toLowerCase().includes(searchTerm.toLowerCase())) {
+        results.push({
+          businessType: item.type,
+          subType: item.subtype,
+          icon: item.icon
+        });
+      }
+    });
+    return results;
+  };
   const handleLoginClick = () => {
     // Mark all as submitted to show errors
     setBusinessTypeSubmitted(true);
@@ -439,9 +244,9 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
         businessName: businessName.trim(),
         businessSize,
       };
-  if (businessSize) {
-  businessData.businessSize = businessSize;
-}
+      if (businessSize) {
+        businessData.businessSize = businessSize;
+      }
       // navigate("/about-business-next");
     } else {
       businessData = {
@@ -450,9 +255,9 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
         businessName: businessName.trim(),
         businessSize,
       };
-  if (businessSize) {
-  businessData.businessSize = businessSize;
-}
+      if (businessSize) {
+        businessData.businessSize = businessSize;
+      }
       // navigate("/business-services");
     }
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
@@ -569,6 +374,13 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
     }
   }, [CheckingUserLimit, isLimitExceeded]);
+  useEffect(() => {
+    const savedBusinessType = sessionStorage.getItem("businessType");
+    const savedSubType = sessionStorage.getItem("subType");
+
+    if (savedBusinessType) setBusinessType(savedBusinessType);
+    if (savedSubType) setSubType(savedSubType);
+  }, []);
   return (
     <div className={styles.container}>
       {/* <h1 className={styles.title}>{EditingMode ? ' Edit: Business Details' : 'Business Details'}</h1> */}
@@ -586,7 +398,39 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       </div>
       <div className={styles.ListDiv}>
         <div className={styles.optionList}>
-          {filteredBusinessTypes.length > 0 ? (
+          {filteredBusinessTypes(searchTerm).length > 0 ? (
+            filteredBusinessTypes(searchTerm).map((item, index) => (
+              <label className={styles.option} key={index}>
+                <div className={styles.forflex}>
+                  <div className={styles.icon}>
+                    <img
+                      src={item.icon}
+                      alt={`${item.type} icon`}
+                      className={styles.iconImg}
+                    />
+                  </div>
+                  <div className={styles.strongDiv}>
+                    <strong>{item.subType}</strong>
+                    <p className={styles.subType}>{item.businessType}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <input
+                    type="radio"
+                    name="businessType"
+                    value={item.subType}
+                    checked={subType === item.subType}
+                    onChange={() => handleBusinessTypeChange(item)}
+                  />
+                </div>
+              </label>
+            ))
+          ) : (
+            <p className={styles.noItemFound}>Lets Find Your Business</p>
+          )}
+
+          {/* {filteredBusinessTypes.length > 0 ? (
             [...filteredBusinessTypes]
               .sort((a, b) => a.type.localeCompare(b.type))
               .map((item, index) => (
@@ -618,7 +462,8 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
               ))
           ) : (
             <p className={styles.noItemFound}>No item found</p>
-          )}
+          )} */}
+
         </div>
       </div>
 
@@ -649,7 +494,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
         </div>
       )}
       {/* business size –- now a dropdown */}
-      <div className={styles.inputGroup}>
+      {/* <div className={styles.inputGroup}>
         <label>Business Size (Number of Emp.)</label>
         <select
           value={businessSize}
@@ -685,7 +530,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
         {businessSizeSubmitted && businessSizeError && (
           <p className={styles.inlineError}>{businessSizeError}</p>
         )}
-      </div>
+      </div> */}
       {/* {stepEditingMode != 'ON' ?
         <div onClick={handleLoginClick}>
           <div type="submit">

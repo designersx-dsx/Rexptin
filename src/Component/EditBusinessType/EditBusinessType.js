@@ -10,12 +10,13 @@ import PopUp from '../Popup/Popup';
 import { useAgentCreator } from '../../hooks/useAgentCreator';
 import { useNavigate } from 'react-router-dom';
 import { useDashboardStore } from '../../Store/agentZustandStore';
-
+import { businessTypes } from "../../lib/businessCategories"
 
 const EditBusinessType = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('');
   const [businessType, setBusinessType] = useState("");
+  const [subType, setSubType] = useState("")
   const [businessSize, setBusinessSize] = useState("")
   const [customBuisness, setcustomBuisness] = useState("");
   const [prevBuisnessType, setprevBuisnessType] = useState("");
@@ -27,7 +28,6 @@ const EditBusinessType = () => {
   const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
   const agentnm = sessionStorage.getItem("agentName");
-
   const [businessTypeSubmitted, setBusinessTypeSubmitted] = useState(false);
   const [businessNameSubmitted, setBusinessNameSubmitted] = useState(false);
   const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
@@ -38,9 +38,10 @@ const EditBusinessType = () => {
   const navigate = useNavigate();
   const { setHasFetched } = useDashboardStore();
   const userId = decodeTokenData?.id;
-  const selectedRef = useRef(null); 
-   const [isChanged, setIsChanged] = useState(false);
+  const selectedRef = useRef(null);
+  const [isChanged, setIsChanged] = useState(false);
   const [initialDetails, setInitialDetails] = useState(null);
+  const subType1 = sessionStorage.getItem("subType");
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditBusinessType",
     setLoading,
@@ -52,254 +53,65 @@ const EditBusinessType = () => {
   });
 
   useEffect(() => {
-  if (selectedRef.current) {
-    selectedRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
+    if (selectedRef.current) {
+      selectedRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+  }, [businessType]);
+  const filteredBusinessTypes = (searchTerm) => {
+    if (!searchTerm) {
+      // Agar search empty hai, to sirf selected show karna hai
+      if (subType && businessType) {
+        const selected = businessTypes.find((bt) =>
+          (bt.subtypes || []).includes(businessType)
+        );
+        if (selected) {
+          return [{
+            businessType: selected.type,
+            subType,
+            icon: selected.icon,
+          }];
+        }
+      }
+      return [];
+    }
+    let results = [];
+
+    businessTypes.forEach((item) => {
+      // search in subtype (main description)
+
+      // search in subtypes array
+      (item.subtypes || []).forEach((sub) => {
+        if (sub.toLowerCase().includes(searchTerm.toLowerCase())) {
+          results.push({
+            businessType: item.type,
+            subType: sub,
+            icon: item.icon
+          });
+        }
+      });
+
+      // search in type itself
+      if (item.type.toLowerCase().includes(searchTerm.toLowerCase())) {
+        results.push({
+          businessType: item.type,
+          subType: item.subtype,
+          icon: item.icon
+        });
+      }
     });
-  }
-}, [businessType]);
-
-  const businessTypes = [
-    {
-      type: "Real Estate Broker",
-      subtype: "Property Transaction Facilitator",
-      icon: "svg/Estate-icon.svg",
-    },
-    {
-      type: "Restaurant",
-      subtype: "Food Service Establishment",
-      icon: "svg/Landscaping-icon.svg",
-    },
-    {
-      type: "Interior Designer",
-      subtype: "Indoor Space Beautifier",
-      icon: "svg/Interior-Designer-icon.svg",
-    },
-    {
-      type: "Salon",
-      subtype: "Hair Styling & Grooming",
-      icon: "svg/Saloon-icon.svg",
-    },
-    {
-      type: "Landscaping Company",
-      subtype: "Outdoor Space Beautification",
-      icon: "svg/Landscaping-icon.svg",
-    },
-    {
-      type: "Dentist",
-      subtype: "Dental Care Provider",
-      icon: "svg/Dentist-Office-icon.svg",
-    },
-    {
-      type: "Doctor's Clinic",
-      subtype: "Medical Consultation & Treatment",
-      icon: "svg/Doctor-clinic-icon.svg",
-    },
-    {
-      type: "Gym & Fitness Center",
-      subtype: "Exercise Facility & Training",
-      icon: "svg/Gym-icon.svg",
-    },
-
-    {
-      type: "Personal Trainer",
-      subtype: "Individual Fitness Coaching",
-      icon: "svg/Personal-Trainer-icon.svg",
-    },
-    {
-      type: "Web Design Agency",
-      subtype: "Website Creation & Development",
-      icon: "svg/Web-Design-Agency-icon.svg",
-    },
-    {
-      type: "Architect",
-      subtype: "Building Design Expert",
-      icon: "svg/Architect-icon.svg",
-    },
-    {
-      type: "Property Rental & Leasing Service",
-      subtype: "Property Rental Management",
-      icon: "svg/Property Rental & Leasing Service.svg",
-    },
-    {
-      type: "Construction Services",
-      subtype: "Building Construction & Repair",
-      icon: "svg/Construction Services.svg",
-    },
-    {
-      type: "Insurance Agency",
-      subtype: "Risk Protection Provider",
-      icon: "svg/Insurance Agency.svg",
-    },
-    {
-      type: "Old Age Home",
-      subtype: "Senior Living Facility",
-      icon: "svg/Old Age Home.svg",
-    },
-    {
-      type: "Travel Agency",
-      subtype: "Trip Planning & Booking",
-      icon: "svg/Travel Agency.svg",
-    },
-    {
-      type: "Ticket Booking",
-      subtype: "Travel Ticket Provider",
-      icon: "svg/Ticket Booking.svg",
-    },
-    {
-      type: "Accounting Services",
-      subtype: "Financial Record Management",
-      icon: "svg/Accounting Services.svg",
-    },
-    {
-      type: "Financial Planners",
-      subtype: "Wealth Management Advice",
-      icon: "svg/Financial Planners.svg",
-    },
-    {
-      type: "Beauty Parlour",
-      subtype: "Cosmetic Beauty Services",
-      icon: "svg/Beauty Parlour.svg",
-    },
-    {
-      type: "Nail Salon",
-      subtype: "Manicure/Pedicure Services",
-      icon: "svg/Nail Saloon.svg",
-    },
-    {
-      type: "Barber Studio/Shop",
-      subtype: "Men's Hair Grooming",
-      icon: "svg/Barber.svg",
-    },
-    {
-      type: "Hair Stylist",
-      subtype: "Professional Hair Care",
-      icon: "svg/Hair Stylist.svg",
-    },
-    {
-      type: "Bakery",
-      subtype: "Baked Goods Producer",
-      icon: "svg/Bakery.svg",
-    },
-    {
-      type: "Dry Cleaners",
-      subtype: "Garment Cleaning & Care",
-      icon: "svg/Dry Cleaner.svg",
-    },
-    {
-      type: "Cleaning and Janitorial Services",
-      subtype: "Professional Cleaning Solutions",
-      icon: "svg/Cleaning Janitorial Service.svg",
-    },
-    {
-      type: "Tour Guides",
-      subtype: "Local Experience Experts",
-      icon: "svg/Tour-Guides.svg",
-    },
-    {
-      type: "Deli Shop",
-      subtype: "Fresh Meats & Gourmet Foods",
-      icon: "svg/Deli shop.svg"
-    },
-    {
-      type: "Marketing Agency",
-      subtype: "Your Journey Begins Here",
-      icon: "svg/Marketing Agency.svg",
-    },
-        {
-      type: "Digital Marketing Agency",
-      subtype: "Grow Your Brand Online",
-      icon: "svg/Digital-marketing-Agency.svg",
-    },
-    {
-      type: "Car Repair & Garage",
-      subtype: "Quality Repairs, Every Time",
-      icon: "svg/Car Repair & Garage.svg",
-    },
-    {
-      type: "Boat Repair",
-      subtype: "Marine Care & Repair Experts",
-      icon: "svg/Boat Repair & Maintenance.svg"
-
-    },
-    {
-      type: "Car & Bus Services",
-      subtype: "Quality Repairs, Every Time",
-      icon: "svg/Car & Bus Services.svg",
-
-    },
-    {
-      type: "Taxi, Cab & Limo Booking",
-      subtype: "Reliable Rides, Anytime, Anywhere",
-      icon: "svg/Taxi.svg",
-
-    },
-    {
-      type: "Movers and Packers",
-      subtype: "Safe & Hassle-Free Relocation Services",
-      icon: "svg/Movers and Packers.svg",
-
-    },
-    {
-      type: "Trucking Company",
-      subtype: "Efficient Freight & Logistics Solutions",
-      icon: "svg/Trucking Company.svg",
-    },
-    {
-      type: "Spa & Wellness Center",
-      subtype: "Relaxation & Health Services",
-      icon: "svg/Hair Stylist.svg",
-    },
-     {
-      type: "Print Shop",
-      subtype: "Your Printing Solutions Partner",
-      icon: "svg/Hair Stylist.svg",
-    },
-     {
-      type: " School",
-      subtype: "Education for a Brighter Future",
-      icon: "svg/Hair Stylist.svg",
-    },
-     {
-      type: "Colleges & Universities",
-      subtype: "Higher Learning Institution",
-      icon: "svg/Hair Stylist.svg",
-    },
-     {
-      type: "Training Center",
-      subtype: "Skill Development Hub",
-      icon: "svg/Hair Stylist.svg",
-    },
-     {
-      type: "Educational Institute",
-      subtype: "Knowledge Empowerment Center",
-      icon: "svg/Hair Stylist.svg",
-    }
-,
-
-    {
-      type: "Other",
-      subtype: "More Ideas, More Impact",
-      icon: "svg/Web-Design-Agency-icon.svg",
-    }
-  ];
-
-  const filteredBusinessTypes = businessTypes.filter((item) =>
-    item.type.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  const btnImgRef = useRef(null);
-
-
+    return results;
+  };
   useEffect(() => {
     try {
       const stored = sessionStorage.getItem("businessDetails");
-      // console.log(stored)
+
       if (stored && stored !== "undefined" && stored !== "null") {
         const businessDetails = JSON.parse(stored);
-        setInitialDetails(businessDetails);  // 👈 first time original save
-
-        // console.log(businessDetails)
+        
+        setInitialDetails(businessDetails);
         if (businessDetails) {
           setBusinessType(businessDetails?.businessType || "");
           setprevBuisnessType(businessDetails?.businessType || "");
@@ -364,15 +176,20 @@ const EditBusinessType = () => {
     };
     sessionStorage.setItem("businessDetails", JSON.stringify(updated));
   };
-  const handleBusinessTypeChange = (e) => {
+  const handleBusinessTypeChange = (item) => {
     // console.log(e.target.value)
-    setBusinessType(e.target.value);
-    if (e.target.value !== "Other") {
+    setSubType(item.subType);
+    setBusinessType(item.businessType);
+
+
+    if (item.businessType !== "Other") {
       setcustomBuisness(""); // Clear textbox if not "Other"
-      updateSessionBusinessDetails("businessType", e.target.value);
+      updateSessionBusinessDetails("businessType", item.businessType);
       sessionStorage.removeItem("showInput");
     }
-    updateSessionBusinessDetails("businessType", e.target.value);
+    updateSessionBusinessDetails("businessType", item.businessType);
+    updateSessionBusinessDetails("subType", item.subType);
+
     // console.log("businessTypeSubmitted", businessTypeSubmitted);
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
@@ -382,7 +199,6 @@ const EditBusinessType = () => {
   };
 
   const handlesave = () => {
-
     // Validate all fields
     let hasError = false;
 
@@ -440,6 +256,7 @@ const EditBusinessType = () => {
         userId,
         businessType,
         businessSize,
+        subType
       };
 
       // navigate("/business-services");
@@ -460,24 +277,26 @@ const EditBusinessType = () => {
 
   };
   useEffect(() => {
-  try {
-    if (initialDetails) {
-  
-      // console.log(initialDetails,businessType)
-      const isTypeChanged = initialDetails?.businessType !== businessType;
-      const isCustomChanged = (initialDetails?.customBuisness || "") !== customBuisness;
+    try {
+      if (initialDetails) {
+        const isTypeChanged = initialDetails?.businessType !== businessType;
+        const isSubTypeChanged = initialDetails?.subType !== subType;
 
-      setIsChanged(isTypeChanged, isCustomChanged);
-    } else {
-      // Agar koi stored details hi nahi h toh by default changed maana
+        const isCustomChanged = (initialDetails?.customBuisness || "") !== customBuisness;
+        // setIsChanged(isTypeChanged, isSubTypeChanged, isCustomChanged);
+        setIsChanged(isTypeChanged || isSubTypeChanged || isCustomChanged);
+
+      } else {
+        setIsChanged(true);
+      }
+    } catch (err) {
+      console.error("Failed to parse businessDetails from sessionStorage:", err);
       setIsChanged(true);
     }
-  } catch (err) {
-    console.error("Failed to parse businessDetails from sessionStorage:", err);
-    setIsChanged(true);
-  }
-}, [businessType, customBuisness,initialDetails]);
-  // console.log('setBusinessType',businessType,customBuisness)
+  }, [businessType, customBuisness, initialDetails, subType]);
+  useEffect(() => {
+    setSubType(subType1)
+  }, [])
   return (
     <>
       <EditHeader title='Edit Agent ' agentName={agentnm} />
@@ -505,7 +324,7 @@ const EditBusinessType = () => {
 
           <div className={styles.ListDiv}>
             <div className={styles.optionList}>
-              {filteredBusinessTypes.length > 0 ? (
+              {/* {filteredBusinessTypes.length > 0 ? (
                 // filteredBusinessTypes
                 [...filteredBusinessTypes]
                   .sort((a, b) => a.type.localeCompare(b.type))
@@ -535,6 +354,37 @@ const EditBusinessType = () => {
                   ))
               ) : (
                 <div className={styles.noResult}>No results found</div>
+              )} */}
+              {filteredBusinessTypes(searchTerm).length > 0 ? (
+                filteredBusinessTypes(searchTerm).map((item, index) => (
+                  <label className={styles.option} key={index}>
+                    <div className={styles.forflex}>
+                      <div className={styles.icon}>
+                        <img
+                          src={item.icon}
+                          alt={`${item.type} icon`}
+                          className={styles.iconImg}
+                        />
+                      </div>
+                      <div className={styles.strongDiv}>
+                        <strong>{item.subType}</strong>
+                        <p className={styles.subType}>{item.businessType}</p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <input
+                        type="radio"
+                        name="businessType"
+                        value={item.subType}
+                        checked={subType === item.subType}
+                        onChange={() => handleBusinessTypeChange(item)}
+                      />
+                    </div>
+                  </label>
+                ))
+              ) : (
+                <p className={styles.noItemFound}>Lets Find Your Business</p>
               )}
 
             </div>
@@ -592,19 +442,19 @@ const EditBusinessType = () => {
 
 
           </div> */}
-          <div className={styles.stickyWrapper} 
-          // onClick={handlesave}
-             style={{
-            position: "sticky",
-            bottom: 0,
-            backgroundColor: "white",
-            padding: "8px",
-            opacity: isChanged ? 1 : 0.5,
-            cursor: isChanged ? "pointer" : "not-allowed"
-          }}
-          onClick={isChanged ? handlesave : undefined}
-           >
-            <AnimatedButton label="Save" isLoading={Loading} position={{ position: 'relative' }} disabled={!isChanged}/>
+          <div className={styles.stickyWrapper}
+            // onClick={handlesave}
+            style={{
+              position: "sticky",
+              bottom: 0,
+              backgroundColor: "white",
+              padding: "8px",
+              opacity: isChanged ? 1 : 0.5,
+              cursor: isChanged ? "pointer" : "not-allowed"
+            }}
+            onClick={isChanged ? handlesave : undefined}
+          >
+            <AnimatedButton label="Save" isLoading={Loading} position={{ position: 'relative' }} disabled={!isChanged} />
           </div>
         </div>
         {showPopup && (

@@ -129,7 +129,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
             const countryCurrencyMap = {
 
 
-                IN: "inr",
+                // IN: "inr",
 
                 US: "usd",
                 CA: "cad",

@@ -404,7 +404,7 @@ const EditProfile = () => {
   const PaygSubscriptionId = subscriptionDetails.invoices
     ?.filter(invoice => {
       // if (invoice.plan_name !== "Extra Minutes" || invoice.status === "canceled") {
-      if (invoice.plan_name !== "PAYG Extra" || invoice.status === "canceled") {
+        if (invoice.plan_name !== "PAYG Extra" || invoice.status === "canceled") {
         return false;
       }
 
@@ -429,13 +429,23 @@ const EditProfile = () => {
 
 
   const handlePaygToggle = async () => {
-    if (subscriptionDetails.invoices.length === 0) {
+
+    const hasByAdminAgent =
+      Array.isArray(subscriptionDetails?.agents) &&
+      subscriptionDetails.agents.some(a => a?.subscriptionId === "byAdmin");
+
+
+    if (hasByAdminAgent) {
+      // return
+    } else if (subscriptionDetails.invoices.length === 0) {
       setRedirectButton(true)
       setShowPopup(true);
       setPopupType("failed");
       setPopupMessage("To enable Pay As You Go, please ensure you have an active subscription.");
       return
     }
+
+
 
 
     const isCurrentlyEnabled = paygEnabled;
@@ -502,7 +512,7 @@ const EditProfile = () => {
       const currentUrl = window.location.origin
       const requestData = {
         customerId: customerId,
-        // priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38", // EXTRA MINUTES
+        // priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38", // Extra Minutes
         priceId: "price_1RvBOrSCQQfKS3WDNZNTpIHS", // PAYG Extra
         promotionCode: "",
         userId: userId1,
@@ -1178,7 +1188,7 @@ const EditProfile = () => {
               <div className={styles.RefferalMain}>
               </div>
               <br></br>
-                {/* <div className={styles.RefferalMain}>
+              {/* <div className={styles.RefferalMain}>
                  <Refferal
                   referralCode={referralCode}
                   setShowDashboardReferral={setShowDashboardReferral}

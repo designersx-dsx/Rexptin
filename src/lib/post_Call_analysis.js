@@ -45,8 +45,6 @@ export  function getBusinessSpecificFields(businessType) {
 
     return [];
 }
-
-
 export  function appointmentBooking(businessType) {
     if (businessType === "Restaurant") {
         return [];
