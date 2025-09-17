@@ -403,8 +403,8 @@ const EditProfile = () => {
 
   const PaygSubscriptionId = subscriptionDetails.invoices
     ?.filter(invoice => {
-      if (invoice.plan_name !== "Extra Minutes" || invoice.status === "canceled") {
-        // if (invoice.plan_name !== "PAYG Extra" || invoice.status === "canceled") {
+      // if (invoice.plan_name !== "Extra Minutes" || invoice.status === "canceled") {
+        if (invoice.plan_name !== "PAYG Extra" || invoice.status === "canceled") {
         return false;
       }
 
@@ -512,8 +512,8 @@ const EditProfile = () => {
       const currentUrl = window.location.origin
       const requestData = {
         customerId: customerId,
-        priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38", // Extra Minutes
-        // priceId: "price_1RvBOrSCQQfKS3WDNZNTpIHS", // PAYG Extra
+        // priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38", // Extra Minutes
+        priceId: "price_1RvBOrSCQQfKS3WDNZNTpIHS", // PAYG Extra
         promotionCode: "",
         userId: userId1,
         // agentId: agentID,
