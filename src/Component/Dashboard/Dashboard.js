@@ -2936,6 +2936,7 @@ sessionStorage.removeItem("isUser")
                             const subscriptionStart =
                               agent?.subscription?.current_period_start;
                             const planName = agent?.agentPlan?.toLowerCase();
+                            // console.log("agent",agent)
                             const isFreePlan = planName === "free";
                             const subscriptionAgeInDays = subscriptionStart
                               ? dayjs().diff(dayjs(subscriptionStart), "day")
@@ -3003,11 +3004,10 @@ sessionStorage.removeItem("isUser")
                             )}
                           {(
 
-                            (agent?.subscription
-                            //  ||
-                            &&
+                            (agent?.subscription &&
                               agent?.subscription?.plan_name?.toLowerCase() !== "free") ||
-                            (assignNumberPaid && agent?.isDeactivated === 0) 
+                            (assignNumberPaid && agent?.isDeactivated === 0) ||
+                            agent?.agentPlan === "Pay-As-You-Go" 
 
                           ) && (
                           <>
