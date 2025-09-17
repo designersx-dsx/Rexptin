@@ -161,11 +161,13 @@ const MySubscription = ({ agents }) => {
                         <div className={styles.row2}>
                             <span className={styles.label}>Plan Activated</span>
                             <span className={styles.plan}>
-                                {isPaygPlan
-                                    ? "Pay-As-You-Go"
-                                    : isDeferredPlan
-                                        ? "Deferred"
-                                        : agent?.latestSubscription?.plan_name || "Free"}
+                                {isFreePlan
+                                    ? "Free"
+                                    : isPaygPlan
+                                        ? "Pay-As-You-Go"
+                                        : isDeferredPlan
+                                            ? "Deferred"
+                                            : agent?.latestSubscription?.plan_name || "Free"}
                             </span>
                         </div>
                         <div className={styles.row2}>
