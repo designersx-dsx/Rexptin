@@ -6,7 +6,7 @@ import axios from 'axios'
 const MySubscription = ({ agents }) => {
 
     const [agentPaygDetails, setagentPaygDetails] = useState()
-    console.log("agentPaygDetails", agentPaygDetails)
+    // console.log("agentPaygDetails", agentPaygDetails)
     useEffect(() => {
         const getPaygDetails = async (agentId) => {
             try {
@@ -93,7 +93,7 @@ const MySubscription = ({ agents }) => {
     }
 
 
-    console.log("agents", agents)
+    // console.log("agents", agents)
 
 
 
