@@ -13,6 +13,7 @@ import FreeTrialModal from '../FreeTrialModal/FreeTrialModal';
 import decodeToken from "../../lib/decodeToken";
 import PopUp from '../Popup/Popup';
 
+
 import axios from 'axios'
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
@@ -73,6 +74,15 @@ const Planss = () => {
     }, [])
 
 
+
+    const CustomhandleClick = () => {
+        navigate("/own-custom-plan" , {
+            state : {
+                locationPath :locationPath , 
+                agentID : agentID
+            }
+        });
+    };
 
     const handleClick = () => {
         setFreeTrial(!freeTrial);
@@ -398,6 +408,8 @@ const Planss = () => {
 
     const [paygEnabled, setPaygEnabled] = useState(localStorage.getItem("isPayg") || false);
 
+
+
     // Handle the Payg enable/disable toggle change
     const handlePaygToggle = async () => {
 
@@ -622,7 +634,8 @@ const Planss = () => {
                 maxUnits: 200,
                 successUrl: window.location.origin + `/thankyou/update?agentId=${agentID}&userId=${decodeTokenData?.id}`, // origin + path
                 cancelUrl: window.location.origin + "/cancel",
-                userId: decodeTokenData?.id
+                userId: decodeTokenData?.id ,
+               
             });
 
             if (res?.data?.url) {
@@ -762,7 +775,7 @@ const Planss = () => {
                         )}
                     </span>
                 </label> : null}
-                {/* {!hasCustomPlan  ?
+                 {/* {!hasCustomPlan  ? 
  <label className={styles.freeTrialBtn} onChange={handleClick2}>
                     Custom Plan
                     <input
@@ -771,7 +784,7 @@ const Planss = () => {
                         onChange={() => setFreeTrialz(!freeTrailz)}
                     />
                     </label>
-: null} */}
+: null}  */}
 
 
 
@@ -796,10 +809,17 @@ const Planss = () => {
 
 
             </div>
-            <div className={styles.sectionPart}>
+            {!hasCustomPlan ? 
+               <div className={styles.sectionPart}>
+                <div className={styles.cutomPlan} onClick={CustomhandleClick}>
+                    <div><img src='svg/edit-custom-plan.svg' alt='edit-custom-plan' /></div>
+                    <p>Custom Plan</p>
+                </div>
                 <h2>Subscriptions Plans </h2>
                 <p>Choose a suitable plan for your agent & business case</p>
             </div>
+            : null}
+         
             <div className={styles.wrapper}>
                 <Slider ref={sliderRef} {...settings}>
                     {products.map((plan, index) => {
@@ -1237,7 +1257,9 @@ const Planss = () => {
 
 
 
+
             {/* <FreeTrialModal isOpen={modalOpenz} onClose={() => setIsModalOpenz(false)}>
+
                 <div className={styles.freeTrialMain}>
                     <div className={styles.Topsection}>
                         <h1>FREE TRIAL</h1>
@@ -1300,7 +1322,9 @@ const Planss = () => {
 
                 </div>
 
+
             </FreeTrialModal> */}
+
 
         </div>
     );

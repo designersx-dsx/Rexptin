@@ -3,6 +3,7 @@ import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from './SubscriptionPlan.module.css';
+import styless from '../Plan/Plan.module.css';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
 import FreeTrialModal from '../FreeTrialModal/FreeTrialModal';
 import HeaderBar from "../HeaderBar/HeaderBar";
@@ -285,6 +286,9 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
     }, [userCurrency]);
 
+    const CustomhandleClick = () => {
+        navigate("/own-plan");
+    };
     const fetchAgentCountFromUser = async () => {
         try {
 
@@ -415,7 +419,10 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 maxUnits: 200,
                 successUrl: url, // origin + path
                 cancelUrl: window.location.origin + "/cancel",
-                userId: userId
+
+                userId: userId , 
+                priceId: "price_1RypKj4T6s9Z2zBzesn9ijNz"
+
             });
 
             if (res?.data?.url) {
@@ -502,6 +509,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     </span>
                 </label>
                     : null}
+
                 {/* {!hasCustomPlan ? 
 
  <label className={styles.freeTrialBtn} onClick={handleClickCustom}>
@@ -530,6 +538,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 </label>
 : null} */}
 
+
             </div>
 
 
@@ -543,6 +552,19 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     <h2>Subscriptions Plans </h2>
                     <p>Choose a suitable plan for your agent & business case</p>
                 </div>
+
+                {!hasCustomPlan ?
+                  <div className={styless.sectionPart}>
+                                <div className={styless.cutomPlan} onClick={CustomhandleClick}>
+                                    <div><img src='svg/edit-custom-plan.svg' alt='edit-custom-plan' /></div>
+                                    <p>Custom Plan</p>
+                                </div>
+                                <h2>Subscriptions Plans </h2>
+                                <p>Choose a suitable plan for your agent & business case</p>
+                            </div>
+                : null}
+
+                   
                 <div className={styles.wrapper}>
                     <Slider ref={sliderRef} {...settings}>
                         {products.map((plan, index) => {
