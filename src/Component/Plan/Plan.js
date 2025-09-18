@@ -617,7 +617,7 @@ const Planss = () => {
 
     const checkCustom = async () => {
         let res = await customPlanCheck(decodeTokenData?.id)
-        // console.log(res?.data?.hasCustomPlan)
+        console.log(res?.data?.hasCustomPlan , "data")
         setHasCustomPlan(res?.data?.hasCustomPlan)
     }
     useEffect(() => {
@@ -809,14 +809,17 @@ const Planss = () => {
 
 
             </div>
+             <div className={styles.sectionPart}>
+                    <h2>Subscriptions Plans </h2>
+                    <p>Choose a suitable plan for your agent & business case</p>
+                </div>
             {!hasCustomPlan ? 
                <div className={styles.sectionPart}>
                 <div className={styles.cutomPlan} onClick={CustomhandleClick}>
                     <div><img src='svg/edit-custom-plan.svg' alt='edit-custom-plan' /></div>
                     <p>Custom Plan</p>
                 </div>
-                <h2>Subscriptions Plans </h2>
-                <p>Choose a suitable plan for your agent & business case</p>
+               
             </div>
             : null}
          
