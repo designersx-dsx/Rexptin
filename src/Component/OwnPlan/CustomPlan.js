@@ -4,12 +4,27 @@ import HeaderBar from "../HeaderBar/HeaderBar";
 import styles from "../OwnPlan/OwnPlan.module.css";
 import decodeToken from "../../lib/decodeToken";
 import { useNavigate, useLocation } from "react-router-dom";
-import AnimatedButton from '../AnimatedButton/AnimatedButton';
+import AnimatedButton from "../AnimatedButton/AnimatedButton";
 
 const CustomPlan = () => {
   const [billingType, setBillingType] = useState("monthly");
-  const steps = [50, 100, 200, 300, 500, 750, 1000];
-  const [value, setValue] = useState(300);
+
+  // 🔹 0–1000 with gap of 25
+ const steps = Array.from({ length: 40 }, (_, i) => (i + 1) * 25);
+  const [index, setIndex] = useState(0);
+
+  const value = steps[index];
+
+  const handleChange = (e) => {
+    setIndex(Number(e.target.value));
+  };
+
+  // Update filled track
+  useEffect(() => {
+    const percent = (index / (steps.length - 1)) * 100;
+    document.documentElement.style.setProperty("--range-percent", `${percent}%`);
+  }, [index, steps]);
+
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
   const token = localStorage.getItem("token") || "";
@@ -20,37 +35,11 @@ const CustomPlan = () => {
   let agentID = location?.state?.agentID;
   let locationPath = location?.state?.locationPath;
 
-  const handleChange = (e) => {
-    setValue(Number(e.target.value));
-  };
-
-  // Update CSS variable for smooth filled track
-  useEffect(() => {
-    const percent = ((value - 50) / (1000 - 50)) * 100;
-    document.documentElement.style.setProperty(
-      "--range-percent",
-      `${percent}%`
-    );
-  }, [value]);
-
   const userId = decodeTokenData?.id || "";
 
-  // 🔹 Pricing Logic based on Tiers
+  // 🔹 Pricing Logic (example only)
   const calculatePrice = (qty) => {
-    let unitPrice = 0;
-
-    if (qty >= 1 && qty <= 50) {
-      unitPrice = 0.41;
-    } else if (qty >= 51 && qty <= 100) {
-      unitPrice = 0.38;
-    } else if (qty >= 101 && qty <= 150) {
-      unitPrice = 0.36;
-    } else if (qty >= 151 && qty <= 200) {
-      unitPrice = 0.35;
-    } else if (qty >= 201) {
-      unitPrice = 0.35;
-    }
-
+    let unitPrice = 0.4;
     return (qty * unitPrice).toFixed(2);
   };
 
@@ -69,8 +58,8 @@ const CustomPlan = () => {
       const res = await axios.post(`${API_BASE}/tier/checkout`, {
         customerId: decodeTokenData?.customerId,
         presetUnits: value,
-        minUnits: 0,
-        maxUnits: 200,
+        minUnits: steps[0],
+        maxUnits: steps[steps.length - 1],
         successUrl:
           window.location.origin +
           `/thankyou/update?agentId=${agentID}&userId=${decodeTokenData?.id}`,
@@ -94,27 +83,10 @@ const CustomPlan = () => {
         <HeaderBar title="Build your own plan" />
         <div className={styles.pricingBox}>
           <div className={styles.toggleTabs}>
-            {/* <div
-            className={`${styles.activeIndicator} ${
-              billingType === "yearly" ? styles.left : styles.right
-            }`}
-          />
-
-          <div
-            className={`${styles.tab} ${
-              billingType === "yearly" ? styles.active : ""
-            }`}
-            onClick={() => setBillingType("yearly")}
-          >
-            <p className={styles.label}>Yearly</p>
-            <h3 className={styles.price}>$30.00</h3>
-            <p className={styles.subText}>/month per agent</p>
-            <span className={styles.saveTag}>Save up to 20% yearly</span>
-          </div> */}
-
             <div
-              className={`${styles.tab} ${billingType === "monthly" ? styles.active : ""
-                }`}
+              className={`${styles.tab} ${
+                billingType === "monthly" ? styles.active : ""
+              }`}
               onClick={() => setBillingType("monthly")}
             >
               <p className={styles.label}>Monthly</p>
@@ -124,16 +96,18 @@ const CustomPlan = () => {
           </div>
 
           <div className={styles.sliderBox}>
-            <p className={styles.label2}>Select the range that fits your plan.</p>
-            <p className={styles.popular}>- Most Popular</p>
+            <p className={styles.label2}>
+              Choose the attendee limit for your plan
+            </p>
+            <p className={styles.popular}>Most Popular</p>
 
             <div className={styles.rangeWrapper}>
               <input
                 type="range"
-                min="50"
-                max="1000"
-                step="50"
-                value={value}
+                min={0}
+                max={steps.length - 1}
+                step={1}
+                value={index}
                 onChange={handleChange}
                 className={styles.range}
               />
@@ -141,17 +115,18 @@ const CustomPlan = () => {
               <div
                 className={styles.tooltip}
                 style={{
-                  left: `calc(${((value - 50) / (1000 - 50)) * 100}% )`,
+                  left: `calc(${(index / (steps.length - 1)) * 100}% )`,
                 }}
               >
                 {value}
               </div>
             </div>
 
+            {/* Labels under slider (optional) */}
             <div className={styles.labels}>
-              {steps.map((step) => (
+              {/* {steps.map((step, i) => (
                 <span key={step}>{step}</span>
-              ))}
+              ))} */}
             </div>
           </div>
 
@@ -196,8 +171,8 @@ const CustomPlan = () => {
             </div>
 
             {/* Checkout Button */}
-            {/* <button
-              className={styles.checkoutButton}
+            <div
+              className={styles.AnimationBtnDiv}
               onClick={() => {
                 if (locationPath === "/dashboard") {
                   tierCheckout();
@@ -211,22 +186,10 @@ const CustomPlan = () => {
                 }
               }}
             >
-
-            </button> */}
-            <div className={styles.AnimationBtnDiv}   onClick={() => {
-                if (locationPath === "/dashboard") {
-                  tierCheckout();
-                } else {
-                  navigate("/steps", {
-                    state: {
-                      plan: "tierPlan",
-                      value: value,
-                    },
-                  });
-                }
-              }}>
-              <AnimatedButton label="Subscirbe" position={{ position: "relative" }} />
-
+              <AnimatedButton
+                label="Subscribe"
+                position={{ position: "relative" }}
+              />
             </div>
           </div>
         </div>
