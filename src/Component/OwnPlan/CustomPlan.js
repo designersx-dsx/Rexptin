@@ -39,7 +39,18 @@ const CustomPlan = () => {
 
   // 🔹 Pricing Logic (example only)
   const calculatePrice = (qty) => {
-    let unitPrice = 0.4;
+    let unitPrice = 0;
+    if (qty >= 1 && qty <= 50) {
+      unitPrice = 0.41;
+    } else if (qty >= 51 && qty <= 100) {
+      unitPrice = 0.38;
+    } else if (qty >= 101 && qty <= 150) {
+      unitPrice = 0.36;
+    } else if (qty >= 151 && qty <= 200) {
+      unitPrice = 0.35;
+    } else if (qty >= 201) {
+      unitPrice = 0.35;
+    }
     return (qty * unitPrice).toFixed(2);
   };
 

@@ -59,7 +59,7 @@ const OwnPlan = () => {
         minUnits: 0,
         maxUnits: 200,
         successUrl: url,
-        cancelUrl: `${origin}/cancel`,
+        cancelUrl: `${origin}/cancel-payment`,
         userId: userId,
         priceId: "price_1RypKj4T6s9Z2zBzesn9ijNz",
       });
