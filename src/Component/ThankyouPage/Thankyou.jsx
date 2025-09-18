@@ -69,6 +69,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
   const isAdmin = ((searchParams.get("isAdmin") || "").toLowerCase() === "true");
 
+
   const deactivateAgentSubs = async (agentId) => {
     if (!agentId) return { ok: false, error: "agentId missing" };
 
@@ -88,6 +89,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
       return { ok: false, error: "Network error" };
     }
   };
+
   // add this function
   const adminHandleClick = async () => {
     try {
@@ -136,6 +138,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
           // localStorage.setItem("subcriptionIdUrl", subcriptionId);
         }
 
+
         // 👇 Deactivate older subs with subscription_status = 9 for this agent
         if (agentId) {
           const deact = await deactivateAgentSubs(agentId);
@@ -143,6 +146,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
             console.warn("Could not deactivate old deffer subscription:", deact.error);
           }
         }
+
 
         navigate("/dashboard");
         return;
@@ -430,6 +434,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     const hasHandledThankYou = localStorage.getItem("hasHandledThankYou");
 
     localStorage.setItem("hasHandledThankYou", "true");
+    console.log("hasHandledThankYou",hasHandledThankYou)
 
     const shouldRunUpdateAgent = key === "update" && agentId && userId;
     const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
@@ -457,7 +462,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     };
 
     run();
-  }, [key, subscriptionId, agentId, userId, subsid]);
+  }, [key, subscriptionId, agentId, userId, subsid , isAdmin]);
+ 
   const formatCurrency = (amount, currency) => {
     const upperCurrency = currency?.toUpperCase() || "USD";
 
