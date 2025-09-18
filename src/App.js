@@ -76,6 +76,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import NotificationView from "./Component/Notifications/NotificationView";
 import OwnPlan from './Component/OwnPlan/OwnPlan'
+import CustomPlan from "./Component/OwnPlan/CustomPlan";
 // import Test from "./utils/Test";
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -488,6 +489,8 @@ useEffect(() => {
                 <Route path="/test-other" element={<Test />} />
 
                 <Route path="/own-plan" element={<OwnPlan />} />
+                <Route path="/own-custom-plan" element={<CustomPlan />} />
+
 
 
 

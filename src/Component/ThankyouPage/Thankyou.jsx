@@ -402,6 +402,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     const hasHandledThankYou = localStorage.getItem("hasHandledThankYou");
 
     localStorage.setItem("hasHandledThankYou", "true");
+    console.log("hasHandledThankYou",hasHandledThankYou)
 
     const shouldRunUpdateAgent = key === "update" && agentId && userId;
     const shouldRunWithStripeFlow = subscriptionId && agentId && userId;

@@ -3,16 +3,21 @@ import axios from "axios";
 import HeaderBar from "../HeaderBar/HeaderBar";
 import styles from "../OwnPlan/OwnPlan.module.css";
 import decodeToken from "../../lib/decodeToken";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const OwnPlan = () => {
+const CustomPlan = () => {
   const [billingType, setBillingType] = useState("monthly");
   const steps = [50, 100, 200, 300, 500, 750, 1000];
   const [value, setValue] = useState(300);
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
-  // Example: retrieve these from localStorage or context
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  let agentID = location?.state?.agentID;
+  let locationPath = location?.state?.locationPath;
 
   const handleChange = (e) => {
     setValue(Number(e.target.value));
@@ -65,7 +70,9 @@ const OwnPlan = () => {
         presetUnits: value,
         minUnits: 0,
         maxUnits: 200,
-        successUrl: url,
+        successUrl:
+          window.location.origin +
+          `/thankyou/update?agentId=${agentID}&userId=${decodeTokenData?.id}`,
         cancelUrl: `${origin}/cancel`,
         userId: userId,
         priceId: "price_1RypKj4T6s9Z2zBzesn9ijNz",
@@ -110,7 +117,7 @@ const OwnPlan = () => {
             onClick={() => setBillingType("monthly")}
           >
             <p className={styles.label}>Monthly</p>
-            <h3 className={styles.price}>${value}</h3>
+            <h3 className={styles.price}> ${value}</h3>
             <p className={styles.subText}>/month per agent</p>
           </div>
         </div>
@@ -188,7 +195,21 @@ const OwnPlan = () => {
           </div>
 
           {/* Checkout Button */}
-          <button className={styles.checkoutButton} onClick={tierCheckout}>
+          <button
+            className={styles.checkoutButton}
+            onClick={() => {
+              if (locationPath === "/dashboard") {
+                tierCheckout();
+              } else {
+                navigate("/steps", {
+                  state: {
+                    plan: "tierPlan",
+                    value: value,
+                  },
+                });
+              }
+            }}
+          >
             Proceed to Checkout
           </button>
         </div>
@@ -197,4 +218,4 @@ const OwnPlan = () => {
   );
 };
 
-export default OwnPlan;
+export default CustomPlan;

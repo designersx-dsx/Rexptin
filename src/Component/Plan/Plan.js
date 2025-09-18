@@ -76,7 +76,12 @@ const Planss = () => {
 
 
     const CustomhandleClick = () => {
-        navigate("/own-plan");
+        navigate("/own-custom-plan" , {
+            state : {
+                locationPath :locationPath , 
+                agentID : agentID
+            }
+        });
     };
 
     const handleClick = () => {
@@ -223,7 +228,7 @@ const Planss = () => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                IN: "inr",
+                // IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -629,7 +634,8 @@ const Planss = () => {
                 maxUnits: 200,
                 successUrl: window.location.origin + `/thankyou/update?agentId=${agentID}&userId=${decodeTokenData?.id}`, // origin + path
                 cancelUrl: window.location.origin + "/cancel",
-                userId: decodeTokenData?.id
+                userId: decodeTokenData?.id ,
+               
             });
 
             if (res?.data?.url) {
@@ -769,7 +775,7 @@ const Planss = () => {
                         )}
                     </span>
                 </label> : null}
-                {/* {!hasCustomPlan  ?
+                 {/* {!hasCustomPlan  ? 
  <label className={styles.freeTrialBtn} onChange={handleClick2}>
                     Custom Plan
                     <input
@@ -778,7 +784,7 @@ const Planss = () => {
                         onChange={() => setFreeTrialz(!freeTrailz)}
                     />
                     </label>
-: null} */}
+: null}  */}
 
 
 
@@ -803,7 +809,8 @@ const Planss = () => {
 
 
             </div>
-            <div className={styles.sectionPart}>
+            {!hasCustomPlan ? 
+               <div className={styles.sectionPart}>
                 <div className={styles.cutomPlan} onClick={CustomhandleClick}>
                     <div><img src='svg/edit-custom-plan.svg' alt='edit-custom-plan' /></div>
                     <p>Custom Plan</p>
@@ -811,6 +818,8 @@ const Planss = () => {
                 <h2>Subscriptions Plans </h2>
                 <p>Choose a suitable plan for your agent & business case</p>
             </div>
+            : null}
+         
             <div className={styles.wrapper}>
                 <Slider ref={sliderRef} {...settings}>
                     {products.map((plan, index) => {
@@ -1241,7 +1250,7 @@ const Planss = () => {
                 //   onConfirm={handleLogoutConfirm}
                 />
             )}
-            {/* 
+      
             <FreeTrialModal isOpen={modalOpenz} onClose={() => setIsModalOpenz(false)}>
                 <div className={styles.freeTrialMain}>
                     <div className={styles.Topsection}>
@@ -1305,8 +1314,7 @@ const Planss = () => {
 
                 </div>
 
-            </FreeTrialModal> */}
-
+            </FreeTrialModal> 
         </div>
     );
 };
