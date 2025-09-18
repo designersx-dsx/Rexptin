@@ -418,7 +418,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 minUnits: 0,
                 maxUnits: 200,
                 successUrl: url, // origin + path
-                cancelUrl: window.location.origin + "/cancel",
+                cancelUrl: window.location.origin + "/cancel-payment",
 
                 userId: userId , 
                 priceId: "price_1RypKj4T6s9Z2zBzesn9ijNz"
