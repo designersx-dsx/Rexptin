@@ -633,7 +633,7 @@ const Planss = () => {
                 minUnits: 0,
                 maxUnits: 200,
                 successUrl: window.location.origin + `/thankyou/update?agentId=${agentID}&userId=${decodeTokenData?.id}`, // origin + path
-                cancelUrl: window.location.origin + "/cancel",
+                cancelUrl: window.location.origin + "/cancel-payment",
                 userId: decodeTokenData?.id ,
                
             });

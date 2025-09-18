@@ -1304,7 +1304,7 @@ const Step = () => {
         successUrl:
           window.location.origin +
           `/steps?mode=create&userId=${decodeTokenData?.id}`, // origin + path
-        cancelUrl: window.location.origin + "/cancel",
+        cancelUrl: window.location.origin + "/cancel-payment",
         userId: decodeTokenData?.id,
       });
 
