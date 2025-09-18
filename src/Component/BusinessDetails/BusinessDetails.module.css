@@ -60,7 +60,7 @@
   flex-direction: column;
   gap: 15px;
   /* max-height: 200px; */
-  max-height: 25dvh;
+  max-height: 45dvh;
   overflow: auto;
   padding-right: 10px;
 }

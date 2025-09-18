@@ -419,8 +419,10 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 maxUnits: 200,
                 successUrl: url, // origin + path
                 cancelUrl: window.location.origin + "/cancel",
+
                 userId: userId , 
                 priceId: "price_1RypKj4T6s9Z2zBzesn9ijNz"
+
             });
 
             if (res?.data?.url) {
@@ -507,33 +509,35 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     </span>
                 </label>
                     : null}
-                 {/* {!hasCustomPlan ? 
 
-  <label className={styles.freeTrialBtn} onClick={handleClickCustom}>
-                     Custom Plan
-                     <inputcustomPlan
-                         type="checkbox"
-                         checked={customPlan}
-                         onChange={() => setCustomPlan(!customPlan)}
-                     />
-                     <span className={`${styles.checkCircle} ${customPlan ? styles.checked : ""}`}>
-                         {customPlan && (
-                             <svg
-                                 className={styles.checkIcon}
-                                 xmlns="http://www.w3.org/2000/svg"
-                                 viewBox="0 0 24 24"
-                                 width="16"
-                                 height="16"
-                             >
-                                 <path
-                                     fill="white"
-                                     d="M20.3 5.7a1 1 0 0 0-1.4 0L9 15.6l-3.9-3.9a1 1 0 0 0-1.4 1.4l4.6 4.6a1 1 0 0 0 1.4 0l10.6-10.6a1 1 0 0 0 0-1.4z"
-                                 />
-                             </svg>
-                         )}
-                     </span>
-                 </label>
- : null}  */}
+                {/* {!hasCustomPlan ? 
+
+ <label className={styles.freeTrialBtn} onClick={handleClickCustom}>
+                    Custom Plan
+                    <inputcustomPlan
+                        type="checkbox"
+                        checked={customPlan}
+                        onChange={() => setCustomPlan(!customPlan)}
+                    />
+                    <span className={`${styles.checkCircle} ${customPlan ? styles.checked : ""}`}>
+                        {customPlan && (
+                            <svg
+                                className={styles.checkIcon}
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                width="16"
+                                height="16"
+                            >
+                                <path
+                                    fill="white"
+                                    d="M20.3 5.7a1 1 0 0 0-1.4 0L9 15.6l-3.9-3.9a1 1 0 0 0-1.4 1.4l4.6 4.6a1 1 0 0 0 1.4 0l10.6-10.6a1 1 0 0 0 0-1.4z"
+                                />
+                            </svg>
+                        )}
+                    </span>
+                </label>
+: null} */}
+
 
             </div>
 

@@ -68,6 +68,28 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
 
   const isAdmin = ((searchParams.get("isAdmin") || "").toLowerCase() === "true");
+
+
+  const deactivateAgentSubs = async (agentId) => {
+    if (!agentId) return { ok: false, error: "agentId missing" };
+
+    try {
+
+      const resp = await fetch(`${API_BASE_URL}/admin-inactive-deffer-payments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ agentId: agentId }),
+      });
+
+      const json = await resp.json();
+      if (!resp.ok) return { ok: false, error: json?.error || "Failed to deactivate" };
+      return { ok: true, data: json };
+    } catch (e) {
+      console.error("deactivateAgentSubs error:", e);
+      return { ok: false, error: "Network error" };
+    }
+  };
+
   // add this function
   const adminHandleClick = async () => {
     try {
@@ -115,6 +137,16 @@ function Thankyou({ onSubmit, isAgentCreated }) {
           localStorage.setItem("paymentDone", true);
           // localStorage.setItem("subcriptionIdUrl", subcriptionId);
         }
+
+
+        // 👇 Deactivate older subs with subscription_status = 9 for this agent
+        if (agentId) {
+          const deact = await deactivateAgentSubs(agentId);
+          if (!deact.ok) {
+            console.warn("Could not deactivate old deffer subscription:", deact.error);
+          }
+        }
+
 
         navigate("/dashboard");
         return;

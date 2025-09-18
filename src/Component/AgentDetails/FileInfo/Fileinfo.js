@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import HeaderBar from "../../HeaderBar/HeaderBar";
@@ -22,11 +22,56 @@ const Fileinfo = () => {
   const [knowledgeBaseSources, setKnowledgeBaseSources] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [loading, setLoading] = useState(true)
-  const [submitLoading, submitSetLoading] = useState(false)
-  const [cancelButtonHeading, setCancelButtonHeading] = useState(false)
+  const [loading, setLoading] = useState(true);
+  const [submitLoading, submitSetLoading] = useState(false);
+  const [cancelButtonHeading, setCancelButtonHeading] = useState(false);
   const [inlineError, setInlineError] = useState("");
   const [isModalDisabled, setIsModalDisabled] = useState(false);
+
+  // ---- Stable code helpers ----
+  const CODE_LS_PREFIX = "kb_stable_code_";
+
+  // Short code banane ka simple helper (KBID/Agent se)
+  const makeShortCode = (knowledgeBaseId, agentId) => {
+    // Prefer KB ID last 8 chars, warna Agent ID last 6, warna random.
+    const fromKb = knowledgeBaseId ? String(knowledgeBaseId).slice(-8) : null;
+    const fromAgent = agentId ? String(agentId).slice(-6) : null;
+    const base = (
+      fromKb ||
+      fromAgent ||
+      Math.random().toString(36).slice(2, 10)
+    ).toUpperCase();
+    return `KB-${base}`;
+  };
+
+  const getOrCreateStableCode = (knowledgeBaseId, agentId) => {
+    const key = `${CODE_LS_PREFIX}${agentId || "unknown"}`;
+    let code = localStorage.getItem(key);
+    if (!code) {
+      code = makeShortCode(knowledgeBaseId, agentId);
+      localStorage.setItem(key, code);
+    }
+    return code;
+  };
+
+  const renameWithCode = (file, code) => {
+    if (!file || !code) return file;
+    if (file.name.includes(`__${code}`)) return file;
+
+    const dot = file.name.lastIndexOf(".");
+    const base = dot >= 0 ? file.name.slice(0, dot) : file.name;
+    const ext = dot >= 0 ? file.name.slice(dot) : "";
+
+    return new File([file], `${base}__${code}${ext}`, {
+      type: file.type,
+      lastModified: file.lastModified,
+    });
+  };
+
+  const stableCode = useMemo(
+    () => getOrCreateStableCode(knowledgeBaseId, agent_id),
+    [knowledgeBaseId, agent_id]
+  );
 
   const [popup, setPopup] = useState({
     show: false,
@@ -40,7 +85,7 @@ const Fileinfo = () => {
 
   const fetchKnowledgeBaseDetails = async () => {
     if (!knowledgeBaseId) return;
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await axios.get(
         `https://api.retellai.com/get-knowledge-base/${knowledgeBaseId}`,
@@ -51,14 +96,13 @@ const Fileinfo = () => {
         }
       );
       setKnowledgeBaseSources(response.data.knowledge_base_sources || []);
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       console.error("Failed to fetch knowledge base details:", error);
-      setLoading(false)
+      setLoading(false);
     }
   };
   const startPollingStatus = (kbId) => {
-
     setLoading(true); // show loader while checking
     const intervalId = setInterval(async () => {
       try {
@@ -73,8 +117,7 @@ const Fileinfo = () => {
         if (response.data?.status === "complete") {
           clearInterval(intervalId); // stop polling
           setLoading(false);
-          fetchKnowledgeBaseDetails()
-
+          fetchKnowledgeBaseDetails();
         }
       } catch (error) {
         console.error("Error while polling KB status:", error);
@@ -97,7 +140,7 @@ const Fileinfo = () => {
       if (file.size / (1024 * 1024) > MAX_FILE_SIZE_MB) {
         oversizedFiles.push(file.name);
       } else {
-        validFiles.push(file);
+        validFiles.push(renameWithCode(file, stableCode));
       }
     });
 
@@ -149,8 +192,8 @@ const Fileinfo = () => {
     try {
       setIsModalDisabled(true); // disable modal
 
-      setCancelButtonHeading(true)
-      submitSetLoading(true)
+      setCancelButtonHeading(true);
+      submitSetLoading(true);
       // Step 1: Upload files to the server
       const uploadResponse = await uploadAgentFiles(agent_id, selectedFiles);
 
@@ -256,10 +299,9 @@ const Fileinfo = () => {
         startPollingStatus(knowledgeBaseId);
         setTimeout(() => {
           setPopup({
-            show: false
+            show: false,
           });
         }, 2000);
-
       } else {
         console.error("Upload failed with status:", retellResponse.status);
         setPopup({
@@ -269,10 +311,10 @@ const Fileinfo = () => {
           onConfirm: null,
         });
       }
-      submitSetLoading(false)
+      submitSetLoading(false);
     } catch (error) {
-      submitSetLoading(false)
-      setCancelButtonHeading(false)
+      submitSetLoading(false);
+      setCancelButtonHeading(false);
       console.error("Error during upload:", error);
       setPopup({
         show: true,
@@ -281,13 +323,12 @@ const Fileinfo = () => {
         onConfirm: null,
       });
     } finally {
-      setCancelButtonHeading(false)
-      setIsModalDisabled(false)
-      submitSetLoading(false)
+      setCancelButtonHeading(false);
+      setIsModalDisabled(false);
+      submitSetLoading(false);
       localStorage.removeItem("newlyUploadedFiles");
     }
   };
-
 
   const performDelete = async (sourceId) => {
     const fileToDelete = knowledgeBaseSources.find(
@@ -357,7 +398,8 @@ const Fileinfo = () => {
         ) : (
           (() => {
             const fileSources = knowledgeBaseSources.filter(
-              (source) => source.file_size
+              (source) =>
+                source.file_size && source.filename?.includes(stableCode)
             );
 
             return fileSources.length > 0 ? (
@@ -373,7 +415,10 @@ const Fileinfo = () => {
                       className={styles.iconButton}
                       title="Download"
                     >
-                      <img src="/svg/download-invoice.svg" alt="download-invoice" />
+                      <img
+                        src="/svg/download-invoice.svg"
+                        alt="download-invoice"
+                      />
                     </a>
                     <button
                       className={styles.iconButton}
@@ -392,29 +437,33 @@ const Fileinfo = () => {
         )}
       </div>
 
-
       {showModal && (
-        <div className={styles.modalOverlay} >
-          <div  className={`${styles.modalContent} ${
-        isModalDisabled ? styles.disabled : ""
-      }`}>
+        <div className={styles.modalOverlay}>
+          <div
+            className={`${styles.modalContent} ${
+              isModalDisabled ? styles.disabled : ""
+            }`}
+          >
             <h2 className={styles.modalTitle}>Upload Files (Max 1)</h2>
             <hr />
 
             <div className={styles.uploadGuidelines}>
               <p className={styles.capsul}> Supported Files</p>
-              <p >
-                .bmp, .csv, .doc, .docx, .eml, .epub, .heic, .html, .jpeg, .png, .md, .msg,
-                .odt, .org, .p7s, .pdf, .ppt, .pptx, .rst, .rtf, .tiff, .txt, .tsv, .xls,
-                .xlsx, .xml.
+              <p>
+                .bmp, .csv, .doc, .docx, .eml, .epub, .heic, .html, .jpeg, .png,
+                .md, .msg, .odt, .org, .p7s, .pdf, .ppt, .pptx, .rst, .rtf,
+                .tiff, .txt, .tsv, .xls, .xlsx, .xml.
                 <br />
+              </p>{" "}
+            </div>
 
-              </p> </div>
-
-            <p className={styles.suportfile}> For <b>CSV, TSV, XLS, and XLSX</b> files specifically, there are additional limits of
+            <p className={styles.suportfile}>
+              {" "}
+              For <b>CSV, TSV, XLS, and XLSX</b> files specifically, there are
+              additional limits of
               <b> 1,000 rows</b> and <b>50 columns</b>.
-
-              <br /></p>
+              <br />
+            </p>
 
             <input
               id="file-upload"
@@ -426,10 +475,10 @@ const Fileinfo = () => {
               .odt, .org, .p7s, .pdf, .ppt, .pptx, .rst, .rtf, .tiff, .txt, .tsv, .xls,
               .xlsx, .xml"
             />
-            <p className={styles.maxlimit}>Maximum file size limit: <b>10MB</b>.</p>
-            {inlineError && (
-              <p className={styles.inlineError}>{inlineError}</p>
-            )}
+            <p className={styles.maxlimit}>
+              Maximum file size limit: <b>10MB</b>.
+            </p>
+            {inlineError && <p className={styles.inlineError}>{inlineError}</p>}
             <ul className={styles.selectedFileList}>
               {selectedFiles.map((file, index) => (
                 <li key={index} className={styles.fileItem}>
@@ -459,10 +508,15 @@ const Fileinfo = () => {
                 onClick={handleSubmit}
                 className={styles.submitButton}
                 disabled={selectedFiles.length === 0}
-
               >
-                {submitLoading ? <div style={{ display: "flex" }}><Loader size={16} />&nbsp; Submitting
-                </div> : "Submit"}
+                {submitLoading ? (
+                  <div style={{ display: "flex" }}>
+                    <Loader size={16} />
+                    &nbsp; Submitting
+                  </div>
+                ) : (
+                  "Submit"
+                )}
               </button>
             </div>
           </div>

@@ -111,7 +111,7 @@
     font-size: 14px;
     color: #000;
     text-align: end;
-    text-decoration: underline;
+    /* text-decoration: underline; */
 }
 
 .frequencyprice {
@@ -120,4 +120,16 @@
     padding: 4px 7px;
     border-radius: 4px;
     font-size: 13px;
+}
+
+.deferredNote {
+  background: #f9f9ff;         /* light background */
+  border: 1px solid #d0d4f5;   /* subtle border */
+  border-radius: 8px;          /* curved corners */
+  padding: 10px 14px;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }

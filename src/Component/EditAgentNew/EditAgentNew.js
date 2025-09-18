@@ -19,7 +19,7 @@ const EditAgentNew = () => {
   useEffect(() => {
     setAgentName(agentnm)
   }, [agentnm])
-  const defaultSteps  = [
+  const defaultSteps = [
     {
       number: 1,
       title: 'Business Type',
@@ -73,14 +73,12 @@ const EditAgentNew = () => {
         agent_id,
         businessId
       );
-     
+
       const agent = response?.data?.agent;
       const business = response?.data?.business;
-     
-      const scrapedUrls= business.scrapedUrls
-
-      sessionStorage.setItem("scrapedUrls",scrapedUrls);
-
+      const scrapedUrls = business.scrapedUrls
+      sessionStorage.setItem("subType", business?.subType)
+      sessionStorage.setItem("scrapedUrls", scrapedUrls);
       sessionStorage.setItem("UpdationModeStepWise", "ON");
       sessionStorage.setItem("agentName", agent.agentName);
       sessionStorage.setItem("agentGender", agent.agentGender);
@@ -117,8 +115,8 @@ const EditAgentNew = () => {
       );
       localStorage.setItem("knowledge_base_name", business.knowledge_base_name);
       localStorage.setItem("knowledge_base_id", business.knowledge_base_id);
-     sessionStorage.setItem("callRecording",agent.CallRecording==1?true:false)
-     sessionStorage.setItem("state", business.state);
+      sessionStorage.setItem("callRecording", agent.CallRecording == 1 ? true : false)
+      sessionStorage.setItem("state", business.state);
       //need to clear above
 
       sessionStorage.setItem(
@@ -156,6 +154,7 @@ const EditAgentNew = () => {
         businessName: business.businessName.trim(),
         businessSize: business.businessSize,
         customBuisness: business.customBuisness,
+         subType: business.subType,
       };
       let parsedServices = safeParse(business.buisnessService, []);
       sessionStorage.setItem(
@@ -213,37 +212,37 @@ const EditAgentNew = () => {
       sessionStorage.setItem(
         "agentGeneralTools", JSON.stringify(agentGeneralTools || [])
       );
-      
-const kb = safeParse(business?.knowledge_base_texts, {});
 
-const dynamicDesc = {
-  1: business?.businessType || null,
-  2: business?.buisnessService
-    ? safeParse(business.buisnessService, []).join(", ")
-    : null,
-  3: business?.googleBusinessName ||business.webUrl
-    ? `${business.googleBusinessName || "N/A"}, ${business.webUrl || "N/A"}`
-    : null,
-  4: business?.businessName
-    ? [business.businessName, kb?.phone, kb?.address, kb?.email]
-        .filter(Boolean)
-        .join(",\n")
-    : null,
-  5: agent?.agentLanguage || null,
-  6: agent?.agentGender
-    ? `${agent.agentGender.charAt(0).toUpperCase() + agent.agentGender.slice(1).toLowerCase()} , ${agent.agentVoice.split("-")[1] || ""}`
-    : null,
-  7: agent?.agentName
-    ? `${agent.agentName}, ${agent.agentRole || ""}`
-    : null,
-};
-    // update steps (agar data mila toh overwrite, warna fallback desc hi rahegi)
-    setSteps(prev =>
-      prev.map(step => ({
-        ...step,
-        desc: dynamicDesc[step.number] || step.desc
-      }))
-    );
+      const kb = safeParse(business?.knowledge_base_texts, {});
+
+      const dynamicDesc = {
+        1: business?.businessType || null,
+        2: business?.buisnessService
+          ? safeParse(business.buisnessService, []).join(", ")
+          : null,
+        3: business?.googleBusinessName || business.webUrl
+          ? `${business.googleBusinessName || "N/A"}, ${business.webUrl || "N/A"}`
+          : null,
+        4: business?.businessName
+          ? [business.businessName, kb?.phone, kb?.address, kb?.email]
+            .filter(Boolean)
+            .join(",\n")
+          : null,
+        5: agent?.agentLanguage || null,
+        6: agent?.agentGender
+          ? `${agent.agentGender.charAt(0).toUpperCase() + agent.agentGender.slice(1).toLowerCase()} , ${agent.agentVoice.split("-")[1] || ""}`
+          : null,
+        7: agent?.agentName
+          ? `${agent.agentName}, ${agent.agentRole || ""}`
+          : null,
+      };
+      // update steps (agar data mila toh overwrite, warna fallback desc hi rahegi)
+      setSteps(prev =>
+        prev.map(step => ({
+          ...step,
+          desc: dynamicDesc[step.number] || step.desc
+        }))
+      );
     } catch (error) {
       console.log("An Error Occured while fetching Agent Data for ", error);
     } finally { setLoading(false) }
