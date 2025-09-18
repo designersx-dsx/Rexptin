@@ -559,8 +559,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                     <div><img src='svg/edit-custom-plan.svg' alt='edit-custom-plan' /></div>
                                     <p>Custom Plan</p>
                                 </div>
-                                <h2>Subscriptions Plans </h2>
-                                <p>Choose a suitable plan for your agent & business case</p>
+                               
                             </div>
                 : null}
 
