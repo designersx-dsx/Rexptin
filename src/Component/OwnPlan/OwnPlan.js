@@ -3,6 +3,8 @@ import axios from "axios";
 import HeaderBar from "../HeaderBar/HeaderBar";
 import styles from "../OwnPlan/OwnPlan.module.css";
 import decodeToken from "../../lib/decodeToken";
+import AnimatedButton from '../AnimatedButton/AnimatedButton';
+
 
 const OwnPlan = () => {
   const [billingType, setBillingType] = useState("monthly");
@@ -82,10 +84,11 @@ const OwnPlan = () => {
 
   return (
     <>
-      <HeaderBar title="Build your own plan" />
-      <div className={styles.pricingBox}>
-        <div className={styles.toggleTabs}>
-          {/* <div
+      <div className={styles.CutomPanMain}>
+        <HeaderBar title="Build your own plan" />
+        <div className={styles.pricingBox}>
+          <div className={styles.toggleTabs}>
+            {/* <div
             className={`${styles.activeIndicator} ${
               billingType === "yearly" ? styles.left : styles.right
             }`}
@@ -103,94 +106,97 @@ const OwnPlan = () => {
             <span className={styles.saveTag}>Save up to 20% yearly</span>
           </div> */}
 
-          <div
-            className={`${styles.tab} ${
-              billingType === "monthly" ? styles.active : ""
-            }`}
-            onClick={() => setBillingType("monthly")}
-          >
-            <p className={styles.label}>Monthly</p>
-            <h3 className={styles.price}>${value}</h3>
-            <p className={styles.subText}>/month per agent</p>
-          </div>
-        </div>
-
-        <div className={styles.sliderBox}>
-          <p className={styles.label2}>Select the range that fits your plan.</p>
-          <p className={styles.popular}>- Most Popular</p>
-
-          <div className={styles.rangeWrapper}>
-            <input
-              type="range"
-              min="50"
-              max="1000"
-              step="50"
-              value={value}
-              onChange={handleChange}
-              className={styles.range}
-            />
-
             <div
-              className={styles.tooltip}
-              style={{
-                left: `calc(${((value - 50) / (1000 - 50)) * 100}% )`,
-              }}
+              className={`${styles.tab} ${billingType === "monthly" ? styles.active : ""
+                }`}
+              onClick={() => setBillingType("monthly")}
             >
-              {value}
+              <p className={styles.label}>Monthly</p>
+              <h3 className={styles.price}>${todayPay}</h3>
+              <p className={styles.subText}>/month per agent</p>
             </div>
           </div>
 
-          <div className={styles.labels}>
-            {steps.map((step) => (
-              <span key={step}>{step}</span>
-            ))}
-          </div>
-        </div>
+          <div className={styles.sliderBox}>
+            <p className={styles.label2}>Select the range that fits your plan.</p>
+            <p className={styles.popular}>- Most Popular</p>
 
-        <div className={styles.customPlanBox}>
-          <div className={styles.paymentBox}>
-            <p className={styles.subTextMinuts}>~Minutes</p>
-            <hr />
-            <div className={styles.paymentRow}>
-              <span className={styles.payTitle}>Today you pay</span>
-              <span className={styles.payAmount}>${todayPay}</span>
-            </div>
-            <p className={styles.priceInfo}>Based on selected quantity</p>
-            <hr />
-          </div>
+            <div className={styles.rangeWrapper}>
+              <input
+                type="range"
+                min="50"
+                max="1000"
+                step="50"
+                value={value}
+                onChange={handleChange}
+                className={styles.range}
+              />
 
-          <div className={styles.whyBox}>
-            <h3 className={styles.heading}>Why Choose a Custom Plan?</h3>
-
-            <div className={styles.feature}>
-              <img src="/svg/flexibility.svg" alt="flexibility" />
-              <div>
-                <h4>Ultimate Flexibility</h4>
-                <p>Only pay for the minutes you need.</p>
+              <div
+                className={styles.tooltip}
+                style={{
+                  left: `calc(${((value - 50) / (1000 - 50)) * 100}% )`,
+                }}
+              >
+                {value}
               </div>
             </div>
 
-            <div className={styles.feature}>
-              <img src="svg/cost-effective.svg" alt="cost-effective" />
-              <div>
-                <h4>Cost-Effective</h4>
-                <p>Avoid paying for unused minutes.</p>
-              </div>
-            </div>
-
-            <div className={styles.feature}>
-              <img src="svg/total-control.svg" alt="total-control" />
-              <div>
-                <h4>Total Control</h4>
-                <p>Take charge of your budget.</p>
-              </div>
+            <div className={styles.labels}>
+              {steps.map((step) => (
+                <span key={step}>{step}</span>
+              ))}
             </div>
           </div>
 
-          {/* Checkout Button */}
-          <button className={styles.checkoutButton} onClick={tierCheckout}>
-            Proceed to Checkout
-          </button>
+          <div className={styles.customPlanBox}>
+            <div className={styles.paymentBox}>
+              <p className={styles.subTextMinuts}>~Minutes</p>
+              <hr />
+              <div className={styles.paymentRow}>
+                <span className={styles.payTitle}>Today you pay</span>
+                <span className={styles.payAmount}>${todayPay}</span>
+              </div>
+              <p className={styles.priceInfo}>Based on selected quantity</p>
+              <hr />
+            </div>
+
+            <div className={styles.whyBox}>
+              <h3 className={styles.heading}>Why Choose a Custom Plan?</h3>
+
+              <div className={styles.feature}>
+                <img src="/svg/flexibility.svg" alt="flexibility" />
+                <div>
+                  <h4>Ultimate Flexibility</h4>
+                  <p>Only pay for the minutes you need.</p>
+                </div>
+              </div>
+
+              <div className={styles.feature}>
+                <img src="svg/cost-effective.svg" alt="cost-effective" />
+                <div>
+                  <h4>Cost-Effective</h4>
+                  <p>Avoid paying for unused minutes.</p>
+                </div>
+              </div>
+
+              <div className={styles.feature}>
+                <img src="svg/total-control.svg" alt="total-control" />
+                <div>
+                  <h4>Total Control</h4>
+                  <p>Take charge of your budget.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Checkout Button */}
+           
+
+            <div className={styles.AnimationBtnDiv} onClick={tierCheckout}>
+              <AnimatedButton label="Subscirbe" position={{ position: "relative" }} />
+
+            </div>
+          </div>
         </div>
       </div>
     </>
