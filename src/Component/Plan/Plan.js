@@ -218,7 +218,7 @@ const Planss = () => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
