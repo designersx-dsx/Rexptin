@@ -218,10 +218,10 @@ const BusinessServices = forwardRef(
     );
 
 
-    const servicesType = Object?.values(businesServices)?.filter(
-      (val) => typeof val === "string" && val !== "" && val !== "email"
-    );
-    console.log("Test",businesServices)
+    // const servicesType = Object?.values(businesServices)?.filter(
+    //   (val) => typeof val === "string" && val !== "" && val !== "email"
+    // );
+    // console.log("Test",businesServices)
 
     const handleAddService = () => {
       if (inputValue.trim()) {
