@@ -434,20 +434,18 @@ const EditProfile = () => {
       Array.isArray(subscriptionDetails?.agents) &&
       subscriptionDetails.agents.some(a => a?.subscriptionId === "byAdmin");
 
-
-    if (hasByAdminAgent) {
-      // return
-    } else if (subscriptionDetails.invoices.length === 0) {
-      setRedirectButton(true)
-      setShowPopup(true);
-      setPopupType("failed");
-      setPopupMessage("To enable Pay As You Go, please ensure you have an active subscription.");
-      return
-    }
+    // console.log("subscriptionDetails",subscriptionDetails)
 
 
-
-
+    // if (hasByAdminAgent) {
+    //   // return
+    // } else if (subscriptionDetails.invoices.length === 0) {
+    //   setRedirectButton(true)
+    //   setShowPopup(true);
+    //   setPopupType("failed");
+    //   setPopupMessage("To enable Pay As You Go, please ensure you have an active subscription.");
+    //   return
+    // }
     const isCurrentlyEnabled = paygEnabled;
 
     if (!isCurrentlyEnabled) {
