@@ -553,7 +553,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     <p>Choose a suitable plan for your agent & business case</p>
                 </div>
 
-                {/* {!hasCustomPlan ? */}
+                {!hasCustomPlan ?
                   <div className={styless.sectionPart}>
                                 <div className={styless.cutomPlan} onClick={CustomhandleClick}>
                                     <div><img src='svg/edit-custom-plan.svg' alt='edit-custom-plan' /></div>
@@ -561,7 +561,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                 </div>
                                
                             </div>
-                {/* : null} */}
+                 : null} 
 
                    
                 <div className={styles.wrapper}>

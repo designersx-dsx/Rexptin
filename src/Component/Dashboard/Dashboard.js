@@ -3007,7 +3007,8 @@ sessionStorage.removeItem("isUser")
                             (agent?.subscription &&
                               agent?.subscription?.plan_name?.toLowerCase() !== "free") ||
                             (assignNumberPaid && agent?.isDeactivated === 0) ||
-                            agent?.agentPlan === "Pay-As-You-Go" 
+                            agent?.agentPlan === "Pay-As-You-Go" ||
+                            agent?.agentPlan === "free"
 
 
                           ) && (
