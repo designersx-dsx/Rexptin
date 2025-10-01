@@ -501,8 +501,10 @@ export default function Home() {
           </table>
         </div>
 
-        {(currentPage == totalPages || loadMoreAvailable) && (
-          <div className={styles.bottomBar}>
+     {/* <>{(currentPage == totalPages || loadMoreAvailable) && (
+          
+        )}></> */}
+        <div className={styles.bottomBar}>
             {loadMoreError && (
               <span className={styles.error}>{loadMoreError}</span>
             )}
@@ -510,7 +512,6 @@ export default function Home() {
               Load More
             </button>
           </div>
-        )}
         {/* Pagination */}
         {filteredData.length > 0 && (
           <>
