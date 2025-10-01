@@ -190,7 +190,6 @@ export const businessTypes = [
       "Commercial Architect",
       "Industrial Architect",
       "Urban Planner",
-      "Landscape Architect",
       "Sustainable Architect",
       "Interior Architect",
       "Restoration Architect",
