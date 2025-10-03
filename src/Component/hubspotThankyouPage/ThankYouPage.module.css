@@ -1,0 +1,192 @@
+/* ThankYouPage.module.css */
+
+/* Global variables for colors */
+:root {
+  --primary-color: #5f33e1;
+  --primary-hover: #4a27b3;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --background: #ffffff;
+  --shadow: 0 4px 20px rgba(95, 51, 225, 0.15);
+}
+
+/* Container for full viewport */
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  /* font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif */
+
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Content wrapper for centering */
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: var(--background);
+  border-radius: 20px;
+  padding: 60px 40px;
+  box-shadow: var(--shadow);
+  max-width: 500px;
+  width: 100%;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+/* Icon wrapper */
+.iconWrapper {
+  margin-bottom: 30px;
+}
+
+/* Checkmark icon styling */
+.checkIcon {
+  animation: pulse 2s infinite;
+}
+
+/* Title styling */
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0 0 20px 0;
+  line-height: 1.2;
+}
+
+/* Description styling */
+.description {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  margin: 0 0 40px 0;
+  line-height: 1.5;
+}
+
+/* Proceed button */
+.proceedButton {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-hover) 100%
+  );
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(95, 51, 225, 0.3);
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.proceedButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(95, 51, 225, 0.4);
+}
+
+.proceedButton:active {
+  transform: translateY(0);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .contentWrapper {
+    padding: 40px 20px;
+    border-radius: 15px;
+    margin: 10px;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .description {
+    font-size: 1.1rem;
+    padding: 0 10px;
+  }
+
+  .proceedButton {
+    padding: 14px 30px;
+    font-size: 1rem;
+    min-width: 180px;
+  }
+
+  .iconWrapper {
+    margin-bottom: 20px;
+  }
+
+  svg {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentWrapper {
+    padding: 30px 15px;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+
+  .proceedButton {
+    padding: 12px 25px;
+    min-width: 160px;
+  }
+
+  svg {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* Dark mode support (optional, if your app has it) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+  }
+
+  .container {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+  }
+}

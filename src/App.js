@@ -28,7 +28,7 @@ import BusinessServices from "./Component/BusinessServices/BusinessServices";
 import TotalsCallsList from "./Component/TotalsCallsList/TotalsCallsList";
 import CallTransfer from "./Component/CallTransfer/CallTransfer";
 import CallDetails from "./Component/CallDetails/CallDetails";
-import BusinessServicesNEXT from "./Component/BusinessServices/BusinessServicesNEXT"
+import BusinessServicesNEXT from "./Component/BusinessServices/BusinessServicesNEXT";
 import CalInfo from "./Component/Dashboard/CalInfo";
 import EditProfile from "./Component/EditProfile/EditProfile";
 //... Edit Screen Start ....//
@@ -36,10 +36,10 @@ import EditAgentNew from "./Component/EditAgentNew/EditAgentNew";
 import EditBusinessType from "./Component/EditBusinessType/EditBusinessType";
 import EditServicesOffered from "./Component/EditServicesOffered/EditServicesOffered";
 import EditPublic from "./Component/EditPublic/EditPublic";
-import EditBusinessDetail from "./Component/EditBusinessDetail/EditBusinessDetail"
-import EditLanguage from "./Component/EditLanguage/EditLanguage"
-import EditGender from "./Component/EditGender/EditGender"
-import EditNameAvtar from "./Component/EditNameAvtar/EditNameAvtar"
+import EditBusinessDetail from "./Component/EditBusinessDetail/EditBusinessDetail";
+import EditLanguage from "./Component/EditLanguage/EditLanguage";
+import EditGender from "./Component/EditGender/EditGender";
+import EditNameAvtar from "./Component/EditNameAvtar/EditNameAvtar";
 //... Edit Screen End ....//
 import { useEffect, useState } from "react";
 import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
@@ -51,8 +51,8 @@ import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAP
 import AssignNumber from "./Component/AssignNumber/AssignNumber";
 import Thankyou from "./Component/ThankyouPage/Thankyou";
 import CancelPage from "./Component/CancelPage/CancelPage";
-import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent"
-import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp"
+import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent";
+import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp";
 import Plan from "./Component/Plans/Plans";
 import Planss from "./Component/Plan/Plan";
 import Documentation from "./Component/Documentation/Documentation";
@@ -75,23 +75,28 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import NotificationView from "./Component/Notifications/NotificationView";
+import ThankYouPage from "./Component/hubspotThankyouPage/HubspotThankyou";
 // import Test from "./utils/Test";
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const token = localStorage.getItem("token");
   const lastRoute = localStorage.getItem("lastVisitedRoute");
   const decoded = decodeToken(token);
-  const userID = decoded?.id
-  const SOCKET_URL = process.env.REACT_APP_API_BASE_URL?.split('/api')[0]
+  const userID = decoded?.id;
+  const SOCKET_URL = process.env.REACT_APP_API_BASE_URL?.split("/api")[0];
   const notifications = useNotificationStore((state) => state.notifications);
-  const addNotification = useNotificationStore((state) => state.addNotification);
-  const loadNotifications = useNotificationStore((state) => state.loadNotifications);
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification
+  );
+  const loadNotifications = useNotificationStore(
+    (state) => state.loadNotifications
+  );
   const toggleFlag = useNotificationStore((state) => state.toggleFlag);
-   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0); // State for unreadCount
   // const [refreshNotification,setRefreshNoitification]=useState(false)
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
@@ -121,56 +126,57 @@ function App() {
           console.log("user notifications ", resp);
           loadNotifications(resp?.notifications || []);
         })
-        .catch((err) => console.log("error while fetching user Notifications", err));
+        .catch((err) =>
+          console.log("error while fetching user Notifications", err)
+        );
     }
-  }, [userID,token]);
+  }, [userID, token]);
 
-// useEffect(() => {
-//   const handleBeforeInstallPrompt = (e) => {
-//     const alreadyShown = localStorage.getItem("installPromptShown");
-//     if (alreadyShown) return;  // only block if already shown
+  // useEffect(() => {
+  //   const handleBeforeInstallPrompt = (e) => {
+  //     const alreadyShown = localStorage.getItem("installPromptShown");
+  //     if (alreadyShown) return;  // only block if already shown
 
-//     e.preventDefault();
-//     console.log("📱 beforeinstallprompt fired");
-//     setDeferredPrompt(e);
-//     setShowPopup(true);  // show your popup
-//   };
+  //     e.preventDefault();
+  //     console.log("📱 beforeinstallprompt fired");
+  //     setDeferredPrompt(e);
+  //     setShowPopup(true);  // show your popup
+  //   };
 
-//   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  //   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-//   return () => {
-//     window.removeEventListener(
-//       "beforeinstallprompt",
-//       handleBeforeInstallPrompt
-//     );
-//   };
-// }, []);
+  //   return () => {
+  //     window.removeEventListener(
+  //       "beforeinstallprompt",
+  //       handleBeforeInstallPrompt
+  //     );
+  //   };
+  // }, []);
 
-// const handleInstall = async () => {
-//   if (!deferredPrompt) return;
+  // const handleInstall = async () => {
+  //   if (!deferredPrompt) return;
 
-//   deferredPrompt.prompt();
-//   const { outcome } = await deferredPrompt.userChoice;
+  //   deferredPrompt.prompt();
+  //   const { outcome } = await deferredPrompt.userChoice;
 
-//   if (outcome === "accepted") {
-//     console.log("✅ User accepted install");
-//   } else {
-//     console.log("❌ User dismissed install");
-//   }
+  //   if (outcome === "accepted") {
+  //     console.log("✅ User accepted install");
+  //   } else {
+  //     console.log("❌ User dismissed install");
+  //   }
 
-//   // mark as shown no matter what
-//   localStorage.setItem("installPromptShown", "true"); 
-//   setDeferredPrompt(null);
-//   setShowPopup(false);
-// };
+  //   // mark as shown no matter what
+  //   localStorage.setItem("installPromptShown", "true");
+  //   setDeferredPrompt(null);
+  //   setShowPopup(false);
+  // };
 
+  //   const handleClose = () => {
+  //     localStorage.setItem("installPromptShown", "true"); // save flag
+  //     setShowPopup(false);
+  //   };
 
-//   const handleClose = () => {
-//     localStorage.setItem("installPromptShown", "true"); // save flag
-//     setShowPopup(false);
-//   };
-  
-useEffect(() => {
+  useEffect(() => {
     const count = notifications?.filter((n) => n?.status === "unread")?.length;
     setUnreadCount(count);
     // console.log("Notifications:", notifications);
@@ -179,7 +185,6 @@ useEffect(() => {
 
   useEffect(() => {
     if (!userID) return;
-
 
     // 🔌 Socket connect
     const socket = io(SOCKET_URL, {
@@ -224,9 +229,8 @@ useEffect(() => {
   }, [userID]);
   useEffect(() => {
     const ref = document.referrer;
-    console.log('Referrer URL:', ref);   
+    console.log("Referrer URL:", ref);
   }, []);
-
 
   //  const handleClose = () => {
   //   setShowPopup(false);
@@ -239,19 +243,12 @@ useEffect(() => {
         <div className="ForDesktop">
           <img src="svg/Rexpt-Logo.svg" />
           <h1>
-
             Launch Your <b>AI Receptionist</b> with Rexpt.in
           </h1>
-          <p>
-            Launch Your AI Receptionist with Rexpt.in
-          </p>
-         
-      
-    
-
+          <p>Launch Your AI Receptionist with Rexpt.in</p>
         </div>
         <div className="ForMobile">
-     {/* {showPopup && (
+          {/* {showPopup && (
         <div
           style={{
             position: "fixed",
@@ -317,11 +314,28 @@ useEffect(() => {
               <Routes>
                 <Route
                   path="/signup"
-                  element={token ? <SecureRoute><Navigate to={"/dashboard"} /></SecureRoute> : <SignUp />}
+                  element={
+                    token ? (
+                      <SecureRoute>
+                        <Navigate to={"/dashboard"} />
+                      </SecureRoute>
+                    ) : (
+                      <SignUp />
+                    )
+                  }
                 />
                 <Route
                   path="/"
-                  element={token ? <SecureRoute> <Navigate to={lastRoute || "/dashboard"} /></SecureRoute> : <Start />}
+                  element={
+                    token ? (
+                      <SecureRoute>
+                        {" "}
+                        <Navigate to={lastRoute || "/dashboard"} />
+                      </SecureRoute>
+                    ) : (
+                      <Start />
+                    )
+                  }
                 />
                 <Route
                   path="/dashboard"
@@ -331,31 +345,57 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-                <Route
-                  path="/calinfo"
-                  element={
-
-                    <CalInfo />
-
-                  }   >
-
-                </Route>
+                <Route path="/calinfo" element={<CalInfo />}></Route>
                 <Route path="/" element={<Start />} />
+                <Route
+                  path="/integrations/hubspot/success"
+                  element={<ThankYouPage />}
+                ></Route>
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/edit-agent" element={<EditAgentNew />} />
-                <Route path="/edit-business-type" element={<EditBusinessType />} />
-                <Route path="/edit-services-offered" element={<EditServicesOffered />} />
+                <Route
+                  path="/edit-business-type"
+                  element={<EditBusinessType />}
+                />
+                <Route
+                  path="/edit-services-offered"
+                  element={<EditServicesOffered />}
+                />
 
                 <Route path="/edit-public-listing" element={<EditPublic />} />
 
                 <Route path="/edit-public" element={<EditPublic />} />
-                <Route path="/edit-business-detail" element={<EditBusinessDetail />} />
+                <Route
+                  path="/edit-business-detail"
+                  element={<EditBusinessDetail />}
+                />
                 <Route path="/edit-language" element={<EditLanguage />} />
                 <Route path="/edit-gender" element={<EditGender />} />
                 <Route path="/edit-name-avtar" element={<EditNameAvtar />} />
-                <Route path="/plans" element={<SecureRoute><SubscriptionPlan /></SecureRoute>} />
-                <Route path="/plan" element={<SecureRoute><Planss /></SecureRoute>} />
-                <Route path="/assign-number" element={<SecureRoute><AssignNumber /></SecureRoute>} />
+                <Route
+                  path="/plans"
+                  element={
+                    <SecureRoute>
+                      <SubscriptionPlan />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/plan"
+                  element={
+                    <SecureRoute>
+                      <Planss />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/assign-number"
+                  element={
+                    <SecureRoute>
+                      <AssignNumber />
+                    </SecureRoute>
+                  }
+                />
                 <Route
                   path="/details"
                   element={
@@ -364,7 +404,14 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-                <Route path="/steps" element={<SecureRoute><Step /></SecureRoute>} />
+                <Route
+                  path="/steps"
+                  element={
+                    <SecureRoute>
+                      <Step />
+                    </SecureRoute>
+                  }
+                />
                 <Route
                   path="/about-business"
                   element={
@@ -381,9 +428,30 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-                <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
-                <Route path="/call-setting" element={<SecureRoute><CallSetting /></SecureRoute>} />
-                <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
+                <Route
+                  path="/business-details"
+                  element={
+                    <SecureRoute>
+                      <BusinessDetails />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/call-setting"
+                  element={
+                    <SecureRoute>
+                      <CallSetting />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/agent-detail"
+                  element={
+                    <SecureRoute>
+                      <AgentDetail />
+                    </SecureRoute>
+                  }
+                />
                 <Route
                   path="/business-locations"
                   element={
@@ -392,7 +460,6 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-
 
                 <Route
                   path="/dashboard"
@@ -403,7 +470,6 @@ useEffect(() => {
                   }
                 />
 
-
                 <Route
                   path="/business-services"
                   element={
@@ -412,7 +478,6 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-
 
                 {/* <Route path="/home" element={<Home />} /> */}
                 <Route
@@ -432,7 +497,14 @@ useEffect(() => {
                   }
                 />
                 {/* <Route path="/plans" element={<Plans />} /> */}
-                <Route path="/checkout" element={<SecureRoute><SubscriptionFlow /></SecureRoute>} />
+                <Route
+                  path="/checkout"
+                  element={
+                    <SecureRoute>
+                      <SubscriptionFlow />
+                    </SecureRoute>
+                  }
+                />
                 <Route
                   path="/calendar"
                   element={
@@ -441,9 +513,30 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-                <Route path="/totalcall-list" element={<SecureRoute><TotalsCallsList /></SecureRoute>} />
-                <Route path="/call-transfer" element={<SecureRoute><CallTransfer /></SecureRoute>} />
-                <Route path="/call-details/:callId" element={<SecureRoute><CallDetails /></SecureRoute>} />
+                <Route
+                  path="/totalcall-list"
+                  element={
+                    <SecureRoute>
+                      <TotalsCallsList />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/call-transfer"
+                  element={
+                    <SecureRoute>
+                      <CallTransfer />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/call-details/:callId"
+                  element={
+                    <SecureRoute>
+                      <CallDetails />
+                    </SecureRoute>
+                  }
+                />
                 <Route
                   path="/business-services"
                   element={
@@ -479,58 +572,167 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-                <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
-                <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
-                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
-                <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
-                <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
+                <Route
+                  path="/edit-profile"
+                  element={
+                    <SecureRoute>
+                      <EditProfile />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/your-business-Listing"
+                  element={
+                    <SecureRoute>
+                      <BusinessListing />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/widget-guide"
+                  element={
+                    <SecureRoute>
+                      <WidgetGuidePage />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/connect-calender"
+                  element={
+                    <SecureRoute>
+                      <ConnectCalenderAPI />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/integrate-agent"
+                  element={
+                    <SecureRoute>
+                      <IntegrateAgent />
+                    </SecureRoute>
+                  }
+                />
                 <Route path="/test-other" element={<Test />} />
 
+                <Route
+                  path="/edit-profile"
+                  element={
+                    <SecureRoute>
+                      <EditProfile />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/your-business-Listing"
+                  element={
+                    <SecureRoute>
+                      <BusinessListing />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/widget-guide"
+                  element={
+                    <SecureRoute>
+                      <WidgetGuidePage />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/connect-calender"
+                  element={
+                    <SecureRoute>
+                      <ConnectCalenderAPI />
+                    </SecureRoute>
+                  }
+                />
 
+                <Route
+                  path="/agent-setup"
+                  element={
+                    <SecureRoute>
+                      <AgentSetupHelp />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/documentation"
+                  element={
+                    <SecureRoute>
+                      <Documentation />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/raise-tickets"
+                  element={
+                    <SecureRoute>
+                      <RaiseTickets />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/create-ticket"
+                  element={
+                    <SecureRoute>
+                      <CreateTicket />
+                    </SecureRoute>
+                  }
+                />
 
+                <Route
+                  path="/integrate-agent"
+                  element={
+                    <SecureRoute>
+                      <IntegrateAgent />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/call-recording"
+                  element={
+                    <SecureRoute>
+                      <CallRecording />
+                    </SecureRoute>
+                  }
+                />
 
-                <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
-                <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
-                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
-                <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
+                <Route
+                  path="/add-file"
+                  element={
+                    <SecureRoute>
+                      <Fileinfo />
+                    </SecureRoute>
+                  }
+                />
 
-                <Route path="/agent-setup" element={<SecureRoute><AgentSetupHelp /></SecureRoute>} />
-                <Route path="/documentation" element={<SecureRoute><Documentation /></SecureRoute>} />
-                <Route path="/raise-tickets" element={<SecureRoute><RaiseTickets /></SecureRoute>} />
-                <Route path="/create-ticket" element={<SecureRoute><CreateTicket /></SecureRoute>} />
-
-                <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
-                <Route path="/call-recording" element={<SecureRoute><CallRecording /></SecureRoute>} />
-
-                <Route path='/add-file' element={<SecureRoute><Fileinfo /></SecureRoute>} />
-
-                <Route path="/notifications" element={<SecureRoute><NotificationView /></SecureRoute>} />
-
-
+                <Route
+                  path="/notifications"
+                  element={
+                    <SecureRoute>
+                      <NotificationView />
+                    </SecureRoute>
+                  }
+                />
 
                 <Route path="/test-other" element={<Test />} />
                 <Route path="/thankyou/:id" element={<Thankyou />} />
                 <Route path="/cancel-payment" element={<CancelPage />} />
                 <Route path="/*" element={<RedirectHandler />} />
 
-
                 <Route path="/thankyou2" element={<Thankyou2 />} />
 
-
-
-
-                <Route path="/number" element={< Number />} />
+                <Route path="/number" element={<Number />} />
 
                 <Route path="/delete-account" element={<Delete />} />
               </Routes>
             </div>
             {/* </BrowserRouter> */}
           </PreventPullToRefresh>
-
         </div>
       </div>
       <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 }
-export default App; 
+export default App;
