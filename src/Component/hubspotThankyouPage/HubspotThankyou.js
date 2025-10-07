@@ -117,11 +117,14 @@ const ThankYouPage = () => {
 
       {/* Email mismatch modal */}
       {showEmailMismatchPopup && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
+        <div className={styles.hbmodalOverlay}>
+          <div className={styles.hbmodalContent}>
             <h2>Email Mismatch</h2>
             <p>Please login with your HubSpot email to continue.</p>
-            <button onClick={handlePopupConfirm} className={styles.modalButton}>
+            <button
+              onClick={handlePopupConfirm}
+              className={styles.hbmodalButton}
+            >
               OK
             </button>
           </div>
