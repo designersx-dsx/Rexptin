@@ -75,7 +75,7 @@ const ThankYouPage = () => {
     localStorage.removeItem("userEmail");
 
     // Redirect to onboarding/signup page
-    navigate(`/signup`);
+    navigate(`/signup?ownerEmail=${encodeURIComponent(ownerEmail)}`);
   };
 
   useEffect(() => {
@@ -119,8 +119,10 @@ const ThankYouPage = () => {
       {showEmailMismatchPopup && (
         <div className={styles.hbmodalOverlay}>
           <div className={styles.hbmodalContent}>
-            <h2>Email Mismatch</h2>
-            <p>Please login with your HubSpot email to continue.</p>
+            <p>
+              Please login with your HubSpot email:{" "}
+              <strong>{ownerEmail}</strong> to continue.
+            </p>
             <button
               onClick={handlePopupConfirm}
               className={styles.hbmodalButton}
