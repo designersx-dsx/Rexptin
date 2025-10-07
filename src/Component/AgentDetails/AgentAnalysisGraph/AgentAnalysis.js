@@ -7,7 +7,7 @@ import axios from "axios";
 import { API_BASE_URL, getAgentCalls, getAgentCallsByMonth } from "../../../Store/apiStore";
 import { useNavigate } from "react-router-dom";
 import { useCallHistoryStore, useCallHistoryStore1 } from "../../../Store/useCallHistoryStore ";
-
+import { DateTime } from "luxon";
 // Helper function to format date
 function formatDateISO(date) {
   const y = date.getFullYear();
@@ -26,6 +26,7 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
   const [callHistory, setCallHistory] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [callsForSelectedDate, setCallsForSelectedDate] = useState([]);
+  console.log(callsForSelectedDate, "callsForSelectedDate")
   const { mergeCallHistoryData } = useCallHistoryStore1();
   const bookingsRef = useRef(null);
 
@@ -43,9 +44,9 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
   const fetchCallHistory = async () => {
     try {
       if (!agentId) return;
-    const currentDate = new Date();
-    const month = currentDate.getMonth() + 1;
-    const year = currentDate.getFullYear();
+      const currentDate = new Date();
+      const month = currentDate.getMonth() + 1;
+      const year = currentDate.getFullYear();
 
       // const response = await axios.get(
       //   `${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`,
@@ -55,10 +56,10 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
       // );
       // const agentCalls = response.data.filteredCalls || [];
       // const response=await getAgentCalls(agentId) ||[]
-      const response=await getAgentCallsByMonth(agentId, month, year)
+      const response = await getAgentCallsByMonth(agentId, month, year)
       // console.log('response,response',response)
-      
-      setCallHistory(response?.calls||[]);
+
+      setCallHistory(response?.calls || []);
     } catch (error) {
       // console.error("Error fetching call history:", error);
       setCallHistory([]);
@@ -109,19 +110,24 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
     );
   };
 
-    const handleMonthChange = async (month, year) => {
+  const handleMonthChange = async (month, year) => {
     try {
       if (agentId) {
         const res = await getAgentCallsByMonth(agentId, month, year);
         setCallHistory(res.calls || []);
-      } 
-      
+      }
+
     } catch (error) {
       console.error("Error fetching month data:", error);
       setCallHistory([]);
     }
   };
-
+  const getTimeFromTimestamp = (timestamp, timezone) => {
+    if (!timestamp) return "-";
+    return DateTime.fromMillis(timestamp)
+      .setZone(timezone || "UTC")
+      .toFormat("hh:mm:ss a");
+  };
   return (
     <div className={styles.container}>
       <div className={styles.CallFlex}>
@@ -176,9 +182,9 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
             value={selectedDate}
             tileContent={tileContent}
             onActiveStartDateChange={({ activeStartDate }) => {
-            const m = activeStartDate.getMonth() + 1;
-            const y = activeStartDate.getFullYear();
-            handleMonthChange(m, y);
+              const m = activeStartDate.getMonth() + 1;
+              const y = activeStartDate.getFullYear();
+              handleMonthChange(m, y);
             }}
             calendarType="gregory"
             className={styles.reactCalendar}
@@ -199,21 +205,21 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
                   onClick={() => {
                     if (call.call_id) {
                       // navigate(`/call-details/${call.call_id}`);
-                         navigate(`/call-details/${call.call_id}`, {
+                      navigate(`/call-details/${call.call_id}`, {
                         state: {
                           agentId: call.agent_id,
                           start_timestamp: call.start_timestamp
                         }
                       });
-                      
+
                     }
                   }}
                   style={{ cursor: call.call_id ? "pointer" : "default" }}
                 >
                   <div className={styles.time}>
-                    {formatTime(call.start_timestamp)}{" "}
+                    {getTimeFromTimestamp(call.start_timestamp, call?.timezone)}{" "}
                     {call.end_timestamp &&
-                      `- ${formatTime(call.end_timestamp)}`}
+                      `- ${getTimeFromTimestamp(call.end_timestamp, call?.timezone)}`}
                   </div>
 
                   <div className={styles.detailColumn}>
@@ -222,8 +228,8 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
                         <b>Caller:</b>{" "}
                         {call.custom_analysis_data
                           ? call.custom_analysis_data[
-                              "name"
-                            ] || "N/A"
+                          "name"
+                          ] || "N/A"
                           : "N/A"}
                       </span>
                     </div>

@@ -812,4 +812,23 @@ export const businessServices = [
             "Other",
         ],
     }
+    // {
+    //     type: "Plumber",
+    //     subtype: "Water System Specialist",
+    //     icon: "svg/Plumber.svg",
+    //     services: [
+    //         "Residential Plumbing Services",
+    //         "Commercial Plumbing Services",
+    //         "Industrial Plumbing Solutions",
+    //         "Pipe Installation & Maintenance",
+    //         "Drainage & Sewer Cleaning",
+    //         "Leak Detection & Repair",
+    //         "Bathroom & Kitchen Fittings",
+    //         "Water Heater Installation & Repair",
+    //         "Water Tank Cleaning & Maintenance",
+    //         "Emergency Plumbing Services",
+    //         "Plumber"
+    //     ],
+    // },
+
 ];
