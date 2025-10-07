@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { API_BASE_URL, verifyOrCreateUser } from "../../Store/apiStore";
 import styles from "./ThankYouPage.module.css";
@@ -7,47 +7,11 @@ import styles from "./ThankYouPage.module.css";
 const ThankYouPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [showEmailMismatchPopup, setShowEmailMismatchPopup] = useState(false);
 
   const ownerEmail = searchParams.get("ownerEmail");
   const ownerName = searchParams.get("ownerName");
   const fullOtp = "notRequired";
-
-  // const handleProceed = async () => {
-  //   try {
-  //     if (!ownerEmail) {
-  //       console.warn("Missing required info to verify.");
-  //       return;
-  //     }
-  //     const data = await verifyOrCreateUser(ownerEmail, fullOtp);
-
-  //     if (data?.res1) {
-  //       const verifyStatus = data?.res1?.data?.verifiedStatus === true;
-
-  //       if (verifyStatus === true) {
-  //         const userData = {
-  //           name: data?.res?.data?.user?.name || "",
-  //           profile:
-  //             `${API_BASE_URL?.split("/api")[0]}${
-  //               (data?.res?.data?.profile || "").split("public")[1] || ""
-  //             }` || "images/camera-icon.avif",
-  //           subscriptionDetails: {},
-  //         };
-
-  //         localStorage.setItem("onboardComplete", "true");
-  //         localStorage.setItem("token", data.res?.data?.token);
-  //         localStorage.setItem("onboardComplete", true);
-  //         localStorage.setItem("paymentDone", true);
-  //       }
-
-  //       navigate(`/details?name=${encodeURIComponent(ownerName || "")}`);
-  //       return;
-  //     }
-  //     navigate(`/details?name=${encodeURIComponent(ownerName || "")}`);
-  //   } catch (error) {
-  //     console.error("Error during login or redirect:", error);
-  //     navigate("/error?message=login_failed");
-  //   }
-  // };
 
   const handleProceed = async () => {
     try {
@@ -60,20 +24,25 @@ const ThankYouPage = () => {
       const onboardComplete =
         localStorage.getItem("onboardComplete") === "true";
 
-      // Case 1: User already onboarded and same email → go to dashboard
+      // Case 1: Email mismatch → show modal
+      if (storedEmail && storedEmail !== ownerEmail) {
+        setShowEmailMismatchPopup(true);
+        return; // stop further execution until user confirms
+      }
+
+      // Case 2: User already onboarded and same email → go to dashboard
       if (storedEmail === ownerEmail && onboardComplete) {
         navigate("/dashboard");
         return;
       }
 
-      // Case 2: New user or different email → verify or create, then go to /details
+      // Case 3: New user or onboarding not complete → verify or create, then go to /details
       const data = await verifyOrCreateUser(ownerEmail, fullOtp);
 
       if (data?.res1) {
         const verifyStatus = data?.res1?.data?.verifiedStatus === true;
 
         if (verifyStatus) {
-          // Prepare userData for app usage
           const userData = {
             name: data?.res?.data?.user?.name || "",
             profile:
@@ -83,25 +52,30 @@ const ThankYouPage = () => {
             subscriptionDetails: {},
           };
 
-          // Save email and token, but do NOT set onboardComplete yet
           localStorage.setItem("userEmail", ownerEmail);
           localStorage.setItem("token", data.res?.data?.token || "");
-
-          // You can also save userData if needed for app-wide use
-          // localStorage.setItem("userData", JSON.stringify(userData));
         }
 
-        // Send user to onboarding/details page
         navigate(`/details?name=${encodeURIComponent(ownerName || "")}`);
         return;
       }
 
-      // Fallback
       navigate(`/details?name=${encodeURIComponent(ownerName || "")}`);
     } catch (error) {
       console.error("Error during login or redirect:", error);
       navigate("/error?message=login_failed");
     }
+  };
+
+  const handlePopupConfirm = () => {
+    // Clear old session
+    localStorage.removeItem("onboardComplete");
+    localStorage.removeItem("paymentDone");
+    localStorage.removeItem("token");
+    localStorage.removeItem("userEmail");
+
+    // Redirect to onboarding/signup page
+    navigate(`/signup`);
   };
 
   useEffect(() => {
@@ -114,7 +88,6 @@ const ThankYouPage = () => {
     <div className={styles.container}>
       <div className={styles.contentWrapper}>
         <div className={styles.iconWrapper}>
-          {/* Updated SVG: Filled circle with white checkmark inside */}
           <svg
             width="80"
             height="80"
@@ -141,6 +114,22 @@ const ThankYouPage = () => {
           Let’s Started
         </button>
       </div>
+
+      {/* Email mismatch modal */}
+      {showEmailMismatchPopup && (
+        <div className={styles.hbmodalOverlay}>
+          <div className={styles.hbmodalContent}>
+            <h2>Email Mismatch</h2>
+            <p>Please login with your HubSpot email to continue.</p>
+            <button
+              onClick={handlePopupConfirm}
+              className={styles.hbmodalButton}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
