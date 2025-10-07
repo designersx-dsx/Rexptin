@@ -6,8 +6,7 @@ import Loader2 from "../Loader2/Loader2";
 import DetailModal from "../DetailModal/DetailModal";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import { getAgentCallById } from "../../Store/apiStore";
-
-
+import { DateTime } from "luxon";
 const CallDetails = () => {
   const location = useLocation();   //adding json call history
   const { agentId, start_timestamp } = location.state || {}; //adding json call history
@@ -19,6 +18,7 @@ const CallDetails = () => {
   const [messagesPerReveal, setMessagesPerReveal] = useState(0);
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [timezone, setTimezone] = useState("")
   const agentData = JSON.parse(
     sessionStorage.getItem("dashboard-session-storage")
   );
@@ -76,9 +76,8 @@ const CallDetails = () => {
         //   }
         // );
         const res = await getAgentCallById(agentId, callId, start_timestamp)
-        //  console.log('res',res)
-
         setCallData(res?.call);
+        setTimezone(res?.timezone || "")
       } catch (err) {
         console.error("Error fetching call details:", err);
         setError("Could not load call details.");
@@ -100,7 +99,24 @@ const CallDetails = () => {
   useEffect(() => {
     setVisibleCount(messagesPerReveal);
   }, [messagesPerReveal]);
-
+  //time
+  const time = callData?.end_timestamp || ""
+  //date
+  const date = callData?.end_timestamp || ""
+  //getTimeFromTimestamp
+  const getTimeFromTimestamp = () => {
+    if (!time) return "-";
+    return DateTime.fromMillis(time)
+      .setZone(timezone || "UTC")
+      .toFormat("hh:mm:ss a");
+  };
+//getDateFromTimestamp
+  const getDateFromTimestamp = () => {
+    if (!date) return "-";
+    return DateTime.fromMillis(date)
+      .setZone(timezone || "UTC")
+      .toFormat("yyyy-MM-dd");
+  };
   if (!callId) return <p>No call selected.</p>;
   if (loading) return <Loader2 />;
   if (error) return <p>{error}</p>;
@@ -201,8 +217,8 @@ const CallDetails = () => {
           <hr className={styles.hrline} />
           <div className={styles.details3}>
             <div className={styles.Part1}>
-              <p>{formattedDate}</p>
-              <strong>{formattedTime}</strong>
+              <p>{getTimeFromTimestamp()}</p>
+              <strong>{getDateFromTimestamp()}</strong>
             </div>
             <div className={styles.Part2}>
               <p>Attended by</p>
@@ -397,7 +413,7 @@ const CallDetails = () => {
                 <h1>Call Transcript</h1>
               </div>
               <div className={styles.ChatBox2}>
-              {transcript.map((entry, index) => (
+                {transcript.map((entry, index) => (
                   entry.role === "agent" ? (
                     <div key={index} className={styles.messageWrapper}>
                       <div className={styles.messageLeftWrapper}>
