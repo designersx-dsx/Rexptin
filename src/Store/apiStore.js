@@ -773,6 +773,19 @@ export const markDashboardTourSeen = async (userId) => {
   }
 };
 
+export const getAppointments = async (userId = null, agentId = null) => {
+  try {
+    const params = {};
+    if (userId) params.userId = userId;
+    if (agentId) params.agentId = agentId;
+
+    const res = await api.get('/appointments', { params });
+    return res.data; 
+  } catch (error) {
+    console.error("Error fetching appointments:", error.response?.data || error.message);
+    return { success: false, data: [] };
+  }
+};
 
 
 
