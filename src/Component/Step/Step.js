@@ -1021,7 +1021,7 @@ const Step = () => {
                 type: "boolean",
                 name: "appointment_booked",
                 description:
-                  "Determine if appointment was successfully booked during the call",
+                  "Determine if appointment was successfully booked during the call and also if you get appointment deatails like email and date then only mark true",
                 examples: [true, false],
               },
               {
