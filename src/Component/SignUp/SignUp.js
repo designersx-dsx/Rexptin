@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "../SignUp/SignUp.module.css";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   API_BASE_URL,
   LoginWithEmailOTP,
@@ -13,6 +13,7 @@ import AnimatedButton from "../AnimatedButton/AnimatedButton";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [otpSent, setOtpSent] = React.useState(false);
   const [email, setEmail] = React.useState("");
   const [emailError, setEmailError] = React.useState("");
@@ -36,6 +37,14 @@ const SignUp = () => {
   const isUser = sessionStorage.getItem("isUser") || "";
   const [customerId, setCustomerId] = useState();
   const [renderHtml, setRenderHtml] = useState(false);
+
+  useEffect(() => {
+    const emailFromParams = searchParams.get("ownerEmail");
+    if (emailFromParams) {
+      const decodedEmail = decodeURIComponent(emailFromParams);
+      setEmail(decodedEmail.toLowerCase());
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!resendEndTime) return;
@@ -101,7 +110,11 @@ const SignUp = () => {
     setIsVerifyingOtp(true);
 
     try {
-      const response = await verifyEmailOTP(email.toLowerCase(), fullOtp, customerId);
+      const response = await verifyEmailOTP(
+        email.toLowerCase(),
+        fullOtp,
+        customerId
+      );
 
       if (response?.status === 200) {
         localStorage.setItem("token", response?.data.token);
@@ -118,7 +131,7 @@ const SignUp = () => {
           "showreferralfloating",
           response?.data?.user?.showreferralfloating
         );
-       
+
         setPopupType("success");
         setShowPopup(true);
         setPopupMessage("One Time Password Verified successfully!");
@@ -127,7 +140,8 @@ const SignUp = () => {
         const userData = {
           name: response?.data?.user?.name || "",
           profile:
-            `${API_BASE_URL?.split("/api")[0]}${response?.data?.user?.profile?.split("public")[1]
+            `${API_BASE_URL?.split("/api")[0]}${
+              response?.data?.user?.profile?.split("public")[1]
             }` || "images/camera-icon.avif",
           subscriptionDetails: {},
         };
@@ -142,13 +156,13 @@ const SignUp = () => {
           navigate("/details", { replace: true });
         }
         if (response?.data?.paymentDone) {
-          
-          navigate(response?.data?.user?.verifyDetails ? "/steps" : "/details", { replace: true });
-        }
-        else {
+          navigate(
+            response?.data?.user?.verifyDetails ? "/steps" : "/details",
+            { replace: true }
+          );
+        } else {
           navigate(verifiedUser ? "/dashboard" : "/details", { replace: true });
         }
-
       } else {
         setPopupType("failed");
         setShowPopup(true);
@@ -331,8 +345,9 @@ const SignUp = () => {
                   <img src="images/Mask.png" alt="Mask.png" />
                 </div>
                 <div
-                  className={`${styles.logimg} ${step >= 1 ? styles.animate1 : ""
-                    }`}
+                  className={`${styles.logimg} ${
+                    step >= 1 ? styles.animate1 : ""
+                  }`}
                 >
                   <img
                     className={styles.logo}
@@ -341,13 +356,15 @@ const SignUp = () => {
                   />
                 </div>
                 <div
-                  className={`${styles.Maincontent} ${step >= 2 ? styles.animate2 : ""
-                    }`}
+                  className={`${styles.Maincontent} ${
+                    step >= 2 ? styles.animate2 : ""
+                  }`}
                 >
                   <div className={styles.welcomeTitle}>
                     <h1>Log In to your Account</h1>
                     <p>
-                      If it doesn’t exist, we’ll create one for you completely free!
+                      If it doesn’t exist, we’ll create one for you completely
+                      free!
                     </p>
                   </div>
                 </div>
@@ -356,14 +373,16 @@ const SignUp = () => {
                   {!otpSent && (
                     <>
                       <div
-                        className={`${styles.labReq} ${step >= 3 ? styles.animate3 : ""
-                          }`}
+                        className={`${styles.labReq} ${
+                          step >= 3 ? styles.animate3 : ""
+                        }`}
                       >
                         <div className={styles.Dblock}>
                           <input
                             type="email"
-                            className={`${styles.emailInput} ${emailError ? styles.inputError : ""
-                              }`}
+                            className={`${styles.emailInput} ${
+                              emailError ? styles.inputError : ""
+                            }`}
                             placeholder="Johnvick@gmail.com"
                             value={email}
                             onChange={handleEmailChange}
@@ -376,8 +395,9 @@ const SignUp = () => {
                       </div>
                       <br />
                       <div
-                        className={`${styles.btnTheme} ${step >= 4 ? styles.animate4 : ""
-                          }`}
+                        className={`${styles.btnTheme} ${
+                          step >= 4 ? styles.animate4 : ""
+                        }`}
                         onClick={handleSendOTP}
                       >
                         <AnimatedButton
@@ -424,9 +444,10 @@ const SignUp = () => {
                             type="tel"
                           />
                         ))}
-
                       </div>
-                      <p className={styles.SpamMessage}>Please check your spam folder if you don’t find it in your main inbox.
+                      <p className={styles.SpamMessage}>
+                        Please check your spam folder if you don’t find it in
+                        your main inbox.
                       </p>
                       <div className={styles.resendContainer}>
                         <button
@@ -448,10 +469,10 @@ const SignUp = () => {
                         >
                           {isResendDisabled && resendTimer > 0
                             ? `Resend One Time Password in ${String(
-                              Math.floor(resendTimer / 60)
-                            ).padStart(2, "0")}:${String(
-                              resendTimer % 60
-                            ).padStart(2, "0")}`
+                                Math.floor(resendTimer / 60)
+                              ).padStart(2, "0")}:${String(
+                                resendTimer % 60
+                              ).padStart(2, "0")}`
                             : "Resend One Time Password"}
                         </button>
                       </div>
@@ -482,8 +503,9 @@ const SignUp = () => {
                     </>
                   )}
                   <div
-                    className={`${styles.Maincontent2} ${step >= 5 ? styles.animate5 : ""
-                      }`}
+                    className={`${styles.Maincontent2} ${
+                      step >= 5 ? styles.animate5 : ""
+                    }`}
                   >
                     <div className={styles.divider}>
                       <hr className={styles.line} />
