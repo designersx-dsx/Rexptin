@@ -68,7 +68,8 @@ export const businessTypes = [
       "Nail Salon",
       "Bridal Salon",
       "Skin Care Studio",
-      "Hair Styling & Grooming"
+      "Hair Styling & Grooming",
+      "Salon"
     ],
   },
   {
