@@ -40,7 +40,7 @@ const IntegrateAgent = () => {
   const webUrl = agentDetails?.business?.webUrl
   const agentWidgetDomain = agentDetails
   const script = agentId
-    ? `<script id="rex-widget-script" src="https://exquisite-kitten-03990f.netlify.app/index.js?agentId=${agentId}"></script>`
+    ? `<script id="rex-widget-script" src="https://app.rexpt.in/widget.js?agentId=${agentId}"></script>`
     : "";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newDomain, setNewDomain] = useState("");
