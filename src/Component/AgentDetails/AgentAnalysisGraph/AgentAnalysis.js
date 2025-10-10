@@ -202,9 +202,7 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
     }
   };
 
-  const handleMonthChange = async (month, year) => {
-    await fetchCallHistory(month, year); // calendar will rebuild after state updates
-  };
+
 
   // ---- calendar dots (green = bookings, orange = calls) ----
   const tileContent = ({ date, view }) => {
@@ -335,9 +333,10 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
                     style={{ cursor: isCall && item.raw?.call_id ? "pointer" : "default" }}
                   >
                     <div className={styles.time}>
-                       {getTimeFromTimestamp( item?.raw?.start_timestamp,  item?.raw?.timezone)}{" "}
-                    {call.end_timestamp &&
-                      `- ${getTimeFromTimestamp( item?.raw?.end_timestamp,  item?.raw?.timezone)}`
+                      {getTimeFromTimestamp(item?.raw?.start_timestamp, item?.raw?.timezone)}{" "}
+                      {item?.raw?.end_timestamp &&
+                        `- ${getTimeFromTimestamp(item?.raw?.end_timestamp, item?.raw?.timezone)}`
+                      }
                     </div>
 
                     <div className={styles.detailColumn}>
