@@ -150,7 +150,7 @@ const Planss = () => {
     const mapCountryToCurrency = (countryCode) => {
 
         const countryCurrencyMap = {
-            // IN: 'inr',
+            IN: 'inr',
             US: 'usd',
             CA: 'cad',
             AU: 'aud',
@@ -228,7 +228,7 @@ const Planss = () => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -1142,9 +1142,7 @@ const Planss = () => {
                         <p className={styles.toggleText} onClick={handleToggle}>
                             ~ {expanded ? 'Hide Features' : 'See All Features'}
                         </p>
-                        <p className={styles.toggleText} onClick={handleToggle2}>
-                            ~ {expanded ? 'Hide Features' : 'See All Features'}
-                        </p>
+                      
                         <AnimatedButton label='Subscribe' position={{ position: "relative" }}
                             onClick={() => navigate('/steps', {
                                 state: {
@@ -1154,34 +1152,7 @@ const Planss = () => {
                         />
 
                     </div>
-                    <div className={styles.featureList}>
-                        <div className={styles.listdata}>
-                            {visibleFeatures.map((text, index) => {
-                                const isNegative = text.toLowerCase().includes('no');
-                                return (
-                                    <div className={styles.liData} key={index}>
-                                        <img
-                                            src={isNegative ? '/svg/cross-svg.svg' : '/svg/tick-svg.svg'}
-                                            alt={isNegative ? 'cross icon' : 'tick icon'}
-                                        />
-                                        <p>{text}</p>
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        <p className={styles.toggleText} onClick={handleToggle}>
-                            ~ {expanded ? 'Hide Features' : 'See All Features'}
-                        </p>
-                        <AnimatedButton label='Subscribe' position={{ position: "relative" }}
-                            onClick={() => navigate('/steps', {
-                                state: {
-                                    value: "chatke"
-                                }
-                            })}
-                        />
-
-                    </div>
+                  
 
                 </div>
 

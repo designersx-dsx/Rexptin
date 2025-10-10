@@ -398,7 +398,8 @@ export const useAgentCreator = ({
           isValid == "EditServicesOffered" ||
           isValid == "EditLanguage" ||
           isValid == "EditGender" ||
-          isValid == "EditNameAvtar"
+          isValid == "EditNameAvtar" ||
+          isValid == "BusinessListing" || isValid == "EditBusinessDetail"
         ) {
           const finalAgentData = {
             voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
@@ -410,6 +411,7 @@ export const useAgentCreator = ({
             enable_backchannel: true,
             interruption_sensitivity: 0.91,
             backchannel_frequency: 0.7,
+
             backchannel_words: [
               "Got it",
               "Yeah",
@@ -481,7 +483,7 @@ export const useAgentCreator = ({
             ],
 
             // webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
-            // webhook_url: ` https://91f8423c486a.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+            // webhook_url: `https://6eef1bafe6fd.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
             webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
 
 
@@ -504,7 +506,6 @@ export const useAgentCreator = ({
             const agentId = response?.data?.agent_id;
             // Get businessId from sessionStorage
             const businessIdString = sessionStorage.getItem("businessId");
-
             // Convert string to object
             const businessIdObj = JSON.parse(businessIdString);
             const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
@@ -547,6 +548,7 @@ export const useAgentCreator = ({
               dynamicPromptTemplate: filledPrompt,
               rawPromptTemplate: rawPromptTemplate,
               promptVariablesList: JSON.stringify(promptVariablesList),
+              timezone: timeZone?.timezoneId || ""
             };
             //update agent in DB
             try {

@@ -901,7 +901,7 @@ const Step = () => {
           end_call_after_silence_ms: 30000,
           normalize_for_speech: true,
           webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
-          // webhook_url: `https://ad0db4634032.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+          // webhook_url: `https://da33c561d4a5.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
         };
         // Create Agent Creation
         try {
@@ -1022,7 +1022,7 @@ const Step = () => {
                 type: "boolean",
                 name: "appointment_booked",
                 description:
-                  "Determine if appointment was successfully booked during the call",
+                  "Determine if appointment was successfully booked during the call and also if you get appointment deatails like email and date then only mark true",
                 examples: [true, false],
               },
               {
@@ -1051,6 +1051,7 @@ const Step = () => {
             promptVariablesList: JSON.stringify(promptVariablesList),
             CallRecording: callRecording,
             voiceWidgetEnabled: true
+            timezone: timeZone?.timezoneId || ""
           };
           try {
             const response = await createAgent(agentData);
