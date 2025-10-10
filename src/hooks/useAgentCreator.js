@@ -1,10 +1,11 @@
 import { useCallback, useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import { API_BASE_URL, listAgents, updateAgent } from "../Store/apiStore";
+import { API_BASE_URL, listAgents, updateAgent, updateChatAgent } from "../Store/apiStore";
 import decodeToken from "../lib/decodeToken";
 import { getAgentPrompt, useAgentPrompt } from "./useAgentPrompt";
 import getTimezoneFromState from "../lib/timeZone";
 import { appointmentBooking, getBusinessSpecificFields } from "../lib/post_Call_analysis";
+import { TruckElectric } from "lucide-react";
 // import { createAgent, updateAgent } from '../api'; // adjust path
 
 const getFromStorage = (key, fallback = "") =>
@@ -132,6 +133,8 @@ export const useAgentCreator = ({
       : sessionStorage.getItem("agentLanguageCode");
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
+    const chat_agent_id = sessionStorage.getItem("chat_agent_id")
+    const chat_llm_id = sessionStorage.getItem("chat_llm_id")
     const sanitize = (str) =>
       String(str || "")
         .trim()
@@ -322,7 +325,7 @@ export const useAgentCreator = ({
           .map((item) => item?.service?.trim())
           .filter(Boolean)
           .map((service) => ({ service }));
-   
+
         try {
           const response = await axios.patch(
             `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`,
@@ -336,7 +339,7 @@ export const useAgentCreator = ({
               buisnessService: buisenessServices?.selectedService,
               customBuisness: businessDetails?.customBuisness || "",
               customServices: cleanedCustomServices,
-              subType:businessDetails?.subType
+              subType: businessDetails?.subType
             }
           );
 
@@ -548,6 +551,46 @@ export const useAgentCreator = ({
             //update agent in DB
             try {
               const response = await updateAgent(agentId, agentData);
+              //updateChatAgent
+              const commonAgentPayload = {
+                industryKey: business?.businessType,
+                roleTitle: role_title,
+                agentName: agentName,
+                agentGender: agentGender,
+                business: {
+                  businessName:
+                    getBusinessNameFromGoogleListing?.businessName ||
+                    getBusinessNameFormCustom,
+                  email: getBusinessNameFromGoogleListing?.email || "",
+                  aboutBusiness:
+                    getBusinessNameFromGoogleListing?.aboutBusiness ||
+                    getBusinessNameFromGoogleListing?.aboutBussiness,
+                  address: getBusinessNameFromGoogleListing?.address || "",
+                },
+                languageSelect: languageSelect,
+                businessType,
+                aboutBusinessForm,
+                commaSeparatedServices,
+                agentNote,
+                timeZone: timeZone?.timezoneId,
+                languageAccToPlan,
+                plan,
+                CallRecording,
+                businessPhone,
+                businessEmail: business?.email,
+                chat_agent_id,
+                chat_llm_id
+              };
+              // Check both IDs exist and are not null/empty/"null"
+              if (chat_agent_id && chat_llm_id && chat_agent_id !== "null" && chat_llm_id !== "null") {
+                try {
+                  const updateChatAgentResponse = await updateChatAgent(commonAgentPayload, token);
+                } catch (error) {
+                  console.error("Error updating chat agent:", error);
+                }
+              } else {
+                console.log("Chat agent or LLM ID not found — skipping API call.");
+              }
               if (response.status === 200 || response.status === 201) {
                 setPopupType("success");
                 setPopupMessage("Agent Updated successfully!");

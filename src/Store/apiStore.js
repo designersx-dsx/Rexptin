@@ -22,7 +22,7 @@ export const LoginWithEmailOTP = async (email) => {
   return res;
 };
 
-export const verifyEmailOTP = async (email, otp,customer_id) => {
+export const verifyEmailOTP = async (email, otp, customer_id) => {
   const customerRes = await fetch(`${API_BASE_URL}/customer`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -37,7 +37,7 @@ export const verifyEmailOTP = async (email, otp,customer_id) => {
 
 export const verifyOrCreateUser = async (email, otp) => {
 
-   const res1 = await api.post('/auth/LoginWithEmailOTP', { email });
+  const res1 = await api.post('/auth/LoginWithEmailOTP', { email });
 
   const customerRes = await fetch(`${API_BASE_URL}/customer`, {
     method: "POST",
@@ -69,8 +69,8 @@ export const createAgent = async (data) => {
   return res;
 };
 
-export const fetchDashboardDetails = async (userId , token) => {
-      let t = token
+export const fetchDashboardDetails = async (userId, token) => {
+  let t = token
   const res = await api.get(`${API_BASE_URL}/agent/getUserAgentsDetails/${userId}`, {
 
     headers: {
@@ -212,9 +212,9 @@ export const validateEmail = async (email) => {
 
 export const getUserAgentMergedDataForAgentUpdate = async (agentId, businessId) => {
   try {
-    const res = await api.get(`/agent/getUserAgentMergedDataForAgentUpdate/${agentId}?businessId=${businessId}`,{
+    const res = await api.get(`/agent/getUserAgentMergedDataForAgentUpdate/${agentId}?businessId=${businessId}`, {
       headers: {
-        Authorization:`Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
     return res.data;
@@ -239,7 +239,7 @@ export const getAllAgentCalls = async (userId) => {
   }
 };
 
-export const getAgentCallById = async (agentId,callId,start_timestamp) => {
+export const getAgentCallById = async (agentId, callId, start_timestamp) => {
   try {
     // const res = await api.get(`/agent/user/${userId}/agent/calls`, {
     const res = await api.get(`callHistory/getSpecificCallData/call/${agentId}/${callId}?start_timestamp=${start_timestamp}`, {
@@ -269,36 +269,36 @@ export const getAgentCalls = async (agentId) => {
   }
 };
 export async function getUserCallsByMonth(userId, month, year) {
-  
-    try {
-  const res = await axios.get(`${API_BASE_URL}/callHistory/user/${userId}/calls-by-month`, {
-    params: { month, year },
-     headers: {
+
+  try {
+    const res = await axios.get(`${API_BASE_URL}/callHistory/user/${userId}/calls-by-month`, {
+      params: { month, year },
+      headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-  });
-  return res.data;
-   } catch (error) {
+    });
+    return res.data;
+  } catch (error) {
     console.error("Error fetching agent calls:", error.response?.data || error.message);
     // throw new Error("Failed to fetch agent calls");
-        return error?.response?.data ;
+    return error?.response?.data;
 
   }
 }
 
 // Specific agent ka month-wise
 export async function getAgentCallsByMonth(agentId, month, year) {
-    try {
-  const res = await axios.get(`${API_BASE_URL}/callHistory/agent/${agentId}/calls-by-month`, {
-    params: { month, year },
-     headers: {
+  try {
+    const res = await axios.get(`${API_BASE_URL}/callHistory/agent/${agentId}/calls-by-month`, {
+      params: { month, year },
+      headers: {
         Authorization: `Bearer $${token}`,
       },
-  });
-  return res.data;
-   } catch (error) {
+    });
+    return res.data;
+  } catch (error) {
     console.error("Error fetching agent calls:", error.response?.data || error.message);
-    return error?.response?.data ;
+    return error?.response?.data;
     // throw new Error("Failed to fetch agent calls");
   }
 }
@@ -306,11 +306,11 @@ export async function getAgentCallsByMonth(agentId, month, year) {
 export const fetchUserDetails = async (id) => {
   const userId = id
   try {
-    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}` , {
-       headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${localStorage.getItem('token')}`,
-  },
+    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
     })
     return response
   } catch (error) {
@@ -330,14 +330,14 @@ export const toggleAgentActivation = async (agentId, deactivate = true) => {
   }
 };
 
-export const getUserDetails = async (userId , token) => {
+export const getUserDetails = async (userId, token) => {
   let t = token
   try {
-    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}` , {
-headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${t}`,
-  },
+    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${t}`,
+      },
     });
     // console.log(response, "response")
     return response.data;
@@ -389,9 +389,9 @@ export const updateLlm = async (llmId, payload) => {
 };
 export const fetchLlmDetails = async (llm_id) => {
   const data = { llmId: llm_id }
-  
+
   try {
-    const token =localStorage.getItem('token')
+    const token = localStorage.getItem('token')
     const response = await axios.post(`${API_BASE_URL}/agent/getLlmDetails`, data,
       {
         headers: {
@@ -424,7 +424,7 @@ export const addGeneralTools = async (llmId, transfers) => {
 }
 export const getBusinessDetailsByBusinessId = async (businessId) => {
   try {
-    const res = await api.get(`/businessDetails/by-business-id/${businessId}`,{
+    const res = await api.get(`/businessDetails/by-business-id/${businessId}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -544,12 +544,12 @@ export const saveAgentSchedule = async (scheduleData) => {
 };
 export const getAgentScheduleByUserId = async (userId) => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/agent/agent-schedule/${userId}` , 
+    const res = await axios.get(`${API_BASE_URL}/agent/agent-schedule/${userId}`,
       {
-          headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${localStorage.getItem('token') }`,
-  }
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        }
       }
     );
     return res.data;
@@ -558,45 +558,45 @@ export const getAgentScheduleByUserId = async (userId) => {
     throw new Error("Failed to fetch agent schedule");
   }
 }
-export const fetchAvailablePhoneNumberByCountry = async (token , country_code, locality, administrative_area, startsWith, endsWith) => {
+export const fetchAvailablePhoneNumberByCountry = async (token, country_code, locality, administrative_area, startsWith, endsWith) => {
   let t = token
   try {
-   const res = await axios.get(`${API_BASE_URL}/telnyx/available-numbers`, {
-  params: {
-    country_code,
-    locality,
-    administrative_area,
-    starts_with: startsWith,
-    ends_with: endsWith
-  },
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${t}`,
-  }
-});
+    const res = await axios.get(`${API_BASE_URL}/telnyx/available-numbers`, {
+      params: {
+        country_code,
+        locality,
+        administrative_area,
+        starts_with: startsWith,
+        ends_with: endsWith
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${t}`,
+      }
+    });
 
     return res.data;
   } catch (error) {
-   return error.response?.data 
-   
+    return error.response?.data
+
   }
 }
-export const createNumberOrder = async (phoneNumbers,agent_id) => {
+export const createNumberOrder = async (phoneNumbers, agent_id) => {
   try {
-    const res = await axios.post(`${API_BASE_URL}/telnyx/create-number-order`, { phoneNumbers: phoneNumbers ,agent_id:agent_id} , {
-       headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
-  },
+    const res = await axios.post(`${API_BASE_URL}/telnyx/create-number-order`, { phoneNumbers: phoneNumbers, agent_id: agent_id }, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
     })
     return res.data;
   } catch (error) {
     console.log(error)
   }
 }
-export const createEvent=async(apiKey,eventName,slug,eventLength)=>{
+export const createEvent = async (apiKey, eventName, slug, eventLength) => {
   try {
-    const res = await axios.post(`${API_BASE_URL}/agent/createCalEvent`, { apiKey:apiKey,eventName:eventName,slug:slug,eventLength:eventLength})
+    const res = await axios.post(`${API_BASE_URL}/agent/createCalEvent`, { apiKey: apiKey, eventName: eventName, slug: slug, eventLength: eventLength })
     return res.data;
   } catch (error) {
     console.log(error)
@@ -645,7 +645,7 @@ export const uploadAgentFiles = async (agentId, files) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data; 
+    return response.data;
   } catch (error) {
     console.error("Error uploading files:", error);
     throw new Error("Error uploading files");
@@ -667,13 +667,13 @@ export async function getUserNotifications(userId) {
   }
 }
 
-export const markNotificationAsSeen = async (id,type) => {
+export const markNotificationAsSeen = async (id, type) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`,{type},{
+    const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`, { type }, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-  });
+    });
     return response.data;
   } catch (err) {
     return { success: false, error: err.message };
@@ -684,7 +684,7 @@ export const getAgentFiles = async (agentId) => {
   try {
     const response = await api.get(`/agent/get-agent-files/${agentId}`, {
       headers: {
-        Authorization: `Bearer ${token}`, 
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
@@ -697,36 +697,36 @@ export const getAgentFiles = async (agentId) => {
 
 export const deleteAgentFile = async (agentId, filename) => {
   try {
-     const response = await api.delete(`/agent/delete-file/${agentId}/${filename}`, {
-       headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error deleting agent file:", error.response?.data || error.message);
-    throw new Error("Error deleting agent file");
-  }
-};
-
-export const listSiteMap=async(url)=>{
-  try {
-    const response = await api.post(`/map/list-sitemap`,{url}, {
+    const response = await api.delete(`/agent/delete-file/${agentId}/${filename}`, {
       headers: {
-       Authorization: `Bearer ${token}`,
-     },
-   });
-   return response.data;
- } catch (error) {
-   console.error("Error deleting agent file:", error.response?.data || error.message);
-   throw new Error("Error deleting agent file");
- }
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting agent file:", error.response?.data || error.message);
+    throw new Error("Error deleting agent file");
+  }
+};
+
+export const listSiteMap = async (url) => {
+  try {
+    const response = await api.post(`/map/list-sitemap`, { url }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting agent file:", error.response?.data || error.message);
+    throw new Error("Error deleting agent file");
+  }
 }
 
-export const sendEmailToOwner = async (email,name,phone ) => {
+export const sendEmailToOwner = async (email, name, phone) => {
   try {
-     const response = await api.post(`/endusers/sendEmailToOwner`,{email:email,name:name,phone:phone}, {
-       headers: {
+    const response = await api.post(`/endusers/sendEmailToOwner`, { email: email, name: name, phone: phone }, {
+      headers: {
         Authorization: `Bearer ${token}`,
       },
     });
@@ -739,14 +739,14 @@ export const sendEmailToOwner = async (email,name,phone ) => {
 
 
 
-export const customPlanCheck = async (userId)=>{
-try {
-  let res = axios.get(`${API_BASE_URL}/tier/${userId}`)
-  return res
-} catch (error) {
-  console.log(error , "Error")
-  return error
-}
+export const customPlanCheck = async (userId) => {
+  try {
+    let res = axios.get(`${API_BASE_URL}/tier/${userId}`)
+    return res
+  } catch (error) {
+    console.log(error, "Error")
+    return error
+  }
 }
 
 export const getDashboardTourStatus = async (userId) => {
@@ -754,7 +754,7 @@ export const getDashboardTourStatus = async (userId) => {
     const res = await api.get(`/agent/status/${userId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return res.data; 
+    return res.data;
   } catch (error) {
     console.error("Error fetching tour status:", error.response?.data || error.message);
     throw new Error("Failed to fetch tour status");
@@ -766,15 +766,49 @@ export const markDashboardTourSeen = async (userId) => {
     const res = await api.post(`/agent/seen/${userId}`, {}, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return res.data; 
+    return res.data;
   } catch (error) {
-    console.error("Error marking tour as seen:", error.response?.data || error.message);
-    throw new Error("Failed to mark tour as seen");
+    console.error("Error marking tour as seen:", error.response);
+  
   }
 };
 
+export const createChatAgent = async (payload, token) => {
+  try {
+    const res = await api.post(`/agent/createChatAgent`, { payload }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error marking tour as seen:", error.response);
+    
+  }
+}
+export const updateAgentChatEnabled = async (agent_id, newState, token) => {
+  try {
+    const res = await api.post(`/agent/updateAgentChatEnabled`, {
+      agent_id: agent_id,
+      newState: newState
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error marking tour as seen:", error.response);
 
+  }
+}
+export const updateChatAgent = async (payload, token) => {
+  try {
+    const res = await api.put(`/agent/updateChatAgent`, { payload }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error marking tour as seen:", error.response);
 
+  }
+}
 
 export default api;
 

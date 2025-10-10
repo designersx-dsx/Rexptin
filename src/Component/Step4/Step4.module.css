@@ -111,3 +111,83 @@
   font-size: 14px;
   font-weight: 500;
 }
+
+/* chat widget Css */
+.widgetCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #E0E5F2;
+  border-radius: 16px;
+  padding: 16px 20px;
+  background-color: #fff;
+  transition: box-shadow 0.2s ease;
+}
+
+.widgetCard:hover {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+}
+
+.widgetInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.widgetTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+}
+
+.widgetSubtitle {
+  font-size: 14px;
+  color: #9CA3AF;
+  margin: 2px 0 0;
+}
+
+/* Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+.switch input:checked + .slider {
+  background-color: #6524EB;
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(18px);
+}
