@@ -5,9 +5,12 @@ import styles from "./AgentAnalysis.module.css";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { API_BASE_URL, getAgentCallsByMonth, getAppointments } from "../../../Store/apiStore";
 import { useNavigate } from "react-router-dom";
-import decodeToken from "../../../lib/decodeToken"; // ⬅️ NEW
 
-// ---------- helpers ----------
+import { useCallHistoryStore, useCallHistoryStore1 } from "../../../Store/useCallHistoryStore ";
+import { DateTime } from "luxon";
+// Helper function to format date
+
+import decodeToken from "../../../lib/decodeToken"; // ⬅️ NEW
 function formatDateISO(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -45,6 +48,9 @@ function joinDateTime(dateStr, timeStr) {
 const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
   const [callHistory, setCallHistory] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [callsForSelectedDate, setCallsForSelectedDate] = useState([]);
+  console.log(callsForSelectedDate, "callsForSelectedDate")
+  const { mergeCallHistoryData } = useCallHistoryStore1();
   const [itemsForSelectedDate, setItemsForSelectedDate] = useState([]);
   const [dateMap, setDateMap] = useState({}); // ⬅️ merged map: { "YYYY-MM-DD": [ items ] }
   const bookingsRef = useRef(null);
@@ -67,9 +73,16 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
       return;
     }
     try {
-      const res = await getAgentCallsByMonth(agentId, m, y);
-      setCallHistory(res?.calls || []);
-    } catch {
+      if (!agentId) return;
+      const currentDate = new Date();
+      const month = currentDate.getMonth() + 1;
+      const year = currentDate.getFullYear();
+      const response = await getAgentCallsByMonth(agentId, month, year)
+      // console.log('response,response',response)
+      setCallHistory(response?.calls || []);
+    } catch (error) {
+      // console.error("Error fetching call history:", error);
+
       setCallHistory([]);
     }
   };
@@ -213,6 +226,26 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
     );
   };
 
+
+  const handleMonthChange = async (month, year) => {
+    try {
+      if (agentId) {
+        const res = await getAgentCallsByMonth(agentId, month, year);
+        setCallHistory(res.calls || []);
+      }
+
+    } catch (error) {
+      console.error("Error fetching month data:", error);
+      setCallHistory([]);
+    }
+  };
+  const getTimeFromTimestamp = (timestamp, timezone) => {
+    if (!timestamp) return "-";
+    return DateTime.fromMillis(timestamp)
+      .setZone(timezone || "UTC")
+      .toFormat("hh:mm:ss a");
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.CallFlex}>
@@ -302,8 +335,9 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
                     style={{ cursor: isCall && item.raw?.call_id ? "pointer" : "default" }}
                   >
                     <div className={styles.time}>
-                      {timeLabel}
-                      {/* {item.endTime ? ` - ${formatTimeLikeClock(item.endTime)}` : ""} */}
+                       {getTimeFromTimestamp( item?.raw?.start_timestamp,  item?.raw?.timezone)}{" "}
+                    {call.end_timestamp &&
+                      `- ${getTimeFromTimestamp( item?.raw?.end_timestamp,  item?.raw?.timezone)}`
                     </div>
 
                     <div className={styles.detailColumn}>

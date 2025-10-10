@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import { red } from "@mui/material/colors";
 import PopUp from "../Popup/Popup";
-
+import { DateTime } from "luxon";
 const options = [
   { id: 1, label: "All", imageUrl: "svg/ThreOpbtn.svg" },
   { id: 2, label: "Positive", imageUrl: "svg/greendot.svg" },
@@ -37,7 +37,7 @@ export default function Home() {
     totalAgentView === "all" ? "all" : sessionAgentId || ""
   );
   const [data, setData] = useState([]);
-
+  console.log(data, "DAYTA")
   const [selectedDateRange, setSelectedDateRange] = useState({
     startDate: "",
     endDate: "",
@@ -66,7 +66,6 @@ export default function Home() {
   const [showPopUp, setShowPopUp] = useState(false);
   const [popUpMessage, setPopUpMessage] = useState("");
   const [popUpType, setPopUpType] = useState("");
-
   useEffect(() => {
     const storedYear = sessionStorage.getItem("selectedYear");
     const storedMonth = sessionStorage.getItem("selectedMonth");
@@ -135,14 +134,20 @@ export default function Home() {
     const seconds = Math.floor((durationMs % 60000) / 1000);
     return `${minutes} min ${seconds} sec`;
   };
-
-  const getDateTimeFromTimestamp = (timestamp) => {
-    const dateObj = new Date(timestamp);
-    const date = dateObj.toLocaleDateString();
-    const time = dateObj.toLocaleTimeString();
-    return { date, time };
-  };
+const getTimeFromTimestamp = (timestamp,timezone) => {
+  if (!timestamp) return "-";
+  return DateTime.fromMillis(timestamp)
+    .setZone(timezone || "UTC")
+    .toFormat("hh:mm:ss a");
+};
+const getDateFromTimestamp = (timestamp,timezone) => {
+  if (!timestamp) return "-";
+  return DateTime.fromMillis(timestamp)
+    .setZone(timezone || "UTC")
+    .toFormat("yyyy-MM-dd");
+};
   const filteredData = data?.filter((call) => {
+
     const sentimentMatch =
       selectedSentiment === "All" ||
       call?.user_sentiment === selectedSentiment ||
@@ -168,7 +173,7 @@ export default function Home() {
       filters?.leadType.length === 0 ||
       filters?.leadType.includes(
         call.custom_analysis_data?.lead_type ||
-          call?.call_analysis?.custom_analysis_data?.lead_type
+        call?.call_analysis?.custom_analysis_data?.lead_type
       );
     const channelMatch =
       filters?.channel === "" || call?.call_type === filters?.channel;
@@ -405,13 +410,13 @@ export default function Home() {
                         <div>
                           {" "}
                           {call?.end_timestamp
-                            ? getDateTimeFromTimestamp(call?.end_timestamp).time
+                            ? getTimeFromTimestamp(call?.end_timestamp,call?.timezone)
                             : "-"}{" "}
                         </div>
                         <div className={styles.callDate}>
                           {" "}
                           {call?.end_timestamp
-                            ? formattedDate(call?.end_timestamp)
+                            ? getDateFromTimestamp(call?.end_timestamp,call?.timezone)
                             : "-"}{" "}
                         </div>
                       </div>
@@ -426,7 +431,7 @@ export default function Home() {
                       <p
                         className={`${styles.fromNumber} ${getSentimentClass(
                           call.user_sentiment ||
-                            call?.call_analysis?.user_sentiment
+                          call?.call_analysis?.user_sentiment
                         )}`}
                       >
                         {call?.call_type == "phone_call"
@@ -501,16 +506,17 @@ export default function Home() {
           </table>
         </div>
 
-        {(currentPage == totalPages || loadMoreAvailable) && (
-          <div className={styles.bottomBar}>
-            {loadMoreError && (
-              <span className={styles.error}>{loadMoreError}</span>
-            )}
-            <button onClick={loadMore} disabled={loading}>
-              Load More
-            </button>
-          </div>
-        )}
+        {/* <>{(currentPage == totalPages || loadMoreAvailable) && (
+          
+        )}></> */}
+        <div className={styles.bottomBar}>
+          {loadMoreError && (
+            <span className={styles.error}>{loadMoreError}</span>
+          )}
+          <button onClick={loadMore} disabled={loading}>
+            Load More
+          </button>
+        </div>
         {/* Pagination */}
         {filteredData.length > 0 && (
           <>

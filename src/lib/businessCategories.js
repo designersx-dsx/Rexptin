@@ -68,7 +68,8 @@ export const businessTypes = [
       "Nail Salon",
       "Bridal Salon",
       "Skin Care Studio",
-      "Hair Styling & Grooming"
+      "Hair Styling & Grooming",
+      "Salon"
     ],
   },
   {
@@ -190,7 +191,6 @@ export const businessTypes = [
       "Commercial Architect",
       "Industrial Architect",
       "Urban Planner",
-      "Landscape Architect",
       "Sustainable Architect",
       "Interior Architect",
       "Restoration Architect",
@@ -763,6 +763,24 @@ export const businessTypes = [
       "Educational Institute"
     ],
   }
+  // {
+  //   type: "Plumber",
+  //   subtype: "Water System Specialist",
+  //   icon: "svg/Hair Stylist.svg",
+  //   subtypes: [
+  //     "Residential Plumbing Services",
+  //     "Commercial Plumbing Services",
+  //     "Industrial Plumbing Solutions",
+  //     "Pipe Installation & Maintenance",
+  //     "Drainage & Sewer Cleaning",
+  //     "Leak Detection & Repair",
+  //     "Bathroom & Kitchen Fittings",
+  //     "Water Heater Installation & Repair",
+  //     "Water Tank Cleaning & Maintenance",
+  //     "Emergency Plumbing Services",
+  //     "Plumber"
+  //   ],
+  // }
   ,
   {
     type: "Other",

@@ -384,9 +384,8 @@ const Step = () => {
     sessionStorage.getItem("placeDetailsExtract")
   );
   const businessPhone = removeSpaces(getBusinessNameFromGoogleListing?.phone);
-  const dynamicAgentName = `${businessCode}_${userId}_${agentCode}_#${
-    agentCount + 1
-  }`;
+  const dynamicAgentName = `${businessCode}_${userId}_${agentCode}_#${agentCount + 1
+    }`;
   const getLeadTypeChoices = () => {
     const fixedChoices = [
       "Spam Caller",
@@ -900,7 +899,7 @@ const Step = () => {
           end_call_after_silence_ms: 30000,
           normalize_for_speech: true,
           webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
-          // webhook_url: `https://ad0db4634032.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+          // webhook_url: `https://da33c561d4a5.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
         };
         // Create Agent Creation
         try {
@@ -1049,6 +1048,7 @@ const Step = () => {
             ],
             promptVariablesList: JSON.stringify(promptVariablesList),
             CallRecording: callRecording,
+            timezone: timeZone?.timezoneId || ""
           };
           try {
             const response = await createAgent(agentData);
