@@ -40,10 +40,12 @@ export const verifyEmailOTP = async (email, otp, customer_id) => {
 };
 
 export const verifyOrCreateUser = async (email, otp) => {
+
   const res1 = await api.post("/auth/LoginWithEmailOTP", {
     email,
     fullOtp: otp,
   });
+
 
   const customerRes = await fetch(`${API_BASE_URL}/customer`, {
     method: "POST",
@@ -80,15 +82,13 @@ export const createAgent = async (data) => {
 };
 
 export const fetchDashboardDetails = async (userId, token) => {
-  let t = token;
-  const res = await api.get(
-    `${API_BASE_URL}/agent/getUserAgentsDetails/${userId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${t}`,
-      },
-    }
-  );
+  let t = token
+  const res = await api.get(`${API_BASE_URL}/agent/getUserAgentsDetails/${userId}`, {
+
+    headers: {
+      Authorization: `Bearer ${t}`,
+    },
+  });
   return res.data;
 };
 
@@ -916,7 +916,6 @@ export const sendEmailToOwner = async (email, name, phone) => {
     throw new Error("Error deleting agent file");
   }
 };
-
 export const customPlanCheck = async (userId) => {
   try {
     let res = axios.get(`${API_BASE_URL}/tier/${userId}`);
@@ -961,6 +960,43 @@ export const markDashboardTourSeen = async (userId) => {
   }
 };
 
+export const createChatAgent = async (payload, token) => {
+  try {
+    const res = await api.post(`/agent/createChatAgent`, { payload }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error marking tour as seen:", error.response);
+    
+  }
+}
+export const updateAgentChatEnabled = async (agent_id, newState, token) => {
+  try {
+    const res = await api.post(`/agent/updateAgentChatEnabled`, {
+      agent_id: agent_id,
+      newState: newState
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error marking tour as seen:", error.response);
+
+
+  }
+}
+export const updateChatAgent = async (payload, token) => {
+  try {
+    const res = await api.put(`/agent/updateChatAgent`, { payload }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error marking tour as seen:", error.response);
+      }
+}
+
 
 export const getAppointments = async (userId = null, agentId = null) => {
   try {
@@ -975,8 +1011,5 @@ export const getAppointments = async (userId = null, agentId = null) => {
     return { success: false, data: [] };
   }
 };
-
-
-
 
 export default api;

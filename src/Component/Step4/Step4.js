@@ -17,30 +17,38 @@ const Step4 = forwardRef(
 
 
     },
-
     ref
   ) => {
     const [agentNote, setAgentNote] = useState("");
     const [selectedRole, setSelectedRole] = useState("");
-
+    const storedWidgetState =
+      typeof window !== "undefined"
+        ? sessionStorage.getItem("chatWebWidget")
+        : null;
+    const [isChatWidgetEnabled, setIsChatWidgetEnabled] = useState(
+      storedWidgetState ? storedWidgetState === "true" : true
+    );
+    console.log(isChatWidgetEnabled,"isChatWidgetEnabled")
     useEffect(() => {
-  const storedAgentRole = sessionStorage.getItem("agentRole");
-  const storedNote = sessionStorage.getItem("agentNote");
+      const storedAgentRole = sessionStorage.getItem("agentRole");
+      const storedNote = sessionStorage.getItem("agentNote");
+      const storedWidgetState = sessionStorage.getItem("chatWebWidget");
+      if (storedAgentRole) {
+        setSelectedRole(storedAgentRole);
+      } else {
+        setSelectedRole("General Receptionist");
+        sessionStorage.setItem("agentRole", "General Receptionist");
+        detectRoleTypeChange?.("General Receptionist");
+      }
 
-  if (storedAgentRole) {
-    setSelectedRole(storedAgentRole);
-  } else {
-    setSelectedRole("General Receptionist");
-    sessionStorage.setItem("agentRole", "General Receptionist");
-    detectRoleTypeChange?.("General Receptionist");
-  }
-
-  if (storedNote) {
-    setAgentNote(storedNote);
-  }
-}, []);
-
-
+      if (storedNote) {
+        setAgentNote(storedNote);
+      }
+      //  If no widget value yet, set a default once
+      if (storedWidgetState === null) {
+        sessionStorage.setItem("chatWebWidget", "true");
+      }
+    }, []);
     // Persist on change
     useEffect(() => {
       sessionStorage.setItem("agentRole", selectedRole);
@@ -48,7 +56,9 @@ const Step4 = forwardRef(
     useEffect(() => {
       sessionStorage.setItem("agentNote", agentNote);
     }, [agentNote]);
-
+    useEffect(() => {
+      sessionStorage.setItem("chatWebWidget", isChatWidgetEnabled);
+    }, [isChatWidgetEnabled]);
     // Pass validation and note back to parent
     useImperativeHandle(ref, () => ({
       validate: () => {
@@ -63,6 +73,7 @@ const Step4 = forwardRef(
         return {
           isValid: true,
           agentNote: agentNote.trim(),
+          chatWebWidget: isChatWidgetEnabled,
         };
 
       },
@@ -117,6 +128,24 @@ const Step4 = forwardRef(
     // }, []);
     return (
       <>
+        <div>
+          <br />
+          <div className={styles.widgetCard}>
+            <div className={styles.widgetInfo}>
+              <p className={styles.widgetTitle}>Chat Web Widget</p>
+              <p className={styles.widgetSubtitle}>Intelligent Messaging Agent</p>
+            </div>
+
+            <label className={styles.switch}>
+              <input
+                type="checkbox"
+                checked={isChatWidgetEnabled}
+                onChange={(e) => setIsChatWidgetEnabled(e.target.checked)}
+              />
+              <span className={styles.slider}></span>
+            </label>
+          </div>
+        </div>
         <div className={`${styles.container} ${loading ? styles.blocked : ""}`}>
           {roles.map((role, index) => (
             <label
@@ -149,9 +178,8 @@ const Step4 = forwardRef(
             </label>
 
           ))}
-
-
         </div>
+
         {selectedRole && (
           <p className={styles.LastP}>
             {

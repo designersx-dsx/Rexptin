@@ -239,7 +239,7 @@ const [bookingCount, setBookingCount] = useState(0);
       setTourElevateDropdown(false);
     });
   };
-sessionStorage.removeItem("isUser")
+  sessionStorage.removeItem("isUser")
   useEffect(() => {
     if (!userId) return;
     let cancelled = false;
@@ -802,7 +802,8 @@ sessionStorage.removeItem("isUser")
       sessionStorage.removeItem("price");
       sessionStorage.removeItem("selectedSiteMapUrls");
       sessionStorage.removeItem("urls");
-
+      sessionStorage.removeItem("chat_agent_id");
+      sessionStorage.removeItem("chat_llm_id")
 
     }
   }, []);
@@ -3055,32 +3056,32 @@ sessionStorage.removeItem("isUser")
 
                           ) && (
 
-                          <>
-                            <div>
-                              <div
-                                onMouseDown={(e) => {
+                              <>
+                                <div>
+                                  <div
+                                    onMouseDown={(e) => {
 
-                                  // handleTogglePayG()
-                                  // console.log("agent", agent)
-                                  setshowPaygConfirm(true)
-                                  setagentToPaygActivate(agent)
-                                  setpaygEnabledPopup(checkPaygStatus === null || checkPaygStatus === 0 ? true : false)
+                                      // handleTogglePayG()
+                                      // console.log("agent", agent)
+                                      setshowPaygConfirm(true)
+                                      setagentToPaygActivate(agent)
+                                      setpaygEnabledPopup(checkPaygStatus === null || checkPaygStatus === 0 ? true : false)
 
 
-                                }}
+                                    }}
 
-                                className={styles.OptionItem}
-                              >
-                                {paygStatusLoading
-                                  ? "Loading.."
-                                  : isPaygActive === true
-                                    ? "Deactivate Pay as you go"
-                                    : "Active Pay as you go"}
-                              </div>
-                            </div>
+                                    className={styles.OptionItem}
+                                  >
+                                    {paygStatusLoading
+                                      ? "Loading.."
+                                      : isPaygActive === true
+                                        ? "Deactivate Pay as you go"
+                                        : "Active Pay as you go"}
+                                  </div>
+                                </div>
 
-                          </>
-                           )} 
+                              </>
+                            )}
 
                         </div>
 

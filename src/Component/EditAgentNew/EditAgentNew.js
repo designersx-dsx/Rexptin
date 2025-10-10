@@ -88,7 +88,8 @@ const EditAgentNew = () => {
       sessionStorage.setItem("agent_id", agent.agent_id);
       sessionStorage.setItem("knowledgeBaseId", agent.knowledgeBaseId);
       sessionStorage.setItem("agentCode", agent?.agentCode);
-
+      sessionStorage.setItem("chat_agent_id", agent?.chat_agent_id)
+      sessionStorage.setItem("chat_llm_id", agent?.chat_llm_id)
       //need to clear later
       localStorage.setItem("UpdationMode", "ON");
       localStorage.setItem("UpdationModeStepWise", "ON");
@@ -154,7 +155,7 @@ const EditAgentNew = () => {
         businessName: business.businessName.trim(),
         businessSize: business.businessSize,
         customBuisness: business.customBuisness,
-         subType: business.subType,
+        subType: business.subType,
       };
       let parsedServices = safeParse(business.buisnessService, []);
       sessionStorage.setItem(
