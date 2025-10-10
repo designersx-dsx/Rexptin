@@ -53,6 +53,7 @@
   align-items: center;
   gap: 10px;
 }
+
 .customRadio {
   width: 20px;
   height: 20px;
@@ -105,7 +106,7 @@
   background-color: transparent;
 }
 
-.LastP{
+.LastP {
   color: #b1b1b1;
   margin-block: 1rem;
   font-size: 14px;
@@ -118,8 +119,9 @@
   align-items: center;
   justify-content: space-between;
   border: 1px solid #E0E5F2;
-  border-radius: 16px;
-  padding: 16px 20px;
+  border-radius: 12px;
+  padding: 12px 16px;
+  height: 73px;
   background-color: #fff;
   transition: box-shadow 0.2s ease;
 }
@@ -134,15 +136,15 @@
 }
 
 .widgetTitle {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
-  color: #000;
+  color: #24252C;
   margin: 0;
 }
 
 .widgetSubtitle {
-  font-size: 14px;
-  color: #9CA3AF;
+  font-size: 16px;
+  color: #A3AED0;
   margin: 2px 0 0;
 }
 
@@ -184,10 +186,10 @@
   border-radius: 50%;
 }
 
-.switch input:checked + .slider {
+.switch input:checked+.slider {
   background-color: #6524EB;
 }
 
-.switch input:checked + .slider::before {
+.switch input:checked+.slider::before {
   transform: translateX(18px);
 }

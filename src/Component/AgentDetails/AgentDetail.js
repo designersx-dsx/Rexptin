@@ -1332,27 +1332,31 @@ Do you want to proceed with deleting this assigned number?`
               </div>
             </div>
             <br />
-            <div className={styles.chatContainer}>
-              <div className={styles.icon}>
-                <span className={styles.chatDots}>•••</span>
-              </div>
+            <div className={styles.chatwebContainer}>
+              <div className={styles.chatContainer}>
+                <div className={styles.icon}>
+                  <img src="/svg/chat-icon.svg" alt="chat-icon" />
+                </div>
 
-              <div className={styles.content}>
-                <div className={styles.headerRow}>
-                  <div>
-                    <h3 className={styles.title}>Chat Web Widget</h3>
-                    <p className={styles.subtitle}>Intelligent Messaging Agent</p>
+                <div className={styles.content}>
+                  <div className={styles.headerRow}>
+                    <div>
+                      <h3 className={styles.title}>Chat Web Widget</h3>
+                      <p className={styles.subtitle}>Intelligent Messaging Agent</p>
+                    </div>
+                    <label className={styles.switch}>
+                      <input type="checkbox" checked={isEnabled} onChange={chatToggleSwitch} />
+                      <span className={styles.slider}></span>
+                    </label>
                   </div>
-                  <label className={styles.switch}>
-                    <input type="checkbox" checked={isEnabled} onChange={chatToggleSwitch} />
-                    <span className={styles.slider}></span>
-                  </label>
+
+
                 </div>
 
-                <div className={styles.footer}>
-                  <span className={styles.messages}><strong>222</strong> messages left (Total 300/m)</span>
-                  <button className={styles.buyMore}>+ Buy More</button>
-                </div>
+              </div>
+              <div className={styles.footer}>
+                <span className={styles.messages}><strong>222</strong> messages left (Total 300/m)</span>
+                <button className={styles.buyMore}><img src="/svg/plus-icon.svg" alt="plus-icon" />Buy More</button>
               </div>
             </div>
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
