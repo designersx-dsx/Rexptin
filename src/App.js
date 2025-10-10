@@ -75,28 +75,29 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import NotificationView from "./Component/Notifications/NotificationView";
+
 import ThankYouPage from "./Component/hubspotThankyouPage/HubspotThankyou";
+
+import OwnPlan from './Component/OwnPlan/OwnPlan'
+import CustomPlan from "./Component/OwnPlan/CustomPlan";
+
 // import Test from "./utils/Test";
 function App() {
-  const [refreshKey, setRefreshKey] = useState(0);
+ const [refreshKey, setRefreshKey] = useState(0);
   const token = localStorage.getItem("token");
   const lastRoute = localStorage.getItem("lastVisitedRoute");
   const decoded = decodeToken(token);
-  const userID = decoded?.id;
-  const SOCKET_URL = process.env.REACT_APP_API_BASE_URL?.split("/api")[0];
+  const userID = decoded?.id
+  const SOCKET_URL = process.env.REACT_APP_API_BASE_URL?.split('/api')[0]
   const notifications = useNotificationStore((state) => state.notifications);
-  const addNotification = useNotificationStore(
-    (state) => state.addNotification
-  );
-  const loadNotifications = useNotificationStore(
-    (state) => state.loadNotifications
-  );
+  const addNotification = useNotificationStore((state) => state.addNotification);
+  const loadNotifications = useNotificationStore((state) => state.loadNotifications);
   const toggleFlag = useNotificationStore((state) => state.toggleFlag);
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
+   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0); // State for unreadCount
   // const [refreshNotification,setRefreshNoitification]=useState(false)
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
@@ -126,57 +127,56 @@ function App() {
           console.log("user notifications ", resp);
           loadNotifications(resp?.notifications || []);
         })
-        .catch((err) =>
-          console.log("error while fetching user Notifications", err)
-        );
+        .catch((err) => console.log("error while fetching user Notifications", err));
     }
-  }, [userID, token]);
+  }, [userID,token]);
 
-  // useEffect(() => {
-  //   const handleBeforeInstallPrompt = (e) => {
-  //     const alreadyShown = localStorage.getItem("installPromptShown");
-  //     if (alreadyShown) return;  // only block if already shown
+// useEffect(() => {
+//   const handleBeforeInstallPrompt = (e) => {
+//     const alreadyShown = localStorage.getItem("installPromptShown");
+//     if (alreadyShown) return;  // only block if already shown
 
-  //     e.preventDefault();
-  //     console.log("📱 beforeinstallprompt fired");
-  //     setDeferredPrompt(e);
-  //     setShowPopup(true);  // show your popup
-  //   };
+//     e.preventDefault();
+//     console.log("📱 beforeinstallprompt fired");
+//     setDeferredPrompt(e);
+//     setShowPopup(true);  // show your popup
+//   };
 
-  //   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+//   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-  //   return () => {
-  //     window.removeEventListener(
-  //       "beforeinstallprompt",
-  //       handleBeforeInstallPrompt
-  //     );
-  //   };
-  // }, []);
+//   return () => {
+//     window.removeEventListener(
+//       "beforeinstallprompt",
+//       handleBeforeInstallPrompt
+//     );
+//   };
+// }, []);
 
-  // const handleInstall = async () => {
-  //   if (!deferredPrompt) return;
+// const handleInstall = async () => {
+//   if (!deferredPrompt) return;
 
-  //   deferredPrompt.prompt();
-  //   const { outcome } = await deferredPrompt.userChoice;
+//   deferredPrompt.prompt();
+//   const { outcome } = await deferredPrompt.userChoice;
 
-  //   if (outcome === "accepted") {
-  //     console.log("✅ User accepted install");
-  //   } else {
-  //     console.log("❌ User dismissed install");
-  //   }
+//   if (outcome === "accepted") {
+//     console.log("✅ User accepted install");
+//   } else {
+//     console.log("❌ User dismissed install");
+//   }
 
-  //   // mark as shown no matter what
-  //   localStorage.setItem("installPromptShown", "true");
-  //   setDeferredPrompt(null);
-  //   setShowPopup(false);
-  // };
+//   // mark as shown no matter what
+//   localStorage.setItem("installPromptShown", "true"); 
+//   setDeferredPrompt(null);
+//   setShowPopup(false);
+// };
 
-  //   const handleClose = () => {
-  //     localStorage.setItem("installPromptShown", "true"); // save flag
-  //     setShowPopup(false);
-  //   };
 
-  useEffect(() => {
+//   const handleClose = () => {
+//     localStorage.setItem("installPromptShown", "true"); // save flag
+//     setShowPopup(false);
+//   };
+  
+useEffect(() => {
     const count = notifications?.filter((n) => n?.status === "unread")?.length;
     setUnreadCount(count);
     // console.log("Notifications:", notifications);
@@ -185,6 +185,7 @@ function App() {
 
   useEffect(() => {
     if (!userID) return;
+
 
     // 🔌 Socket connect
     const socket = io(SOCKET_URL, {
@@ -229,8 +230,9 @@ function App() {
   }, [userID]);
   useEffect(() => {
     const ref = document.referrer;
-    console.log("Referrer URL:", ref);
+    console.log('Referrer URL:', ref);   
   }, []);
+
 
   //  const handleClose = () => {
   //   setShowPopup(false);
@@ -248,7 +250,7 @@ function App() {
           <p>Launch Your AI Receptionist with Rexpt.in</p>
         </div>
         <div className="ForMobile">
-          {/* {showPopup && (
+
         <div
           style={{
             position: "fixed",
@@ -646,6 +648,9 @@ function App() {
                     </SecureRoute>
                   }
                 />
+                <Route path="/own-plan" element={<OwnPlan />} />
+                <Route path="/own-custom-plan" element={<CustomPlan />} />
+
 
                 <Route
                   path="/agent-setup"

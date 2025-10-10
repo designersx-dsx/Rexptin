@@ -22,6 +22,7 @@ import {
   API_BASE_URL,
   getDashboardTourStatus,
   markDashboardTourSeen,
+  getAppointments,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -125,7 +126,11 @@ function Dashboard() {
 
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
-  const [bookingCount, setBookingCount] = useState(0);
+
+const [calBookingCount, setCalBookingCount] = useState(0);
+const [dbBookingCount, setDbBookingCount] = useState(0);
+const [bookingCount, setBookingCount] = useState(0); 
+
 
   const [callId, setCallId] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
@@ -801,6 +806,65 @@ sessionStorage.removeItem("isUser")
 
     }
   }, []);
+
+  useEffect(() => {
+  if (!localAgents?.length || !userId) {
+    setCalBookingCount(0);
+    setDbBookingCount(0);
+    setBookingCount(0);
+    return;
+  }
+
+  const fetchCounts = async () => {
+    // ---- Cal.com total (across agents, filtered by eventId when present)
+    let calTotal = 0;
+    const seen = new Set(); // avoid duplicate calls for identical (apiKey,eventId) pairs
+
+    for (const ag of localAgents) {
+      const key = ag?.calApiKey?.trim();
+      if (!key) continue;
+
+      // de-dup per (apiKey,eventId) tuple to avoid counting same list multiple times
+      const dedupKey = `${key}:${ag?.eventId ?? ""}`;
+      if (seen.has(dedupKey)) continue;
+      seen.add(dedupKey);
+
+      try {
+        const resp = await fetch(
+          `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(key)}`
+        );
+        if (!resp.ok) throw new Error("Cal.com fetch failed");
+        const json = await resp.json();
+
+        const filtered =
+          json?.bookings?.filter(b =>
+            ag?.eventId ? Number(b.eventTypeId) === Number(ag.eventId) : true
+          ) ?? [];
+
+        calTotal += filtered.length;
+      } catch (e) {
+        console.error("Cal.com booking count error:", e);
+      }
+    }
+    setCalBookingCount(calTotal);
+
+    // ---- DB appointments total (all agents for this user)
+    let dbTotal = 0;
+    try {
+      const res = await getAppointments(userId, null); 
+      dbTotal = Array.isArray(res?.data) ? res.data.length : 0;
+    } catch (e) {
+      console.error("DB appointments count error:", e);
+    }
+    setDbBookingCount(dbTotal);
+
+    // ---- Combined
+    setBookingCount(calTotal + dbTotal);
+  };
+
+  fetchCounts();
+}, [localAgents, userId]);
+
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
@@ -810,29 +874,6 @@ sessionStorage.removeItem("isUser")
       state: { agentId: agent?.agent_id, bussinesId: agent?.businessId },
     });
   };
-  useEffect(() => {
-    const agentWithCalKey = localAgents?.find((agent) => agent.calApiKey);
-    if (agentWithCalKey?.calApiKey) {
-      const fetchBookings = async () => {
-        try {
-          const response = await fetch(
-            `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
-              agentWithCalKey.calApiKey
-            )}`
-          );
-          if (!response.ok) throw new Error("Failed to fetch bookings");
-
-          const data = await response.json();
-          setBookingCount(data.bookings?.length || 0);
-        } catch (error) {
-          console.error("Error fetching booking count:", error);
-          setBookingCount(0);
-        }
-      };
-
-      fetchBookings();
-    }
-  }, [localAgents]);
   // Open Cal modal & set current agent + API key
   const handleCalClick = (agent, e) => {
     e.stopPropagation();
@@ -3007,7 +3048,9 @@ sessionStorage.removeItem("isUser")
                             (agent?.subscription &&
                               agent?.subscription?.plan_name?.toLowerCase() !== "free") ||
                             (assignNumberPaid && agent?.isDeactivated === 0) ||
-                            agent?.agentPlan === "Pay-As-You-Go" 
+                            agent?.agentPlan === "Pay-As-You-Go" ||
+                            agent?.agentPlan === "free"
+
 
 
                           ) && (

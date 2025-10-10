@@ -1020,7 +1020,7 @@ const Step = () => {
                 type: "boolean",
                 name: "appointment_booked",
                 description:
-                  "Determine if appointment was successfully booked during the call",
+                  "Determine if appointment was successfully booked during the call and also if you get appointment deatails like email and date then only mark true",
                 examples: [true, false],
               },
               {
@@ -1304,7 +1304,7 @@ const Step = () => {
         successUrl:
           window.location.origin +
           `/steps?mode=create&userId=${decodeTokenData?.id}`, // origin + path
-        cancelUrl: window.location.origin + "/cancel",
+        cancelUrl: window.location.origin + "/cancel-payment",
         userId: decodeTokenData?.id,
       });
 
@@ -1561,6 +1561,8 @@ const Step = () => {
       JSON.stringify(updatedWithStatus)
     );
   };
+
+
 
   const handleCheckboxChange = (url) => {
     setSelectedUrls((prev) => {
