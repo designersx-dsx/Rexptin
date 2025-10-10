@@ -1050,7 +1050,7 @@ const Step = () => {
             ],
             promptVariablesList: JSON.stringify(promptVariablesList),
             CallRecording: callRecording,
-            voiceWidgetEnabled: true
+            voiceWidgetEnabled: true,
             timezone: timeZone?.timezoneId || ""
           };
           try {
