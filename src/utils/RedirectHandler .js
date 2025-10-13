@@ -37,7 +37,7 @@ const RedirectHandler = () => {
   useEffect(() => {
     const slug = location.pathname.split("/")[1] || "";
     const currentDomain = window.location.hostname;
-    const isFromReferrerLink = currentDomain === "refer.rxpt.us";
+    const isFromReferrerLink = currentDomain === "refer.rxpt.us" || currentDomain === "refer.rxpt.ca";
 
     const searchParams = new URLSearchParams(location.search);
     const referral = searchParams.get("referral");
