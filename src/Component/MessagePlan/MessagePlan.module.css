@@ -7,7 +7,7 @@
 .planContainer {
     background: #fff;
     border-radius: 20px;
-    padding: 20px;
+    padding: 0px 20px 20px;
     color: #333;
 }
 
@@ -266,6 +266,6 @@
 
 @media(max-width:370px) {
     .planValue {
-        font-size: 26px;
+        font-size: 30px;
     }
 }
