@@ -21,6 +21,7 @@ import SecureRoute from "./Pages/SecureRoute";
 import Dashboard from "./Component/Dashboard/Dashboard";
 import RexAgent from "./Component/RexAgent/RexAgent";
 import Plans from "./Component/Plans/Plans";
+import MessagePlan from "./Component/MessagePlan/MessagePlan";
 import Delete from "./Component/Delete/Delete";
 import SubscriptionFlow from "./Component/Checkout/SubscriptionFlow";
 import Calendar from "./Component/Celender/Calendar";
@@ -83,7 +84,7 @@ import CustomPlan from "./Component/OwnPlan/CustomPlan";
 
 // import Test from "./utils/Test";
 function App() {
- const [refreshKey, setRefreshKey] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
   const token = localStorage.getItem("token");
   const lastRoute = localStorage.getItem("lastVisitedRoute");
   const decoded = decodeToken(token);
@@ -93,7 +94,7 @@ function App() {
   const addNotification = useNotificationStore((state) => state.addNotification);
   const loadNotifications = useNotificationStore((state) => state.loadNotifications);
   const toggleFlag = useNotificationStore((state) => state.toggleFlag);
-   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0); // State for unreadCount
   // const [refreshNotification,setRefreshNoitification]=useState(false)
@@ -129,54 +130,54 @@ function App() {
         })
         .catch((err) => console.log("error while fetching user Notifications", err));
     }
-  }, [userID,token]);
+  }, [userID, token]);
 
-// useEffect(() => {
-//   const handleBeforeInstallPrompt = (e) => {
-//     const alreadyShown = localStorage.getItem("installPromptShown");
-//     if (alreadyShown) return;  // only block if already shown
+  // useEffect(() => {
+  //   const handleBeforeInstallPrompt = (e) => {
+  //     const alreadyShown = localStorage.getItem("installPromptShown");
+  //     if (alreadyShown) return;  // only block if already shown
 
-//     e.preventDefault();
-//     console.log("📱 beforeinstallprompt fired");
-//     setDeferredPrompt(e);
-//     setShowPopup(true);  // show your popup
-//   };
+  //     e.preventDefault();
+  //     console.log("📱 beforeinstallprompt fired");
+  //     setDeferredPrompt(e);
+  //     setShowPopup(true);  // show your popup
+  //   };
 
-//   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  //   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-//   return () => {
-//     window.removeEventListener(
-//       "beforeinstallprompt",
-//       handleBeforeInstallPrompt
-//     );
-//   };
-// }, []);
+  //   return () => {
+  //     window.removeEventListener(
+  //       "beforeinstallprompt",
+  //       handleBeforeInstallPrompt
+  //     );
+  //   };
+  // }, []);
 
-// const handleInstall = async () => {
-//   if (!deferredPrompt) return;
+  // const handleInstall = async () => {
+  //   if (!deferredPrompt) return;
 
-//   deferredPrompt.prompt();
-//   const { outcome } = await deferredPrompt.userChoice;
+  //   deferredPrompt.prompt();
+  //   const { outcome } = await deferredPrompt.userChoice;
 
-//   if (outcome === "accepted") {
-//     console.log("✅ User accepted install");
-//   } else {
-//     console.log("❌ User dismissed install");
-//   }
+  //   if (outcome === "accepted") {
+  //     console.log("✅ User accepted install");
+  //   } else {
+  //     console.log("❌ User dismissed install");
+  //   }
 
-//   // mark as shown no matter what
-//   localStorage.setItem("installPromptShown", "true"); 
-//   setDeferredPrompt(null);
-//   setShowPopup(false);
-// };
+  //   // mark as shown no matter what
+  //   localStorage.setItem("installPromptShown", "true"); 
+  //   setDeferredPrompt(null);
+  //   setShowPopup(false);
+  // };
 
 
-//   const handleClose = () => {
-//     localStorage.setItem("installPromptShown", "true"); // save flag
-//     setShowPopup(false);
-//   };
-  
-useEffect(() => {
+  //   const handleClose = () => {
+  //     localStorage.setItem("installPromptShown", "true"); // save flag
+  //     setShowPopup(false);
+  //   };
+
+  useEffect(() => {
     const count = notifications?.filter((n) => n?.status === "unread")?.length;
     setUnreadCount(count);
     // console.log("Notifications:", notifications);
@@ -230,7 +231,7 @@ useEffect(() => {
   }, [userID]);
   useEffect(() => {
     const ref = document.referrer;
-    console.log('Referrer URL:', ref);   
+    console.log('Referrer URL:', ref);
   }, []);
 
 
@@ -250,7 +251,7 @@ useEffect(() => {
           <p>Launch Your AI Receptionist with Rexpt.in</p>
         </div>
         <div className="ForMobile">
-  
+
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
             <div className="App" key={refreshKey}>
@@ -332,6 +333,12 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
+                <Route
+                  path="/message-plan"
+                  element={<MessagePlan />}
+                />
+
+
                 <Route
                   path="/assign-number"
                   element={
