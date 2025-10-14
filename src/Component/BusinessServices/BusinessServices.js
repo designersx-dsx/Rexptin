@@ -217,10 +217,12 @@ const BusinessServices = forwardRef(
       sessionStorage.getItem("businesServices")
     );
 
-    const servicesType = Object?.values(businesServices)?.filter(
-      (val) => typeof val === "string" && val !== "" && val !== "email"
-    );
-    console.log("Test",businesServices)
+
+    // const servicesType = Object?.values(businesServices)?.filter(
+    //   (val) => typeof val === "string" && val !== "" && val !== "email"
+    // );
+    // console.log("Test",businesServices)
+// lkjklj
 
     const handleAddService = () => {
       if (inputValue.trim()) {

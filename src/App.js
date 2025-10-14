@@ -28,7 +28,7 @@ import BusinessServices from "./Component/BusinessServices/BusinessServices";
 import TotalsCallsList from "./Component/TotalsCallsList/TotalsCallsList";
 import CallTransfer from "./Component/CallTransfer/CallTransfer";
 import CallDetails from "./Component/CallDetails/CallDetails";
-import BusinessServicesNEXT from "./Component/BusinessServices/BusinessServicesNEXT"
+import BusinessServicesNEXT from "./Component/BusinessServices/BusinessServicesNEXT";
 import CalInfo from "./Component/Dashboard/CalInfo";
 import EditProfile from "./Component/EditProfile/EditProfile";
 //... Edit Screen Start ....//
@@ -36,10 +36,10 @@ import EditAgentNew from "./Component/EditAgentNew/EditAgentNew";
 import EditBusinessType from "./Component/EditBusinessType/EditBusinessType";
 import EditServicesOffered from "./Component/EditServicesOffered/EditServicesOffered";
 import EditPublic from "./Component/EditPublic/EditPublic";
-import EditBusinessDetail from "./Component/EditBusinessDetail/EditBusinessDetail"
-import EditLanguage from "./Component/EditLanguage/EditLanguage"
-import EditGender from "./Component/EditGender/EditGender"
-import EditNameAvtar from "./Component/EditNameAvtar/EditNameAvtar"
+import EditBusinessDetail from "./Component/EditBusinessDetail/EditBusinessDetail";
+import EditLanguage from "./Component/EditLanguage/EditLanguage";
+import EditGender from "./Component/EditGender/EditGender";
+import EditNameAvtar from "./Component/EditNameAvtar/EditNameAvtar";
 //... Edit Screen End ....//
 import { useEffect, useState } from "react";
 import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
@@ -51,8 +51,8 @@ import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAP
 import AssignNumber from "./Component/AssignNumber/AssignNumber";
 import Thankyou from "./Component/ThankyouPage/Thankyou";
 import CancelPage from "./Component/CancelPage/CancelPage";
-import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent"
-import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp"
+import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent";
+import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp";
 import Plan from "./Component/Plans/Plans";
 import Planss from "./Component/Plan/Plan";
 import Documentation from "./Component/Documentation/Documentation";
@@ -75,11 +75,15 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import NotificationView from "./Component/Notifications/NotificationView";
+
+import ThankYouPage from "./Component/hubspotThankyouPage/HubspotThankyou";
+
 import OwnPlan from './Component/OwnPlan/OwnPlan'
 import CustomPlan from "./Component/OwnPlan/CustomPlan";
+
 // import Test from "./utils/Test";
 function App() {
-  const [refreshKey, setRefreshKey] = useState(0);
+ const [refreshKey, setRefreshKey] = useState(0);
   const token = localStorage.getItem("token");
   const lastRoute = localStorage.getItem("lastVisitedRoute");
   const decoded = decodeToken(token);
@@ -241,77 +245,12 @@ useEffect(() => {
         <div className="ForDesktop">
           <img src="svg/Rexpt-Logo.svg" />
           <h1>
-
             Launch Your <b>AI Receptionist</b> with Rexpt.in
           </h1>
-          <p>
-            Launch Your AI Receptionist with Rexpt.in
-          </p>
-         
-      
-    
-
+          <p>Launch Your AI Receptionist with Rexpt.in</p>
         </div>
         <div className="ForMobile">
-     {/* {showPopup && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999,
-          }}
-        >
-          <div
-            style={{
-              background: "white",
-              padding: "20px",
-              borderRadius: "10px",
-              textAlign: "center",
-              width: "300px",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-            }}
-          >
-            <h3>Add Rexpt to Home Screen</h3>
-            <p>Install this app for a faster and better experience.</p>
-            <div style={{ marginTop: "15px", display: "flex", gap: "10px", justifyContent: "center" }}>
-              <button
-                onClick={handleInstall}
-                style={{
-                  padding: "10px 16px",
-                  background: "#6524EB",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                Install
-              </button>
-              <button
-                onClick={handleClose}
-                style={{
-                  padding: "10px 16px",
-                  background: "#e0e0e0",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                Later
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
+  
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
             <div className="App" key={refreshKey}>
@@ -319,11 +258,28 @@ useEffect(() => {
               <Routes>
                 <Route
                   path="/signup"
-                  element={token ? <SecureRoute><Navigate to={"/dashboard"} /></SecureRoute> : <SignUp />}
+                  element={
+                    token ? (
+                      <SecureRoute>
+                        <Navigate to={"/dashboard"} />
+                      </SecureRoute>
+                    ) : (
+                      <SignUp />
+                    )
+                  }
                 />
                 <Route
                   path="/"
-                  element={token ? <SecureRoute> <Navigate to={lastRoute || "/dashboard"} /></SecureRoute> : <Start />}
+                  element={
+                    token ? (
+                      <SecureRoute>
+                        {" "}
+                        <Navigate to={lastRoute || "/dashboard"} />
+                      </SecureRoute>
+                    ) : (
+                      <Start />
+                    )
+                  }
                 />
                 <Route
                   path="/dashboard"
@@ -333,31 +289,57 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-                <Route
-                  path="/calinfo"
-                  element={
-
-                    <CalInfo />
-
-                  }   >
-
-                </Route>
+                <Route path="/calinfo" element={<CalInfo />}></Route>
                 <Route path="/" element={<Start />} />
+                <Route
+                  path="/integrations/hubspot/success"
+                  element={<ThankYouPage />}
+                ></Route>
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/edit-agent" element={<EditAgentNew />} />
-                <Route path="/edit-business-type" element={<EditBusinessType />} />
-                <Route path="/edit-services-offered" element={<EditServicesOffered />} />
+                <Route
+                  path="/edit-business-type"
+                  element={<EditBusinessType />}
+                />
+                <Route
+                  path="/edit-services-offered"
+                  element={<EditServicesOffered />}
+                />
 
                 <Route path="/edit-public-listing" element={<EditPublic />} />
 
                 <Route path="/edit-public" element={<EditPublic />} />
-                <Route path="/edit-business-detail" element={<EditBusinessDetail />} />
+                <Route
+                  path="/edit-business-detail"
+                  element={<EditBusinessDetail />}
+                />
                 <Route path="/edit-language" element={<EditLanguage />} />
                 <Route path="/edit-gender" element={<EditGender />} />
                 <Route path="/edit-name-avtar" element={<EditNameAvtar />} />
-                <Route path="/plans" element={<SecureRoute><SubscriptionPlan /></SecureRoute>} />
-                <Route path="/plan" element={<SecureRoute><Planss /></SecureRoute>} />
-                <Route path="/assign-number" element={<SecureRoute><AssignNumber /></SecureRoute>} />
+                <Route
+                  path="/plans"
+                  element={
+                    <SecureRoute>
+                      <SubscriptionPlan />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/plan"
+                  element={
+                    <SecureRoute>
+                      <Planss />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/assign-number"
+                  element={
+                    <SecureRoute>
+                      <AssignNumber />
+                    </SecureRoute>
+                  }
+                />
                 <Route
                   path="/details"
                   element={
@@ -366,7 +348,14 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-                <Route path="/steps" element={<SecureRoute><Step /></SecureRoute>} />
+                <Route
+                  path="/steps"
+                  element={
+                    <SecureRoute>
+                      <Step />
+                    </SecureRoute>
+                  }
+                />
                 <Route
                   path="/about-business"
                   element={
@@ -383,9 +372,30 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-                <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
-                <Route path="/call-setting" element={<SecureRoute><CallSetting /></SecureRoute>} />
-                <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
+                <Route
+                  path="/business-details"
+                  element={
+                    <SecureRoute>
+                      <BusinessDetails />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/call-setting"
+                  element={
+                    <SecureRoute>
+                      <CallSetting />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/agent-detail"
+                  element={
+                    <SecureRoute>
+                      <AgentDetail />
+                    </SecureRoute>
+                  }
+                />
                 <Route
                   path="/business-locations"
                   element={
@@ -394,7 +404,6 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-
 
                 <Route
                   path="/dashboard"
@@ -405,7 +414,6 @@ useEffect(() => {
                   }
                 />
 
-
                 <Route
                   path="/business-services"
                   element={
@@ -414,7 +422,6 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-
 
                 {/* <Route path="/home" element={<Home />} /> */}
                 <Route
@@ -434,7 +441,14 @@ useEffect(() => {
                   }
                 />
                 {/* <Route path="/plans" element={<Plans />} /> */}
-                <Route path="/checkout" element={<SecureRoute><SubscriptionFlow /></SecureRoute>} />
+                <Route
+                  path="/checkout"
+                  element={
+                    <SecureRoute>
+                      <SubscriptionFlow />
+                    </SecureRoute>
+                  }
+                />
                 <Route
                   path="/calendar"
                   element={
@@ -443,9 +457,30 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-                <Route path="/totalcall-list" element={<SecureRoute><TotalsCallsList /></SecureRoute>} />
-                <Route path="/call-transfer" element={<SecureRoute><CallTransfer /></SecureRoute>} />
-                <Route path="/call-details/:callId" element={<SecureRoute><CallDetails /></SecureRoute>} />
+                <Route
+                  path="/totalcall-list"
+                  element={
+                    <SecureRoute>
+                      <TotalsCallsList />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/call-transfer"
+                  element={
+                    <SecureRoute>
+                      <CallTransfer />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/call-details/:callId"
+                  element={
+                    <SecureRoute>
+                      <CallDetails />
+                    </SecureRoute>
+                  }
+                />
                 <Route
                   path="/business-services"
                   element={
@@ -481,61 +516,170 @@ useEffect(() => {
                     </SecureRoute>
                   }
                 />
-                <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
-                <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
-                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
-                <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
-                <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
+                <Route
+                  path="/edit-profile"
+                  element={
+                    <SecureRoute>
+                      <EditProfile />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/your-business-Listing"
+                  element={
+                    <SecureRoute>
+                      <BusinessListing />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/widget-guide"
+                  element={
+                    <SecureRoute>
+                      <WidgetGuidePage />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/connect-calender"
+                  element={
+                    <SecureRoute>
+                      <ConnectCalenderAPI />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/integrate-agent"
+                  element={
+                    <SecureRoute>
+                      <IntegrateAgent />
+                    </SecureRoute>
+                  }
+                />
                 <Route path="/test-other" element={<Test />} />
 
+                <Route
+                  path="/edit-profile"
+                  element={
+                    <SecureRoute>
+                      <EditProfile />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/your-business-Listing"
+                  element={
+                    <SecureRoute>
+                      <BusinessListing />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/widget-guide"
+                  element={
+                    <SecureRoute>
+                      <WidgetGuidePage />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/connect-calender"
+                  element={
+                    <SecureRoute>
+                      <ConnectCalenderAPI />
+                    </SecureRoute>
+                  }
+                />
                 <Route path="/own-plan" element={<OwnPlan />} />
                 <Route path="/own-custom-plan" element={<CustomPlan />} />
 
 
+                <Route
+                  path="/agent-setup"
+                  element={
+                    <SecureRoute>
+                      <AgentSetupHelp />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/documentation"
+                  element={
+                    <SecureRoute>
+                      <Documentation />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/raise-tickets"
+                  element={
+                    <SecureRoute>
+                      <RaiseTickets />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/create-ticket"
+                  element={
+                    <SecureRoute>
+                      <CreateTicket />
+                    </SecureRoute>
+                  }
+                />
 
+                <Route
+                  path="/integrate-agent"
+                  element={
+                    <SecureRoute>
+                      <IntegrateAgent />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/call-recording"
+                  element={
+                    <SecureRoute>
+                      <CallRecording />
+                    </SecureRoute>
+                  }
+                />
 
-                <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
-                <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
-                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
-                <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
+                <Route
+                  path="/add-file"
+                  element={
+                    <SecureRoute>
+                      <Fileinfo />
+                    </SecureRoute>
+                  }
+                />
 
-                <Route path="/agent-setup" element={<SecureRoute><AgentSetupHelp /></SecureRoute>} />
-                <Route path="/documentation" element={<SecureRoute><Documentation /></SecureRoute>} />
-                <Route path="/raise-tickets" element={<SecureRoute><RaiseTickets /></SecureRoute>} />
-                <Route path="/create-ticket" element={<SecureRoute><CreateTicket /></SecureRoute>} />
-
-                <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
-                <Route path="/call-recording" element={<SecureRoute><CallRecording /></SecureRoute>} />
-
-                <Route path='/add-file' element={<SecureRoute><Fileinfo /></SecureRoute>} />
-
-                <Route path="/notifications" element={<SecureRoute><NotificationView /></SecureRoute>} />
-
-
+                <Route
+                  path="/notifications"
+                  element={
+                    <SecureRoute>
+                      <NotificationView />
+                    </SecureRoute>
+                  }
+                />
 
                 <Route path="/test-other" element={<Test />} />
                 <Route path="/thankyou/:id" element={<Thankyou />} />
                 <Route path="/cancel-payment" element={<CancelPage />} />
                 <Route path="/*" element={<RedirectHandler />} />
 
-
                 <Route path="/thankyou2" element={<Thankyou2 />} />
 
-
-
-
-                <Route path="/number" element={< Number />} />
+                <Route path="/number" element={<Number />} />
 
                 <Route path="/delete-account" element={<Delete />} />
               </Routes>
             </div>
             {/* </BrowserRouter> */}
           </PreventPullToRefresh>
-
         </div>
       </div>
       <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 }
-export default App; 
+export default App;

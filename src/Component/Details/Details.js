@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "../Details/Details.module.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import axios from "axios";
 import { API_BASE_URL, sendEmailToOwner } from "../../Store/apiStore";
@@ -14,6 +14,7 @@ import { useRef } from "react";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 const Details = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [startExit, setStartExit] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
@@ -52,12 +53,17 @@ const Details = () => {
     document.addEventListener("click", handleOutsideClick);
   };
   useEffect(() => {
+    const nameFromParams = searchParams.get("name");
+    if (nameFromParams) {
+      const decodedName = decodeURIComponent(nameFromParams);
+      setName(decodedName);
+    }
     if (sessionStorage.getItem("OwnerDetails")) {
       const ownerDetails = JSON.parse(sessionStorage.getItem("OwnerDetails"));
       setName(ownerDetails.name || "");
       setPhone(ownerDetails.phone || "");
     }
-  }, []);
+  }, [searchParams]);
 
   const containsEmoji = (text) => {
     return /[\p{Emoji_Presentation}\u200d]/u.test(text);

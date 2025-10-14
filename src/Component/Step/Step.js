@@ -26,6 +26,7 @@ import decodeToken from "../../lib/decodeToken";
 import {
   API_BASE_URL,
   createAgent,
+  createChatAgent,
   listAgents,
   updateAgent,
   updateAgentWidgetDomain,
@@ -341,7 +342,6 @@ const Step = () => {
       sliderRef.current?.slickGoTo(prevStep);
     }
   };
-
   const settings = {
     dots: false,
     infinite: false,
@@ -384,9 +384,8 @@ const Step = () => {
     sessionStorage.getItem("placeDetailsExtract")
   );
   const businessPhone = removeSpaces(getBusinessNameFromGoogleListing?.phone);
-  const dynamicAgentName = `${businessCode}_${userId}_${agentCode}_#${
-    agentCount + 1
-  }`;
+  const dynamicAgentName = `${businessCode}_${userId}_${agentCode}_#${agentCount + 1
+    }`;
   const getLeadTypeChoices = () => {
     const fixedChoices = [
       "Spam Caller",
@@ -494,6 +493,10 @@ const Step = () => {
   const callRecording = statesRequiringCallRecording.includes(currentState)
     ? true
     : false;
+  //if widget
+  const ifChatWidgetEnabledOrNot =
+    sessionStorage.getItem("chatWebWidget") === "true";
+    
   const handleContinue = async () => {
     // if (step8ARef.current) {
     setIsContinueClicked(true);
@@ -534,7 +537,6 @@ const Step = () => {
       agentNote: "{{AGENTNOTE}}",
       timeZone: "{{TIMEZONE}}",
     });
-
     const filledPrompt = getAgentPrompt({
       industryKey:
         business?.businessType == "Other"
@@ -811,7 +813,6 @@ const Step = () => {
         );
         sessionStorage.setItem("llmId", llmResponse.data.llm_id);
         const llmId = llmResponse.data.llm_id;
-
         const response_engine = {
           type: "retell-llm",
           llm_id: llmId,
@@ -900,7 +901,7 @@ const Step = () => {
           end_call_after_silence_ms: 30000,
           normalize_for_speech: true,
           webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
-          // webhook_url: `https://ad0db4634032.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+          // webhook_url: `https://da33c561d4a5.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
         };
         // Create Agent Creation
         try {
@@ -1049,9 +1050,12 @@ const Step = () => {
             ],
             promptVariablesList: JSON.stringify(promptVariablesList),
             CallRecording: callRecording,
+            voiceWidgetEnabled: true,
+            timezone: timeZone?.timezoneId || ""
           };
           try {
             const response = await createAgent(agentData);
+
             if (response.status === 200 || response.status === 201) {
               sessionStorage.setItem("agentId", response.data.agent_id);
               sessionStorage.setItem("agentStatus", true);
@@ -1061,15 +1065,52 @@ const Step = () => {
                 agentId,
                 aboutBusinessForm?.businessUrl
               );
+              if (ifChatWidgetEnabledOrNot) {
+                // alert("ok")
+                // Shared payload data for both Voice Agent and Chat Agent
+                const commonAgentPayload = {
+                  industryKey:
+                    business?.businessType == "Other"
+                      ? business?.customBuisness
+                      : business?.businessType,
+                  roleTitle: sessionStorage.getItem("agentRole"),
+                  agentName: agentName?.split(" ")[0],
+                  agentGender: agentGender,
+                  business: {
+                    businessName:
+                      getBusinessNameFromGoogleListing?.businessName ||
+                      getBusinessNameFormCustom,
+                    email: getBusinessNameFromGoogleListing?.email || "",
+                    aboutBusiness:
+                      getBusinessNameFromGoogleListing?.aboutBusiness ||
+                      getBusinessNameFromGoogleListing?.aboutBussiness,
+                    address: getBusinessNameFromGoogleListing?.address || "",
+                  },
+                  languageSelect: languageSelect,
+                  businessType,
+                  aboutBusinessForm,
+                  commaSeparatedServices,
+                  agentNote,
+                  timeZone: timeZone?.timezoneId,
+                  languageAccToPlan,
+                  plan: plan,
+                  CallRecording: callRecording,
+                  knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
+                  businessPhone,
+                  businessEmail: business?.email,
+                  agent_id: agentId || sessionStorage.getItem("agentId"),
+                };
+          
+                const response = await createChatAgent(
+                  commonAgentPayload, token
+                )
+              }
               // if (checkPaymentDone === "true") {
               //     await callNextApiAndRedirect(agentId)
               // }
               setPopupMessage("Agent created successfully!");
-
               setIsAgentCreated(true);
-
               setShowPopup(true);
-
               if (freeTrail) {
                 setCustomeLoader(true);
                 setTimeout(
@@ -1135,10 +1176,8 @@ const Step = () => {
         setLoading(false);
       }
       setLoading(false);
-      // setCustomeLoader(false)
     }
   };
-
   const handleValidationError = ({ type, message }) => {
     setPopupType(type);
     setPopupMessage(message);
