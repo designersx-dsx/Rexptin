@@ -86,6 +86,7 @@ const AgentDashboard = () => {
   // console.log("agentData", agentData)
   const [isModalOpen, setModalOpen] = useState();
   const [openCard, setOpenCard] = useState(null);
+
   const { setHasFetched } = useDashboardStore();
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -141,7 +142,8 @@ const AgentDashboard = () => {
     if (agentData?.agent?.chat_agent_id && agentData?.agent?.chat_llm_id) {
       // Always call updateAgentChatEnabled, regardless of true/false
       await updateAgentChatEnabled(agent_id, newState, token);
-      setHasFetched(false)
+      getAgentDetailsAndBookings()
+
     } else {
       const businessDetailsFromKnowledgeBase = agentData?.business
       const knowledge_base_texts_Details = JSON.parse(businessDetailsFromKnowledgeBase.knowledge_base_texts)
@@ -973,11 +975,17 @@ const AgentDashboard = () => {
   }, [agentData]);
 
 
-  
+
   const handleMessagePlan = () => {
     navigate("/message-plan");
   };
+  const handleChatHistoryNavigation = () => {
+    sessionStorage.setItem("agentId", agentDetails?.agentId);
+    sessionStorage.setItem("userId", userId);
+      navigate("/totalcall-list?filter=chatHistory");
 
+    localStorage.setItem("filterType", "single")
+  }
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -1840,33 +1848,36 @@ Do you want to proceed with deleting this assigned number?`
               </div>
             </div>
 
-            <div className={styles.ChatReport}>
+            {agentData?.agent?.chat_agent_id && agentData?.agent?.chat_llm_id
+
+
+              && agentData?.agent?.chat_agent_id !== "null" && agentData?.agent?.chatWidgetEnabled && agentData?.agent?.chat_llm_id !== "null" ? <div className={styles.ChatReport}>
 
               <div className={styles.reportDiv}>
                 <p>Total</p>
-                <h4>1.1K</h4>
+                <h4>{agentData?.chatHistorySummary?.totalChatMessage}</h4>
               </div>
               <hr className={styles.hrLine} />
               <div className={styles.reportDiv}>
                 <p>Remaining</p>
-                <h4>958</h4>
+                <h4>{agentData?.chatHistorySummary?.remainingChatMessage}</h4>
               </div>
               <hr className={styles.hrLine} />
 
-              <div className={styles.reportDiv}>
+              <div className={styles.reportDiv} onClick={handleChatHistoryNavigation}>
                 <p>Interactions</p>
-                <h4>05</h4>
+                <h4>{agentData?.chatHistorySummary?.chat_count_interactions}</h4>
               </div>
               <hr className={styles.hrLine} />
 
               <div className={styles.reportDiv}>
                 <p>Msg. Per Inter. </p>
-                <h4>12<span className={styles.avgText}>AVG</span></h4>
+                <h4>{agentData?.chatHistorySummary?.messagePerInteraction}<span className={styles.avgText}>AVG</span></h4>
               </div>
 
               <div className={styles.chatTitle}>Chat Messages Report</div>
 
-            </div>
+            </div> : ""}
 
 
 

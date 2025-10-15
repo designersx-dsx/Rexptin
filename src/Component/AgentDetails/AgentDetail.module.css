@@ -861,6 +861,7 @@
 .reportDiv P {
   font-size: 14px;
   color: #24252C;
+  cursor: pointer;
   /* white-space: nowrap; */
 
 }
@@ -868,6 +869,7 @@
 .reportDiv h4 {
   font-size: 32px;
   font-weight: 600;
+   cursor: pointer;
 }
 
 .hrLine {

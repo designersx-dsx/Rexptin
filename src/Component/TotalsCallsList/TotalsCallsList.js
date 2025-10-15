@@ -14,7 +14,7 @@ import {
 } from "../../Store/apiStore";
 import Loader from "../Loader/Loader";
 import Loader2 from "../Loader2/Loader2";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import { red } from "@mui/material/colors";
 import PopUp from "../Popup/Popup";
@@ -28,6 +28,7 @@ const options = [
 
 const callsPerPage = 6;
 export default function Home() {
+  const location = useLocation();
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
   const totalAgentView = localStorage.getItem("filterType");
   const sessionAgentId = sessionStorage.getItem("agentId") || "";
@@ -177,6 +178,12 @@ export default function Home() {
       );
     const channelMatch =
       filters?.channel === "" || call?.call_type === filters?.channel;
+        // Chat type filter: show only api_chat if selectedSentiment is "Chat" or your custom label
+  // const chatTypeMatch =
+  //   selectedSentiment.toLowerCase() === "chat"
+  //     ? call.call_type === "api_chat"
+  //     : true
+  //   console.log(chatTypeMatch,"chatTypeMatchchatTypeMatch")
     return sentimentMatch && inDateRange && leadTypeMatch && channelMatch;
   });
   // Pagination
@@ -184,6 +191,8 @@ export default function Home() {
   const indexOfLastCall = currentPage * callsPerPage;
   const indexOfFirstCall = indexOfLastCall - callsPerPage;
   const currentCalls = filteredData.slice(indexOfFirstCall, indexOfLastCall);
+  console.log(currentCalls,"currentCallscurrentCalls")
+  console.log(currentCalls)
   // Handle page change
   const handlePageChange = (pageNum) => {
     if (pageNum < 1 || pageNum > totalPages) return;
@@ -257,6 +266,22 @@ export default function Home() {
       setIsLoadingSubmit(false);
     }
   };
+  // const handleChatFilter = (filterType) => {
+  //   setSelectedSentiment(filterType); // Update the selected sentiment
+  //   setCurrentPage(1);                // Reset pagination
+  // };
+// useEffect(() => {
+//   const queryParams = new URLSearchParams(location.search);
+//   const filterParam = queryParams.get("filter");
+
+//   if (filterParam === "chatHistory") {
+//     // alert("ok")
+//     // make sure it matches the logic in filteredData
+//     setSelectedSentiment("Chat"); // sets the filter to only show api_chat
+//     setCurrentPage(1); // reset pagination
+//   }
+// }, [location.search]);
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -290,6 +315,8 @@ export default function Home() {
             setFilters(newFilters);
             setCurrentPage(1);
           }}
+          // onChatFilter={handleChatFilter} // ✅ Pass the function here
+
         />
         <button className={styles.exportButton} onClick={handleExportClick}>
           Export
