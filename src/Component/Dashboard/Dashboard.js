@@ -55,7 +55,7 @@ import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import NotificationView from "../Notifications/NotificationView";
 
 function Dashboard() {
-  const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
+  const { agents, totalCalls, total_chat, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
 
 
@@ -127,9 +127,9 @@ function Dashboard() {
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
 
-const [calBookingCount, setCalBookingCount] = useState(0);
-const [dbBookingCount, setDbBookingCount] = useState(0);
-const [bookingCount, setBookingCount] = useState(0); 
+  const [calBookingCount, setCalBookingCount] = useState(0);
+  const [dbBookingCount, setDbBookingCount] = useState(0);
+  const [bookingCount, setBookingCount] = useState(0);
 
 
   const [callId, setCallId] = useState(null);
@@ -703,6 +703,8 @@ const [bookingCount, setBookingCount] = useState(0);
       sessionStorage.removeItem("agentCode");
       sessionStorage.removeItem("businessUrl");
       sessionStorage.removeItem("selectedServices");
+      sessionStorage.removeItem("chatWebWidget")
+       sessionStorage.removeItem("subType")
     } else {
       localStorage.removeItem("UpdationMode");
       localStorage.removeItem("displayBusinessName");
@@ -804,67 +806,71 @@ const [bookingCount, setBookingCount] = useState(0);
       sessionStorage.removeItem("urls");
       sessionStorage.removeItem("chat_agent_id");
       sessionStorage.removeItem("chat_llm_id")
+      sessionStorage.removeItem("chatWebWidget")
+            sessionStorage.removeItem("subType")
+      
+
 
     }
   }, []);
 
   useEffect(() => {
-  if (!localAgents?.length || !userId) {
-    setCalBookingCount(0);
-    setDbBookingCount(0);
-    setBookingCount(0);
-    return;
-  }
+    if (!localAgents?.length || !userId) {
+      setCalBookingCount(0);
+      setDbBookingCount(0);
+      setBookingCount(0);
+      return;
+    }
 
-  const fetchCounts = async () => {
-    // ---- Cal.com total (across agents, filtered by eventId when present)
-    let calTotal = 0;
-    const seen = new Set(); // avoid duplicate calls for identical (apiKey,eventId) pairs
+    const fetchCounts = async () => {
+      // ---- Cal.com total (across agents, filtered by eventId when present)
+      let calTotal = 0;
+      const seen = new Set(); // avoid duplicate calls for identical (apiKey,eventId) pairs
 
-    for (const ag of localAgents) {
-      const key = ag?.calApiKey?.trim();
-      if (!key) continue;
+      for (const ag of localAgents) {
+        const key = ag?.calApiKey?.trim();
+        if (!key) continue;
 
-      // de-dup per (apiKey,eventId) tuple to avoid counting same list multiple times
-      const dedupKey = `${key}:${ag?.eventId ?? ""}`;
-      if (seen.has(dedupKey)) continue;
-      seen.add(dedupKey);
+        // de-dup per (apiKey,eventId) tuple to avoid counting same list multiple times
+        const dedupKey = `${key}:${ag?.eventId ?? ""}`;
+        if (seen.has(dedupKey)) continue;
+        seen.add(dedupKey);
 
-      try {
-        const resp = await fetch(
-          `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(key)}`
-        );
-        if (!resp.ok) throw new Error("Cal.com fetch failed");
-        const json = await resp.json();
+        try {
+          const resp = await fetch(
+            `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(key)}`
+          );
+          if (!resp.ok) throw new Error("Cal.com fetch failed");
+          const json = await resp.json();
 
-        const filtered =
-          json?.bookings?.filter(b =>
-            ag?.eventId ? Number(b.eventTypeId) === Number(ag.eventId) : true
-          ) ?? [];
+          const filtered =
+            json?.bookings?.filter(b =>
+              ag?.eventId ? Number(b.eventTypeId) === Number(ag.eventId) : true
+            ) ?? [];
 
-        calTotal += filtered.length;
-      } catch (e) {
-        console.error("Cal.com booking count error:", e);
+          calTotal += filtered.length;
+        } catch (e) {
+          console.error("Cal.com booking count error:", e);
+        }
       }
-    }
-    setCalBookingCount(calTotal);
+      setCalBookingCount(calTotal);
 
-    // ---- DB appointments total (all agents for this user)
-    let dbTotal = 0;
-    try {
-      const res = await getAppointments(userId, null); 
-      dbTotal = Array.isArray(res?.data) ? res.data.length : 0;
-    } catch (e) {
-      console.error("DB appointments count error:", e);
-    }
-    setDbBookingCount(dbTotal);
+      // ---- DB appointments total (all agents for this user)
+      let dbTotal = 0;
+      try {
+        const res = await getAppointments(userId, null);
+        dbTotal = Array.isArray(res?.data) ? res.data.length : 0;
+      } catch (e) {
+        console.error("DB appointments count error:", e);
+      }
+      setDbBookingCount(dbTotal);
 
-    // ---- Combined
-    setBookingCount(calTotal + dbTotal);
-  };
+      // ---- Combined
+      setBookingCount(calTotal + dbTotal);
+    };
 
-  fetchCounts();
-}, [localAgents, userId]);
+    fetchCounts();
+  }, [localAgents, userId]);
 
   const handleCardClick = (agent) => {
     setHasFetched(false);
@@ -928,7 +934,7 @@ const [bookingCount, setBookingCount] = useState(0);
         calApiKey: calApiKeyMap[agent.agent_id] || null,
       }));
 
-      setDashboardData(agentsWithCalKeys, res.total_call || 0);
+      setDashboardData(agentsWithCalKeys, res.total_call || 0, res.total_chat || 0);
       setHasFetched(true);
       // localStorage.setItem("userId", userId);
       // localStorage.setItem("agents", JSON.stringify(agentsWithCalKeys));
@@ -2745,7 +2751,6 @@ const [bookingCount, setBookingCount] = useState(0);
               </h2>
               <img src="svg/total-call.svg" alt="total-call" />
             </div>
-
             <hr />
 
             <div
