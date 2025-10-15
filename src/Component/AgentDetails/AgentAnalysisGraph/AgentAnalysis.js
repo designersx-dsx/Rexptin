@@ -3,10 +3,17 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import styles from "./AgentAnalysis.module.css";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { API_BASE_URL, getAgentCallsByMonth, getAppointments } from "../../../Store/apiStore";
+import {
+  API_BASE_URL,
+  getAgentCallsByMonth,
+  getAppointments,
+} from "../../../Store/apiStore";
 import { useNavigate } from "react-router-dom";
 
-import { useCallHistoryStore, useCallHistoryStore1 } from "../../../Store/useCallHistoryStore ";
+import {
+  useCallHistoryStore,
+  useCallHistoryStore1,
+} from "../../../Store/useCallHistoryStore ";
 import { DateTime } from "luxon";
 // Helper function to format date
 
@@ -49,7 +56,7 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
   const [callHistory, setCallHistory] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [callsForSelectedDate, setCallsForSelectedDate] = useState([]);
-  console.log(callsForSelectedDate, "callsForSelectedDate")
+  console.log(callsForSelectedDate, "callsForSelectedDate");
   const { mergeCallHistoryData } = useCallHistoryStore1();
   const [itemsForSelectedDate, setItemsForSelectedDate] = useState([]);
   const [dateMap, setDateMap] = useState({}); // ⬅️ merged map: { "YYYY-MM-DD": [ items ] }
@@ -77,7 +84,7 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
       const currentDate = new Date();
       const month = currentDate.getMonth() + 1;
       const year = currentDate.getFullYear();
-      const response = await getAgentCallsByMonth(agentId, month, year)
+      const response = await getAgentCallsByMonth(agentId, month, year);
       // console.log('response,response',response)
       setCallHistory(response?.calls || []);
     } catch (error) {
@@ -97,15 +104,15 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
     if (!calApiKey) return [];
     try {
       const resp = await fetch(
-        `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
+        `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
+          calApiKey
+        )}`
       );
       if (!resp.ok) throw new Error("Cal.com fetch failed");
       const json = await resp.json();
       let arr = json?.bookings || [];
       if (eventId) {
-        arr = arr.filter(
-          (b) => Number(b.eventTypeId) === Number(eventId)
-        );
+        arr = arr.filter((b) => Number(b.eventTypeId) === Number(eventId));
       }
       // Normalize
       return arr.map((b) => ({
@@ -136,10 +143,13 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
         return {
           type: "db-appointment",
           id: appt.id ?? `db_${start}`,
-          title:
-            appt?.reason
-              ? `${appt.reason}${appt?.attendeeName ? ` — ${appt.attendeeName}` : ""}`
-              : `Appointment${appt?.attendeeName ? ` — ${appt.attendeeName}` : ""}`,
+          title: appt?.reason
+            ? `${appt.reason}${
+                appt?.attendeeName ? ` — ${appt.attendeeName}` : ""
+              }`
+            : `Appointment${
+                appt?.attendeeName ? ` — ${appt.attendeeName}` : ""
+              }`,
           startTime: start,
           endTime: null,
           icsFile: appt?.icsFile || null,
@@ -158,10 +168,9 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
     const callItems = (callHistory || []).map((c, i) => ({
       type: "call",
       id: c.call_id || `call_${i}`,
-      title:
-        c?.custom_analysis_data?.name
-          ? `Caller — ${c.custom_analysis_data.name}`
-          : "Caller",
+      title: c?.custom_analysis_data?.name
+        ? `Caller — ${c.custom_analysis_data.name}`
+        : "Caller",
       startTime: c.start_timestamp,
       endTime: c.end_timestamp || null,
       raw: c,
@@ -198,11 +207,12 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
     setSelectedDate(date);
     setItemsForSelectedDate(dateMap[formatDateISO(date)] || []);
     if (bookingsRef.current) {
-      bookingsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      bookingsRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }
   };
-
-
 
   // ---- calendar dots (green = bookings, orange = calls) ----
   const tileContent = ({ date, view }) => {
@@ -215,15 +225,18 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
     return (
       <div className={styles.bookingDotContainer}>
         {bookings > 0 && (
-          <div className={`${styles.dot} ${styles.greenDot}`}>{cap(bookings)}</div>
+          <div className={`${styles.dot} ${styles.greenDot}`}>
+            {cap(bookings)}
+          </div>
         )}
         {calls > 0 && (
-          <div className={`${styles.dot} ${styles.orangeDot}`}>{cap(calls)}</div>
+          <div className={`${styles.dot} ${styles.orangeDot}`}>
+            {cap(calls)}
+          </div>
         )}
       </div>
     );
   };
-
 
   const handleMonthChange = async (month, year) => {
     try {
@@ -231,7 +244,6 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
         const res = await getAgentCallsByMonth(agentId, month, year);
         setCallHistory(res.calls || []);
       }
-
     } catch (error) {
       console.error("Error fetching month data:", error);
       setCallHistory([]);
@@ -259,7 +271,13 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
         <LineChart data={data}>
           <defs>
             <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#6A0DAD" floodOpacity="0.4" />
+              <feDropShadow
+                dx="0"
+                dy="2"
+                stdDeviation="3"
+                floodColor="#6A0DAD"
+                floodOpacity="0.4"
+              />
             </filter>
           </defs>
           <XAxis dataKey="name" tick={{ fontSize: 12 }} />
@@ -330,12 +348,27 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
                         });
                       }
                     }}
-                    style={{ cursor: isCall && item.raw?.call_id ? "pointer" : "default" }}
+                    style={{
+                      cursor:
+                        isCall && item.raw?.call_id ? "pointer" : "default",
+                    }}
                   >
                     <div className={styles.time}>
-                      {getTimeFromTimestamp(item?.raw?.start_timestamp, item?.raw?.timezone)}{" "}
-                      {item?.raw?.end_timestamp &&
-                        `- ${getTimeFromTimestamp(item?.raw?.end_timestamp, item?.raw?.timezone)}`
+                      {
+                        item.type === "call"
+                          ? [
+                              getTimeFromTimestamp(
+                                item?.raw?.start_timestamp,
+                                item?.raw?.timezone
+                              ),
+                              item?.raw?.end_timestamp
+                                ? ` - ${getTimeFromTimestamp(
+                                    item?.raw?.end_timestamp,
+                                    item?.raw?.timezone
+                                  )}`
+                                : "",
+                            ].join("")
+                          : timeLabel
                       }
                     </div>
 
@@ -351,22 +384,6 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
                       {isCall && (
                         <div className={styles.timeRange}>
                           <b>Phone:</b> {item.raw?.call_type}
-                        </div>
-                      )}
-
-                      {/* download ICS for DB appts */}
-                      {isDb && item.icsFile && (
-                        <div className={styles.timeRange}>
-                          <a
-                            href={`data:text/calendar;charset=utf-8,${encodeURIComponent(item.icsFile)}`}
-                            download={`invite-${(item.raw?.attendeeName || "attendee")
-                              .toString()
-                              .replace(/\s+/g, "_")}-${item.raw?.appointmentDate}.ics`}
-                            title="Download ICS"
-                            style={{ textDecoration: "none" }}
-                          >
-                            📥 Download ICS
-                          </a>
                         </div>
                       )}
                     </div>

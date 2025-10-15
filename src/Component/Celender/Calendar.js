@@ -477,24 +477,6 @@ const AgentAnalysis = () => {
                           : item?.call_type}
                       </div>
                     )}
-
-                    {/* DB ICS download remains unchanged */}
-                    {isDbAppt && item.icsFile && (
-                      <div className={styles.timeRange}>
-                        <a
-                          href={`data:text/calendar;charset=utf-8,${encodeURIComponent(
-                            item.icsFile
-                          )}`}
-                          download={`invite-${(item.attendeeName || "attendee")
-                            .toString()
-                            .replace(/\s+/g, "_")}-${item.appointmentDate}.ics`}
-                          title="Download ICS"
-                          style={{ textDecoration: "none" }}
-                        >
-                          📥 Download ICS
-                        </a>
-                      </div>
-                    )}
                   </div>
                 </li>
               );
