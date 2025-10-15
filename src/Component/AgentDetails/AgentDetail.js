@@ -132,6 +132,7 @@ const AgentDashboard = () => {
   const [assignPopUp, setAssignPopUp] = useState(false)
   const unreadCount = notifications?.filter((n) => n?.status === 'unread').length;
   const [isEnabled, setIsEnabled] = useState(true);
+  const [agentinfo, setAgentInfo] = useState()
   //chatToggleSwitch
   const chatToggleSwitch = async () => {
     const newState = !isEnabled;
@@ -190,6 +191,7 @@ const AgentDashboard = () => {
     }
     return number;
   }
+  
   useEffect(() => {
     const fetchMeetingCount = async () => {
       if (!agentData?.agent?.calApiKey || !agentData?.agent?.eventId) return;
@@ -391,7 +393,8 @@ const AgentDashboard = () => {
       const agentInfo = response?.data;
       setAgentCalApiKey(agentInfo?.agent?.calApiKey);
       let numbersArray = [];
-
+      console.log(agentInfo, "agentinfo")
+      setAgentInfo(agentInfo)
       const voipNumbersStr = agentInfo?.agent?.voip_numbers;
       if (voipNumbersStr) {
         try {
@@ -425,6 +428,8 @@ const AgentDashboard = () => {
       setLoading(false);
     }
   };
+  console.log(agentinfo , "chatke");
+  
   useEffect(() => {
     getAgentDetailsAndBookings();
   }, [refresh]);
@@ -973,9 +978,21 @@ const AgentDashboard = () => {
   }, [agentData]);
 
 
-  
+
   const handleMessagePlan = () => {
-    navigate("/message-plan");
+    navigate("/message-plan", {
+      state: {
+        agent: agentinfo
+      }
+    });
+  };
+   const handleMessagePlanUpgarde = () => {
+    navigate("/message-plan", {
+      state: {
+        agent: agentinfo,
+        system : true
+      }
+    });
   };
 
   return (
@@ -1378,11 +1395,53 @@ Do you want to proceed with deleting this assigned number?`
                 </div>
 
               </div>
-              <div className={styles.footer}>
-                <span className={styles.messages}><strong>Starter Voice</strong> (included 300/m)</span>
-                {/* <Tooltip /> */}
-                <button onClick={handleMessagePlan} className={styles.buyMore}><img src="/svg/plus-icon.svg" alt="plus-icon" />ADD MORE</button>
-              </div>
+
+              {/* for voice plan  */}
+
+
+              {agentinfo?.agent?.subscriptionId && !agentinfo?.agent?.msgSubscriptionId ?
+
+                <div className={styles.footer}>
+                  <span className={styles.messages}><strong>{agentinfo?.agent?.agentPlan} Voice</strong> (included {agentinfo?.agent?.planMinutes/60}/m)</span>
+
+                  <button onClick={handleMessagePlan} className={styles.buyMore}><img src="/svg/plus-icon.svg" alt="plus-icon" />ADD MORE</button>
+                </div>
+                : null}
+
+
+
+              {/* for free plan  */}
+
+              {agentinfo?.agent?.agentPlan === "free" &&  !agentinfo?.agent?.msgSubscriptionId ?
+                <div className={styles.footer}>
+                  <span className={styles.messages}><strong>FREE Voice</strong> (included 20/m)</span>
+
+                  <button onClick={handleMessagePlan} className={styles.buyMore}><img src="/svg/plus-icon.svg" alt="plus-icon" />UPGRADE</button>
+                </div>
+                : null}
+
+
+                 {agentinfo?.agent?.agentPlan === "free" &&  agentinfo?.agent?.msgSubscriptionId ?
+                <div className={styles.footer}>
+                  <span className={styles.messages}><strong>FREE Voice + Chat Plan</strong> (include {agentinfo?.agent?.messagePurchase}/m)</span>
+
+                  <button onClick={handleMessagePlanUpgarde} className={styles.buyMore}><img src="/svg/plus-icon.svg" alt="plus-icon" />UPGRADE</button>
+                </div>
+                : null}
+
+
+              {/* for voice + chaat plan  */}
+              {agentinfo?.agent?.subscriptionId && agentinfo?.agent?.msgSubscriptionId ?
+                <div className={styles.footer}>
+                  <span className={styles.messages}><strong>Total {(() => {
+                    const total = (agentinfo?.agent?.addOnsMins || 0) + (agentinfo?.agent?.messageLeft || 0);
+                    return total >= 1000 ? (total / 1000).toFixed(1) + "K" : total;
+                  })()}</strong> ({agentinfo?.agent?.messageLeft} + {agentinfo?.agent?.addOnsMins})per month</span>
+
+                  <button onClick={handleMessagePlanUpgarde} className={styles.buyMore}><img src="/svg/plus-icon.svg" alt="plus-icon" />UPGRADE</button>
+                </div>
+                : null}
+
             </div>
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
             <Divider label="Agent Options" />
