@@ -21,10 +21,8 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
   const [domainInputs, setDomainInputs] = useState([
     { value:url, isVerified: false, loading: false, error: "", debounceTimer: null },
   ]);
-
   const agentId = isAgentDetails.agent_id;
   const scriptText = `<script id="rex-widget-script" src="https://aesthetic-wisp-d15448.netlify.app/index.js?agentId=${agentId}"></script>`;
-
   // Load existing domains on mount or update
   useEffect(() => {
     if (typeof isAgentDetails.agentWidgetDomain === "string") {

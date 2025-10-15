@@ -1089,7 +1089,7 @@ const Step = () => {
                   languageSelect: languageSelect,
                   businessType,
                   aboutBusinessForm,
-                  commaSeparatedServices,
+                  allServices,
                   agentNote,
                   timeZone: timeZone?.timezoneId,
                   languageAccToPlan,
@@ -1100,7 +1100,6 @@ const Step = () => {
                   businessEmail: business?.email,
                   agent_id: agentId || sessionStorage.getItem("agentId"),
                 };
-          
                 const response = await createChatAgent(
                   commonAgentPayload, token
                 )

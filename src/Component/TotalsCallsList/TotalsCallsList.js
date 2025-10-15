@@ -134,18 +134,18 @@ export default function Home() {
     const seconds = Math.floor((durationMs % 60000) / 1000);
     return `${minutes} min ${seconds} sec`;
   };
-const getTimeFromTimestamp = (timestamp,timezone) => {
-  if (!timestamp) return "-";
-  return DateTime.fromMillis(timestamp)
-    .setZone(timezone || "UTC")
-    .toFormat("hh:mm:ss a");
-};
-const getDateFromTimestamp = (timestamp,timezone) => {
-  if (!timestamp) return "-";
-  return DateTime.fromMillis(timestamp)
-    .setZone(timezone || "UTC")
-    .toFormat("yyyy-MM-dd");
-};
+  const getTimeFromTimestamp = (timestamp, timezone) => {
+    if (!timestamp) return "-";
+    return DateTime.fromMillis(timestamp)
+      .setZone(timezone || "UTC")
+      .toFormat("hh:mm:ss a");
+  };
+  const getDateFromTimestamp = (timestamp, timezone) => {
+    if (!timestamp) return "-";
+    return DateTime.fromMillis(timestamp)
+      .setZone(timezone || "UTC")
+      .toFormat("yyyy-MM-dd");
+  };
   const filteredData = data?.filter((call) => {
 
     const sentimentMatch =
@@ -410,19 +410,19 @@ const getDateFromTimestamp = (timestamp,timezone) => {
                         <div>
                           {" "}
                           {call?.end_timestamp
-                            ? getTimeFromTimestamp(call?.end_timestamp,call?.timezone)
+                            ? getTimeFromTimestamp(call?.end_timestamp, call?.timezone)
                             : "-"}{" "}
                         </div>
                         <div className={styles.callDate}>
                           {" "}
                           {call?.end_timestamp
-                            ? getDateFromTimestamp(call?.end_timestamp,call?.timezone)
+                            ? getDateFromTimestamp(call?.end_timestamp, call?.timezone)
                             : "-"}{" "}
                         </div>
                       </div>
                     </td>
                     <td>
-                      {call?.duration_ms
+                      {call.call_type == "api_chat" ? call?.duration_ms : call?.duration_ms
                         ? convertMsToMinSec(call.duration_ms)
                         : "-"}
                     </td>
