@@ -325,7 +325,6 @@ export const useAgentCreator = ({
           .map((item) => item?.service?.trim())
           .filter(Boolean)
           .map((service) => ({ service }));
-
         try {
           const response = await axios.patch(
             `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`,
@@ -482,9 +481,13 @@ export const useAgentCreator = ({
               ...getBusinessSpecificFields(businessType)
             ],
 
+
             // webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
             // webhook_url: `https://c779fb0c1135.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+
             webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
+            // webhook_url: `  https://4aa21b9c074e.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+            // webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
 
 
             normalize_for_speech: true,
@@ -572,7 +575,7 @@ export const useAgentCreator = ({
                 languageSelect: languageSelect,
                 businessType,
                 aboutBusinessForm,
-                commaSeparatedServices,
+                allServices,
                 agentNote,
                 timeZone: timeZone?.timezoneId,
                 languageAccToPlan,
@@ -581,7 +584,8 @@ export const useAgentCreator = ({
                 businessPhone,
                 businessEmail: business?.email,
                 chat_agent_id,
-                chat_llm_id
+                chat_llm_id,
+                agent_id: agentId
               };
               // Check both IDs exist and are not null/empty/"null"
               if (chat_agent_id && chat_llm_id && chat_agent_id !== "null" && chat_llm_id !== "null") {

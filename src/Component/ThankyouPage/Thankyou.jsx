@@ -32,6 +32,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
   // Prefer query param if available, else fallback to URL paramm
   const key = queryMode || paramMode;
+  console.log(key, "chut di key");
+
   const location = useLocation();
 
   const [popupType, setPopupType] = useState(null);
@@ -427,23 +429,90 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     return new Intl.NumberFormat("en-IN").format(price);
   };
 
+
+
+  const fetchSubscriptionInfoMsg = async () => {
+    if (!agentId && !userId) return; // Ensure at least one ID exists
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/subscription-details-msg`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(
+          agentId ? { agentId } : { userId } // Send only one key based on availability
+        ),
+      });
+
+      const data = await res.json();
+      // console.log("Subscription Info:", data);
+
+      if (data && !data.error) {
+        // const { planAmount, ...rest } = data; // ignore planAmount
+        // setSubscriptionInfo((prev) => ({
+        //   ...prev,
+        //   ...rest, // keep existing planAmount
+        // }));
+        setSubscriptionInfo(data);
+        // Extract currency symbol
+        const currencyMap = {
+          USD: "$",
+          INR: "₹",
+          EUR: "€",
+          GBP: "£",
+          AUD: "A$",
+          CAD: "C$",
+        };
+        const upperCurrency = data.currency?.toUpperCase() || "USD";
+        const symbol = currencyMap[upperCurrency] || "$";
+        setCurrencySymbol(`${upperCurrency} ${symbol}`);
+        // Save invoice link
+        if (data.invoiceUrl) {
+          setInvoiceLink(data.invoiceUrl);
+        }
+      } else {
+        console.warn("No subscription found, falling back to static info.");
+      }
+    } catch (error) {
+      console.error("Failed to fetch subscription info:", error);
+    }
+  };
+
+
   useEffect(() => {
+    console.log("dddddddddd");
+
+
     if (hasRunRef.current) return;
     hasRunRef.current = true;
 
     const hasHandledThankYou = localStorage.getItem("hasHandledThankYou");
 
     localStorage.setItem("hasHandledThankYou", "true");
-    console.log("hasHandledThankYou",hasHandledThankYou)
+    console.log("hasHandledThankYou", hasHandledThankYou)
 
     const shouldRunUpdateAgent = key === "update" && agentId && userId;
     const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
     const shouldRunCreateFlow = key === "create" && userId;
 
+    const shouldMsgCheck = key === "msgPlan"
+    console.log(shouldMsgCheck, "gashas");
+
+
+
     const run = async () => {
       try {
         setLoading(true);
-        if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
+        if (shouldMsgCheck) {
+          console.log("doneeeee this workkkk");
+
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          await fetchSubscriptionInfoMsg();
+        }
+        else if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
           await callNextApiAndRedirect(); // handles update + cancellation
           await new Promise((resolve) => setTimeout(resolve, 1500));
           await fetchSubscriptionInfo();
@@ -453,6 +522,12 @@ function Thankyou({ onSubmit, isAgentCreated }) {
           if (!hasHandledThankYou) {
             onSubmit();
           }
+          // else if (shouldMsgCheck) {
+          //   console.log("doneeeee this workkkk");
+
+          //   await new Promise((resolve) => setTimeout(resolve, 1500));
+          //   await fetchSubscriptionInfoMsg();
+          // }
         }
       } catch (error) {
         console.log(error);
@@ -462,8 +537,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     };
 
     run();
-  }, [key, subscriptionId, agentId, userId, subsid , isAdmin]);
- 
+  }, [key, subscriptionId, agentId, userId, subsid, isAdmin]);
+
   const formatCurrency = (amount, currency) => {
     const upperCurrency = currency?.toUpperCase() || "USD";
 

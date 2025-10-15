@@ -496,7 +496,7 @@ const Step = () => {
   //if widget
   const ifChatWidgetEnabledOrNot =
     sessionStorage.getItem("chatWebWidget") === "true";
-    
+
   const handleContinue = async () => {
     // if (step8ARef.current) {
     setIsContinueClicked(true);
@@ -653,6 +653,33 @@ const Step = () => {
                 description: "Extract the user's name from the conversation\"",
               },
             ],
+          },
+          {
+            name: "get_conversation_history",
+            description: "Fetch previous coversation history by customer email address",
+            type: "custom",
+            method: "POST",
+            url: `${process.env.REACT_APP_API_BASE_URL}/Chatbot/get_chat_logs?email={{parameter.email}}`,
+            speak_after_execution: true,
+
+            // Query parameters for GET request
+            query_parameters: {
+              email: "{{parameter.email}}",
+            },
+
+            // Response variables to extract order status
+            parameters: {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "description": "Customer email address to fetch conversation history"
+                }
+              },
+              "required": [
+                "email"
+              ]
+            }
           },
         ],
         states: [
@@ -1089,7 +1116,7 @@ const Step = () => {
                   languageSelect: languageSelect,
                   businessType,
                   aboutBusinessForm,
-                  commaSeparatedServices,
+                  allServices,
                   agentNote,
                   timeZone: timeZone?.timezoneId,
                   languageAccToPlan,
@@ -1100,7 +1127,6 @@ const Step = () => {
                   businessEmail: business?.email,
                   agent_id: agentId || sessionStorage.getItem("agentId"),
                 };
-          
                 const response = await createChatAgent(
                   commonAgentPayload, token
                 )

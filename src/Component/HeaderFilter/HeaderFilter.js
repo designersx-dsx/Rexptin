@@ -18,8 +18,9 @@ function HeaderFilter({
   isCallSummary,
   filters,
   onFilterChange,
+  // onChatFilter
 }) {
-  // console.log(isAgents, "isAgents")
+  console.log(isAgents, "isAgents")
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [startDate, setStartDate] = useState(null);
@@ -29,23 +30,23 @@ function HeaderFilter({
   const totalAgentView = localStorage.getItem("filterType");
   const calendarRef = useRef(null);
 
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (calendarRef.current && !calendarRef.current.contains(event.target)) {
-      setOpen(false);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
     }
-  };
 
-  if (open) {
-    document.addEventListener("mousedown", handleClickOutside);
-  } else {
-    document.removeEventListener("mousedown", handleClickOutside);
-  }
-
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [open]);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
 
   const today = new Date();
   const sevenDaysAgo = new Date();
@@ -209,13 +210,13 @@ useEffect(() => {
                 {" "}
                 {startDate
                   ? startDate.toLocaleString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })
+                    month: "long",
+                    year: "numeric",
+                  })
                   : (startDate || new Date()).toLocaleString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    month: "long",
+                    year: "numeric",
+                  })}
               </p>
               <div className={styles.dateRange}>
                 <h6>
@@ -244,7 +245,7 @@ useEffect(() => {
               <div className={styles.DatePic}>
                 {open && (
                   <div
-                  style={{
+                    style={{
                       position: "absolute",
                       zIndex: 100,
                       left: "50px",
@@ -300,7 +301,32 @@ useEffect(() => {
             </div>
 
             <hr></hr>
+            {/* --------------- Call / Chat Filter Section --------------- */}
+            {/* <div className={styles.DateSecT} onClick={closeCalender}>
+              <p>Filter</p>
+              <div className={styles.selectWrapper}>
+                <div className={styles.selectedValue}>
+                  {selectedAgentId === "all"
+                    ? "All"
+                    : (() => {
+                      const agentName =
+                        isAgents.find(
+                          (agent) => agent.agent_id === selectedAgentId
+                        )?.agentName || "";
+                      return agentName.length > 28
+                        ? agentName.slice(0, 28) + "..."
+                        : agentName;
+                    })()}
+                </div>
 
+                <select className={styles.agentSelect1} value={selectedAgentId} onChange={(e) => onAgentChange(e.target.value)}>
+                  <option value="all">All</option>
+                  <option value="chat">Chat</option>
+                  <option value="call">Call</option>
+                </select>
+              </div>
+            </div> */}
+            {/* <hr></hr> */}
             <div className={styles.DateSecT} onClick={closeCalender}>
               <p>Agent</p>
 
@@ -309,14 +335,14 @@ useEffect(() => {
                   {selectedAgentId === "all"
                     ? "All"
                     : (() => {
-                        const agentName =
-                          isAgents.find(
-                            (agent) => agent.agent_id === selectedAgentId
-                          )?.agentName || "";
-                        return agentName.length > 28
-                          ? agentName.slice(0, 28) + "..."
-                          : agentName;
-                      })()}
+                      const agentName =
+                        isAgents.find(
+                          (agent) => agent.agent_id === selectedAgentId
+                        )?.agentName || "";
+                      return agentName.length > 28
+                        ? agentName.slice(0, 28) + "..."
+                        : agentName;
+                    })()}
                 </div>
 
                 <select
