@@ -4,7 +4,7 @@ import { API_BASE_URL, updateAgentWidgetDomain, validateWebsite } from "../../St
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
 const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
- const url=isAgentDetails?.business?.webUrl||""
+  const url = isAgentDetails?.business?.webUrl || ""
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [emailInput, setEmailInput] = useState("");
@@ -16,13 +16,12 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
   const [existingDomain, setExistingDomain] = useState([]);
   const [loading, setLoading] = useState(false);
   const [generateMode, setGenerateMode] = useState(false);
-  
   // Each domain input keeps value, isVerified, loading, error, debounceTimer
   const [domainInputs, setDomainInputs] = useState([
-    { value:url, isVerified: false, loading: false, error: "", debounceTimer: null },
+    { value: url, isVerified: false, loading: false, error: "", debounceTimer: null },
   ]);
   const agentId = isAgentDetails.agent_id;
-  const scriptText = `<script id="rex-widget-script" src="https://aesthetic-wisp-d15448.netlify.app/index.js?agentId=${agentId}"></script>`;
+  const scriptText = `<script id="rex-widget-script" src="https://rexptin.vercel.app/widget.js?agentId=${agentId}"></script>`;
   // Load existing domains on mount or update
   useEffect(() => {
     if (typeof isAgentDetails.agentWidgetDomain === "string") {
@@ -195,14 +194,14 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
       }
     }
   }, [existingDomain]);
-  console.log('domainInputs',domainInputs)
+  console.log('domainInputs', domainInputs)
 
   // Render domain inputs
   const renderDomainInputs = () => (
     <div className={styles.container}>
       <h3>Enter your Website URL(s)</h3>
       <p className={styles.noteText}>Note: The widget will only work on the domains you add.</p>
-    
+
       <div className={styles.forScroll}>
         {domainInputs.map((input, index) => (
           <div key={index} className={styles.domainInputRow}>
@@ -212,7 +211,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
                 placeholder="e.g., https://example.com"
                 value={input.value}
                 // onChange={(e) => handleDomainChange(index, e.target.value)}
-                         onKeyDown={(e) => {
+                onKeyDown={(e) => {
                   const prefix = "https://";
                   if (
                     input.value.length <= prefix.length &&
@@ -221,14 +220,14 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
                     e.preventDefault(); // block backspace inside https://
                   }
                 }}
-                  onChange={(e) => {
+                onChange={(e) => {
                   let val = e.target.value.toLowerCase().replace(/\s/g, ""); // lowercase & no spaces
                   if (!val.startsWith("https://")) {
                     val = "https://" + val.replace(/^https?:\/\//, ""); // ensure https://
                   }
                   handleDomainChange(index, val);
                 }}
-         
+
                 className={styles.inputField}
                 disabled={loading}
               />
@@ -260,15 +259,15 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
 
 
       <div className={styles.BottomBtnAddGen}>
-        
-        {domainInputs[0].value !=='' &&
-        <button
-          className={styles.addNewInputBtn}
-          onClick={handleAddDomainInput}
-          disabled={loading}
-        >
-          Add more +
-        </button>
+
+        {domainInputs[0].value !== '' &&
+          <button
+            className={styles.addNewInputBtn}
+            onClick={handleAddDomainInput}
+            disabled={loading}
+          >
+            Add more +
+          </button>
         }
 
         {(existingDomain.length > 0 || domainInputs.some(input => input.isVerified)) && (
@@ -282,16 +281,16 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
         )}
       </div>
       <div className={styles.guideNote}>
-           <p className={styles.noteText}> Need help Integrating the AI Receptionist Widget?{" "}
-                <a
-                  href="/widget-guide"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                   click here</a>
-              </p>
+        <p className={styles.noteText}> Need help Integrating the AI Receptionist Widget?{" "}
+          <a
+            href="/widget-guide"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            click here</a>
+        </p>
       </div>
-          
+
     </div>
   );
 
@@ -301,7 +300,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
 
       {generateMode && !showModal && (
         <>
-          <button className={styles.backBtn} onClick={() => setGenerateMode(false)}><img src="svg/back-Btn.svg" alt="back-Btn"/></button>
+          <button className={styles.backBtn} onClick={() => setGenerateMode(false)}><img src="svg/back-Btn.svg" alt="back-Btn" /></button>
           <h3 className={styles.title}>Widget Script</h3>
           <div className={styles.forScroll}>
             <div className={styles.domainList}>
@@ -337,7 +336,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
 
       {showModal && (
         <div className={styles.modalContainer}>
-          <button className={styles.backBtn} onClick={() => setShowModal(false)}><img src="svg/back-Btn.svg" alt="back-Btn"/></button>
+          <button className={styles.backBtn} onClick={() => setShowModal(false)}><img src="svg/back-Btn.svg" alt="back-Btn" /></button>
           <h3>Send Script to Developer</h3>
           <div className={styles.modalInfo}>
             <input
@@ -349,28 +348,28 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
               className={styles.inputField}
               disabled={loading}
             />
-           
+
           </div>
           {error && <p style={{ color: "red" }}>{error}</p>}
           <div className={styles.forScroll}>
-<ul className={styles.listType}>
-            {emails.map((e, idx) => (
-              <li key={idx}>
-                {e} <button onClick={() => handleDelete(idx)} disabled={loading} className={styles.Cross}><span >X</span></button>
-              </li>
-            ))}
-          </ul>
+            <ul className={styles.listType}>
+              {emails.map((e, idx) => (
+                <li key={idx}>
+                  {e} <button onClick={() => handleDelete(idx)} disabled={loading} className={styles.Cross}><span >X</span></button>
+                </li>
+              ))}
+            </ul>
           </div>
-          
+
           <div className={styles.modalActions}>
             <button onClick={handleSend} disabled={loading} className={styles.sendEmail}>
               {loading ? <div className={styles.loaderDiv}><Loader size={18} />&nbsp;&nbsp; &nbsp;Sending</div> : "Send Emails"}
             </button>
-             
-              <button className={styles.adddBtn} onClick={handleAddEmails} disabled={loading}>Add</button>
-            </div>
+
+            <button className={styles.adddBtn} onClick={handleAddEmails} disabled={loading}>Add</button>
           </div>
-     
+        </div>
+
       )}
 
       {showPopup && (
