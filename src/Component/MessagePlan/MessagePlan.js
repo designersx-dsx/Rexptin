@@ -193,14 +193,21 @@ const formattedPlanName = planName
         </div>
 
         {/* Bill */}
+        
         <div className={styles.billBox}>
+
+          <div className={styles.Dflex}>
+          <p className={styles.planLabel2}>Estimated Monthly Bill</p>
+          <button className={styles.webChatTag}>For Web Chat</button>
+        </div>
+          
           <div>
-            <p className={styles.planLabel2}>Estimated Monthly Bill</p>
+            
             <h2 className={styles.billValue}>
               ${price} <span>Per month</span>
             </h2>
           </div>
-          <button className={styles.webChatTag}>For Web Chat</button>
+          
         </div>
 
         {/* Popular Packs */}

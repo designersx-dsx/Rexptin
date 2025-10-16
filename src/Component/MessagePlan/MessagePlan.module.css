@@ -59,11 +59,15 @@
     font-weight: 500;
     font-family: 'Inter', sans-serif;
 }
-
-.billBox {
+.Dflex{
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+}
+
+.billBox {
+    /* display: flex;
+    justify-content: space-between;
+    align-items: flex-start; */
     margin: 20px 0;
     padding: 15px;
     border-radius: 15px;
