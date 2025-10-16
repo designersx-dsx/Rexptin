@@ -8,16 +8,23 @@ import decodeToken from "../../lib/decodeToken";
 import { API_BASE_URL } from '../../Store/apiStore';
 
 const MessagePlan = () => {
-  const [value, setValue] = useState(2450);
+ 
   const [activePack, setActivePack] = useState("2.5k");
   const [price, setPrice] = useState(0);
-  const [showWarning, setShowWarning] = useState(false);
   const location = useLocation();
-  let agent = location.state?.agent;
-  let system = location.state?.system;
-  console.log({ agent, system });
+  let agent = location.state.agent;
+   let system = location.state.system;
+const min = 500;
+  const max = 99000;
+  const initialValue = system 
+    ? Math.max(agent?.agent?.messagePurchase || min, min)  // use purchased messages if system
+    : 2450; // your default for new purchase
 
-  const packs = [
+const [value, setValue] = useState(initialValue);
+  
+  
+   console.log({agent})
+     const packs = [
     { label: "1k", value: 1000 },
     { label: "2.5k", value: 2500 },
     { label: "5k", value: 5000 },
@@ -30,29 +37,7 @@ const MessagePlan = () => {
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
 
-  const planName = agent?.agent?.agentPlan || '';
-  const messageLeft = Number(agent?.agent?.messageLeft || 0);
-  const msgPurchases = Number(agent?.agent?.messagePurchase
- || 0);
-  const msgSubscriptionId = agent?.agent?.msgSubscriptionId || null;
-
-  const currentPurchased = msgPurchases;
-  const globalMin = 500;
-  const min = system ? Math.max(globalMin, currentPurchased) : globalMin;
-  const max = 99000;
-  const step = 500;
-
-  // initialize slider
-  useEffect(() => {
-    if (system && currentPurchased > 0) {
-      setValue(currentPurchased);
-      setShowWarning(true);
-    } else {
-      setValue(2450);
-    }
-  }, [system, currentPurchased]);
-
-  // Tiered pricing logic
+  // 🟣 Tiered price per message logic
   const getPricePerMessage = (qty) => {
     if (qty <= 100) return 0.3;
     if (qty <= 200) return 0.29;
@@ -63,6 +48,7 @@ const MessagePlan = () => {
     return 0.2;
   };
 
+  // 🟣 Calculate price when value changes
   useEffect(() => {
     const perMsg = getPricePerMessage(value);
     const total = value * perMsg;
@@ -73,62 +59,62 @@ const MessagePlan = () => {
     try {
       const agentId = sessionStorage.getItem("SelectAgentId");
       if (!agentId) throw new Error("Agent ID not found in sessionStorage");
-
-      sessionStorage.setItem("agentName", agent?.agent?.agentName || "");
-      sessionStorage.setItem("AgentCode", agent?.agent?.agentCode || "");
-      sessionStorage.setItem("bussinessName", agent?.business?.businessName || "");
-
+sessionStorage.setItem("agentName" , agent?.agent?.agentName)
+       sessionStorage.setItem("AgentCode" , agent?.agent?.agentCode)
+       sessionStorage.setItem("bussinessName" , agent?.business?.businessName)
       const response = await axios.post(`${API_BASE_URL}/message`, {
         customerId: decodeTokenData?.customerId,
         units: value,
         agentId,
         userId: agent?.agent?.userId,
-        url: window.location.origin + `/thankyou/msgPlan?agentId=${agentId}`,
-        cancelUrl: window.location.origin + "/cancel-payment"
+        url : window.location.origin + `/thankyou/msgPlan?agentId=${agentId}` , 
+        cancelUrl : window.location.origin + "/cancel-payment"
       });
 
       if (response.data?.url) {
         window.location.href = response.data.url;
+      } else {
+        console.error("No URL returned from API:", response.data);
       }
     } catch (error) {
       console.error("❌ Error in msGcheckout:", error);
     }
   };
 
-  const msGcheckoutUpgarde = async () => {
+
+    const msGcheckoutUpgarde = async () => {
     try {
       const agentId = sessionStorage.getItem("SelectAgentId");
       if (!agentId) throw new Error("Agent ID not found in sessionStorage");
-
-      sessionStorage.setItem("agentName", agent?.agent?.agentName || "");
-      sessionStorage.setItem("AgentCode", agent?.agent?.agentCode || "");
-      sessionStorage.setItem("bussinessName", agent?.business?.businessName || "");
-      sessionStorage.setItem("oldSubsId", msgSubscriptionId || "");
-
+       sessionStorage.setItem("agentName" , agent?.agent?.agentName)
+       sessionStorage.setItem("AgentCode" , agent?.agent?.agentCode)
+       sessionStorage.setItem("bussinessName" , agent?.business?.businessName)
+       sessionStorage.setItem("oldSubsId" , agent?.agent?.msgSubscriptionId)
       const response = await axios.post(`${API_BASE_URL}/upgrade-msg-plan`, {
         customerId: decodeTokenData?.customerId,
         units: value,
         agentId,
         userId: agent?.agent?.userId,
-        oldSubscriptionId: msgSubscriptionId,
-        url: window.location.origin + `/thankyou/msgPlan?agentId=${agentId}`,
-        cancelUrl: window.location.origin + "/cancel-payment"
+        oldSubscriptionId : agent?.agent?.msgSubscriptionId , 
+        url : window.location.origin + `/thankyou/msgPlan?agentId=${agentId}` , 
+        cancelUrl : window.location.origin + "/cancel-payment"
       });
 
       if (response.data?.url) {
         window.location.href = response.data.url;
+      } else {
+        console.error("No URL returned from API:", response.data);
       }
     } catch (error) {
-      console.error("❌ Error in msGcheckoutUpgarde:", error);
+      console.error("❌ Error in msGcheckout:", error);
     }
   };
-
   const formatValue = (num, isTooltip = false) => {
     if (num >= 1000) {
-      const valueK = (num / 1000).toFixed(1);
+      const value = (num / 1000).toFixed(1);
       return (
         <span>
-          {valueK}
+          {value}
           {!isTooltip && <span style={{ fontSize: '40px' }}>K</span>}
           {isTooltip && 'K'}
         </span>
@@ -137,62 +123,60 @@ const MessagePlan = () => {
     return num;
   };
 
+
   const progress = ((value - min) / (max - min)) * 100;
 
-  useEffect(() => {
-    const nearestPack = packs.find((p) => Math.abs(p.value - value) <= 500);
-    setActivePack(nearestPack ? nearestPack.label : null);
-  }, [value]);
+const purchasedMessages = system ? (agent?.agent?.messagePurchase || min) : min;
 
-  const totalDisplayed =
-    planName === "free" ? value : Number(messageLeft || 0) + Number(value || 0);
+const handleSliderChange = (e) => {
+  let newValue = Number(e.target.value);
 
-  const renderTotal = (num) => (num >= 1000 ? `${(num / 1000).toFixed(1)}K` : num);
+  // Prevent downgrade if system is true
+  if (system && newValue < purchasedMessages) {
+    newValue = purchasedMessages;
+  }
 
+  setValue(newValue);
+};
   const handlePackClick = (packValue, packLabel) => {
-    if (system && packValue <= currentPurchased) {
-      setShowWarning(true);
-      setValue(currentPurchased);
-      return;
-    }
     setValue(packValue);
     setActivePack(packLabel);
-    if (system && packValue > currentPurchased) setShowWarning(false);
   };
 
-  const handleSliderChange = (e) => {
-    const newValue = Number(e.target.value);
-    if (system) {
-      if (newValue <= currentPurchased) {
-        setShowWarning(true);
-      } else {
-        setShowWarning(false);
-      }
-    }
-    setValue(newValue);
-  };
-const formattedPlanName = planName
-  ? planName.charAt(0).toUpperCase() + planName.slice(1)
-  : "";
+  // 🟣 Auto-highlight active pack
+  useEffect(() => {
+    const nearestPack = packs.find((p) => Math.abs(p.value - value) <= 500);
+    if (nearestPack) setActivePack(nearestPack.label);
+    else setActivePack(null);
+  }, [value]);
+
   return (
     <div className={styles.containerBox}>
       <HeaderBar title="Message Plan" />
       <div className={styles.planContainer}>
-        {/* Header */}
+        {/* Header Section */}
         <div className={styles.header}>
           <div className={styles.planBox}>
             <p className={styles.planLabel}>Voice Agent Plan</p>
-            <h2 className={styles.planName}>{formattedPlanName}</h2>
+            <h2 className={styles.planName}>{agent?.agent?.agentPlan}</h2>
           </div>
           <div className={styles.totalBox}>
             <p className={styles.planLabel}>Total Messages</p>
-            <h2 className={styles.planValue}>
-              {renderTotal(totalDisplayed)} <span>Per month</span>
-            </h2>
+           <h2 className={styles.planValue}>
+  {agent?.agent?.agentPlan === "free"
+    ? value >= 1000
+      ? (value / 1000).toFixed(1) + "K"
+      : value
+    : (value + (agent?.agent?.messageLeft || 0)) >= 1000
+    ? ((value + (agent?.agent?.messageLeft || 0)) / 1000).toFixed(1) + "K"
+    : value + (agent?.agent?.messageLeft || 0)
+  } 
+  <span>Per month</span>
+</h2>
           </div>
         </div>
 
-        {/* Bill */}
+        {/* Bill Section */}
         <div className={styles.billBox}>
           <div>
             <p className={styles.planLabel2}>Estimated Monthly Bill</p>
@@ -211,7 +195,9 @@ const formattedPlanName = planName
               <button
                 key={i}
                 onClick={() => handlePackClick(pack.value, pack.label)}
-                className={`${styles.packBtn} ${activePack === pack.label ? styles.activePack : ''}`}
+                className={`${styles.packBtn} ${
+                  activePack === pack.label ? styles.activePack : ''
+                }`}
               >
                 <p>
                   {pack.label} <span>sms</span>
@@ -224,26 +210,26 @@ const formattedPlanName = planName
           </p>
         </div>
 
-        {/* Slider */}
+        {/* Slider Section */}
         <div className={styles.sliderSection}>
           <h1 className={styles.sliderValue}>{formatValue(value)}</h1>
           <p className={styles.sliderText}>Messages per month</p>
+
           <div className={styles.sliderWrapper}>
-            <input
-              type="range"
-              min={min}
-              max={max}
-              step={step}
-              value={value}
-              onChange={handleSliderChange}
-              className={styles.slider}
-              style={{
-                background: `linear-gradient(to right, #a855f7, #6524EB ${progress}%, #fff ${progress}%)`,
-                border: '1px solid #CDCDCD',
-                borderRadius: '5px',
-                outline: 'none',
-              }}
-            />
+          <input
+  type="range"
+  min={min}
+  max={max}
+  value={value}
+  className={styles.slider}
+  onChange={handleSliderChange}
+  style={{
+    background: `linear-gradient(to right, #a855f7, #6524EB ${progress}%, #fff ${progress}%)`,
+    border: '1px solid #CDCDCD',
+    borderRadius: '5px',
+    outline: 'none',
+  }}
+/>
             <div
               className={styles.sliderTooltip}
               style={{
@@ -253,8 +239,9 @@ const formattedPlanName = planName
               {formatValue(value, true)}
             </div>
           </div>
+
           <div className={styles.sliderLabels}>
-            <span>{min}</span>
+            <span>500</span>
             <span>99K</span>
           </div>
           <p className={styles.rangeHint}>
@@ -262,23 +249,10 @@ const formattedPlanName = planName
           </p>
         </div>
 
-        {/* Warning Message */}
-        {system && showWarning && (
-          <p className={styles.warningMsg}>
-            ⚠️ Please select a higher message count than your current purchased plan ({currentPurchased}).
-          </p>
-        )}
-
-        {/* Purchase Button */}
-        <div
-          className={`${styles.PurchaseBtn} ${showWarning ? styles.disabledBtn : ''}`}
-          onClick={!showWarning ? (system ? msGcheckoutUpgarde : msGcheckout) : undefined}
-          role="button"
-        >
+        <div className={styles.PurchaseBtn} onClick={system ?  msGcheckoutUpgarde : msGcheckout}>
           <AnimatedButton
             label="Confirm PURCHASE"
             position={{ position: 'relative' }}
-            disabled={showWarning}
           />
           <p className={styles.NeedmOre}>Need more? Get in Touch with us!</p>
         </div>

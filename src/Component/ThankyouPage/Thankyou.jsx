@@ -269,7 +269,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
         let aa = sessionStorage.getItem("bussinessName")
           setAgentCode(sessionStorage.getItem("AgentCode"));
         setAgentName(sessionStorage.getItem("agentName"));
-        console.lof(aa , "aaaa")
+   
         setBusinessName(sessionStorage.getItem("bussinessName"))
         let businessNameVal = "";
 
@@ -591,10 +591,15 @@ const cancelOldSubscription = async () => {
           console.log("doneeeee this workkkk");
 
           await new Promise((resolve) => setTimeout(resolve, 1500));
-          await fetchSubscriptionInfoMsg();
+         
            let subscriptionId = sessionStorage.getItem("oldSubsId")
           if(subscriptionId){
- await cancelOldSubscription()
+  await cancelOldSubscription()
+  await fetchSubscriptionInfoMsg();
+ 
+          }
+          else{
+       await fetchSubscriptionInfoMsg();
           }
          
         }
