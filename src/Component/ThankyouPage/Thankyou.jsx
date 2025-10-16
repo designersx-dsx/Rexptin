@@ -32,7 +32,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
   // Prefer query param if available, else fallback to URL paramm
   const key = queryMode || paramMode;
-  console.log(key, "chut di key");
+  
 
   const location = useLocation();
 
@@ -235,6 +235,67 @@ function Thankyou({ onSubmit, isAgentCreated }) {
         if (!businessNameVal && placeData?.businessName) {
           businessNameVal = placeData.businessName;
         }
+
+        setBusinessName(businessNameVal || "Your Business");
+        // ✅ Load plan details from localStorage
+        const selectedPlanRaw = localStorage.getItem("selectedPlanData");
+        if (selectedPlanRaw) {
+          try {
+            const plan = JSON.parse(selectedPlanRaw);
+
+            setSubscriptionInfo({
+              planName: plan.planName || "N/A",
+              planAmount: plan.price || 0,
+              planMins: plan.planMins || "N/A",
+              interval: plan.interval || "month",
+              currentPeriodStart:
+                plan.currentPeriodStart || new Date().toISOString(),
+              nextRenewalDate: plan.nextBillingDate || null,
+              invoiceUrl: plan.invoiceUrl || null,
+            });
+          } catch (err) {
+            console.warn(
+              "Failed to parse selected plan data from localStorage:",
+              err
+            );
+          }
+        }
+      }
+
+      if (key === "msgPlan") {
+        console.log("dadadsadada")
+        let aa = sessionStorage.getItem("bussinessName")
+        console.lof(aa , "aaaa")
+        setBusinessName(sessionStorage.getItem("bussinessName"))
+        let businessNameVal = "";
+
+        const businessData = storedBusinessDetails
+          ? JSON.parse(storedBusinessDetails)
+          : null;
+
+        console.log("businessData",businessData);
+        
+        const placeData = storedPlaceDetails
+          ? JSON.parse(storedPlaceDetails)
+          : null;
+
+        setAgentCode(sessionStorage.getItem("AgentCode") || "XXXXXX");
+        setAgentName(sessionStorage.getItem("agentName") || "Agent");
+
+        // 1. From businessDetails first
+        if (businessData) {
+          // setAgentCode(businessData.AgentCode || "XXXXXX");
+          // setAgentName(businessData.agentName || "Agent");
+
+          businessNameVal = businessData.businessName;
+        }
+
+        // 2. If missing, fallback to placeDetailsExtract
+        if (!businessNameVal && placeData?.businessName) {
+          businessNameVal = placeData.businessName;
+        }
+
+        console.log("businessNameVal",businessNameVal)
 
         setBusinessName(businessNameVal || "Your Business");
         // ✅ Load plan details from localStorage
@@ -644,7 +705,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
                 <div className={styles.row}>
                   <span>Business Name:</span>{" "}
                   <div className={styles.Right50}>
-                    {isAdmin ? businessName1 : (businessName || "ACME Construction Services")}
+                    {isAdmin ? businessName1 : (key === "msgPlan" ? sessionStorage.getItem("bussinessName") :  businessName || "ACME Construction Services")}
                   </div>
                 </div>
                 <div className={styles.row}>
@@ -663,7 +724,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
                   <span>Plan Activated:</span>
                   <div className={styles.Right50}>
                     {subscriptionInfo?.planName || "Growth"} -{" "}
-                    {subscriptionInfo?.planMins || "1500"} minutes
+                    { key === "msgPlan" ? subscriptionInfo.planMessage : subscriptionInfo?.planMins|| "1500" } 
+                    {key === "msgPlan" ?  " Messages" : " Minutes"}
                   </div>
                 </div>
                 <div className={styles.row}>

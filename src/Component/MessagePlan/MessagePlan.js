@@ -14,7 +14,7 @@ const MessagePlan = () => {
   const location = useLocation();
   let agent = location.state.agent;
    let system = location.state.system;
-   console.log(system , "chatke ");
+   console.log({agent})
      const packs = [
     { label: "1k", value: 1000 },
     { label: "2.5k", value: 2500 },
@@ -50,7 +50,9 @@ const MessagePlan = () => {
     try {
       const agentId = sessionStorage.getItem("SelectAgentId");
       if (!agentId) throw new Error("Agent ID not found in sessionStorage");
-
+sessionStorage.setItem("agentName" , agent?.agent?.agentName)
+       sessionStorage.setItem("AgentCode" , agent?.agent?.agentCode)
+       sessionStorage.setItem("bussinessName" , agent?.business?.businessName)
       const response = await axios.post(`${API_BASE_URL}/message`, {
         customerId: decodeTokenData?.customerId,
         units: value,
@@ -73,7 +75,9 @@ const MessagePlan = () => {
     try {
       const agentId = sessionStorage.getItem("SelectAgentId");
       if (!agentId) throw new Error("Agent ID not found in sessionStorage");
-
+       sessionStorage.setItem("agentName" , agent?.agent?.agentName)
+       sessionStorage.setItem("AgentCode" , agent?.agent?.agentCode)
+       sessionStorage.setItem("bussinessName" , agent?.business?.businessName)
       const response = await axios.post(`${API_BASE_URL}/upgrade-msg-plan`, {
         customerId: decodeTokenData?.customerId,
         units: value,
