@@ -58,6 +58,8 @@ sessionStorage.setItem("agentName" , agent?.agent?.agentName)
         units: value,
         agentId,
         userId: agent?.agent?.userId,
+        url : window.location.origin + `/thankyou/msgPlan?agentId=${agentId}` , 
+        cancelUrl : window.location.origin + "/cancel-payment"
       });
 
       if (response.data?.url) {
@@ -78,12 +80,15 @@ sessionStorage.setItem("agentName" , agent?.agent?.agentName)
        sessionStorage.setItem("agentName" , agent?.agent?.agentName)
        sessionStorage.setItem("AgentCode" , agent?.agent?.agentCode)
        sessionStorage.setItem("bussinessName" , agent?.business?.businessName)
+       sessionStorage.setItem("oldSubsId" , agent?.agent?.msgSubscriptionId)
       const response = await axios.post(`${API_BASE_URL}/upgrade-msg-plan`, {
         customerId: decodeTokenData?.customerId,
         units: value,
         agentId,
         userId: agent?.agent?.userId,
-        oldSubscriptionId : agent?.agent?.msgSubscriptionId
+        oldSubscriptionId : agent?.agent?.msgSubscriptionId , 
+        url : window.location.origin + `/thankyou/msgPlan?agentId=${agentId}` , 
+        cancelUrl : window.location.origin + "/cancel-payment"
       });
 
       if (response.data?.url) {
