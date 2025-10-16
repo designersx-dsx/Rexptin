@@ -433,7 +433,7 @@ function injectCSS() {
           .terms-content h2 {
             margin-top: 0;
             font-size: 16px;
-            margin-bottom: 4px;
+            margin-bottom: -7px;
           }
           
           .close-terms {
@@ -1613,7 +1613,7 @@ function createReviewWidget() {
         localStorage.setItem("call_mins_left", String(json.mins_left ?? ""));
         localStorage.setItem("chat_mins_left", String(json.messageLeft ?? ""));
         localStorage.setItem("addOnsMins", String(json.addOnsMins ?? ""));
-        localStorage.setItem("addOnsMins", json.avatar);
+
         enforceRexIfNoMinutes();
 
         console.log(json, "json of wfwe");
@@ -2718,7 +2718,7 @@ function createReviewWidget() {
     const termsWrapper = document.createElement("div");
     termsWrapper.className = "terms-wrapper";
     termsWrapper.style.position = "absolute";
-    termsWrapper.style.top = "2.3rem";
+    termsWrapper.style.top = "8.7rem";
     termsWrapper.style.zIndex = "11";
     popupBody.appendChild(termsWrapper);
 
@@ -2758,7 +2758,178 @@ function createReviewWidget() {
       termsPopup.style.display = "none";
     });
 
+    // callBtn.onclick = async () => {
+    //   localStorage.setItem("rex_last_ui", "call");
+    //   const mainModal = document.getElementById("agentPopup");
+    //   if (mainModal) {
+    //     mainModal.style.display = "block";
+    //     setWidgetLocked(true);
+    //   }
+
+    //   let agentId = localStorage.getItem("agent_id");
+    //   if (!agentId && typeof getAgentIdFromScript === "function") {
+    //     agentId = getAgentIdFromScript() || "";
+    //     if (agentId) localStorage.setItem("agent_id", agentId);
+    //   }
+    //   const SPECIAL_AGENT = "agent_0498e1599d6ea9e13d09657f79";
+    //   const endpoint =
+    //     agentId === SPECIAL_AGENT ? "createRexWebCall" : "createWidegetWebCall";
+    //   if (navigator?.mediaDevices) {
+    //     try {
+    //       const stream = await navigator.mediaDevices.getUserMedia({
+    //         audio: true,
+    //       });
+    //       micStream = stream;
+    //     } catch (err) {
+    //       console.error("Microphone access denied or error:", err);
+    //       alert("Please allow microphone access to proceed with the call.");
+    //       return;
+    //     }
+    //     if (!onCall) {
+    //       callBtn.disabled = true;
+    //       callContent = "Calling...";
+    //       callLabel.textContent = callContent;
+    //       callText.innerHTML = `<p>Connecting...</p>`;
+    //       disableChatButton();
+    //       try {
+    //         const res = await fetch(`${API_URL}/agent/${endpoint}`, {
+    //           method: "POST",
+    //           headers: { "Content-Type": "application/json" },
+    //           body: JSON.stringify({
+    //             agent_id: agentId || localStorage.getItem("agent_id"),
+    //             url: currentSiteURL,
+    //             retell_llm_dynamic_variables: buildRetellDynamicVars(),
+    //           }),
+    //         });
+
+    //         if (res.ok) {
+    //           const data = await res.json();
+
+    //           if (data?.access_token && data?.call_id) {
+    //             const access_token = data.access_token;
+    //             callId = data.call_id;
+
+    //             await retellWebClient.startCall({ accessToken: access_token });
+    //             callContent = "Connected";
+    //             callLabel.textContent = callContent;
+    //             callBtn.classList.remove("greendiv");
+    //             callBtn.classList.add("reddiv");
+    //             phoneIcon.src = "https://rexptin.vercel.app/svg/Hangup.svg";
+    //             callText.innerHTML = `<p>Hang up Now</p><small>In Call with ${
+    //               agentName.length > 10
+    //                 ? `${agentName.substring(0, 8)}..`
+    //                 : agentName
+    //             }</small>`;
+    //             onCall = true;
+
+    //             imageWrapper.classList.add("active");
+
+    //             imageWrapper
+    //               .querySelectorAll(".pulse-ring2")
+    //               .forEach((ring) => ring.remove());
+
+    //             for (let i = 0; i < 3; i++) {
+    //               const ring = document.createElement("span");
+    //               ring.className = "pulse-ring2";
+    //               imageWrapper.insertBefore(ring, agentImg);
+    //             }
+    //           } else {
+    //             console.error("Invalid response data:", data);
+    //             throw new Error("Invalid response data");
+    //           }
+    //         } else {
+    //           throw new Error("Failed to fetch access token");
+    //         }
+    //       } catch (err) {
+    //         console.error("Call failed:", err.message);
+    //         callText.innerHTML = `<p style="color: red;">Unauthorized Access</p>`;
+    //         enableChatButton();
+    //         setWidgetLocked(false);
+    //       } finally {
+    //         callBtn.disabled = false;
+    //         if (!onCall) enableChatButton();
+    //       }
+    //     } else {
+    //       await retellWebClient.stopCall();
+    //       try {
+    //         localStorage.removeItem("rex_last_ui");
+    //       } catch {}
+    //       setWidgetLocked(false);
+    //       callBtn.classList.remove("reddiv");
+    //       callBtn.classList.add("greendiv");
+    //       phoneIcon.src = "https://rexptin.vercel.app/svg/Phone-call.svg";
+    //       callText.innerHTML = `<p style="color:white">Call <span class="agentTag">${
+    //         agentName.length > 8 ? `${agentName.substring(0, 8)}..` : agentName
+    //       }</span></p>
+    //             <small>${
+    //               businessName.length > 10
+    //                 ? `${businessName.substring(0, 8)}..`
+    //                 : businessName
+    //             } Agent is LIVE</small>`;
+    //       onCall = false;
+    //       callLabel.textContent = `Call ${agentName}`;
+    //       imageWrapper.classList.remove("active");
+    //       imageWrapper
+    //         .querySelectorAll(".pulse-ring2")
+    //         .forEach((ring) => ring.remove());
+    //       enableChatButton();
+    //       const data = {
+    //         agentId: getAgentIdFromScript(),
+    //         callId: callId,
+    //       };
+
+    //       modal.style.display = "none";
+    //       document.getElementById("agentButton")?.classList.remove("noFloat");
+
+    //       // ---- SOFT RELOAD WIDGET (no page refresh) ----
+    //       try {
+    //         // 1) remove any existing popups to avoid duplicate IDs
+    //         ["agentPopup", "rexChatPopup", "rexSupportPopup"].forEach((id) => {
+    //           document.getElementById(id)?.remove();
+    //         });
+
+    //         // 2) drop the init flag so we can re-init cleanly
+    //         window.__REX_WIDGET_INITIALIZED__ = false;
+
+    //         // 3) ensure host exists (create if removed)
+    //         if (!document.getElementById("review-widget")) {
+    //           const host = document.createElement("div");
+    //           host.id = "review-widget";
+    //           document.body.appendChild(host);
+    //         }
+
+    //         // 4) re-init on next frames so DOM/LS writes settle
+    //         const reinit = () => {
+    //           try {
+    //             createReviewWidget();
+    //           } catch (e) {
+    //             console.warn("reinit failed", e);
+    //           }
+    //         };
+    //         if (typeof requestAnimationFrame === "function") {
+    //           requestAnimationFrame(() => requestAnimationFrame(reinit));
+    //         } else {
+    //           setTimeout(reinit, 0);
+    //         }
+    //       } catch (e) {
+    //         console.warn("[Rex] widget soft reload failed:", e);
+    //       }
+    //       // const res = await fetch(`${API_URL}/agent/updateAgentMinutesLeft`, {
+    //       //     method: "PATCH",
+    //       //     headers: { "Content-Type": "application/json" },
+    //       //     body: JSON.stringify({  agentId: getAgentIdFromScript(), callId: callId }),
+    //       //   });
+    //     }
+    //   }
+    // };
+
+    // add this near your other globals
+    let isCreatingCall = false; // prevents double hits while request is pending
+
     callBtn.onclick = async () => {
+      // if already creating or already on call, ignore repeat clicks (except hangup branch)
+      if (isCreatingCall && !onCall) return;
+
       localStorage.setItem("rex_last_ui", "call");
       const mainModal = document.getElementById("agentPopup");
       if (mainModal) {
@@ -2771,27 +2942,40 @@ function createReviewWidget() {
         agentId = getAgentIdFromScript() || "";
         if (agentId) localStorage.setItem("agent_id", agentId);
       }
+
       const SPECIAL_AGENT = "agent_0498e1599d6ea9e13d09657f79";
       const endpoint =
         agentId === SPECIAL_AGENT ? "createRexWebCall" : "createWidegetWebCall";
+
       if (navigator?.mediaDevices) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-          });
-          micStream = stream;
-        } catch (err) {
-          console.error("Microphone access denied or error:", err);
-          alert("Please allow microphone access to proceed with the call.");
-          return;
-        }
+        // ---- CLICK FOR CALL (not currently onCall) ----
         if (!onCall) {
-          callBtn.disabled = true;
-          callContent = "Calling...";
-          callLabel.textContent = callContent;
-          callText.innerHTML = `<p>Connecting...</p>`;
-          disableChatButton();
           try {
+            // lock immediately so rapid clicks don’t re-enter
+            isCreatingCall = true;
+            callBtn.disabled = true; // <- disable right away
+            disableChatButton();
+
+            // show "Connecting..." ASAP
+            callContent = "Calling...";
+            callLabel.textContent = callContent;
+            callText.innerHTML = `<p>Connecting...</p>`;
+
+            // ask mic permission
+            try {
+              const stream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+              });
+              micStream = stream;
+            } catch (err) {
+              console.error("Microphone access denied or error:", err);
+              alert("Please allow microphone access to proceed with the call.");
+              return; // early exit; finally will run to unlock
+            }
+
+            // optional: protect fetch with AbortController (avoids overlaps/timeouts)
+            const controller = new AbortController();
+
             const res = await fetch(`${API_URL}/agent/${endpoint}`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -2800,56 +2984,61 @@ function createReviewWidget() {
                 url: currentSiteURL,
                 retell_llm_dynamic_variables: buildRetellDynamicVars(),
               }),
+              signal: controller.signal,
             });
 
-            if (res.ok) {
-              const data = await res.json();
+            if (!res.ok) throw new Error("Failed to fetch access token");
 
-              if (data?.access_token && data?.call_id) {
-                const access_token = data.access_token;
-                callId = data.call_id;
+            const data = await res.json();
+            if (!(data?.access_token && data?.call_id)) {
+              console.error("Invalid response data:", data);
+              throw new Error("Invalid response data");
+            }
 
-                await retellWebClient.startCall({ accessToken: access_token });
-                callContent = "Connected";
-                callLabel.textContent = callContent;
-                callBtn.classList.remove("greendiv");
-                callBtn.classList.add("reddiv");
-                phoneIcon.src = "https://rexptin.vercel.app/svg/Hangup.svg";
-                callText.innerHTML = `<p>Hang up Now</p><small>In Call with ${
-                  agentName.length > 10
-                    ? `${agentName.substring(0, 8)}..`
-                    : agentName
-                }</small>`;
-                onCall = true;
+            const access_token = data.access_token;
+            callId = data.call_id;
 
-                imageWrapper.classList.add("active");
+            await retellWebClient.startCall({ accessToken: access_token });
 
-                imageWrapper
-                  .querySelectorAll(".pulse-ring2")
-                  .forEach((ring) => ring.remove());
+            callContent = "Connected";
+            callLabel.textContent = callContent;
+            callBtn.classList.remove("greendiv");
+            callBtn.classList.add("reddiv");
+            phoneIcon.src = "https://rexptin.vercel.app/svg/Hangup.svg";
+            callText.innerHTML = `<p>Hang up Now</p><small>In Call with ${
+              agentName.length > 10
+                ? `${agentName.substring(0, 8)}..`
+                : agentName
+            }</small>`;
+            onCall = true;
 
-                for (let i = 0; i < 3; i++) {
-                  const ring = document.createElement("span");
-                  ring.className = "pulse-ring2";
-                  imageWrapper.insertBefore(ring, agentImg);
-                }
-              } else {
-                console.error("Invalid response data:", data);
-                throw new Error("Invalid response data");
-              }
-            } else {
-              throw new Error("Failed to fetch access token");
+            imageWrapper.classList.add("active");
+            imageWrapper
+              .querySelectorAll(".pulse-ring2")
+              .forEach((r) => r.remove());
+            for (let i = 0; i < 3; i++) {
+              const ring = document.createElement("span");
+              ring.className = "pulse-ring2";
+              imageWrapper.insertBefore(ring, agentImg);
             }
           } catch (err) {
-            console.error("Call failed:", err.message);
+            console.error("Call failed:", err?.message || err);
             callText.innerHTML = `<p style="color: red;">Unauthorized Access</p>`;
             enableChatButton();
             setWidgetLocked(false);
           } finally {
-            callBtn.disabled = false;
-            if (!onCall) enableChatButton();
+            // while connecting/pending we keep it disabled.
+            // re-enable only if we did NOT enter onCall state (i.e., failed/denied)
+            if (!onCall) {
+              callBtn.disabled = false;
+            }
+            isCreatingCall = false; // unlock for next attempt (or for hangup branch)
           }
-        } else {
+          return; // end not-onCall branch
+        }
+
+        // ---- HANGUP BRANCH (already onCall) ----
+        try {
           await retellWebClient.stopCall();
           try {
             localStorage.removeItem("rex_last_ui");
@@ -2861,44 +3050,37 @@ function createReviewWidget() {
           callText.innerHTML = `<p style="color:white">Call <span class="agentTag">${
             agentName.length > 8 ? `${agentName.substring(0, 8)}..` : agentName
           }</span></p>
-                <small>${
-                  businessName.length > 10
-                    ? `${businessName.substring(0, 8)}..`
-                    : businessName
-                } Agent is LIVE</small>`;
+        <small>${
+          businessName.length > 10
+            ? `${businessName.substring(0, 8)}..`
+            : businessName
+        } Agent is LIVE</small>`;
           onCall = false;
           callLabel.textContent = `Call ${agentName}`;
           imageWrapper.classList.remove("active");
           imageWrapper
             .querySelectorAll(".pulse-ring2")
-            .forEach((ring) => ring.remove());
+            .forEach((r) => r.remove());
           enableChatButton();
-          const data = {
-            agentId: getAgentIdFromScript(),
-            callId: callId,
-          };
+
+          const data = { agentId: getAgentIdFromScript(), callId: callId };
 
           modal.style.display = "none";
           document.getElementById("agentButton")?.classList.remove("noFloat");
 
           // ---- SOFT RELOAD WIDGET (no page refresh) ----
           try {
-            // 1) remove any existing popups to avoid duplicate IDs
             ["agentPopup", "rexChatPopup", "rexSupportPopup"].forEach((id) => {
               document.getElementById(id)?.remove();
             });
-
-            // 2) drop the init flag so we can re-init cleanly
             window.__REX_WIDGET_INITIALIZED__ = false;
 
-            // 3) ensure host exists (create if removed)
             if (!document.getElementById("review-widget")) {
               const host = document.createElement("div");
               host.id = "review-widget";
               document.body.appendChild(host);
             }
 
-            // 4) re-init on next frames so DOM/LS writes settle
             const reinit = () => {
               try {
                 createReviewWidget();
@@ -2914,11 +3096,10 @@ function createReviewWidget() {
           } catch (e) {
             console.warn("[Rex] widget soft reload failed:", e);
           }
-          // const res = await fetch(`${API_URL}/agent/updateAgentMinutesLeft`, {
-          //     method: "PATCH",
-          //     headers: { "Content-Type": "application/json" },
-          //     body: JSON.stringify({  agentId: getAgentIdFromScript(), callId: callId }),
-          //   });
+        } finally {
+          // ensure button is enabled after hangup
+          callBtn.disabled = false;
+          isCreatingCall = false;
         }
       }
     };
@@ -3462,14 +3643,24 @@ function createReviewWidget() {
       document.body.appendChild(chatModalEl);
       const endConfirm = makeEndConfirm(chatModalEl);
 
+      // add once at module scope
+      let isCreatingCall = false;
+
       async function startVoiceCall() {
+        // guard: avoid duplicate hits while request is in-flight or if already on a call
+        if (isCreatingCall || onCall) return;
+
+        isCreatingCall = true;
+        callBtn.disabled = true; // disable immediately
+        callLabel.textContent = "Connecting…";
+        callText.textContent = "Connecting…";
+
         try {
-          callBtn.disabled = true;
-
-          callLabel.textContent = "Connecting…";
-          callText.textContent = "Connecting…";
-
+          // mic permission (keeps button disabled during prompt)
           await navigator.mediaDevices.getUserMedia({ audio: true });
+
+          // optional: protects against overlaps/timeouts
+          const controller = new AbortController();
 
           const res = await fetch(`${API_URL}/agent/createWidegetWebCall`, {
             method: "POST",
@@ -3479,6 +3670,7 @@ function createReviewWidget() {
               url: currentSiteURL,
               retell_llm_dynamic_variables: buildRetellDynamicVars(),
             }),
+            signal: controller.signal,
           });
           if (!res.ok) throw new Error("Failed to fetch access token");
 
@@ -3489,6 +3681,7 @@ function createReviewWidget() {
           callId = data.call_id;
           await retellWebClient.startCall({ accessToken: data.access_token });
 
+          // === connected state ===
           callLabel.textContent = "Connected";
           callBtn.classList.remove("greendiv");
           callBtn.classList.add("reddiv");
@@ -3507,14 +3700,74 @@ function createReviewWidget() {
             ring.className = "pulse-ring2";
             imageWrapper.insertBefore(ring, agentImg);
           }
+
+          // IMPORTANT: once connected, enable button so user can hang up
+          callBtn.disabled = false;
         } catch (err) {
           console.error("startVoiceCall failed:", err);
           callText.textContent = "Unable to connect";
           onCall = false;
-        } finally {
+
+          // allow retry after failure
           callBtn.disabled = false;
+        } finally {
+          isCreatingCall = false; // unlock for the next attempt
         }
       }
+
+      // async function startVoiceCall() {
+      //   try {
+      //     callBtn.disabled = true;
+
+      //     callLabel.textContent = "Connecting…";
+      //     callText.textContent = "Connecting…";
+
+      //     await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      //     const res = await fetch(`${API_URL}/agent/createWidegetWebCall`, {
+      //       method: "POST",
+      //       headers: { "Content-Type": "application/json" },
+      //       body: JSON.stringify({
+      //         agent_id: localStorage.getItem("agent_id"),
+      //         url: currentSiteURL,
+      //         retell_llm_dynamic_variables: buildRetellDynamicVars(),
+      //       }),
+      //     });
+      //     if (!res.ok) throw new Error("Failed to fetch access token");
+
+      //     const data = await res.json();
+      //     if (!data?.access_token || !data?.call_id)
+      //       throw new Error("Invalid response data");
+
+      //     callId = data.call_id;
+      //     await retellWebClient.startCall({ accessToken: data.access_token });
+
+      //     callLabel.textContent = "Connected";
+      //     callBtn.classList.remove("greendiv");
+      //     callBtn.classList.add("reddiv");
+      //     phoneIcon.src = "https://rexptin.vercel.app/svg/Hangup.svg";
+      //     callText.innerHTML = `<p>Hang up Now</p><small>In Call with ${
+      //       agentName.length > 10 ? `${agentName.substring(0, 8)}..` : agentName
+      //     }</small>`;
+      //     onCall = true;
+
+      //     imageWrapper.classList.add("active");
+      //     imageWrapper
+      //       .querySelectorAll(".pulse-ring2")
+      //       .forEach((r) => r.remove());
+      //     for (let i = 0; i < 3; i++) {
+      //       const ring = document.createElement("span");
+      //       ring.className = "pulse-ring2";
+      //       imageWrapper.insertBefore(ring, agentImg);
+      //     }
+      //   } catch (err) {
+      //     console.error("startVoiceCall failed:", err);
+      //     callText.textContent = "Unable to connect";
+      //     onCall = false;
+      //   } finally {
+      //     callBtn.disabled = false;
+      //   }
+      // }
       function openCallConfirmInsideChat() {
         const overlay = document.createElement("div");
         overlay.className = "rex-confirm-overlay";
