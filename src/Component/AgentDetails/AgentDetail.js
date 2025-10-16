@@ -147,7 +147,9 @@ const AgentDashboard = () => {
 
     } else {
       const businessDetailsFromKnowledgeBase = agentData?.business
-      const knowledge_base_texts_Details = JSON.parse(businessDetailsFromKnowledgeBase.knowledge_base_texts)
+      // const knowledge_base_texts_Details = JSON.parse(businessDetailsFromKnowledgeBase.knowledge_base_texts)
+            const knowledge_base_texts_Details =businessDetailsFromKnowledgeBase.knowledge_base_texts
+
       const commonAgentPayload = {
         industryKey: agentData?.business?.businessType || "",
         roleTitle: agentData?.agent?.agentRole || "",
