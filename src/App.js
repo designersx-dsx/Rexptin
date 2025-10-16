@@ -22,6 +22,7 @@ import Dashboard from "./Component/Dashboard/Dashboard";
 import RexAgent from "./Component/RexAgent/RexAgent";
 import Plans from "./Component/Plans/Plans";
 import MessagePlan from "./Component/MessagePlan/MessagePlan";
+import BuildPlan from "./Component/BuildPlan/BuildPlan";
 import Delete from "./Component/Delete/Delete";
 import SubscriptionFlow from "./Component/Checkout/SubscriptionFlow";
 import Calendar from "./Component/Celender/Calendar";
@@ -336,6 +337,10 @@ function App() {
                 <Route
                   path="/message-plan"
                   element={<MessagePlan />}
+                />
+                 <Route
+                  path="/build-plan"
+                  element={<BuildPlan />}
                 />
 
 
