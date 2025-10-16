@@ -813,7 +813,7 @@ const Planss = () => {
                     <h2>Subscriptions Plans </h2>
                     <p>Choose a suitable plan for your agent & business case</p>
                 </div>
-            {!hasCustomPlan ? 
+            {/* {!hasCustomPlan ? 
                <div className={styles.sectionPart}>
                 <div className={styles.cutomPlan} onClick={CustomhandleClick}>
                     <div><img src='svg/edit-custom-plan.svg' alt='edit-custom-plan' /></div>
@@ -821,7 +821,7 @@ const Planss = () => {
                 </div>
                
             </div>
-            : null}
+            : null} */}
          
             <div className={styles.wrapper}>
                 <Slider ref={sliderRef} {...settings}>

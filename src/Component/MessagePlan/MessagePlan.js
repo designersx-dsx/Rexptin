@@ -138,10 +138,12 @@ const handleSliderChange = (e) => {
 
   setValue(newValue);
 };
-  const handlePackClick = (packValue, packLabel) => {
-    setValue(packValue);
-    setActivePack(packLabel);
-  };
+const handlePackClick = (packValue, packLabel) => {
+  // If system is true, prevent decreasing below purchased messages
+  const newValue = system && packValue < purchasedMessages ? purchasedMessages : packValue;
+  setValue(newValue);
+  setActivePack(packLabel);
+};
 
   // 🟣 Auto-highlight active pack
   useEffect(() => {
