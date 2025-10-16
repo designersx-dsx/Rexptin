@@ -663,7 +663,7 @@ const Step = () => {
             speak_after_execution: true,
 
             // Query parameters for GET request
-            query_parameters: {
+            query_params: {
               email: "{{parameter.email}}",
             },
 

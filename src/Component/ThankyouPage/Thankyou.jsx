@@ -11,6 +11,7 @@ import { useRef } from "react";
 import Loader2 from "../Loader2/Loader2";
 import LottieAnimation from "../../lib/LottieAnimation";
 import useUser from "../../Store/Context/UserContext";
+import axios from "axios";
 
 function Thankyou({ onSubmit, isAgentCreated }) {
   const [animationData, setAnimationData] = useState(null);
@@ -179,6 +180,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   };
 
   const onDashboardClick = async () => {
+    sessionStorage.removeItem("oldSubsId")
     if (isAdmin) {
       await adminHandleClick();
     } else {
@@ -265,6 +267,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
       if (key === "msgPlan") {
         console.log("dadadsadada")
         let aa = sessionStorage.getItem("bussinessName")
+          setAgentCode(sessionStorage.getItem("AgentCode"));
+        setAgentName(sessionStorage.getItem("agentName"));
         console.lof(aa , "aaaa")
         setBusinessName(sessionStorage.getItem("bussinessName"))
         let businessNameVal = "";
@@ -279,8 +283,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
           ? JSON.parse(storedPlaceDetails)
           : null;
 
-        setAgentCode(sessionStorage.getItem("AgentCode") || "XXXXXX");
-        setAgentName(sessionStorage.getItem("agentName") || "Agent");
+      
 
         // 1. From businessDetails first
         if (businessData) {
@@ -562,7 +565,24 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     const shouldMsgCheck = key === "msgPlan"
     console.log(shouldMsgCheck, "gashas");
 
+const cancelOldSubscription = async () => {
+  try {
+    let subscriptionId = sessionStorage.getItem("oldSubsId")
+    if (!subscriptionId) throw new Error("subscriptionId is required");
 
+    // Call your backend cancel API
+    const response = await axios.post(`${API_BASE_URL}/cancelMessage-plan`, {
+      subscriptionId,
+    });
+
+    console.log("Cancel response:", response.data);
+
+  
+  } catch (error) {
+    console.error("Error canceling subscription:", error);
+   
+  }
+};
 
     const run = async () => {
       try {
@@ -572,6 +592,11 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
           await new Promise((resolve) => setTimeout(resolve, 1500));
           await fetchSubscriptionInfoMsg();
+           let subscriptionId = sessionStorage.getItem("oldSubsId")
+          if(subscriptionId){
+ await cancelOldSubscription()
+          }
+         
         }
         else if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
           await callNextApiAndRedirect(); // handles update + cancellation

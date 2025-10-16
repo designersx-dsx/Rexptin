@@ -147,7 +147,9 @@ const AgentDashboard = () => {
 
     } else {
       const businessDetailsFromKnowledgeBase = agentData?.business
-      const knowledge_base_texts_Details = JSON.parse(businessDetailsFromKnowledgeBase.knowledge_base_texts)
+      // const knowledge_base_texts_Details = JSON.parse(businessDetailsFromKnowledgeBase.knowledge_base_texts)
+      const knowledge_base_texts_Details = businessDetailsFromKnowledgeBase.knowledge_base_texts
+
       const commonAgentPayload = {
         industryKey: agentData?.business?.businessType || "",
         roleTitle: agentData?.agent?.agentRole || "",
@@ -162,7 +164,7 @@ const AgentDashboard = () => {
         languageSelect: agentData?.business?.agentLanguage || "",
         businessType: agentData?.business?.businessType || "",
         aboutBusinessForm: agentData?.business?.aboutBusiness || "",
-        commaSeparatedServices: agentData?.business?.buisnessService || "",
+        allServices: agentData?.business?.buisnessService || "",
         agentNote: "",
         timeZone: "",
         languageAccToPlan: agentData?.agent?.agentPlan || "",
@@ -176,7 +178,7 @@ const AgentDashboard = () => {
       const response = await createChatAgent(
         commonAgentPayload, token
       );
-      setHasFetched(false)
+      getAgentDetailsAndBookings()
     }
 
   };
@@ -193,7 +195,7 @@ const AgentDashboard = () => {
     }
     return number;
   }
-  
+
   useEffect(() => {
     const fetchMeetingCount = async () => {
       if (!agentData?.agent?.calApiKey || !agentData?.agent?.eventId) return;
@@ -430,8 +432,8 @@ const AgentDashboard = () => {
       setLoading(false);
     }
   };
-  console.log(agentinfo , "chatke");
-  
+  console.log(agentinfo, "chatke");
+
   useEffect(() => {
     getAgentDetailsAndBookings();
   }, [refresh]);
@@ -988,18 +990,18 @@ const AgentDashboard = () => {
       }
     });
   };
-   const handleMessagePlanUpgarde = () => {
+  const handleMessagePlanUpgarde = () => {
     navigate("/message-plan", {
       state: {
         agent: agentinfo,
-        system : true
+        system: true
       }
     });
   };
   const handleChatHistoryNavigation = () => {
     sessionStorage.setItem("agentId", agentDetails?.agentId);
     sessionStorage.setItem("userId", userId);
-      navigate("/totalcall-list?filter=chatHistory");
+    navigate("/totalcall-list?filter=chatHistory");
 
     localStorage.setItem("filterType", "single")
   }
@@ -1410,7 +1412,7 @@ Do you want to proceed with deleting this assigned number?`
               {agentinfo?.agent?.subscriptionId && !agentinfo?.agent?.msgSubscriptionId ?
 
                 <div className={styles.footer}>
-                  <span className={styles.messages}><strong>{agentinfo?.agent?.agentPlan} Voice</strong> (included {agentinfo?.agent?.planMinutes/60}/m)</span>
+                  <span className={styles.messages}><strong>{agentinfo?.agent?.agentPlan} Voice</strong> (included {agentinfo?.agent?.planMinutes / 60}/m)</span>
 
                   <button onClick={handleMessagePlan} className={styles.buyMore}><img src="/svg/plus-icon.svg" alt="plus-icon" />ADD MORE</button>
                 </div>
@@ -1420,7 +1422,7 @@ Do you want to proceed with deleting this assigned number?`
 
               {/* for free plan  */}
 
-              {agentinfo?.agent?.agentPlan === "free" &&  !agentinfo?.agent?.msgSubscriptionId ?
+              {agentinfo?.agent?.agentPlan === "free" && !agentinfo?.agent?.msgSubscriptionId ?
                 <div className={styles.footer}>
                   <span className={styles.messages}><strong>FREE Voice</strong> (included 20/m)</span>
 
@@ -1429,7 +1431,7 @@ Do you want to proceed with deleting this assigned number?`
                 : null}
 
 
-                 {agentinfo?.agent?.agentPlan === "free" &&  agentinfo?.agent?.msgSubscriptionId ?
+              {agentinfo?.agent?.agentPlan === "free" && agentinfo?.agent?.msgSubscriptionId ?
                 <div className={styles.footer}>
                   <span className={styles.messages}><strong>FREE Voice + Chat Plan</strong> (include {agentinfo?.agent?.messagePurchase}/m)</span>
 
