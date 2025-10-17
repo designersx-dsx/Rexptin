@@ -517,6 +517,7 @@ function injectCSS() {
                 border-radius: 0 !important;
                 transform: none !important;
               }
+                
             }
                             .attio-header{display:flex; align-items:center; justify-content:space-between;
                             padding:12px 16px; border-bottom:1px solid #EFEFEF}
@@ -554,7 +555,7 @@ function injectCSS() {
                 .composer{display:flex; gap:8px; align-items:center; margin-top:10px;
                 border:0px solid #E6E6E6; border-radius:14px; padding:6px;z-index: 1;
                     position: relative; width:93%}
-                .composer input{flex:1; border:0; outline:0; padding:10px 12px; font-size:14px;border-radius: 10px 0 0 10px;
+                .composer input{flex:1; border:0; outline:0; padding:8px 12px; font-size:14px;border-radius: 10px 0 0 10px;
          height: 32px;}
                 .composer button{border:0; background:#6564eb00; color:#fff; 
                 border-radius:10px; font-weight:600; cursor:pointer; position: absolute;
@@ -686,7 +687,7 @@ function injectCSS() {
           position: fixed;
           bottom: 155px;
           right: 20px;
-          max-width: 290px;
+          max-width: 320px;
           width: 90%;
           background: #fff;
           border-radius: 16px;
@@ -902,14 +903,20 @@ function injectCSS() {
         .support-popup .actions-ct.single .btn {
           width: 100%;
         }
+        #agentButton.disabled { opacity: .6; cursor: not-allowed; }
+
         #pcGreetingMsg {
           letter-spacing: normal; 
         }
         @keyframes rexSpin{ to{ transform: rotate(360deg); } }
 
         @media (max-width:650px){
-          .support-popup{ max-width:none !important; width:100% !important; left:0 !important; right:0 !important; border-radius:0 !important }
-          .big-card{ min-height:34dvh; padding-bottom:96px }
+          .support-popup{ max-width:500px !important; width:88% !important; left:0 !important; right:0 !important; border-radius:0 !important }
+          .big-card{ padding-bottom:60px }
+          .support-body{
+             height: 50dvh;
+             overflow: auto;
+          }
         }
           @media (max-width:370px){
           .big-card{ min-height:45dvh; padding-bottom:96px }
@@ -925,18 +932,15 @@ function injectCSS() {
         .typing-dots i:nth-child(3){ animation-delay:.3s }
         @keyframes pcBlink { 0%{transform:translateY(0);opacity:.3}
           50%{transform:translateY(-3px);opacity:1} 100%{transform:translateY(0);opacity:.3}
-        }
-
-        
-
-
+        }      
 `;
   document.head.appendChild(style);
 }
-const currentSiteURL = window.location.origin;
-const API_URL = "https://rex-bk.truet.net/api/";
-// const API_URL = "http://localhost:2512/api";
 
+const currentSiteURL = window.location.origin;
+// const API_URL = "https://rex-bk.truet.net/api/";
+const API_URL = "https://rexptin.truet.net/api/";
+// const API_URL = "http://localhost:2512/api";
 const CHAT_LS_KEY = "rex_chat_history";
 let typingEl = null;
 function loadChatHistory() {
@@ -947,7 +951,6 @@ function loadChatHistory() {
     return [];
   }
 }
-
 let __rex_end_called__ = false;
 let __pc_greeting_played = false;
 let __rex_only_user_end_timer = null;
@@ -1054,31 +1057,18 @@ async function hardEndChatNow() {
     try {
       localStorage.removeItem("rex_intro_inline");
     } catch {}
-
-    // stop any timers
     try {
       clearOnlyUserAutoEndTimer?.();
     } catch {}
-
-    // close UI if open
     try {
       document.getElementById("rexChatPopup")?.classList.remove("show");
     } catch {}
-
-    // --- HARD RELOAD (no soft widget re-init) ---
-    // Simple reload:
     window.location.reload();
     return;
-
-    // If you ever need a cache-busting variant instead:
-    // const u = new URL(window.location.href);
-    // u.searchParams.set("_ts", String(Date.now()));
-    // window.location.replace(u.toString());
-    // return;
   }
 }
 
-function scheduleOnlyUserAutoEnd(idleMs = 1 * 60 * 1000) {
+function scheduleOnlyUserAutoEnd(idleMs = 4 * 60 * 1000) {
   clearOnlyUserAutoEndTimer();
 
   const hist = getHistorySafe();
@@ -1113,8 +1103,6 @@ function lockWidgetFor(ms = 3000) {
     btn.style.pointerEvents = "auto";
   }, ms);
 }
-
-// Soft-refresh + conditional archive/end
 async function endChatArchiveNow({ silent = false } = {}) {
   if (window.__rex_end_called__) return;
   window.__rex_end_called__ = true;
@@ -1124,7 +1112,6 @@ async function endChatArchiveNow({ silent = false } = {}) {
       ? CHAT_LS_KEY
       : "rex_chat_history";
 
-  // ---- read history safely ----
   let hist = [];
   try {
     const raw = localStorage.getItem(CHAT_KEY) || "[]";
@@ -1138,10 +1125,8 @@ async function endChatArchiveNow({ silent = false } = {}) {
   const knowledgeBaseId = localStorage.getItem("knowledge_base_id");
 
   try {
-    // choose API based on history presence
     if (chatId) {
       if (hist.length > 0 && knowledgeBaseId) {
-        // archive (history present)
         const res = await fetch(`${API_URL}/agent/end-chat-archive`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1176,7 +1161,6 @@ async function endChatArchiveNow({ silent = false } = {}) {
       );
     }
   } finally {
-    // ---- LS cleanup / reset ----
     try {
       localStorage.removeItem("rex_last_ui");
     } catch {}
@@ -1186,12 +1170,10 @@ async function endChatArchiveNow({ silent = false } = {}) {
     try {
       localStorage.removeItem("rex_intro_inline");
     } catch {}
-    // persist empty history so reopen par kuch append na ho
     try {
       localStorage.setItem(CHAT_KEY, "[]");
     } catch {}
 
-    // ---- stop timers ----
     try {
       clearInactivityTimers?.();
     } catch {}
@@ -1282,115 +1264,6 @@ async function endChatArchiveNow({ silent = false } = {}) {
     } catch {}
   }
 }
-
-// async function endChatArchiveNow({ silent = false } = {}) {
-//   if (__rex_end_called__) return;
-//   __rex_end_called__ = true;
-
-//   try {
-//     const chatId = localStorage.getItem("chat_id");
-//     const knowledgeBaseId = localStorage.getItem("knowledge_base_id");
-//     if (chatId && knowledgeBaseId) {
-//       const res = await fetch(`${API_URL}/agent/end-chat-archive`, {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//           knowledge_base_id: knowledgeBaseId,
-//           chat_id: chatId,
-//         }),
-//       });
-//       console.log("end chat", res);
-//       if (!res.ok) {
-//         const txt = await res.text().catch(() => "");
-//         throw new Error(`end-chat-archive HTTP ${res.status}: ${txt}`);
-//       }
-//     }
-//   } catch (e) {
-//     console.error("[Rex] auto end-chat failed:", e);
-//     if (!silent) {
-//       appendMessage?.(
-//         "bot",
-//         "⚠️ Unable to auto-end the chat. You can close the window.",
-//         Date.now()
-//       );
-//     }
-//   } finally {
-//     try {
-//       localStorage.removeItem("rex_last_ui");
-//     } catch {}
-//     try {
-//       localStorage.removeItem(CHAT_LS_KEY);
-//     } catch {}
-//     try {
-//       localStorage.removeItem("chat_id");
-//     } catch {}
-//     try {
-//       localStorage.removeItem("rex_intro_inline");
-//     } catch {}
-
-//     // persist an empty history so reopen pe kuch append na ho
-//     try {
-//       localStorage.setItem(CHAT_LS_KEY, "[]");
-//     } catch {}
-
-//     // stop all timers that may re-open or re-append
-//     try {
-//       clearInactivityTimers?.();
-//     } catch {}
-//     try {
-//       clearOnlyUserAutoEndTimer?.();
-//     } catch {}
-//     try {
-//       clearCloseTimer?.();
-//     } catch {}
-//     try {
-//       loadChatHistory?.();
-//     } catch {}
-//     // ---- HARD UI TEARDOWN (no page reload) ----
-//     try {
-//       // 1) close & wipe the existing chat popup content
-//       const cp = document.getElementById("rexChatPopup");
-//       if (cp) {
-//         cp.classList.remove("show", "expanded");
-//         const msgs = cp.querySelector("#rexMessages");
-//         if (msgs) msgs.innerHTML = "";
-//         // typing bubble ref ko drop karo (agar global var use ho raha)
-//         try {
-//           if (window.typingEl) {
-//             window.typingEl.remove?.();
-//             window.typingEl = null;
-//           }
-//         } catch {}
-//         // 2) force fresh mount next time
-//         cp.remove();
-//       }
-
-//       // 3) agar aapke code me chatModalEl ek outer var hai, usko null kar do
-//       try {
-//         window.chatModalEl = null;
-//       } catch {}
-
-//       // 4) support/prechat modals bhi band
-//       try {
-//         document.getElementById("rexSupportPopup")?.classList.remove("show");
-//       } catch {}
-//       try {
-//         const pcm = document.getElementById("rexPreChatModal");
-//         if (pcm) pcm.style.display = "none";
-//       } catch {}
-
-//       // 5) launcher ko normal state me lao (float back)
-//       try {
-//         document.getElementById("agentButton")?.classList.remove("noFloat");
-//       } catch {}
-//     } catch (e) {
-//       console.warn("[Rex] UI teardown failed:", e);
-//     }
-
-//     // IMPORTANT: **no reload**
-//     window.location.reload();
-//   }
-// }
 let __rex_close_timer__ = null;
 function startCloseTimer() {
   clearCloseTimer();
@@ -1443,6 +1316,32 @@ function extractBotText(resp) {
   return t;
 }
 
+// async function createChatCompletion(userText) {
+//   let chatId = localStorage.getItem("chat_id");
+//   const agentIdHdr =
+//     localStorage.getItem("chat_agent_id") || getAgentIdFromScript();
+//   const chat_agent_id = localStorage.getItem("chat_agent_id");
+
+//   if (!chatId) {
+//     await createChatSession(localStorage.getItem("chat_agent_id") || undefined);
+//     chatId = localStorage.getItem("chat_id");
+//     if (!chatId) throw new Error("chat_id missing; cannot send message");
+//   }
+
+//   const res = await fetch(`${API_URL}/Chatbot/create-chat-completion`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       ...(agentIdHdr ? { agent_id: agentIdHdr } : {}),
+//     },
+//     body: JSON.stringify({ chat_id: chatId, content: userText, chat_agent_id }),
+//   });
+
+//   if (!res.ok) throw new Error(`HTTP ${res.status}`);
+//   const data = await res.json();
+//   const botText = extractBotText(data) || "";
+//   return { data, botText };
+// }
 async function createChatCompletion(userText) {
   let chatId = localStorage.getItem("chat_id");
   const agentIdHdr =
@@ -1464,8 +1363,55 @@ async function createChatCompletion(userText) {
     body: JSON.stringify({ chat_id: chatId, content: userText, chat_agent_id }),
   });
 
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
+  // Parse response safely (JSON or text or empty)
+  let data = null;
+  try {
+    data = await res.clone().json();
+  } catch {
+    try {
+      const txt = await res.text();
+      data = txt ? { error: txt } : null;
+    } catch {
+      data = null;
+    }
+  }
+
+  // Helper: only reload once per 10s to avoid loops
+  const shouldReloadOnce = (reason) => {
+    const key = "reload_guard_missing_agent";
+    const last = Number(sessionStorage.getItem(key) || 0);
+    const now = Date.now();
+    if (now - last < 10_000) return false;
+    sessionStorage.setItem(key, String(now));
+    console.warn("Reloading due to:", reason);
+    return true;
+  };
+
+  // Normalize known “missing agent / not found” signals
+  const agentMissing =
+    data?.error === "Agent not found" ||
+    data?.detail?.message === "Not Found" ||
+    data?.error?.includes?.("Agent not found") ||
+    res.status === 404;
+
+  if (agentMissing) {
+    localStorage.removeItem("chat_id");
+    localStorage.removeItem("rex_chat_history");
+
+    if (
+      shouldReloadOnce(
+        data?.detail?.message || data?.error || `HTTP ${res.status}`
+      )
+    ) {
+      window.location.reload();
+    }
+    throw new Error("Agent/session missing; cleared chat_id and reloaded.");
+  }
+  if (!res.ok) {
+    const msg = data?.error || data?.detail?.message || `HTTP ${res.status}`;
+    throw new Error(msg);
+  }
+
   const botText = extractBotText(data) || "";
   return { data, botText };
 }
@@ -1669,6 +1615,18 @@ function createReviewWidget() {
     });
     return el;
   };
+
+  function setWidgetLocked(locked = true) {
+    const btn = document.getElementById("agentButton");
+    if (!btn) return;
+    btn.classList.toggle("disabled", !!locked);
+    btn.style.pointerEvents = locked ? "none" : "auto";
+    btn.setAttribute("aria-disabled", locked ? "true" : "false");
+  }
+  function isCallPopupOpen() {
+    const m = document.getElementById("agentPopup");
+    return !!(m && m.style.display === "block");
+  }
 
   const initWidget = async () => {
     const { RetellWebClient } = await import(
@@ -2259,26 +2217,30 @@ function createReviewWidget() {
       <div class="big-card">
       
 
-        <div class="field">
-         
-          <div class="input-dark"><input id="pcName" type="text" placeholder="John Doe"   autocomplete="off" autocapitalize="off" autocorrect="off"
-  spellcheck="false" aria-autocomplete="none" inputmode="text"></div>
-          <div class="err" id="erPcName"></div>
-        </div>
+  <div class="field">
+    <div class="input-dark">
+        <input id="pcName" type="text" placeholder="John Doe" autocomplete="off" autocapitalize="off" autocorrect="off"
+               spellcheck="false" aria-autocomplete="none" inputmode="text" maxlength="30">
+    </div>
+    <div class="err" id="erPcName"></div>
+</div>
 
-        <div class="field">
-         
-          <div class="input-dark"><input id="pcEmail" type="email" placeholder="email@example.com"   autocomplete="off" autocapitalize="off" autocorrect="off"
-  spellcheck="false" aria-autocomplete="none" inputmode="email"></div>
-          <div class="err" id="erPcEmail"></div>
-        </div>
+<div class="field">
+    <div class="input-dark">
+        <input id="pcEmail" type="email" placeholder="email@example.com" autocomplete="off" autocapitalize="off" autocorrect="off"
+               spellcheck="false" aria-autocomplete="none" inputmode="email" maxlength="50">
+    </div>
+    <div class="err" id="erPcEmail"></div>
+</div>
 
-        <div class="field">
-          
-          <div class="input-dark"><input id="pcPhone" type="tel" placeholder="+1 98XXXXXXXX"  autocomplete="off" autocapitalize="off" autocorrect="off"
-  spellcheck="false" aria-autocomplete="none" inputmode="tel"></div>
-          <div class="err" id="erPcPhone"></div>
-        </div>
+<div class="field">
+    <div class="input-dark">
+        <input id="pcPhone" type="tel" placeholder="+1 98XXXXXXXX" autocomplete="off" autocapitalize="off" autocorrect="off"
+               spellcheck="false" aria-autocomplete="none" inputmode="tel" maxlength="15">
+    </div>
+    <div class="err" id="erPcPhone"></div>
+</div>
+
 
        
       </div>
@@ -2330,7 +2292,6 @@ function createReviewWidget() {
         return Number.isFinite(n) ? n : 0;
       };
       const SPECIAL_REX_AGENT = "agent_0498e1599d6ea9e13d09657f79";
-
       const $name = supportEl.querySelector("#pcName");
       const $email = supportEl.querySelector("#pcEmail");
       const $phone = supportEl.querySelector("#pcPhone");
@@ -2340,17 +2301,24 @@ function createReviewWidget() {
       const $chat = supportEl.querySelector("#pcStartChat");
       const $call = supportEl.querySelector("#pcStartCall");
       const $actions = supportEl.querySelector(".actions-ct");
+
+      // --- normalized flags/values ---
       const chatEnabledFlag = String(
         isChatEnabled ?? localStorage.getItem("isChatEnabled") ?? ""
       ).toLowerCase();
       const chatEnabled = chatEnabledFlag === "true" || chatEnabledFlag === "1";
-      const chatMinsLeft = Number(localStorage.getItem("chat_mins_left"));
-      const callMinsLeft = Number(localStorage.getItem("call_mins_left"));
-      const addOnsLeft = toNum(localStorage.getItem("addOnsMins"));
-      const allZero =
-        chatMinsLeft === 0 && callMinsLeft === 0 && addOnsLeft === 0;
-      const canShowChat = chatEnabled && chatMinsLeft > 0;
-      const canShowCall = callMinsLeft > 0 || addOnsLeft > 0;
+
+      const chatMinsLeft = toNum(localStorage.getItem("chat_mins_left"));
+      const addOnsMins = toNum(localStorage.getItem("addOnsMins")); // ✅ correct key
+      const callMinsLeft = toNum(localStorage.getItem("call_mins_left"));
+
+      // --- entitlements per your rules ---
+      const hasChatEntitlement =
+        chatEnabled && (chatMinsLeft > 0 || addOnsMins > 0); // (1) & (2)
+      const hasCallEntitlement = callMinsLeft > 0; // (2) & (3)
+      const allZero = chatMinsLeft <= 0 && addOnsMins <= 0 && callMinsLeft <= 0; // (4)
+
+      // reset UI
       if ($actions) $actions.classList.remove("single");
       if ($chat) {
         $chat.style.display = "none";
@@ -2363,89 +2331,51 @@ function createReviewWidget() {
         $call.style.width = "";
         $call.setAttribute("aria-disabled", "true");
       }
-      // if (canShowChat && canShowCall) {
-      //   if ($chat) $chat.style.display = "inline-flex";
-      //   if ($call) {
-      //     $call.style.display = "inline-flex";
-      //     $call.removeAttribute("aria-disabled");
-      //   }
-      //   if ($actions) $actions.classList.remove("single");
-      // } else if (canShowChat && !canShowCall) {
-      //   if ($chat) {
-      //     $chat.style.display = "inline-flex";
-      //     $chat.style.flex = "1 1 100%";
-      //   }
-      //   if ($actions) $actions.classList.add("single");
-      // } else if (!canShowChat && canShowCall) {
-      //   if ($call) {
-      //     $call.style.display = "inline-flex";
-      //     $call.style.flex = "1 1 100%";
-      //     $call.style.width = "100%";
-      //     $call.removeAttribute("aria-disabled");
-      //   }
-      //   if ($actions) $actions.classList.add("single");
-      // } else {
-      //   localStorage.setItem("agent_id", "agent_0498e1599d6ea9e13d09657f79");
-      //   if ($chat) {
-      //     $chat.style.display = "none";
-      //     $chat.style.flex = "";
-      //     $chat.style.width = "";
-      //   }
-      //   if ($call) {
-      //     $call.style.display = "inline-flex";
-      //     $call.style.flex = "1 1 100%";
-      //     $call.style.width = "100%";
-      //     $call.setAttribute("aria-disabled", "true");
-      //   }
-      //   if ($actions) $actions.classList.add("single");
+
+      // --- apply rules ---
       if (allZero) {
-        // 🔒 Force REX
+        // (4) sab zero => special rex agent lock + sirf disabled call button (aapka existing UX)
         localStorage.setItem("agent_id", SPECIAL_REX_AGENT);
-
-        // chat bilkul hide
-        if ($chat) $chat.style.display = "none";
-
-        // call button single layout me (disabled)
         if ($call) {
           $call.style.display = "inline-flex";
           $call.style.flex = "1 1 100%";
           $call.style.width = "100%";
           $call.setAttribute("aria-disabled", "true");
-        }
-        if ($actions) $actions.classList.add("single");
-      } else if (canShowChat && canShowCall) {
-        if ($chat) $chat.style.display = "inline-flex";
-        if ($call) {
-          $call.style.display = "inline-flex";
-          $call.removeAttribute("aria-disabled");
-        }
-        if ($actions) $actions.classList.remove("single");
-      } else if (canShowChat && !canShowCall) {
-        if ($chat) {
-          $chat.style.display = "inline-flex";
-          $chat.style.flex = "1 1 100%";
-        }
-        if ($actions) $actions.classList.add("single");
-      } else if (!canShowChat && canShowCall) {
-        if ($call) {
-          $call.style.display = "inline-flex";
-          $call.style.flex = "1 1 100%";
-          $call.style.width = "100%";
-          $call.removeAttribute("aria-disabled");
         }
         if ($actions) $actions.classList.add("single");
       } else {
-        // default fallback (usually unreachable now)
-        localStorage.setItem("agent_id", SPECIAL_REX_AGENT);
-        if ($chat) $chat.style.display = "none";
-        if ($call) {
-          $call.style.display = "inline-flex";
-          $call.style.flex = "1 1 100%";
-          $call.style.width = "100%";
-          $call.setAttribute("aria-disabled", "true");
+        // (1) & (2): chat sirf tab dikhana jab chatEnabled true ho AND (chatMinsLeft>0 || addOnsMins>0)
+        if (hasChatEntitlement && $chat) {
+          $chat.style.display = "inline-flex";
         }
-        if ($actions) $actions.classList.add("single");
+
+        // (2) & (3): call sirf tab dikhana jab callMinsLeft>0
+        if (hasCallEntitlement && $call) {
+          $call.style.display = "inline-flex";
+          $call.removeAttribute("aria-disabled");
+        }
+
+        // single/double layout
+        const showChat = hasChatEntitlement;
+        const showCall = hasCallEntitlement;
+
+        if (showChat && !showCall) {
+          if ($chat) {
+            $chat.style.flex = "1 1 100%";
+            $chat.style.width = "100%";
+          }
+          if ($actions) $actions.classList.add("single");
+        } else if (!showChat && showCall) {
+          if ($call) {
+            $call.style.flex = "1 1 100%";
+            $call.style.width = "100%";
+          }
+          if ($actions) $actions.classList.add("single");
+        } else {
+          if ($actions) $actions.classList.remove("single");
+        }
       }
+
       $name.value = localStorage.getItem("rex_user_name") || "";
       $email.value = localStorage.getItem("rex_user_email") || "";
       $phone.value = localStorage.getItem("rex_user_phone") || "";
@@ -2753,6 +2683,10 @@ function createReviewWidget() {
     let __rex_widget_clicking = false;
 
     rexAgent.addEventListener("click", async () => {
+      if (onCall || isCallPopupOpen()) {
+        pingBeep?.();
+        return;
+      }
       const preferChat = localStorage.getItem("rex_last_ui") === "chat";
       const preferCall = localStorage.getItem("rex_last_ui") === "call";
       const hasHistory = (loadChatHistory() || []).length > 0;
@@ -2774,6 +2708,7 @@ function createReviewWidget() {
         const modal = document.getElementById("agentPopup");
         if (modal) {
           modal.style.display = "block";
+          setWidgetLocked(true);
           rexAgent.classList.add("noFloat");
           clearCloseTimer?.();
           return;
@@ -2816,6 +2751,8 @@ function createReviewWidget() {
     closeButton.addEventListener("click", async () => {
       modal.style.display = "none";
       rexAgent.classList.remove("noFloat");
+      setWidgetLocked(false);
+
       if (onCall) {
         try {
           await retellWebClient.stopCall();
@@ -2836,13 +2773,20 @@ function createReviewWidget() {
             : businessName
         } Agent is LIVE</small>`;
         onCall = false;
+        setWidgetLocked(false);
       }
     });
 
-    modal.addEventListener("click", (e) => {
+    modal.addEventListener("click", async (e) => {
       if (e.target === modal) {
+        try {
+          if (onCall) await retellWebClient.stopCall();
+        } catch {}
+        onCall = false;
+        setWidgetLocked(false);
         modal.style.display = "none";
         rexAgent.classList.remove("noFloat");
+        setWidgetLocked(false);
       }
     });
 
@@ -2889,34 +2833,224 @@ function createReviewWidget() {
       termsPopup.style.display = "none";
     });
 
+    // callBtn.onclick = async () => {
+    //   localStorage.setItem("rex_last_ui", "call");
+    //   const mainModal = document.getElementById("agentPopup");
+    //   if (mainModal) {
+    //     mainModal.style.display = "block";
+    //     setWidgetLocked(true);
+    //   }
+
+    //   let agentId = localStorage.getItem("agent_id");
+    //   if (!agentId && typeof getAgentIdFromScript === "function") {
+    //     agentId = getAgentIdFromScript() || "";
+    //     if (agentId) localStorage.setItem("agent_id", agentId);
+    //   }
+    //   const SPECIAL_AGENT = "agent_0498e1599d6ea9e13d09657f79";
+    //   const endpoint =
+    //     agentId === SPECIAL_AGENT ? "createRexWebCall" : "createWidegetWebCall";
+    //   if (navigator?.mediaDevices) {
+    //     try {
+    //       const stream = await navigator.mediaDevices.getUserMedia({
+    //         audio: true,
+    //       });
+    //       micStream = stream;
+    //     } catch (err) {
+    //       console.error("Microphone access denied or error:", err);
+    //       alert("Please allow microphone access to proceed with the call.");
+    //       return;
+    //     }
+    //     if (!onCall) {
+    //       callBtn.disabled = true;
+    //       callContent = "Calling...";
+    //       callLabel.textContent = callContent;
+    //       callText.innerHTML = `<p>Connecting...</p>`;
+    //       disableChatButton();
+    //       try {
+    //         const res = await fetch(`${API_URL}/agent/${endpoint}`, {
+    //           method: "POST",
+    //           headers: { "Content-Type": "application/json" },
+    //           body: JSON.stringify({
+    //             agent_id: agentId || localStorage.getItem("agent_id"),
+    //             url: currentSiteURL,
+    //             retell_llm_dynamic_variables: buildRetellDynamicVars(),
+    //           }),
+    //         });
+
+    //         if (res.ok) {
+    //           const data = await res.json();
+
+    //           if (data?.access_token && data?.call_id) {
+    //             const access_token = data.access_token;
+    //             callId = data.call_id;
+
+    //             await retellWebClient.startCall({ accessToken: access_token });
+    //             callContent = "Connected";
+    //             callLabel.textContent = callContent;
+    //             callBtn.classList.remove("greendiv");
+    //             callBtn.classList.add("reddiv");
+    //             phoneIcon.src = "https://rexptin.vercel.app/svg/Hangup.svg";
+    //             callText.innerHTML = `<p>Hang up Now</p><small>In Call with ${
+    //               agentName.length > 10
+    //                 ? `${agentName.substring(0, 8)}..`
+    //                 : agentName
+    //             }</small>`;
+    //             onCall = true;
+
+    //             imageWrapper.classList.add("active");
+
+    //             imageWrapper
+    //               .querySelectorAll(".pulse-ring2")
+    //               .forEach((ring) => ring.remove());
+
+    //             for (let i = 0; i < 3; i++) {
+    //               const ring = document.createElement("span");
+    //               ring.className = "pulse-ring2";
+    //               imageWrapper.insertBefore(ring, agentImg);
+    //             }
+    //           } else {
+    //             console.error("Invalid response data:", data);
+    //             throw new Error("Invalid response data");
+    //           }
+    //         } else {
+    //           throw new Error("Failed to fetch access token");
+    //         }
+    //       } catch (err) {
+    //         console.error("Call failed:", err.message);
+    //         callText.innerHTML = `<p style="color: red;">Unauthorized Access</p>`;
+    //         enableChatButton();
+    //         setWidgetLocked(false);
+    //       } finally {
+    //         callBtn.disabled = false;
+    //         if (!onCall) enableChatButton();
+    //       }
+    //     } else {
+    //       await retellWebClient.stopCall();
+    //       try {
+    //         localStorage.removeItem("rex_last_ui");
+    //       } catch {}
+    //       setWidgetLocked(false);
+    //       callBtn.classList.remove("reddiv");
+    //       callBtn.classList.add("greendiv");
+    //       phoneIcon.src = "https://rexptin.vercel.app/svg/Phone-call.svg";
+    //       callText.innerHTML = `<p style="color:white">Call <span class="agentTag">${
+    //         agentName.length > 8 ? `${agentName.substring(0, 8)}..` : agentName
+    //       }</span></p>
+    //             <small>${
+    //               businessName.length > 10
+    //                 ? `${businessName.substring(0, 8)}..`
+    //                 : businessName
+    //             } Agent is LIVE</small>`;
+    //       onCall = false;
+    //       callLabel.textContent = `Call ${agentName}`;
+    //       imageWrapper.classList.remove("active");
+    //       imageWrapper
+    //         .querySelectorAll(".pulse-ring2")
+    //         .forEach((ring) => ring.remove());
+    //       enableChatButton();
+    //       const data = {
+    //         agentId: getAgentIdFromScript(),
+    //         callId: callId,
+    //       };
+
+    //       modal.style.display = "none";
+    //       document.getElementById("agentButton")?.classList.remove("noFloat");
+
+    //       // ---- SOFT RELOAD WIDGET (no page refresh) ----
+    //       try {
+    //         // 1) remove any existing popups to avoid duplicate IDs
+    //         ["agentPopup", "rexChatPopup", "rexSupportPopup"].forEach((id) => {
+    //           document.getElementById(id)?.remove();
+    //         });
+
+    //         // 2) drop the init flag so we can re-init cleanly
+    //         window.__REX_WIDGET_INITIALIZED__ = false;
+
+    //         // 3) ensure host exists (create if removed)
+    //         if (!document.getElementById("review-widget")) {
+    //           const host = document.createElement("div");
+    //           host.id = "review-widget";
+    //           document.body.appendChild(host);
+    //         }
+
+    //         // 4) re-init on next frames so DOM/LS writes settle
+    //         const reinit = () => {
+    //           try {
+    //             createReviewWidget();
+    //           } catch (e) {
+    //             console.warn("reinit failed", e);
+    //           }
+    //         };
+    //         if (typeof requestAnimationFrame === "function") {
+    //           requestAnimationFrame(() => requestAnimationFrame(reinit));
+    //         } else {
+    //           setTimeout(reinit, 0);
+    //         }
+    //       } catch (e) {
+    //         console.warn("[Rex] widget soft reload failed:", e);
+    //       }
+    //       // const res = await fetch(`${API_URL}/agent/updateAgentMinutesLeft`, {
+    //       //     method: "PATCH",
+    //       //     headers: { "Content-Type": "application/json" },
+    //       //     body: JSON.stringify({  agentId: getAgentIdFromScript(), callId: callId }),
+    //       //   });
+    //     }
+    //   }
+    // };
+
+    // add this near your other globals
+    let isCreatingCall = false; // prevents double hits while request is pending
+
     callBtn.onclick = async () => {
+      // if already creating or already on call, ignore repeat clicks (except hangup branch)
+      if (isCreatingCall && !onCall) return;
+
       localStorage.setItem("rex_last_ui", "call");
+      const mainModal = document.getElementById("agentPopup");
+      if (mainModal) {
+        mainModal.style.display = "block";
+        setWidgetLocked(true);
+      }
+
       let agentId = localStorage.getItem("agent_id");
       if (!agentId && typeof getAgentIdFromScript === "function") {
         agentId = getAgentIdFromScript() || "";
         if (agentId) localStorage.setItem("agent_id", agentId);
       }
+
       const SPECIAL_AGENT = "agent_0498e1599d6ea9e13d09657f79";
       const endpoint =
         agentId === SPECIAL_AGENT ? "createRexWebCall" : "createWidegetWebCall";
+
       if (navigator?.mediaDevices) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-          });
-          micStream = stream;
-        } catch (err) {
-          console.error("Microphone access denied or error:", err);
-          alert("Please allow microphone access to proceed with the call.");
-          return;
-        }
+        // ---- CLICK FOR CALL (not currently onCall) ----
         if (!onCall) {
-          callBtn.disabled = true;
-          callContent = "Calling...";
-          callLabel.textContent = callContent;
-          callText.innerHTML = `<p>Connecting...</p>`;
-          disableChatButton();
           try {
+            // lock immediately so rapid clicks don’t re-enter
+            isCreatingCall = true;
+            callBtn.disabled = true; // <- disable right away
+            disableChatButton();
+
+            // show "Connecting..." ASAP
+            callContent = "Calling...";
+            callLabel.textContent = callContent;
+            callText.innerHTML = `<p>Connecting...</p>`;
+
+            // ask mic permission
+            try {
+              const stream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+              });
+              micStream = stream;
+            } catch (err) {
+              console.error("Microphone access denied or error:", err);
+              alert("Please allow microphone access to proceed with the call.");
+              return; // early exit; finally will run to unlock
+            }
+
+            // optional: protect fetch with AbortController (avoids overlaps/timeouts)
+            const controller = new AbortController();
+
             const res = await fetch(`${API_URL}/agent/${endpoint}`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -2925,103 +3059,103 @@ function createReviewWidget() {
                 url: currentSiteURL,
                 retell_llm_dynamic_variables: buildRetellDynamicVars(),
               }),
+              signal: controller.signal,
             });
 
-            if (res.ok) {
-              const data = await res.json();
+            if (!res.ok) throw new Error("Failed to fetch access token");
 
-              if (data?.access_token && data?.call_id) {
-                const access_token = data.access_token;
-                callId = data.call_id;
+            const data = await res.json();
+            if (!(data?.access_token && data?.call_id)) {
+              console.error("Invalid response data:", data);
+              throw new Error("Invalid response data");
+            }
 
-                await retellWebClient.startCall({ accessToken: access_token });
-                callContent = "Connected";
-                callLabel.textContent = callContent;
-                callBtn.classList.remove("greendiv");
-                callBtn.classList.add("reddiv");
-                phoneIcon.src = "https://rexptin.vercel.app/svg/Hangup.svg";
-                callText.innerHTML = `<p>Hang up Now</p><small>In Call with ${
-                  agentName.length > 10
-                    ? `${agentName.substring(0, 8)}..`
-                    : agentName
-                }</small>`;
-                onCall = true;
+            const access_token = data.access_token;
+            callId = data.call_id;
 
-                imageWrapper.classList.add("active");
+            await retellWebClient.startCall({ accessToken: access_token });
 
-                imageWrapper
-                  .querySelectorAll(".pulse-ring2")
-                  .forEach((ring) => ring.remove());
+            callContent = "Connected";
+            callLabel.textContent = callContent;
+            callBtn.classList.remove("greendiv");
+            callBtn.classList.add("reddiv");
+            phoneIcon.src = "https://rexptin.vercel.app/svg/Hangup.svg";
+            callText.innerHTML = `<p>Hang up Now</p><small>In Call with ${
+              agentName.length > 10
+                ? `${agentName.substring(0, 8)}..`
+                : agentName
+            }</small>`;
+            onCall = true;
 
-                for (let i = 0; i < 3; i++) {
-                  const ring = document.createElement("span");
-                  ring.className = "pulse-ring2";
-                  imageWrapper.insertBefore(ring, agentImg);
-                }
-              } else {
-                console.error("Invalid response data:", data);
-                throw new Error("Invalid response data");
-              }
-            } else {
-              throw new Error("Failed to fetch access token");
+            imageWrapper.classList.add("active");
+            imageWrapper
+              .querySelectorAll(".pulse-ring2")
+              .forEach((r) => r.remove());
+            for (let i = 0; i < 3; i++) {
+              const ring = document.createElement("span");
+              ring.className = "pulse-ring2";
+              imageWrapper.insertBefore(ring, agentImg);
             }
           } catch (err) {
-            console.error("Call failed:", err.message);
+            console.error("Call failed:", err?.message || err);
             callText.innerHTML = `<p style="color: red;">Unauthorized Access</p>`;
             enableChatButton();
+            setWidgetLocked(false);
           } finally {
-            callBtn.disabled = false;
-            if (!onCall) enableChatButton();
+            // while connecting/pending we keep it disabled.
+            // re-enable only if we did NOT enter onCall state (i.e., failed/denied)
+            if (!onCall) {
+              callBtn.disabled = false;
+            }
+            isCreatingCall = false; // unlock for next attempt (or for hangup branch)
           }
-        } else {
+          return; // end not-onCall branch
+        }
+
+        // ---- HANGUP BRANCH (already onCall) ----
+        try {
           await retellWebClient.stopCall();
           try {
             localStorage.removeItem("rex_last_ui");
           } catch {}
+          setWidgetLocked(false);
           callBtn.classList.remove("reddiv");
           callBtn.classList.add("greendiv");
           phoneIcon.src = "https://rexptin.vercel.app/svg/Phone-call.svg";
           callText.innerHTML = `<p style="color:white">Call <span class="agentTag">${
             agentName.length > 8 ? `${agentName.substring(0, 8)}..` : agentName
           }</span></p>
-                <small>${
-                  businessName.length > 10
-                    ? `${businessName.substring(0, 8)}..`
-                    : businessName
-                } Agent is LIVE</small>`;
+        <small>${
+          businessName.length > 10
+            ? `${businessName.substring(0, 8)}..`
+            : businessName
+        } Agent is LIVE</small>`;
           onCall = false;
           callLabel.textContent = `Call ${agentName}`;
           imageWrapper.classList.remove("active");
           imageWrapper
             .querySelectorAll(".pulse-ring2")
-            .forEach((ring) => ring.remove());
+            .forEach((r) => r.remove());
           enableChatButton();
-          const data = {
-            agentId: getAgentIdFromScript(),
-            callId: callId,
-          };
+
+          const data = { agentId: getAgentIdFromScript(), callId: callId };
 
           modal.style.display = "none";
           document.getElementById("agentButton")?.classList.remove("noFloat");
 
           // ---- SOFT RELOAD WIDGET (no page refresh) ----
           try {
-            // 1) remove any existing popups to avoid duplicate IDs
             ["agentPopup", "rexChatPopup", "rexSupportPopup"].forEach((id) => {
               document.getElementById(id)?.remove();
             });
-
-            // 2) drop the init flag so we can re-init cleanly
             window.__REX_WIDGET_INITIALIZED__ = false;
 
-            // 3) ensure host exists (create if removed)
             if (!document.getElementById("review-widget")) {
               const host = document.createElement("div");
               host.id = "review-widget";
               document.body.appendChild(host);
             }
 
-            // 4) re-init on next frames so DOM/LS writes settle
             const reinit = () => {
               try {
                 createReviewWidget();
@@ -3037,11 +3171,10 @@ function createReviewWidget() {
           } catch (e) {
             console.warn("[Rex] widget soft reload failed:", e);
           }
-          // const res = await fetch(`${API_URL}/agent/updateAgentMinutesLeft`, {
-          //     method: "PATCH",
-          //     headers: { "Content-Type": "application/json" },
-          //     body: JSON.stringify({  agentId: getAgentIdFromScript(), callId: callId }),
-          //   });
+        } finally {
+          // ensure button is enabled after hangup
+          callBtn.disabled = false;
+          isCreatingCall = false;
         }
       }
     };
@@ -3119,7 +3252,7 @@ function createReviewWidget() {
 
       <label id="rexPreLabel" style="display:block;font-size:13px;margin-bottom:6px">Your full name</label>
       <input id="rexPreInput" type="text" placeholder="John Doe"
-             style="width:93%;padding:11px 12px;border:1px solid #E6E6E6;border-radius:10px;font-size:14px;outline:0"/>
+             style="width:93%;padding:11px 12px;border:1px solid #E6E6E6;border-radius:10px;font-size:14px;outline:0";maxlength="30"/>
 
       <div id="rexPreErr" style="color:#d93025;font-size:12px;margin-top:6px;display:none"></div>
 
@@ -3356,56 +3489,30 @@ function createReviewWidget() {
 
     let _queuedOpenChat = null;
 
-    // function ensureUserProfileThen(openChatFn) {
-    //   // Safe number parser (handles null/undefined/empty)
-    //   const toNum = (v) => {
-    //     const n = Number(v);
-    //     return Number.isFinite(n) ? n : 0;
-    //   };
-
-    //   const chatLeft = toNum(localStorage.getItem("chat_mins_left"));
-    //   const callLeft = toNum(localStorage.getItem("call_mins_left"));
-
-    //   // 1) Dono zero
-    //   if (bothMinsZero && bothMinsZero()) {
-    //     localStorage.setItem("rex_last_ui", "call");
-    //     localStorage.setItem("agent_id", "agent_0498e1599d6ea9e13d09657f79");
-    //     openCallOnlyWidget();
-    //     return;
-    //   }
-
-    //   // 2) Sirf CALL minutes bache (call > 0, chat = 0) => call UI
-    //   if (callLeft > 0 && chatLeft === 0) {
-    //     localStorage.setItem("rex_last_ui", "call");
-    //     // NOTE: agent_id ko touch nahi karna
-    //     openCallOnlyWidget();
-    //     return;
-    //   }
-
-    //   // 3) Warna normal flow (chat allowed)
-    //   if (hasCompleteProfile && hasCompleteProfile()) {
-    //     openChatFn();
-    //   } else {
-    //     _queuedOpenChat = openChatFn;
-    //     showPreChatModal();
-    //   }
-    // }
-
-    // small inline confirm modal
-
     function ensureUserProfileThen(openChatFn) {
       const toNum = (v) => {
         const n = Number(v);
         return Number.isFinite(n) ? n : 0;
       };
 
+      // ✅ sahi keys + chatEnabled flag
+      const chatEnabled = /^(true|1)$/i.test(
+        String(localStorage.getItem("isChatEnabled") ?? "")
+      );
       const chatLeft = toNum(localStorage.getItem("chat_mins_left"));
       const callLeft = toNum(localStorage.getItem("call_mins_left"));
-      const addOnsLeft = toNum(localStorage.getItem("addOnsLeft"));
-      const openCallAfterWrites = (setAgentId) => {
+      const addOnsMins = toNum(localStorage.getItem("addOnsMins")); // <-- yahi sahi key hai
+
+      // ✅ entitlements per rules
+      const hasChatEntitlement =
+        chatEnabled && (chatLeft > 0 || addOnsMins > 0); // (1) & (2)
+      const hasCallEntitlement = callLeft > 0; // (2) & (3)
+      const allZero = chatLeft <= 0 && callLeft <= 0 && addOnsMins <= 0; // (4)
+
+      const openCallAfterWrites = (forceSpecialAgent) => {
         localStorage.setItem("rex_last_ui", "call");
-        if (setAgentId) {
-          localStorage.setItem("agent_id", "agent_0498e1599d6ea9e13d09657f79");
+        if (forceSpecialAgent) {
+          localStorage.setItem("agent_id", "agent_0498e1599d6ea9e13d09657f79"); // SPECIAL REX
         }
         const run = () => {
           if (typeof openCallOnlyWidget === "function") openCallOnlyWidget();
@@ -3417,20 +3524,31 @@ function createReviewWidget() {
         }
       };
 
-      if (callLeft === 0 && chatLeft === 0) {
+      // (4) teeno zero -> special rex agent + call-only (disabled UX)
+      if (allZero) {
         openCallAfterWrites(true);
         return;
       }
-      if (callLeft > 0 && addOnsLeft > 0 && chatLeft === 0) {
+
+      // (3) sirf call entitlement bacha (chat/add-on zero ya chatEnabled=false)
+      if (!hasChatEntitlement && hasCallEntitlement) {
         openCallAfterWrites(false);
         return;
       }
-      if (typeof hasCompleteProfile === "function" && hasCompleteProfile()) {
-        openChatFn();
-      } else {
-        _queuedOpenChat = openChatFn;
-        showPreChatModal();
+
+      // (1)/(2) chat entitlement true (chat_mins>0 ya addOnsMins>0) & chatEnabled=true -> chat khol do
+      if (hasChatEntitlement) {
+        if (typeof hasCompleteProfile === "function" && hasCompleteProfile()) {
+          openChatFn();
+        } else {
+          _queuedOpenChat = openChatFn;
+          showPreChatModal();
+        }
+        return;
       }
+
+      // Fallback: safety—agar yahan aaye to call UI dikha do (agent force nahi)
+      openCallAfterWrites(false);
     }
 
     function makeEndConfirm(parentEl) {
@@ -3600,14 +3718,24 @@ function createReviewWidget() {
       document.body.appendChild(chatModalEl);
       const endConfirm = makeEndConfirm(chatModalEl);
 
+      // add once at module scope
+      let isCreatingCall = false;
+
       async function startVoiceCall() {
+        // guard: avoid duplicate hits while request is in-flight or if already on a call
+        if (isCreatingCall || onCall) return;
+
+        isCreatingCall = true;
+        callBtn.disabled = true; // disable immediately
+        callLabel.textContent = "Connecting…";
+        callText.textContent = "Connecting…";
+
         try {
-          callBtn.disabled = true;
-
-          callLabel.textContent = "Connecting…";
-          callText.textContent = "Connecting…";
-
+          // mic permission (keeps button disabled during prompt)
           await navigator.mediaDevices.getUserMedia({ audio: true });
+
+          // optional: protects against overlaps/timeouts
+          const controller = new AbortController();
 
           const res = await fetch(`${API_URL}/agent/createWidegetWebCall`, {
             method: "POST",
@@ -3617,6 +3745,7 @@ function createReviewWidget() {
               url: currentSiteURL,
               retell_llm_dynamic_variables: buildRetellDynamicVars(),
             }),
+            signal: controller.signal,
           });
           if (!res.ok) throw new Error("Failed to fetch access token");
 
@@ -3627,6 +3756,7 @@ function createReviewWidget() {
           callId = data.call_id;
           await retellWebClient.startCall({ accessToken: data.access_token });
 
+          // === connected state ===
           callLabel.textContent = "Connected";
           callBtn.classList.remove("greendiv");
           callBtn.classList.add("reddiv");
@@ -3645,15 +3775,74 @@ function createReviewWidget() {
             ring.className = "pulse-ring2";
             imageWrapper.insertBefore(ring, agentImg);
           }
+
+          // IMPORTANT: once connected, enable button so user can hang up
+          callBtn.disabled = false;
         } catch (err) {
           console.error("startVoiceCall failed:", err);
           callText.textContent = "Unable to connect";
           onCall = false;
-        } finally {
+
+          // allow retry after failure
           callBtn.disabled = false;
+        } finally {
+          isCreatingCall = false; // unlock for the next attempt
         }
       }
 
+      // async function startVoiceCall() {
+      //   try {
+      //     callBtn.disabled = true;
+
+      //     callLabel.textContent = "Connecting…";
+      //     callText.textContent = "Connecting…";
+
+      //     await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      //     const res = await fetch(`${API_URL}/agent/createWidegetWebCall`, {
+      //       method: "POST",
+      //       headers: { "Content-Type": "application/json" },
+      //       body: JSON.stringify({
+      //         agent_id: localStorage.getItem("agent_id"),
+      //         url: currentSiteURL,
+      //         retell_llm_dynamic_variables: buildRetellDynamicVars(),
+      //       }),
+      //     });
+      //     if (!res.ok) throw new Error("Failed to fetch access token");
+
+      //     const data = await res.json();
+      //     if (!data?.access_token || !data?.call_id)
+      //       throw new Error("Invalid response data");
+
+      //     callId = data.call_id;
+      //     await retellWebClient.startCall({ accessToken: data.access_token });
+
+      //     callLabel.textContent = "Connected";
+      //     callBtn.classList.remove("greendiv");
+      //     callBtn.classList.add("reddiv");
+      //     phoneIcon.src = "https://rexptin.vercel.app/svg/Hangup.svg";
+      //     callText.innerHTML = `<p>Hang up Now</p><small>In Call with ${
+      //       agentName.length > 10 ? `${agentName.substring(0, 8)}..` : agentName
+      //     }</small>`;
+      //     onCall = true;
+
+      //     imageWrapper.classList.add("active");
+      //     imageWrapper
+      //       .querySelectorAll(".pulse-ring2")
+      //       .forEach((r) => r.remove());
+      //     for (let i = 0; i < 3; i++) {
+      //       const ring = document.createElement("span");
+      //       ring.className = "pulse-ring2";
+      //       imageWrapper.insertBefore(ring, agentImg);
+      //     }
+      //   } catch (err) {
+      //     console.error("startVoiceCall failed:", err);
+      //     callText.textContent = "Unable to connect";
+      //     onCall = false;
+      //   } finally {
+      //     callBtn.disabled = false;
+      //   }
+      // }
       function openCallConfirmInsideChat() {
         const overlay = document.createElement("div");
         overlay.className = "rex-confirm-overlay";
@@ -3673,9 +3862,21 @@ function createReviewWidget() {
         overlay.addEventListener("click", (e) => {
           if (e.target === overlay) close();
         });
+
+        const cancelBtn = overlay.querySelector('[data-act="cancel"]');
+        const okBtn = overlay.querySelector('[data-act="ok"]');
         overlay.querySelector('[data-act="cancel"]').onclick = close;
 
-        overlay.querySelector('[data-act="ok"]').onclick = async () => {
+        okBtn.onclick = async () => {
+          if (okBtn.dataset.busy === "1") return;
+
+          okBtn.dataset.busy = "1";
+          const oldOkHtml = okBtn.innerHTML;
+          okBtn.innerHTML = `<span class="rex-spinner" style="margin-right:6px"></span>Starting…`;
+          okBtn.disabled = true;
+          okBtn.setAttribute("aria-busy", "true");
+          if (cancelBtn) cancelBtn.disabled = true;
+
           try {
             clearOnlyUserAutoEndTimer();
             clearInactivityTimers?.();
@@ -3685,7 +3886,6 @@ function createReviewWidget() {
 
             const hadOpenChat = !!localStorage.getItem("chat_id");
             let endStatus = "skip";
-
             if (hadOpenChat) {
               endStatus = await archiveOpenChatIfAny();
             } else {
@@ -3696,19 +3896,22 @@ function createReviewWidget() {
 
             chatModalEl.classList.remove("show");
             modal.style.display = "block";
+            setWidgetLocked(true);
             document.getElementById("agentButton")?.classList.add("noFloat");
 
             await startVoiceCall();
+            overlay.remove();
           } catch (e) {
             console.error("Start-call (inline confirm) failed:", e);
             callText.innerHTML = `<p style="color: red;">Unable to connect</p>`;
-          } finally {
-            overlay.remove();
+            okBtn.innerHTML = oldOkHtml;
+            okBtn.removeAttribute("aria-busy");
+            okBtn.disabled = false;
+            if (cancelBtn) cancelBtn.disabled = false;
+            delete okBtn.dataset.busy;
           }
         };
       }
-
-      // helper: minutes ko safely number banao
       const toNum = (v) => {
         const n = Number(v);
         return Number.isFinite(n) ? n : 0;
@@ -3720,12 +3923,7 @@ function createReviewWidget() {
 
         const callMinsLeft = toNum(localStorage.getItem("call_mins_left"));
         if (callMinsLeft <= 0) {
-          // Option A: poora button hata do
           $callIcon.remove();
-
-          // Option B (agar remove nahi karna): bas chhupa do
-          // $callIcon.style.display = "none";
-          // $callIcon.setAttribute("aria-hidden", "true");
         } else {
           // visible + clickable
           $callIcon.style.display = "";
@@ -3851,9 +4049,9 @@ function createReviewWidget() {
         typingEl.remove();
         typingEl = null;
       }
-      const FIRST_WAIT = 1 * 60 * 1000;
-      const SECOND_WAIT = 1 * 60 * 1000;
-      const THIRD_WAIT = 1 * 60 * 1000;
+      const FIRST_WAIT = 2 * 60 * 1000;
+      const SECOND_WAIT = 3 * 60 * 1000;
+      const THIRD_WAIT = 4 * 60 * 1000;
 
       let t1 = null,
         t2 = null,
@@ -4090,7 +4288,7 @@ function createReviewWidget() {
 
           const errMsg = "Sorry, couldn't send your message. Please try again.";
           appendMessage("bot", errMsg, Date.now());
-          saveChatMessage("bot", errMsg);
+          // saveChatMessage("bot", errMsg);
         } finally {
           $input.disabled = false;
           $send.disabled = false;

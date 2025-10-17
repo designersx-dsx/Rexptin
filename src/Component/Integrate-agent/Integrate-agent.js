@@ -39,8 +39,11 @@ const IntegrateAgent = () => {
   const agentId = agentDetails?.agent_id;
   const webUrl = agentDetails?.business?.webUrl
   const agentWidgetDomain = agentDetails
-  const script = agentId
-    ? `<script id="rex-widget-script" src="https://rexptin.vercel.app/widget.js?agentId=${agentId}"></script>`
+  // const script = agentId
+  //   ? `<script id="rex-widget-script" src="https://rexptin.vercel.app/widget.js?agentId=${agentId}"></script>`
+  //   : "";
+ const script = agentId
+    ? `<script id="rex-widget-script" src="app.rexpt.in/widget.js?agentId=${agentId}"></script>`
     : "";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newDomain, setNewDomain] = useState("");
