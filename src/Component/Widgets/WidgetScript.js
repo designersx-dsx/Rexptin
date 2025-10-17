@@ -21,7 +21,9 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
     { value: url, isVerified: false, loading: false, error: "", debounceTimer: null },
   ]);
   const agentId = isAgentDetails.agent_id;
-  const scriptText = `<script id="rex-widget-script" src="https://rexptin.vercel.app/widget.js?agentId=${agentId}"></script>`;
+ const script = agentId
+    ? `<script id="rex-widget-script" src="app.rexpt.in/widget.js?agentId=${agentId}"></script>`
+    : "";
   // Load existing domains on mount or update
   useEffect(() => {
     if (typeof isAgentDetails.agentWidgetDomain === "string") {
