@@ -1367,15 +1367,27 @@ Do you want to proceed with deleting this assigned number?`
             </div>
             <br />
             <div className={styles.BtnContainer}>
-              <div className={`${styles.callTDiv} ${styles.callTransfer}`}>
+              <div onClick={() => {
+                if (agentStatus === true) {
+                  handleInactiveAgentAlert();
+                } else {
+                  handleCallTransfer();
+                }
+              }} className={`${styles.callTDiv} ${styles.callTransfer}`}>
                 <img src="/svg/Call-Transfer-New.svg" alt="Call-Transfer-New" />
                 <p>Call Transfer</p>
               </div>
-              <div className={`${styles.callTDiv} ${styles.integration}`}>
+              <div onClick={() => {
+                if (agentStatus === true) {
+                  handleInactiveAgentAlert();
+                } else {
+                  handleOpenWidgetModal(agentData);
+                }
+              }} className={`${styles.callTDiv} ${styles.integration}`}>
                 <img src="/svg/Integration-New.svg" alt="Integration-New" />
                 <p>Integration</p>
               </div>
-              <div className={`${styles.callTDiv} ${styles.upgrade}`}>
+              <div onClick={() => handleUpgradeClick(agentData)} className={`${styles.callTDiv} ${styles.upgrade}`}>
                 <img src="/svg/Upgrade.svg" alt="Upgrade" />
                 <p>Upgrade</p>
               </div>
