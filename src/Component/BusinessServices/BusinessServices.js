@@ -223,6 +223,7 @@ const BusinessServices = forwardRef(
     // );
     // console.log("Test",businesServices)
 // lkjklj
+
     const handleAddService = () => {
       if (inputValue.trim()) {
         const newServiceName = inputValue.trim();

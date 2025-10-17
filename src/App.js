@@ -21,6 +21,7 @@ import SecureRoute from "./Pages/SecureRoute";
 import Dashboard from "./Component/Dashboard/Dashboard";
 import RexAgent from "./Component/RexAgent/RexAgent";
 import Plans from "./Component/Plans/Plans";
+import MessagePlan from "./Component/MessagePlan/MessagePlan";
 import Delete from "./Component/Delete/Delete";
 import SubscriptionFlow from "./Component/Checkout/SubscriptionFlow";
 import Calendar from "./Component/Celender/Calendar";
@@ -75,28 +76,29 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import NotificationView from "./Component/Notifications/NotificationView";
+
 import ThankYouPage from "./Component/hubspotThankyouPage/HubspotThankyou";
+
+import OwnPlan from './Component/OwnPlan/OwnPlan'
+import CustomPlan from "./Component/OwnPlan/CustomPlan";
+
 // import Test from "./utils/Test";
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const token = localStorage.getItem("token");
   const lastRoute = localStorage.getItem("lastVisitedRoute");
   const decoded = decodeToken(token);
-  const userID = decoded?.id;
-  const SOCKET_URL = process.env.REACT_APP_API_BASE_URL?.split("/api")[0];
+  const userID = decoded?.id
+  const SOCKET_URL = process.env.REACT_APP_API_BASE_URL?.split('/api')[0]
   const notifications = useNotificationStore((state) => state.notifications);
-  const addNotification = useNotificationStore(
-    (state) => state.addNotification
-  );
-  const loadNotifications = useNotificationStore(
-    (state) => state.loadNotifications
-  );
+  const addNotification = useNotificationStore((state) => state.addNotification);
+  const loadNotifications = useNotificationStore((state) => state.loadNotifications);
   const toggleFlag = useNotificationStore((state) => state.toggleFlag);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0); // State for unreadCount
   // const [refreshNotification,setRefreshNoitification]=useState(false)
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
@@ -126,9 +128,7 @@ function App() {
           console.log("user notifications ", resp);
           loadNotifications(resp?.notifications || []);
         })
-        .catch((err) =>
-          console.log("error while fetching user Notifications", err)
-        );
+        .catch((err) => console.log("error while fetching user Notifications", err));
     }
   }, [userID, token]);
 
@@ -166,10 +166,11 @@ function App() {
   //   }
 
   //   // mark as shown no matter what
-  //   localStorage.setItem("installPromptShown", "true");
+  //   localStorage.setItem("installPromptShown", "true"); 
   //   setDeferredPrompt(null);
   //   setShowPopup(false);
   // };
+
 
   //   const handleClose = () => {
   //     localStorage.setItem("installPromptShown", "true"); // save flag
@@ -185,6 +186,7 @@ function App() {
 
   useEffect(() => {
     if (!userID) return;
+
 
     // 🔌 Socket connect
     const socket = io(SOCKET_URL, {
@@ -229,8 +231,9 @@ function App() {
   }, [userID]);
   useEffect(() => {
     const ref = document.referrer;
-    console.log("Referrer URL:", ref);
+    console.log('Referrer URL:', ref);
   }, []);
+
 
   //  const handleClose = () => {
   //   setShowPopup(false);
@@ -248,65 +251,7 @@ function App() {
           <p>Launch Your AI Receptionist with Rexpt.in</p>
         </div>
         <div className="ForMobile">
-          {/* {showPopup && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999,
-          }}
-        >
-          <div
-            style={{
-              background: "white",
-              padding: "20px",
-              borderRadius: "10px",
-              textAlign: "center",
-              width: "300px",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-            }}
-          >
-            <h3>Add Rexpt to Home Screen</h3>
-            <p>Install this app for a faster and better experience.</p>
-            <div style={{ marginTop: "15px", display: "flex", gap: "10px", justifyContent: "center" }}>
-              <button
-                onClick={handleInstall}
-                style={{
-                  padding: "10px 16px",
-                  background: "#6524EB",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                Install
-              </button>
-              <button
-                onClick={handleClose}
-                style={{
-                  padding: "10px 16px",
-                  background: "#e0e0e0",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                Later
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
+
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
             <div className="App" key={refreshKey}>
@@ -388,6 +333,12 @@ function App() {
                     </SecureRoute>
                   }
                 />
+                <Route
+                  path="/message-plan"
+                  element={<MessagePlan />}
+                />
+
+
                 <Route
                   path="/assign-number"
                   element={
@@ -646,6 +597,9 @@ function App() {
                     </SecureRoute>
                   }
                 />
+                <Route path="/own-plan" element={<OwnPlan />} />
+                <Route path="/own-custom-plan" element={<CustomPlan />} />
+
 
                 <Route
                   path="/agent-setup"

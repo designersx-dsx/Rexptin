@@ -1,0 +1,271 @@
+.containerBox {
+    width: 100%;
+    max-width: 500px;
+    margin-inline: auto;
+}
+
+.planContainer {
+    background: #fff;
+    border-radius: 20px;
+    padding: 0px 20px 20px;
+    color: #333;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.planBox {
+    border: 1px solid #E0E5F2;
+    border-radius: 12px;
+    width: 50%;
+    padding: 10px;
+}
+
+.totalBox {
+    border: 1px solid #E0E5F2;
+    border-radius: 12px;
+    width: 50%;
+    padding: 10px;
+
+
+}
+
+.planLabel {
+    font-size: 16px;
+    color: #24252C;
+    margin-bottom: 1rem;
+}
+
+.planName {
+    font-size: 32px;
+    font-weight: 800;
+    color: #E83BAC;
+}
+
+.planValue {
+    font-size: 32px;
+    font-weight: 800;
+    color: #24252C;
+}
+
+.totalBox span {
+    font-size: 12px;
+    color: #555555;
+    white-space: nowrap;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+}
+
+.billBox {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid #E0E5F2;
+}
+
+.planLabel2 {
+    font-size: 16px;
+    color: #24252C;
+    margin-bottom: 10px;
+}
+
+.billValue {
+    font-size: 40px;
+    font-weight: 800;
+    color: #24252C;
+    display: flex;
+    gap: 5px;
+    align-items: baseline;
+}
+
+.billValue span {
+    font-size: 15px;
+    color: #555555;
+    white-space: nowrap;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+}
+
+.webChatTag {
+    background: #F7A600;
+    border: none;
+    border-radius: 10px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: #ffffff;
+}
+
+.popularSection h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #24252C;
+    font-family: 'Inter', sans-serif;
+
+}
+
+.packButtons {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 5px 0 12px;
+    scrollbar-width: thin;
+    /* for Firefox */
+    scrollbar-color: #dadada #ffffff;
+}
+
+.packButtons::-webkit-scrollbar {
+    height: 3px;
+}
+
+
+.packButtons p {
+    color: #24252c;
+    font-family: 'Inter', sans-serif;
+
+}
+
+.activePack p {
+    color: #ffffff;
+
+}
+
+.packBtn {
+    background: #ffffff;
+    border: 1px solid #e0e5f2;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.packBtn span {
+    font-size: 14px;
+    color: #BDBDBD;
+}
+
+.activePack {
+    background: #6524EB;
+    color: #fff;
+}
+
+.packHint {
+    font-size: 14px;
+    color: #626262;
+    margin-top: 8px;
+    font-family: 'Inter', sans-serif;
+
+}
+
+.sliderSection {
+    text-align: center;
+    margin-top: 25px;
+    background-color: #F8F4FF;
+    border: 1px solid #e6daff;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.sliderValue {
+    font-size: 75px;
+    color: #6524EB;
+    font-weight: 800;
+    margin-bottom: 0;
+}
+
+.sliderText {
+    font-size: 14px;
+    color: #555;
+}
+
+.sliderWrapper {
+    position: relative;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.slider {
+    width: 100%;
+    height: 10px;
+    border-radius: 10px;
+    background: #e7e7e7;
+    appearance: none;
+    outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    background: #ffffff;
+    cursor: pointer;
+    border: 10px solid #6524EB;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.sliderTooltip {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    background: #7e3ff2;
+    color: #fff;
+    padding: 4px 8px;
+    font-size: 15px;
+    border-radius: 6px;
+    white-space: nowrap;
+    margin-top: 2.5rem;
+    transition: left 0.2s ease;
+}
+
+/* Nib / arrow at the top */
+.sliderTooltip::after {
+    content: "";
+    position: absolute;
+    top: -9px;
+    left: 35%;
+    transform: rotate(225deg);
+    border-width: 9px;
+    border-style: solid;
+    border-color: transparent #7e3ff2 #7e3ff2 transparent;
+}
+
+.sliderLabels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-top: 8px;
+    color: #555555;
+}
+
+.rangeHint {
+    font-size: 14px;
+    color: #555555;
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.PurchaseBtn {
+    margin-top: 2rem;
+}
+
+.NeedmOre {
+    text-align: center;
+    color: #888888;
+}
+
+@media(max-width:370px) {
+    .planValue {
+        font-size: 30px;
+    }
+}

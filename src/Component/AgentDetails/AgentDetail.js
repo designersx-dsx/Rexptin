@@ -2,9 +2,11 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import styles from "./AgentDetail.module.css";
 import AgentAnalysis from "./AgentAnalysisGraph/AgentAnalysis";
 import {
+  createChatAgent,
   EndWebCallUpdateAgentMinutesLeft,
   fetchAgentDetailById,
   getUserAgentMergedDataForAgentUpdate,
+  updateAgentChatEnabled,
 } from "../../Store/apiStore";
 
 import { useLocation, useNavigate } from "react-router-dom";
@@ -33,6 +35,7 @@ import { clearSessionAfterEdit } from "../../utils/helperFunctions";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import { useNotificationStore } from "../../Store/notificationStore";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
+import Tooltip from "../TooltipSteps/Tooltip";
 
 const AgentDashboard = () => {
   const location = useLocation();
@@ -83,6 +86,7 @@ const AgentDashboard = () => {
   // console.log("agentData", agentData)
   const [isModalOpen, setModalOpen] = useState();
   const [openCard, setOpenCard] = useState(null);
+
   const { setHasFetched } = useDashboardStore();
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -128,11 +132,57 @@ const AgentDashboard = () => {
   const notifications = useNotificationStore((state) => state.notifications);
   const [assignPopUp, setAssignPopUp] = useState(false)
   const unreadCount = notifications?.filter((n) => n?.status === 'unread').length;
-  // console.log('unreadCount', unreadCount)
+  const [isEnabled, setIsEnabled] = useState(true);
+  const [agentinfo, setAgentInfo] = useState()
+  //chatToggleSwitch
+  const chatToggleSwitch = async () => {
+    const newState = !isEnabled;
+    setIsEnabled(newState);
+    const agent_id = agentData?.agent?.agent_id;
+    // Chat just got enabled
+    if (agentData?.agent?.chat_agent_id && agentData?.agent?.chat_llm_id) {
+      // Always call updateAgentChatEnabled, regardless of true/false
+      await updateAgentChatEnabled(agent_id, newState, token);
+      getAgentDetailsAndBookings()
 
+    } else {
+      const businessDetailsFromKnowledgeBase = agentData?.business
+      // const knowledge_base_texts_Details = JSON.parse(businessDetailsFromKnowledgeBase.knowledge_base_texts)
+      const knowledge_base_texts_Details = businessDetailsFromKnowledgeBase.knowledge_base_texts
 
+      const commonAgentPayload = {
+        industryKey: agentData?.business?.businessType || "",
+        roleTitle: agentData?.agent?.agentRole || "",
+        agentName: agentData?.agent?.agentName || "",
+        agentGender: agentData?.agent?.agentGender || "",
+        business: {
+          businessName: agentData?.business?.businessName || "",
+          email: "",
+          aboutBusiness: "",
+          address: agentData?.business?.address1 || "",
+        },
+        languageSelect: agentData?.business?.agentLanguage || "",
+        businessType: agentData?.business?.businessType || "",
+        aboutBusinessForm: agentData?.business?.aboutBusiness || "",
+        allServices: agentData?.business?.buisnessService || "",
+        agentNote: "",
+        timeZone: "",
+        languageAccToPlan: agentData?.agent?.agentPlan || "",
+        plan: agentData?.agent?.agentPlan || "",
+        CallRecording: agentData?.agent?.CallRecording || "",
+        knowledgeBaseId: "",
+        businessPhone: knowledge_base_texts_Details.phone || "",
+        businessEmail: knowledge_base_texts_Details.email || "",
+        agent_id: agentData?.agent?.agent_id || "",
+      };
+      const response = await createChatAgent(
+        commonAgentPayload, token
+      );
+      getAgentDetailsAndBookings()
+    }
+
+  };
   const isRefreshing = useContext(RefreshContext);
-
   function formatE164USNumber(number) {
     const cleaned = number.replace(/\D/g, "");
 
@@ -145,6 +195,7 @@ const AgentDashboard = () => {
     }
     return number;
   }
+
   useEffect(() => {
     const fetchMeetingCount = async () => {
       if (!agentData?.agent?.calApiKey || !agentData?.agent?.eventId) return;
@@ -346,7 +397,8 @@ const AgentDashboard = () => {
       const agentInfo = response?.data;
       setAgentCalApiKey(agentInfo?.agent?.calApiKey);
       let numbersArray = [];
-
+      console.log(agentInfo, "agentinfo")
+      setAgentInfo(agentInfo)
       const voipNumbersStr = agentInfo?.agent?.voip_numbers;
       if (voipNumbersStr) {
         try {
@@ -380,6 +432,8 @@ const AgentDashboard = () => {
       setLoading(false);
     }
   };
+  console.log(agentinfo, "chatke");
+
   useEffect(() => {
     getAgentDetailsAndBookings();
   }, [refresh]);
@@ -394,16 +448,6 @@ const AgentDashboard = () => {
     // window.location.href = "/signup";
     navigate("/signup", { replace: true });
   };
-
-  const withShimmer = (content) =>
-    loading ? (
-      <div className={styles.shimmerContainer} style={{ minHeight: "150px" }}>
-        {content}
-      </div>
-    ) : (
-      content
-    );
-
   const handleBackClick = () => {
     navigate("/dashboard");
   };
@@ -508,7 +552,6 @@ const AgentDashboard = () => {
   const openCallTestModal = () => {
     setOpenCallModal(true);
   };
-
   // Close call modal
   const closeCallTestModal = () => {
     handleEndCall();
@@ -727,13 +770,9 @@ const AgentDashboard = () => {
     // console.log("agentData", agentData)
     setAssignPopUp(true)
   }
-
-
-
   const mClose = () => {
     setAssignPopUp(false)
   }
-
   // const handleSamanPtra = async () => {
 
   //   const handleCancelSubscription = async () => {
@@ -837,7 +876,6 @@ const AgentDashboard = () => {
           const text = await res.text().catch(() => "");
           console.log(`assign-number-resume failed (${res.status}): ${text}`);
         }
-
         const data = await res.json(); // ← parse body
 
         if (data?.subscription) {
@@ -873,10 +911,6 @@ const AgentDashboard = () => {
       }
       return
     }
-
-
-
-
     if (!isFreeOrPayg) {
       console.log("No cancel needed: plan is neither free nor Pay-As-You-Go");
       return;
@@ -941,11 +975,36 @@ const AgentDashboard = () => {
     }
 
   };
+  useEffect(() => {
+    if (agentData?.agent) {
+      setIsEnabled(agentData.agent.chatWidgetEnabled);
+    }
+  }, [agentData]);
 
 
 
+  const handleMessagePlan = () => {
+    navigate("/message-plan", {
+      state: {
+        agent: agentinfo
+      }
+    });
+  };
+  const handleMessagePlanUpgarde = () => {
+    navigate("/message-plan", {
+      state: {
+        agent: agentinfo,
+        system: true
+      }
+    });
+  };
+  const handleChatHistoryNavigation = () => {
+    sessionStorage.setItem("agentId", agentDetails?.agentId);
+    sessionStorage.setItem("userId", userId);
+    navigate("/totalcall-list?filter=chatHistory");
 
-
+    localStorage.setItem("filterType", "single")
+  }
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -1075,7 +1134,7 @@ const AgentDashboard = () => {
                     <hr className={styles.agentLine}></hr>
 
                     <div className={styles.agentDetailsFlex}>
-                     {assignedNumbers?.length > 0 ? (
+                      {assignedNumbers?.length > 0 ? (
                         <>
                           <div className={styles.AssignNumText}>
                             Phone Number
@@ -1105,7 +1164,7 @@ const AgentDashboard = () => {
                         >
                           <img src="/svg/assign-number.svg" />
                         </div>
-                      )} 
+                      )}
                       {/* {!(agentData?.agent?.agentPlan === "free" && !agentData?.agent?.subscriptionId) && (
                         <>
                           {assignedNumbers?.length > 0 ? (
@@ -1306,10 +1365,96 @@ Do you want to proceed with deleting this assigned number?`
                 </div>
               </div>
             </div>
+            <br />
+            <div className={styles.BtnContainer}>
+              <div className={`${styles.callTDiv} ${styles.callTransfer}`}>
+                <img src="/svg/Call-Transfer-New.svg" alt="Call-Transfer-New" />
+                <p>Call Transfer</p>
+              </div>
+              <div className={`${styles.callTDiv} ${styles.integration}`}>
+                <img src="/svg/Integration-New.svg" alt="Integration-New" />
+                <p>Integration</p>
+              </div>
+              <div className={`${styles.callTDiv} ${styles.upgrade}`}>
+                <img src="/svg/Upgrade.svg" alt="Upgrade" />
+                <p>Upgrade</p>
+              </div>
+            </div>
+
+
+
+            <div className={styles.chatwebContainer}>
+              <div className={styles.chatContainer}>
+                <div className={styles.icon}>
+                  <img src="/svg/chat-icon.svg" alt="chat-icon" />
+                </div>
+
+                <div className={styles.content}>
+                  <div className={styles.headerRow}>
+                    <div>
+                      <h3 className={styles.title}>Activate Chat Messages</h3>
+                      <p className={styles.subtitle}>Enable website chat for Agent </p>
+                    </div>
+                    <label className={styles.switch}>
+                      <input type="checkbox" checked={isEnabled} onChange={chatToggleSwitch} />
+                      <span className={styles.slider}></span>
+                    </label>
+                  </div>
+
+
+                </div>
+
+              </div>
+
+              {/* for voice plan  */}
+
+
+              {agentinfo?.agent?.subscriptionId && !agentinfo?.agent?.msgSubscriptionId ?
+
+                <div className={styles.footer}>
+                  <span className={styles.messages}><strong>{agentinfo?.agent?.agentPlan} Voice</strong> (included {agentinfo?.agent?.planMinutes / 60}/m)</span>
+
+                  <button onClick={handleMessagePlan} className={styles.buyMore}><img src="/svg/plus-icon.svg" alt="plus-icon" />ADD MORE</button>
+                </div>
+                : null}
+
+
+
+              {/* for free plan  */}
+
+              {agentinfo?.agent?.agentPlan === "free" && !agentinfo?.agent?.msgSubscriptionId ?
+                <div className={styles.footer}>
+                  <span className={styles.messages}><strong>FREE Voice</strong> (included 20/m)</span>
+
+                  <button onClick={handleMessagePlan} className={styles.buyMore}><img src="/svg/plus-icon.svg" alt="plus-icon" />UPGRADE</button>
+                </div>
+                : null}
+
+
+              {agentinfo?.agent?.agentPlan === "free" && agentinfo?.agent?.msgSubscriptionId ?
+                <div className={styles.footer}>
+                  <span className={styles.messages}><strong>FREE Voice + Chat Plan</strong> (include {agentinfo?.agent?.messagePurchase}/m)</span>
+
+                  <button onClick={handleMessagePlanUpgarde} className={styles.buyMore}><img src="/svg/plus-icon.svg" alt="plus-icon" />UPGRADE</button>
+                </div>
+                : null}
+
+
+              {/* for voice + chaat plan  */}
+              {agentinfo?.agent?.subscriptionId && agentinfo?.agent?.msgSubscriptionId ?
+                <div className={styles.footer}>
+                  <span className={styles.messages}><strong>Total {(() => {
+                    const total = (agentinfo?.agent?.addOnsMins || 0) + (agentinfo?.agent?.messageLeft || 0);
+                    return total >= 1000 ? (total / 1000).toFixed(1) + "K" : total;
+                  })()}</strong> ({agentinfo?.agent?.messagePurchase} + {agentinfo?.agent?.addOnsMins})per month</span>
+
+                  <button onClick={handleMessagePlanUpgarde} className={styles.buyMore}><img src="/svg/plus-icon.svg" alt="plus-icon" />UPGRADE</button>
+                </div>
+                : null}
+
+            </div>
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
-
             <Divider label="Agent Options" />
-
             <div className={styles.managementActions}>
               <div
                 onClick={() => {
@@ -1323,16 +1468,14 @@ Do you want to proceed with deleting this assigned number?`
                 style={{ cursor: "pointer" }}
               >
                 <div className={styles.SvgDesign}>
-                  <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect width="30" height="30" rx="5" fill="white" />
-                      <path d="M7.5016 8.50027L8.50014 6.50061L10.5015 5.49981L12.5 8.00049L12 10.0005L14.5 13.5005L18 13.0005L19.5 14.5005L19.5 16.0005L18.5 17.5005L16 18.0005L14.5 17.5005L12.998 15.9997L10.4999 14.0006L9.0005 11.9999L7.5016 8.50027Z" fill="#1AA850" />
-                      <rect x="5" y="20" width="22" height="9" fill="white" />
-                      <path d="M12.229 20.875H10.049V27H8.70402V20.875H6.52402V19.77H12.229V20.875ZM15.0839 23.845C15.0839 23.685 15.0606 23.535 15.0139 23.395C14.9706 23.2517 14.9039 23.1267 14.8139 23.02C14.7239 22.9133 14.6089 22.83 14.4689 22.77C14.3323 22.7067 14.1723 22.675 13.9889 22.675C13.6323 22.675 13.3506 22.7767 13.1439 22.98C12.9406 23.1833 12.8106 23.4717 12.7539 23.845H15.0839ZM12.7289 24.59C12.7489 24.8533 12.7956 25.0817 12.8689 25.275C12.9423 25.465 13.0389 25.6233 13.1589 25.75C13.2789 25.8733 13.4206 25.9667 13.5839 26.03C13.7506 26.09 13.9339 26.12 14.1339 26.12C14.3339 26.12 14.5056 26.0967 14.6489 26.05C14.7956 26.0033 14.9223 25.9517 15.0289 25.895C15.1389 25.8383 15.2339 25.7867 15.3139 25.74C15.3973 25.6933 15.4773 25.67 15.5539 25.67C15.6573 25.67 15.7339 25.7083 15.7839 25.785L16.1389 26.235C16.0023 26.395 15.8489 26.53 15.6789 26.64C15.5089 26.7467 15.3306 26.8333 15.1439 26.9C14.9606 26.9633 14.7723 27.0083 14.5789 27.035C14.3889 27.0617 14.2039 27.075 14.0239 27.075C13.6673 27.075 13.3356 27.0167 13.0289 26.9C12.7223 26.78 12.4556 26.605 12.2289 26.375C12.0023 26.1417 11.8239 25.855 11.6939 25.515C11.5639 25.1717 11.4989 24.775 11.4989 24.325C11.4989 23.975 11.5556 23.6467 11.6689 23.34C11.7823 23.03 11.9439 22.7617 12.1539 22.535C12.3673 22.305 12.6256 22.1233 12.9289 21.99C13.2356 21.8567 13.5806 21.79 13.9639 21.79C14.2873 21.79 14.5856 21.8417 14.8589 21.945C15.1323 22.0483 15.3673 22.2 15.5639 22.4C15.7606 22.5967 15.9139 22.84 16.0239 23.13C16.1373 23.4167 16.1939 23.745 16.1939 24.115C16.1939 24.3017 16.1739 24.4283 16.1339 24.495C16.0939 24.5583 16.0173 24.59 15.9039 24.59H12.7289ZM20.2507 22.87C20.2174 22.9233 20.1824 22.9617 20.1457 22.985C20.1091 23.005 20.0624 23.015 20.0057 23.015C19.9457 23.015 19.8807 22.9983 19.8107 22.965C19.7441 22.9317 19.6657 22.895 19.5757 22.855C19.4857 22.8117 19.3824 22.7733 19.2657 22.74C19.1524 22.7067 19.0174 22.69 18.8607 22.69C18.6174 22.69 18.4257 22.7417 18.2857 22.845C18.1491 22.9483 18.0807 23.0833 18.0807 23.25C18.0807 23.36 18.1157 23.4533 18.1857 23.53C18.2591 23.6033 18.3541 23.6683 18.4707 23.725C18.5907 23.7817 18.7257 23.8333 18.8757 23.88C19.0257 23.9233 19.1774 23.9717 19.3307 24.025C19.4874 24.0783 19.6407 24.14 19.7907 24.21C19.9407 24.2767 20.0741 24.3633 20.1907 24.47C20.3107 24.5733 20.4057 24.6983 20.4757 24.845C20.5491 24.9917 20.5857 25.1683 20.5857 25.375C20.5857 25.6217 20.5407 25.85 20.4507 26.06C20.3641 26.2667 20.2341 26.4467 20.0607 26.6C19.8874 26.75 19.6724 26.8683 19.4157 26.955C19.1624 27.0383 18.8691 27.08 18.5357 27.08C18.3591 27.08 18.1857 27.0633 18.0157 27.03C17.8491 27 17.6874 26.9567 17.5307 26.9C17.3774 26.8433 17.2341 26.7767 17.1007 26.7C16.9707 26.6233 16.8557 26.54 16.7557 26.45L17.0407 25.98C17.0774 25.9233 17.1207 25.88 17.1707 25.85C17.2207 25.82 17.2841 25.805 17.3607 25.805C17.4374 25.805 17.5091 25.8267 17.5757 25.87C17.6457 25.9133 17.7257 25.96 17.8157 26.01C17.9057 26.06 18.0107 26.1067 18.1307 26.15C18.2541 26.1933 18.4091 26.215 18.5957 26.215C18.7424 26.215 18.8674 26.1983 18.9707 26.165C19.0774 26.1283 19.1641 26.0817 19.2307 26.025C19.3007 25.9683 19.3507 25.9033 19.3807 25.83C19.4141 25.7533 19.4307 25.675 19.4307 25.595C19.4307 25.475 19.3941 25.3767 19.3207 25.3C19.2507 25.2233 19.1557 25.1567 19.0357 25.1C18.9191 25.0433 18.7841 24.9933 18.6307 24.95C18.4807 24.9033 18.3257 24.8533 18.1657 24.8C18.0091 24.7467 17.8541 24.685 17.7007 24.615C17.5507 24.5417 17.4157 24.45 17.2957 24.34C17.1791 24.23 17.0841 24.095 17.0107 23.935C16.9407 23.775 16.9057 23.5817 16.9057 23.355C16.9057 23.145 16.9474 22.945 17.0307 22.755C17.1141 22.565 17.2357 22.4 17.3957 22.26C17.5591 22.1167 17.7607 22.0033 18.0007 21.92C18.2441 21.8333 18.5241 21.79 18.8407 21.79C19.1941 21.79 19.5157 21.8483 19.8057 21.965C20.0957 22.0817 20.3374 22.235 20.5307 22.425L20.2507 22.87ZM23.2253 27.08C22.7786 27.08 22.4353 26.955 22.1953 26.705C21.9586 26.4517 21.8403 26.1033 21.8403 25.66V22.795H21.3153C21.2486 22.795 21.1919 22.7733 21.1453 22.73C21.0986 22.6867 21.0753 22.6217 21.0753 22.535V22.045L21.9003 21.91L22.1603 20.51C22.1769 20.4433 22.2086 20.3917 22.2553 20.355C22.3019 20.3183 22.3619 20.3 22.4353 20.3H23.0753V21.915H24.4453V22.795H23.0753V25.575C23.0753 25.735 23.1136 25.86 23.1903 25.95C23.2703 26.04 23.3786 26.085 23.5153 26.085C23.5919 26.085 23.6553 26.0767 23.7053 26.06C23.7586 26.04 23.8036 26.02 23.8403 26C23.8803 25.98 23.9153 25.9617 23.9453 25.945C23.9753 25.925 24.0053 25.915 24.0353 25.915C24.0719 25.915 24.1019 25.925 24.1253 25.945C24.1486 25.9617 24.1736 25.9883 24.2003 26.025L24.5703 26.625C24.3903 26.775 24.1836 26.8883 23.9503 26.965C23.7169 27.0417 23.4753 27.08 23.2253 27.08Z" fill="#6524EB" />
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M18.5728 12.9247C17.8719 12.2238 16.735 12.2238 16.0331 12.9247L16.0314 12.9273C15.6671 13.2907 15.0767 13.2907 14.7132 12.9273C14.0874 12.3015 13.2759 11.49 12.6509 10.865C12.2866 10.5007 12.2866 9.91024 12.6509 9.54595L12.6527 9.54423C13.3536 8.84327 13.3536 7.70638 12.6527 7.00455C12.3358 6.68774 11.9785 6.33035 11.6452 5.99713C11.2404 5.59227 10.6914 5.36523 10.119 5.36523C9.54668 5.36523 8.99765 5.59227 8.59278 5.99713C8.3597 6.23021 8.11627 6.47365 7.88578 6.70413C6.99749 7.59242 6.75059 8.93736 7.26682 10.082L7.26856 10.0864C8.84572 13.4064 12.0518 16.616 15.4936 18.2588L15.4962 18.2605C16.64 18.7888 17.9893 18.5497 18.8801 17.6623C19.1141 17.4499 19.3523 17.2125 19.5802 16.9846C19.9851 16.5797 20.2121 16.0307 20.2121 15.4584C20.2121 14.886 19.9851 14.337 19.5802 13.9321C19.247 13.5989 18.8897 13.2424 18.5728 12.9247ZM17.9625 13.535L18.9699 14.5425C19.2125 14.7859 19.3489 15.1148 19.3489 15.4584C19.3489 15.802 19.2125 16.1308 18.9699 16.3743L18.2741 17.0476C17.6397 17.6821 16.6771 17.8539 15.8631 17.4784C12.5948 15.9176 9.54926 12.8729 8.05238 9.72379C7.6855 8.90715 7.86247 7.94807 8.4961 7.31531L9.2031 6.60745C9.44654 6.36488 9.77544 6.22849 10.119 6.22849C10.4626 6.22849 10.7915 6.36488 11.0349 6.60745L12.0423 7.61486C12.4066 7.97915 12.4066 8.56961 12.0423 8.93391L12.0398 8.93565C11.3388 9.63661 11.3388 10.7735 12.0398 11.4753C12.6656 12.1003 13.477 12.9118 14.102 13.5376C14.8039 14.2386 15.9408 14.2386 16.6417 13.5376L16.6435 13.535C17.0077 13.1707 17.5982 13.1707 17.9625 13.535Z" fill="#1AA850" />
-                      <path d="M16.7265 10.3376C16.7265 9.62287 16.1464 9.04276 15.4316 9.04276C15.1934 9.04276 15 8.84939 15 8.61114C15 8.37288 15.1934 8.17951 15.4316 8.17951C16.6229 8.17951 17.5898 9.14635 17.5898 10.3376C17.5898 10.5759 17.3964 10.7693 17.1581 10.7693C16.9199 10.7693 16.7265 10.5759 16.7265 10.3376Z" fill="#6524EB" />
-                      <path d="M19.3163 10.3376C19.3163 8.19332 17.5759 6.45301 15.4316 6.45301C15.1934 6.45301 15 6.25964 15 6.02138C15 5.78312 15.1934 5.58976 15.4316 5.58976C18.0525 5.58976 20.1795 7.71681 20.1795 10.3376C20.1795 10.5759 19.9861 10.7693 19.7479 10.7693C19.5096 10.7693 19.3163 10.5759 19.3163 10.3376Z" fill="#6524EB" />
-                      <path d="M21.906 10.3376C21.906 6.76464 19.0046 3.86325 15.4316 3.86325C15.1934 3.86325 15 3.66988 15 3.43163C15 3.19337 15.1934 3 15.4316 3C19.4811 3 22.7693 6.28813 22.7693 10.3376C22.7693 10.5759 22.5759 10.7693 22.3376 10.7693C22.0994 10.7693 21.906 10.5759 21.906 10.3376Z" fill="#6524EB" />
-                    </svg>
+                  <svg width="19" height="25" viewBox="0 0 19 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5.70498 17.8745H3.52498V23.9995H2.18V17.8745H0V16.7695H5.70498V17.8745ZM8.55988 20.8445C8.55988 20.6845 8.53658 20.5345 8.48988 20.3945C8.44658 20.2512 8.37988 20.1262 8.28988 20.0195C8.19988 19.9128 8.08488 19.8295 7.94488 19.7695C7.80828 19.7062 7.64828 19.6745 7.46488 19.6745C7.10828 19.6745 6.82658 19.7762 6.61988 19.9795C6.41658 20.1828 6.28658 20.4712 6.22988 20.8445H8.55988ZM6.20488 21.5895C6.22488 21.8528 6.27158 22.0812 6.34488 22.2745C6.41828 22.4645 6.51488 22.6228 6.63488 22.7495C6.75488 22.8728 6.89658 22.9662 7.05988 23.0295C7.22658 23.0895 7.40988 23.1195 7.60988 23.1195C7.80988 23.1195 7.98158 23.0962 8.12488 23.0495C8.27158 23.0028 8.39828 22.9512 8.50488 22.8945C8.61488 22.8378 8.70988 22.7862 8.78988 22.7395C8.87328 22.6928 8.95328 22.6695 9.02988 22.6695C9.13328 22.6695 9.20988 22.7078 9.25988 22.7845L9.61488 23.2345C9.47828 23.3945 9.32488 23.5295 9.15488 23.6395C8.98488 23.7462 8.80658 23.8328 8.61988 23.8995C8.43658 23.9628 8.24828 24.0078 8.05488 24.0345C7.86488 24.0612 7.67988 24.0745 7.49988 24.0745C7.14328 24.0745 6.81158 24.0162 6.50488 23.8995C6.19828 23.7795 5.93158 23.6045 5.70488 23.3745C5.47828 23.1412 5.29988 22.8545 5.16988 22.5145C5.03988 22.1712 4.97488 21.7745 4.97488 21.3245C4.97488 20.9745 5.03158 20.6462 5.14488 20.3395C5.25828 20.0295 5.41988 19.7612 5.62988 19.5345C5.84328 19.3045 6.10158 19.1228 6.40488 18.9895C6.71158 18.8562 7.05658 18.7895 7.43988 18.7895C7.76328 18.7895 8.06158 18.8412 8.33488 18.9445C8.60828 19.0478 8.84328 19.1995 9.03988 19.3995C9.23658 19.5962 9.38988 19.8395 9.49988 20.1295C9.61328 20.4162 9.66988 20.7445 9.66988 21.1145C9.66988 21.3012 9.64988 21.4278 9.60988 21.4945C9.56988 21.5578 9.49328 21.5895 9.37988 21.5895H6.20488ZM13.7267 19.8695C13.6934 19.9228 13.6584 19.9612 13.6217 19.9845C13.5851 20.0045 13.5384 20.0145 13.4817 20.0145C13.4217 20.0145 13.3567 19.9978 13.2867 19.9645C13.2201 19.9312 13.1417 19.8945 13.0517 19.8545C12.9617 19.8112 12.8584 19.7728 12.7417 19.7395C12.6284 19.7062 12.4934 19.6895 12.3367 19.6895C12.0934 19.6895 11.9017 19.7412 11.7617 19.8445C11.6251 19.9478 11.5567 20.0828 11.5567 20.2495C11.5567 20.3595 11.5917 20.4528 11.6617 20.5295C11.7351 20.6028 11.8301 20.6678 11.9467 20.7245C12.0667 20.7812 12.2017 20.8328 12.3517 20.8795C12.5017 20.9228 12.6534 20.9712 12.8067 21.0245C12.9634 21.0778 13.1167 21.1395 13.2667 21.2095C13.4167 21.2762 13.5501 21.3628 13.6667 21.4695C13.7867 21.5728 13.8817 21.6978 13.9517 21.8445C14.0251 21.9912 14.0617 22.1678 14.0617 22.3745C14.0617 22.6212 14.0167 22.8495 13.9267 23.0595C13.8401 23.2662 13.7101 23.4462 13.5367 23.5995C13.3634 23.7495 13.1484 23.8678 12.8917 23.9545C12.6384 24.0378 12.3451 24.0795 12.0117 24.0795C11.8351 24.0795 11.6617 24.0628 11.4917 24.0295C11.3251 23.9995 11.1634 23.9562 11.0067 23.8995C10.8534 23.8428 10.7101 23.7762 10.5767 23.6995C10.4467 23.6228 10.3317 23.5395 10.2317 23.4495L10.5167 22.9795C10.5534 22.9228 10.5967 22.8795 10.6467 22.8495C10.6967 22.8195 10.7601 22.8045 10.8367 22.8045C10.9134 22.8045 10.9851 22.8262 11.0517 22.8695C11.1217 22.9128 11.2017 22.9595 11.2917 23.0095C11.3817 23.0595 11.4867 23.1062 11.6067 23.1495C11.7301 23.1928 11.8851 23.2145 12.0717 23.2145C12.2184 23.2145 12.3434 23.1978 12.4467 23.1645C12.5534 23.1278 12.6401 23.0812 12.7067 23.0245C12.7767 22.9678 12.8267 22.9028 12.8567 22.8295C12.8901 22.7528 12.9067 22.6745 12.9067 22.5945C12.9067 22.4745 12.8701 22.3762 12.7967 22.2995C12.7267 22.2228 12.6317 22.1562 12.5117 22.0995C12.3951 22.0428 12.2601 21.9928 12.1067 21.9495C11.9567 21.9028 11.8017 21.8528 11.6417 21.7995C11.4851 21.7462 11.3301 21.6845 11.1767 21.6145C11.0267 21.5412 10.8917 21.4495 10.7717 21.3395C10.6551 21.2295 10.5601 21.0945 10.4867 20.9345C10.4167 20.7745 10.3817 20.5812 10.3817 20.3545C10.3817 20.1445 10.4234 19.9445 10.5067 19.7545C10.5901 19.5645 10.7117 19.3995 10.8717 19.2595C11.0351 19.1162 11.2367 19.0028 11.4767 18.9195C11.7201 18.8328 12.0001 18.7895 12.3167 18.7895C12.6701 18.7895 12.9917 18.8478 13.2817 18.9645C13.5717 19.0812 13.8134 19.2345 14.0067 19.4245L13.7267 19.8695ZM16.7013 24.0795C16.2546 24.0795 15.9113 23.9545 15.6713 23.7045C15.4346 23.4512 15.3163 23.1028 15.3163 22.6595V19.7945H14.7913C14.7246 19.7945 14.6679 19.7728 14.6213 19.7295C14.5746 19.6862 14.5513 19.6212 14.5513 19.5345V19.0445L15.3763 18.9095L15.6363 17.5095C15.6529 17.4428 15.6846 17.3912 15.7313 17.3545C15.7779 17.3178 15.8379 17.2995 15.9113 17.2995H16.5513V18.9145H17.9213V19.7945H16.5513V22.5745C16.5513 22.7345 16.5896 22.8595 16.6663 22.9495C16.7463 23.0395 16.8546 23.0845 16.9913 23.0845C17.0679 23.0845 17.1313 23.0762 17.1813 23.0595C17.2346 23.0395 17.2796 23.0195 17.3163 22.9995C17.3563 22.9795 17.3913 22.9612 17.4213 22.9445C17.4513 22.9245 17.4813 22.9145 17.5113 22.9145C17.5479 22.9145 17.5779 22.9245 17.6013 22.9445C17.6246 22.9612 17.6496 22.9878 17.6763 23.0245L18.0463 23.6245C17.8663 23.7745 17.6596 23.8878 17.4263 23.9645C17.1929 24.0412 16.9513 24.0795 16.7013 24.0795Z" fill="#6524EB" />
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0494 9.92666C11.3485 9.22576 10.2116 9.22576 9.50966 9.92666L9.50796 9.92926C9.14366 10.2927 8.55326 10.2927 8.18976 9.92926C7.56396 9.30346 6.75246 8.49196 6.12746 7.86696C5.76316 7.50266 5.76316 6.9122 6.12746 6.54791L6.12926 6.54619C6.83016 5.84523 6.83016 4.70834 6.12926 4.00651C5.81236 3.6897 5.45506 3.33231 5.12176 2.99909C4.71696 2.59423 4.16796 2.36719 3.59556 2.36719C3.02324 2.36719 2.47421 2.59423 2.06934 2.99909C1.83626 3.23217 1.59283 3.47561 1.36234 3.70609C0.474053 4.59438 0.227153 5.93932 0.743383 7.08396L0.745123 7.08836C2.32228 10.4084 5.52836 13.618 8.97016 15.2608L8.97276 15.2625C10.1166 15.7908 11.4659 15.5517 12.3567 14.6643C12.5907 14.4519 12.8289 14.2145 13.0568 13.9866C13.4617 13.5817 13.6887 13.0327 13.6887 12.4604C13.6887 11.888 13.4617 11.339 13.0568 10.9341C12.7236 10.6009 12.3663 10.2444 12.0494 9.92666ZM11.4391 10.537L12.4465 11.5445C12.6891 11.7879 12.8255 12.1168 12.8255 12.4604C12.8255 12.804 12.6891 13.1328 12.4465 13.3763L11.7507 14.0496C11.1163 14.6841 10.1537 14.8559 9.33966 14.4804C6.07136 12.9196 3.02582 9.87486 1.52894 6.72575C1.16206 5.90911 1.33903 4.95003 1.97266 4.31727L2.67966 3.60941C2.9231 3.36684 3.252 3.23045 3.59556 3.23045C3.93916 3.23045 4.26806 3.36684 4.51146 3.60941L5.51886 4.61682C5.88316 4.98111 5.88316 5.57157 5.51886 5.93587L5.51636 5.93761C4.81536 6.63857 4.81536 7.77546 5.51636 8.47726C6.14216 9.10226 6.95356 9.91376 7.57856 10.5396C8.28046 11.2406 9.41736 11.2406 10.1183 10.5396L10.1201 10.537C10.4843 10.1727 11.0748 10.1727 11.4391 10.537Z" fill="#1AA850" />
+                    <path d="M10.2031 7.33778C10.2031 6.62305 9.62296 6.04294 8.90816 6.04294C8.66996 6.04294 8.47656 5.84957 8.47656 5.61132C8.47656 5.37306 8.66996 5.17969 8.90816 5.17969C10.0995 5.17969 11.0664 6.14653 11.0664 7.33778C11.0664 7.57608 10.873 7.76948 10.6347 7.76948C10.3965 7.76948 10.2031 7.57608 10.2031 7.33778Z" fill="#6524EB" />
+                    <path d="M12.7929 7.33768C12.7929 5.1934 11.0525 3.45309 8.90816 3.45309C8.66996 3.45309 8.47656 3.25972 8.47656 3.02146C8.47656 2.7832 8.66996 2.58984 8.90816 2.58984C11.5291 2.58984 13.6561 4.71689 13.6561 7.33768C13.6561 7.57598 13.4627 7.76938 13.2245 7.76938C12.9862 7.76938 12.7929 7.57598 12.7929 7.33768Z" fill="#6524EB" />
+                    <path d="M15.3826 7.3376C15.3826 3.76464 12.4812 0.86325 8.90816 0.86325C8.66996 0.86325 8.47656 0.66988 8.47656 0.43163C8.47656 0.19337 8.66996 0 8.90816 0C12.9577 0 16.2459 3.28813 16.2459 7.3376C16.2459 7.5759 16.0525 7.7693 15.8142 7.7693C15.576 7.7693 15.3826 7.5759 15.3826 7.3376Z" fill="#6524EB" />
+                  </svg>
+
                 </div>
                 <p
                   className={styles.managementText}
@@ -1766,6 +1909,40 @@ Do you want to proceed with deleting this assigned number?`
               </div>
             </div>
 
+            {agentData?.agent?.chat_agent_id && agentData?.agent?.chat_llm_id
+
+
+              && agentData?.agent?.chat_agent_id !== "null" && agentData?.agent?.chatWidgetEnabled && agentData?.agent?.chat_llm_id !== "null" ? <div className={styles.ChatReport}>
+
+              <div className={styles.reportDiv}>
+                <p>Total</p>
+                <h4>{agentData?.chatHistorySummary?.totalChatMessage}</h4>
+              </div>
+              <hr className={styles.hrLine} />
+              <div className={styles.reportDiv}>
+                <p>Remaining</p>
+                <h4>{agentData?.chatHistorySummary?.remainingChatMessage}</h4>
+              </div>
+              <hr className={styles.hrLine} />
+
+              <div className={styles.reportDiv} onClick={handleChatHistoryNavigation}>
+                <p>Interactions</p>
+                <h4>{agentData?.chatHistorySummary?.chat_count_interactions}</h4>
+              </div>
+              <hr className={styles.hrLine} />
+
+              <div className={styles.reportDiv}>
+                <p>Msg. Per Inter. </p>
+                <h4>{agentData?.chatHistorySummary?.messagePerInteraction}<span className={styles.avgText}>AVG</span></h4>
+              </div>
+
+              <div className={styles.chatTitle}>Chat Messages Report</div>
+
+            </div> : ""}
+
+
+
+
             <section className={styles.management}>
               <AgentAnalysis
                 agentId={agentDetails?.agentId}
@@ -2118,9 +2295,7 @@ Do you want to proceed with deleting this assigned number?`
     </div>
   );
 };
-
 export default AgentDashboard;
-
 const fetchPrevAgentDEtails = async (agent_id, businessId) => {
   try {
     const response = await getUserAgentMergedDataForAgentUpdate(

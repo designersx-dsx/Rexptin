@@ -11,6 +11,7 @@ import { useRef } from "react";
 import Loader2 from "../Loader2/Loader2";
 import LottieAnimation from "../../lib/LottieAnimation";
 import useUser from "../../Store/Context/UserContext";
+import axios from "axios";
 
 function Thankyou({ onSubmit, isAgentCreated }) {
   const [animationData, setAnimationData] = useState(null);
@@ -32,6 +33,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
   // Prefer query param if available, else fallback to URL paramm
   const key = queryMode || paramMode;
+  
+
   const location = useLocation();
 
   const [popupType, setPopupType] = useState(null);
@@ -177,6 +180,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   };
 
   const onDashboardClick = async () => {
+    sessionStorage.removeItem("oldSubsId")
     if (isAdmin) {
       await adminHandleClick();
     } else {
@@ -233,6 +237,68 @@ function Thankyou({ onSubmit, isAgentCreated }) {
         if (!businessNameVal && placeData?.businessName) {
           businessNameVal = placeData.businessName;
         }
+
+        setBusinessName(businessNameVal || "Your Business");
+        // ✅ Load plan details from localStorage
+        const selectedPlanRaw = localStorage.getItem("selectedPlanData");
+        if (selectedPlanRaw) {
+          try {
+            const plan = JSON.parse(selectedPlanRaw);
+
+            setSubscriptionInfo({
+              planName: plan.planName || "N/A",
+              planAmount: plan.price || 0,
+              planMins: plan.planMins || "N/A",
+              interval: plan.interval || "month",
+              currentPeriodStart:
+                plan.currentPeriodStart || new Date().toISOString(),
+              nextRenewalDate: plan.nextBillingDate || null,
+              invoiceUrl: plan.invoiceUrl || null,
+            });
+          } catch (err) {
+            console.warn(
+              "Failed to parse selected plan data from localStorage:",
+              err
+            );
+          }
+        }
+      }
+
+      if (key === "msgPlan") {
+        console.log("dadadsadada")
+        let aa = sessionStorage.getItem("bussinessName")
+          setAgentCode(sessionStorage.getItem("AgentCode"));
+        setAgentName(sessionStorage.getItem("agentName"));
+   
+        setBusinessName(sessionStorage.getItem("bussinessName"))
+        let businessNameVal = "";
+
+        const businessData = storedBusinessDetails
+          ? JSON.parse(storedBusinessDetails)
+          : null;
+
+        console.log("businessData",businessData);
+        
+        const placeData = storedPlaceDetails
+          ? JSON.parse(storedPlaceDetails)
+          : null;
+
+      
+
+        // 1. From businessDetails first
+        if (businessData) {
+          // setAgentCode(businessData.AgentCode || "XXXXXX");
+          // setAgentName(businessData.agentName || "Agent");
+
+          businessNameVal = businessData.businessName;
+        }
+
+        // 2. If missing, fallback to placeDetailsExtract
+        if (!businessNameVal && placeData?.businessName) {
+          businessNameVal = placeData.businessName;
+        }
+
+        console.log("businessNameVal",businessNameVal)
 
         setBusinessName(businessNameVal || "Your Business");
         // ✅ Load plan details from localStorage
@@ -427,22 +493,117 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     return new Intl.NumberFormat("en-IN").format(price);
   };
 
+
+
+  const fetchSubscriptionInfoMsg = async () => {
+    if (!agentId && !userId) return; // Ensure at least one ID exists
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/subscription-details-msg`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(
+          agentId ? { agentId } : { userId } // Send only one key based on availability
+        ),
+      });
+
+      const data = await res.json();
+      // console.log("Subscription Info:", data);
+
+      if (data && !data.error) {
+        // const { planAmount, ...rest } = data; // ignore planAmount
+        // setSubscriptionInfo((prev) => ({
+        //   ...prev,
+        //   ...rest, // keep existing planAmount
+        // }));
+        setSubscriptionInfo(data);
+        // Extract currency symbol
+        const currencyMap = {
+          USD: "$",
+          INR: "₹",
+          EUR: "€",
+          GBP: "£",
+          AUD: "A$",
+          CAD: "C$",
+        };
+        const upperCurrency = data.currency?.toUpperCase() || "USD";
+        const symbol = currencyMap[upperCurrency] || "$";
+        setCurrencySymbol(`${upperCurrency} ${symbol}`);
+        // Save invoice link
+        if (data.invoiceUrl) {
+          setInvoiceLink(data.invoiceUrl);
+        }
+      } else {
+        console.warn("No subscription found, falling back to static info.");
+      }
+    } catch (error) {
+      console.error("Failed to fetch subscription info:", error);
+    }
+  };
+
+
   useEffect(() => {
+    console.log("dddddddddd");
+
+
     if (hasRunRef.current) return;
     hasRunRef.current = true;
 
     const hasHandledThankYou = localStorage.getItem("hasHandledThankYou");
 
     localStorage.setItem("hasHandledThankYou", "true");
+    console.log("hasHandledThankYou", hasHandledThankYou)
 
     const shouldRunUpdateAgent = key === "update" && agentId && userId;
     const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
     const shouldRunCreateFlow = key === "create" && userId;
 
+    const shouldMsgCheck = key === "msgPlan"
+    console.log(shouldMsgCheck, "gashas");
+
+const cancelOldSubscription = async () => {
+  try {
+    let subscriptionId = sessionStorage.getItem("oldSubsId")
+    if (!subscriptionId) throw new Error("subscriptionId is required");
+
+    // Call your backend cancel API
+    const response = await axios.post(`${API_BASE_URL}/cancelMessage-plan`, {
+      subscriptionId,
+    });
+
+    console.log("Cancel response:", response.data);
+
+  
+  } catch (error) {
+    console.error("Error canceling subscription:", error);
+   
+  }
+};
+
     const run = async () => {
       try {
         setLoading(true);
-        if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
+        if (shouldMsgCheck) {
+          console.log("doneeeee this workkkk");
+
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+         
+           let subscriptionId = sessionStorage.getItem("oldSubsId")
+          if(subscriptionId){
+  await cancelOldSubscription()
+  await fetchSubscriptionInfoMsg();
+ 
+          }
+          else{
+       await fetchSubscriptionInfoMsg();
+          }
+         
+        }
+        else if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
           await callNextApiAndRedirect(); // handles update + cancellation
           await new Promise((resolve) => setTimeout(resolve, 1500));
           await fetchSubscriptionInfo();
@@ -452,6 +613,12 @@ function Thankyou({ onSubmit, isAgentCreated }) {
           if (!hasHandledThankYou) {
             onSubmit();
           }
+          // else if (shouldMsgCheck) {
+          //   console.log("doneeeee this workkkk");
+
+          //   await new Promise((resolve) => setTimeout(resolve, 1500));
+          //   await fetchSubscriptionInfoMsg();
+          // }
         }
       } catch (error) {
         console.log(error);
@@ -461,8 +628,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     };
 
     run();
-  }, [key, subscriptionId, agentId, userId, subsid , isAdmin]);
- 
+  }, [key, subscriptionId, agentId, userId, subsid, isAdmin]);
+
   const formatCurrency = (amount, currency) => {
     const upperCurrency = currency?.toUpperCase() || "USD";
 
@@ -568,7 +735,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
                 <div className={styles.row}>
                   <span>Business Name:</span>{" "}
                   <div className={styles.Right50}>
-                    {isAdmin ? businessName1 : (businessName || "ACME Construction Services")}
+                    {isAdmin ? businessName1 : (key === "msgPlan" ? sessionStorage.getItem("bussinessName") :  businessName || "ACME Construction Services")}
                   </div>
                 </div>
                 <div className={styles.row}>
@@ -587,7 +754,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
                   <span>Plan Activated:</span>
                   <div className={styles.Right50}>
                     {subscriptionInfo?.planName || "Growth"} -{" "}
-                    {subscriptionInfo?.planMins || "1500"} minutes
+                    { key === "msgPlan" ? subscriptionInfo.planMessage : subscriptionInfo?.planMins|| "1500" } 
+                    {key === "msgPlan" ?  " Messages" : " Minutes"}
                   </div>
                 </div>
                 <div className={styles.row}>

@@ -26,6 +26,7 @@ import decodeToken from "../../lib/decodeToken";
 import {
   API_BASE_URL,
   createAgent,
+  createChatAgent,
   listAgents,
   updateAgent,
   updateAgentWidgetDomain,
@@ -341,7 +342,6 @@ const Step = () => {
       sliderRef.current?.slickGoTo(prevStep);
     }
   };
-
   const settings = {
     dots: false,
     infinite: false,
@@ -493,6 +493,10 @@ const Step = () => {
   const callRecording = statesRequiringCallRecording.includes(currentState)
     ? true
     : false;
+  //if widget
+  const ifChatWidgetEnabledOrNot =
+    sessionStorage.getItem("chatWebWidget") === "true";
+
   const handleContinue = async () => {
     // if (step8ARef.current) {
     setIsContinueClicked(true);
@@ -533,7 +537,6 @@ const Step = () => {
       agentNote: "{{AGENTNOTE}}",
       timeZone: "{{TIMEZONE}}",
     });
-
     const filledPrompt = getAgentPrompt({
       industryKey:
         business?.businessType == "Other"
@@ -650,6 +653,33 @@ const Step = () => {
                 description: "Extract the user's name from the conversation\"",
               },
             ],
+          },
+          {
+            name: "get_conversation_history",
+            description: "Fetch previous coversation history by customer email address",
+            type: "custom",
+            method: "POST",
+            url: `${process.env.REACT_APP_API_BASE_URL}/Chatbot/get_chat_logs?email={{parameter.email}}`,
+            speak_after_execution: true,
+
+            // Query parameters for GET request
+            query_params: {
+              email: "{{parameter.email}}",
+            },
+
+            // Response variables to extract order status
+            parameters: {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "description": "Customer email address to fetch conversation history"
+                }
+              },
+              "required": [
+                "email"
+              ]
+            }
           },
         ],
         states: [
@@ -810,7 +840,6 @@ const Step = () => {
         );
         sessionStorage.setItem("llmId", llmResponse.data.llm_id);
         const llmId = llmResponse.data.llm_id;
-
         const response_engine = {
           type: "retell-llm",
           llm_id: llmId,
@@ -1020,7 +1049,7 @@ const Step = () => {
                 type: "boolean",
                 name: "appointment_booked",
                 description:
-                  "Determine if appointment was successfully booked during the call",
+                  "Determine if appointment was successfully booked during the call and also if you get appointment deatails like email and date then only mark true",
                 examples: [true, false],
               },
               {
@@ -1048,10 +1077,12 @@ const Step = () => {
             ],
             promptVariablesList: JSON.stringify(promptVariablesList),
             CallRecording: callRecording,
+            voiceWidgetEnabled: true,
             timezone: timeZone?.timezoneId || ""
           };
           try {
             const response = await createAgent(agentData);
+
             if (response.status === 200 || response.status === 201) {
               sessionStorage.setItem("agentId", response.data.agent_id);
               sessionStorage.setItem("agentStatus", true);
@@ -1061,15 +1092,51 @@ const Step = () => {
                 agentId,
                 aboutBusinessForm?.businessUrl
               );
+              if (ifChatWidgetEnabledOrNot) {
+                // alert("ok")
+                // Shared payload data for both Voice Agent and Chat Agent
+                const commonAgentPayload = {
+                  industryKey:
+                    business?.businessType == "Other"
+                      ? business?.customBuisness
+                      : business?.businessType,
+                  roleTitle: sessionStorage.getItem("agentRole"),
+                  agentName: agentName?.split(" ")[0],
+                  agentGender: agentGender,
+                  business: {
+                    businessName:
+                      getBusinessNameFromGoogleListing?.businessName ||
+                      getBusinessNameFormCustom,
+                    email: getBusinessNameFromGoogleListing?.email || "",
+                    aboutBusiness:
+                      getBusinessNameFromGoogleListing?.aboutBusiness ||
+                      getBusinessNameFromGoogleListing?.aboutBussiness,
+                    address: getBusinessNameFromGoogleListing?.address || "",
+                  },
+                  languageSelect: languageSelect,
+                  businessType,
+                  aboutBusinessForm,
+                  allServices,
+                  agentNote,
+                  timeZone: timeZone?.timezoneId,
+                  languageAccToPlan,
+                  plan: plan,
+                  CallRecording: callRecording,
+                  knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
+                  businessPhone,
+                  businessEmail: business?.email,
+                  agent_id: agentId || sessionStorage.getItem("agentId"),
+                };
+                const response = await createChatAgent(
+                  commonAgentPayload, token
+                )
+              }
               // if (checkPaymentDone === "true") {
               //     await callNextApiAndRedirect(agentId)
               // }
               setPopupMessage("Agent created successfully!");
-
               setIsAgentCreated(true);
-
               setShowPopup(true);
-
               if (freeTrail) {
                 setCustomeLoader(true);
                 setTimeout(
@@ -1135,10 +1202,8 @@ const Step = () => {
         setLoading(false);
       }
       setLoading(false);
-      // setCustomeLoader(false)
     }
   };
-
   const handleValidationError = ({ type, message }) => {
     setPopupType(type);
     setPopupMessage(message);
@@ -1304,7 +1369,7 @@ const Step = () => {
         successUrl:
           window.location.origin +
           `/steps?mode=create&userId=${decodeTokenData?.id}`, // origin + path
-        cancelUrl: window.location.origin + "/cancel",
+        cancelUrl: window.location.origin + "/cancel-payment",
         userId: decodeTokenData?.id,
       });
 
@@ -1561,6 +1626,8 @@ const Step = () => {
       JSON.stringify(updatedWithStatus)
     );
   };
+
+
 
   const handleCheckboxChange = (url) => {
     setSelectedUrls((prev) => {
