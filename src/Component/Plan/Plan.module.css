@@ -51,6 +51,28 @@
     height: 20px;
 }
 
+.cutomPlan {
+    width: max-content;
+    padding: 6px 14px;
+    background-color: #6524EB;
+    border-radius: 15px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-inline: auto;
+    cursor: pointer;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cutomPlan p {
+    color: rgb(255, 255, 255) !important;
+
+}
+
 .sectionPart {
     padding-inline: 20px;
     text-align: center;
@@ -348,7 +370,7 @@
     margin-top: 8px;
     font-size: 12px;
     color: #333;
-    
+
 }
 
 .toggleSwitch {
@@ -562,7 +584,7 @@
         margin: auto;
     }
 
-    .ForSticky  {
+    .ForSticky {
         max-width: 500px;
         margin: auto;
         position: fixed;
@@ -642,7 +664,7 @@
 
 /* When checked (toggle is active) */
 .active1 {
-    background-color: #7b4fdd; 
+    background-color: #7b4fdd;
 }
 
 /* Move the circle when active */

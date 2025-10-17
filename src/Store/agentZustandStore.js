@@ -34,11 +34,12 @@ export const useDashboardStore = create(
     (set) => ({
       agents: [],
       totalCalls: 0,
+      total_chat:0,
       hasFetched: false,
 
       // ✅ Set dashboard data and mark as fetched
-      setDashboardData: (agents, totalCalls) =>
-        set({ agents, totalCalls, hasFetched: true }),
+      setDashboardData: (agents, totalCalls,total_chat) =>
+        set({ agents, totalCalls, total_chat,hasFetched: true }),
 
       // ✅ Set hasFetched manually
       setHasFetched: (value) => set({ hasFetched: value }),
@@ -49,6 +50,9 @@ export const useDashboardStore = create(
           agents: [],
           totalCalls: 0,
           hasFetched: false,
+          total_chat:0
+          
+
         }),
     }),
     {
@@ -58,6 +62,7 @@ export const useDashboardStore = create(
       partialize: (state) => ({
         agents: state.agents,
         totalCalls: state.totalCalls,
+        total_chat:state.total_chat
       }),
 
       // ✅ Use sessionStorage (not localStorage)

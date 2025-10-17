@@ -18,12 +18,12 @@ import Select from "react-select";
 import Loader2 from "../Loader2/Loader2";
 import axios from "axios";
 
-const stripePromise = loadStripe(
-  "pk_live_51RYjjKSCQQfKS3WDzVLb6c2Xk6Gdt2NaJ7pF5eWRDk345NQY1TNBOgxy5CUYCWAsWsqU1pJx8Bi56Ue7U5vg2Noe00HMCU3IXV"
-);
 // const stripePromise = loadStripe(
-//   "pk_test_51RQodQ4T6s9Z2zBzHe6xifROxlIMVsodSNxf2MnmDX3AwkI44JT3AjDuyQZEoZq9Zha69WiA8ecnXZZ2sw9iY5sP007jJUxE52"
+//   "pk_live_51RYjjKSCQQfKS3WDzVLb6c2Xk6Gdt2NaJ7pF5eWRDk345NQY1TNBOgxy5CUYCWAsWsqU1pJx8Bi56Ue7U5vg2Noe00HMCU3IXV"
 // );
+const stripePromise = loadStripe(
+  "pk_test_51RQodQ4T6s9Z2zBzHe6xifROxlIMVsodSNxf2MnmDX3AwkI44JT3AjDuyQZEoZq9Zha69WiA8ecnXZZ2sw9iY5sP007jJUxE52"
+);
 
 function CheckoutForm({
   customerId,

@@ -8,10 +8,9 @@ import decodeToken from "../../lib/decodeToken";
 import {
   API_BASE_URL,
   fetchDashboardDetails,
-  getAgentCalls,
   getAgentCallsByMonth,
-  getAllAgentCalls,
   getUserCallsByMonth,
+  getAppointments,
 } from "../../Store/apiStore";
 import axios from "axios";
 import { data, useNavigate } from "react-router-dom";
@@ -25,9 +24,29 @@ function formatDateISO(date) {
   return `${y}-${m}-${d}`;
 }
 
-function formatTime(timestamp) {
-  const date = new Date(timestamp);
-  return `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
+function toDateSafe(value) {
+  if (!value && value !== 0) return null;
+
+  if (value instanceof Date) {
+    return isNaN(value.getTime()) ? null : value;
+  }
+  const asNum = Number(value);
+  if (!Number.isNaN(asNum)) {
+    const ms = asNum < 1e12 ? asNum * 1000 : asNum;
+    const d = new Date(ms);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function formatTime(value) {
+  const d = toDateSafe(value);
+  if (!d) return "00:00"; // graceful fallback
+  const h = String(d.getHours()).padStart(2, "0");
+  const m = String(d.getMinutes()).padStart(2, "0");
+  return `${h}:${m}`;
 }
 
 const AgentAnalysis = () => {
@@ -46,25 +65,17 @@ const AgentAnalysis = () => {
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id || "";
   const [selectedAgentEventId, setSelectedAgentEventId] = useState("");
-  const {
-    callHistory,
-    totalCalls,
-    hasFetched,
-    setCallHistoryData,
-  } = useCallHistoryStore.getState();
+  const { callHistory, totalCalls, hasFetched, setCallHistoryData } =
+    useCallHistoryStore.getState();
 
   useEffect(() => {
     const unsub = useCallHistoryStore.persist.onFinishHydration(() => {
       setHydrated(true);
-
       fetchCallHistory();
     });
-
-    return () => {
-      // Cleanup subscription when component unmounts
-      unsub();
-    };
+    return () => unsub();
   }, []);
+
   useEffect(() => {
     const foundAgent = agents.find((a) => a.agent_id === selectedAgentId);
     setSelectedAgentEventId(foundAgent?.eventId || "");
@@ -73,7 +84,7 @@ const AgentAnalysis = () => {
   const fetchUserAgents = async () => {
     if (!userId) return;
     try {
-      const res = await fetchDashboardDetails(userId , token);
+      const res = await fetchDashboardDetails(userId, token);
       setAgents(res?.agents);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -87,7 +98,6 @@ const AgentAnalysis = () => {
         const parsed = JSON.parse(sessionData);
         const agents = parsed?.state?.agents || [];
         setAgents(agents);
-        const foundAgent = agents.find((a) => a.agent_id === selectedAgentId);
         const foundKey = agents.find((a) => a.calApiKey)?.calApiKey;
         if (foundKey) setCalApiKey(foundKey);
       } catch (e) {
@@ -98,67 +108,54 @@ const AgentAnalysis = () => {
 
   const fetchCallHistory = async () => {
     try {
-      if (hasFetched) {
-        // return;
-      }
-    const currentDate = new Date();
-    const month = currentDate.getMonth() + 1;
-    const year = currentDate.getFullYear();
+      const currentDate = new Date();
+      const month = currentDate.getMonth() + 1;
+      const year = currentDate.getFullYear();
 
       if (selectedAgentId === "") {
-        // const res = await getAllAgentCalls(userId);
-        const res = await  getUserCallsByMonth(userId, month,year);
+        const res = await getUserCallsByMonth(userId, month, year);
         const allCalls = res.calls || [];
-        // setCallHistory(allCalls);
         setCallHistoryData(allCalls);
         setapiCallHistory(allCalls);
       } else {
-        // const response = await axios.get(
-        //   `${API_BASE_URL}/agent/getAgentCallHistory/${selectedAgentId}`,
-        //   // `${API_BASE_URL}/callHistory/agentCalLHistory/${selectedAgentId}/last3months`,
-        //   {
-        //     headers: { Authorization: `Bearer ${token}` },
-        //   }
-        // );
-        // const response=await getAgentCalls(selectedAgentId)2
-        const response=await getAgentCallsByMonth(selectedAgentId, month, year);
+        const response = await getAgentCallsByMonth(
+          selectedAgentId,
+          month,
+          year
+        );
         const agentCalls = response.calls || [];
         setCallHistoryData(agentCalls);
         setapiCallHistory(agentCalls);
-        // setCallHistory(agentCalls);
       }
     } catch (error) {
       console.error("Error fetching call history:", error);
-      // setCallHistory([]);
       setCallHistoryData([]);
       setapiCallHistory([]);
     }
   };
 
-  // useEffect(() => {
-  //   fetchUserAgents();
-  // }, []);
-
   useEffect(() => {
     fetchCallHistory();
   }, [selectedAgentId, agents]);
+
+  // Builds the map from Calls + Cal.com
   const fetchBookingDates = async () => {
     const filteredCalls = selectedAgentId
       ? callHistory.filter(
-        (call) => String(call.agent_id) === String(selectedAgentId)
-      )
+          (call) => String(call.agent_id) === String(selectedAgentId)
+        )
       : callHistory || apiCallHistory;
+
     const bookingsMap = {};
 
-    // 1. Add Calls
-    // callHistory.forEach((call) => {
+    // Calls
     filteredCalls.forEach((call) => {
       const callDate = formatDateISO(new Date(call.start_timestamp));
       if (!bookingsMap[callDate]) bookingsMap[callDate] = [];
       bookingsMap[callDate].push({ ...call, type: "call" });
     });
 
-    // 2. Fetch Cal bookings
+    // Cal.com
     if (calApiKey) {
       try {
         const response = await fetch(
@@ -184,22 +181,85 @@ const AgentAnalysis = () => {
 
           if (shouldInclude) {
             if (!bookingsMap[formattedDate]) bookingsMap[formattedDate] = [];
-            bookingsMap[formattedDate].push({ ...booking, type: "meeting" });
+
+            const attendeeEmailsFromList = (booking.attendees || [])
+              .map((a) => a?.email)
+              .filter(Boolean);
+            const fallbackEmail =
+              booking?.responses?.email || booking?.user?.email || null;
+
+            const attendeeEmails =
+              attendeeEmailsFromList.length > 0
+                ? attendeeEmailsFromList
+                : fallbackEmail
+                ? [fallbackEmail]
+                : [];
+
+            bookingsMap[formattedDate].push({
+              ...booking,
+              type: "meeting",
+              attendeeEmails,
+            });
           }
         });
       } catch (error) {
         console.error("Cal.com API fetch failed:", error);
       }
     }
-    
-    setBookingDates(bookingsMap);
-    setBookingsForSelectedDate(
-      bookingsMap[formatDateISO(selectedDate)] || []
-    );
+    return bookingsMap;
   };
-  useEffect(() => {
 
-    fetchBookingDates();
+  const fetchDatabaseAppointments = async (baseMap) => {
+    try {
+      const res = await getAppointments(userId, selectedAgentId || null);
+      if (!res?.success) return baseMap;
+
+      const dbAppointments = res.data || [];
+      const mergedMap = { ...baseMap };
+
+      dbAppointments.forEach((appt) => {
+        const dateStr = appt.appointmentDate; // e.g., "2025-10-08"
+        if (!mergedMap[dateStr]) mergedMap[dateStr] = [];
+
+        // Try typical field names; adjust if your API differs
+        const apptTime =
+          appt.startTime ||
+          appt.appointmentTime || // e.g., "14:30"
+          appt.time ||
+          null;
+
+        // If we have both date & time, build an ISO-like string; else leave null
+        const computedStart =
+          dateStr && apptTime
+            ? `${dateStr}T${apptTime}`
+            : appt.startTime || null;
+
+        mergedMap[dateStr].push({
+          ...appt,
+          type: "db-appointment",
+          startTime: computedStart,
+          attendeeEmails: appt.attendeeEmail ? [appt.attendeeEmail] : [],
+        });
+      });
+
+      return mergedMap;
+    } catch (err) {
+      console.error("Error fetching database appointments:", err);
+      return baseMap;
+    }
+  };
+
+  // Build everything together
+  useEffect(() => {
+    const fetchAllBookings = async () => {
+      const baseMap = await fetchBookingDates();
+      const mergedMap = await fetchDatabaseAppointments(baseMap);
+
+      setBookingDates(mergedMap);
+      setBookingsForSelectedDate(mergedMap[formatDateISO(selectedDate)] || []);
+    };
+
+    fetchAllBookings();
   }, [calApiKey, selectedDate, selectedAgentId, callHistory, agents, hydrated]);
 
   const handleDateClick = (date) => {
@@ -218,15 +278,19 @@ const AgentAnalysis = () => {
     if (view !== "month") return null;
     const dateStr = formatDateISO(date);
     const items = bookingDates[dateStr] || [];
+
     const meetingCount = items.filter((i) => i.type === "meeting").length;
+    const dbCount = items.filter((i) => i.type === "db-appointment").length;
     const callCount = items.filter((i) => i.type === "call").length;
+
+    const totalBookings = meetingCount + dbCount;
     const formatCount = (count) => (count > 99 ? "99+" : count);
 
     return (
       <div className={styles.bookingDotContainer}>
-        {meetingCount > 0 && (
+        {totalBookings > 0 && (
           <div className={`${styles.dot} ${styles.greenDot}`}>
-            {formatCount(meetingCount)}
+            {formatCount(totalBookings)}
           </div>
         )}
         {callCount > 0 && (
@@ -237,33 +301,40 @@ const AgentAnalysis = () => {
       </div>
     );
   };
+
   useEffect(() => {
     if (isRefreshing) {
-      // Reset hasFetched to allow re-fetching
       useCallHistoryStore.setState({ hasFetched: false });
-      fetchCallHistory();    
-      fetchBookingDates();  
+      fetchCallHistory();
+      // rebuilding both maps (calls + cal + db)
+      (async () => {
+        const baseMap = await fetchBookingDates();
+        const mergedMap = await fetchDatabaseAppointments(baseMap);
+        setBookingDates(mergedMap);
+        setBookingsForSelectedDate(
+          mergedMap[formatDateISO(selectedDate)] || []
+        );
+      })();
     }
   }, [isRefreshing]);
 
   const handleMonthChange = async (month, year) => {
-  try {
-    if (selectedAgentId) {
-      const res = await getAgentCallsByMonth(selectedAgentId, month, year);
-      setCallHistoryData(res.calls || []);
-      setapiCallHistory(res.calls || []);
-    } else {
-      const res = await getUserCallsByMonth(userId, month, year);
-      setCallHistoryData(res.calls || []);
-      setapiCallHistory(res.calls || []);
+    try {
+      if (selectedAgentId) {
+        const res = await getAgentCallsByMonth(selectedAgentId, month, year);
+        setCallHistoryData(res.calls || []);
+        setapiCallHistory(res.calls || []);
+      } else {
+        const res = await getUserCallsByMonth(userId, month, year);
+        setCallHistoryData(res.calls || []);
+        setapiCallHistory(res.calls || []);
+      }
+    } catch (error) {
+      console.error("Error fetching month data:", error);
+      setCallHistoryData([]);
+      setapiCallHistory([]);
     }
-    
-  } catch (error) {
-    console.error("Error fetching month data:", error);
-    setCallHistoryData([]);
-    setapiCallHistory([]);
-  }
-};
+  };
 
   return (
     <div className={styles.container}>
@@ -311,10 +382,10 @@ const AgentAnalysis = () => {
           <hr />
           <div className={styles.DotGreen}>
             <div className={styles.dot}></div>
-            <span>Meetings Booked</span>
+            <span>Bookings </span>
           </div>
         </div>
-        {/* gg */}
+
         <Calendar
           onChange={handleDateClick}
           value={selectedDate}
@@ -336,24 +407,28 @@ const AgentAnalysis = () => {
             {bookingsForSelectedDate.map((item, index) => {
               const isMeeting = item.type === "meeting";
               const isCall = item.type === "call";
+              const isDbAppt = item.type === "db-appointment";
+
               const dotColorClass = isMeeting
                 ? styles.greenBar
                 : isCall
-                  ? styles.orangeBar
-                  : styles.greenBar;
-
+                ? styles.orangeBar
+                : styles.greenBar;
+              const emails =
+                item.attendeeEmails && item.attendeeEmails.length
+                  ? item.attendeeEmails
+                  : [];
               return (
                 <li
                   key={index}
                   className={styles.bookingItem}
                   onClick={() => {
                     if (isCall && item.call_id) {
-                      // navigate(`/call-details/${item.call_id}`);
                       navigate(`/call-details/${item.call_id}`, {
                         state: {
                           agentId: item.agent_id,
-                          start_timestamp: item.start_timestamp
-                        }
+                          start_timestamp: item.start_timestamp,
+                        },
                       });
                     }
                   }}
@@ -361,27 +436,47 @@ const AgentAnalysis = () => {
                 >
                   <div className={styles.timeColumn}>
                     <span className={styles.timeLabel}>
-                      {formatTime(item.startTime || item.start_timestamp)}
+                      {formatTime(
+                        item.startTime ?? item.start_timestamp ?? null
+                      )}
                     </span>
                   </div>
+
                   <span
                     className={`${styles.verticalBar} ${dotColorClass}`}
                   ></span>
+
                   <div className={styles.detailColumn}>
                     <div className={styles.line}>
                       <span className={styles.titleText}>
                         <b>{isCall ? "Caller:" : "Title:"}</b>{" "}
-                        {item.title || item.custom_analysis_data?.name ||
-                          item.custom_analysis_data?.[
-                          "_detailed _call _summery"
-                          ] ||
-                          "N/A"}
+                        {isDbAppt
+                          ? `${item.reason} by ${item.attendeeName}`
+                          : item.title ||
+                            item.custom_analysis_data?.name ||
+                            item.custom_analysis_data?.[
+                              "_detailed _call _summery"
+                            ] ||
+                            "N/A"}
                       </span>
                     </div>
-                    <div className={styles.timeRange}>
-                      <b>Phone:</b>  {item?.call_type == 'phone_call' ? item?.from_number : item?.call_type}
-                      {/* {item.call_type} */}
-                    </div>
+
+                    {/* Show Email for Cal.com bookings & DB appointments */}
+                    {(isMeeting || isDbAppt) && emails.length > 0 && (
+                      <div className={styles.timeRange}>
+                        <b>Email:</b> {emails.join(", ")}
+                      </div>
+                    )}
+
+                    {/* Existing phone row for calls */}
+                    {isCall && (
+                      <div className={styles.timeRange}>
+                        <b>Phone:</b>{" "}
+                        {item?.call_type === "phone_call"
+                          ? item?.from_number
+                          : item?.call_type}
+                      </div>
+                    )}
                   </div>
                 </li>
               );

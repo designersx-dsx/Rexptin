@@ -110,7 +110,7 @@ const CallDetails = () => {
       .setZone(timezone || "UTC")
       .toFormat("hh:mm:ss a");
   };
-//getDateFromTimestamp
+  //getDateFromTimestamp
   const getDateFromTimestamp = () => {
     if (!date) return "-";
     return DateTime.fromMillis(date)
@@ -121,7 +121,7 @@ const CallDetails = () => {
   if (loading) return <Loader2 />;
   if (error) return <p>{error}</p>;
 
-  const transcript = callData.transcript_object || [];
+  const transcript = callData.chat_type == "api_chat" ? callData.message_with_tool_calls : callData.transcript_object || [];
   const formattedDate = new Date(callData?.end_timestamp)?.toLocaleDateString(
     "en-GB",
     {
@@ -167,6 +167,7 @@ const CallDetails = () => {
     }
   }
   const currentAgent = agents.find((a) => a.agent_id === callData?.agent_id);
+  console.log(callData, "callData")
   return (
     <div className={styles.CallDetailsMain}>
       <div className={styles.forSticky}>
@@ -235,7 +236,7 @@ const CallDetails = () => {
             <div className={styles.Part3}>
               <p>Durations</p>
 
-              <strong>{convertMsToMinSec(callData.duration_ms)}</strong>
+              <strong>{callData.chat_type == "api_chat" ? callData?.duration_ms || 0 : convertMsToMinSec(callData.duration_ms)}</strong>
             </div>
           </div>
         </div>
@@ -272,7 +273,7 @@ const CallDetails = () => {
             <div className={styles.channel}>
               <p className={styles.Ptext}>Channel</p>
               <div className={styles.PhoneDiv}>
-                <p>{callData.call_type}</p>
+                <p>{callData.chat_type == "api_chat" ? callData.chat_type : callData.call_type}</p>
               </div>
             </div>
             <div className={styles.channel}>
@@ -281,7 +282,7 @@ const CallDetails = () => {
                 <strong>{lead_type || "Unknown"}</strong>
               </div>
             </div>
-            <div className={styles.channel}>
+            {callData.chat_type == "api_chat" ? "" : <div className={styles.channel}>
               <p className={styles.Ptext}>Call Recording</p>
               <div className={styles.audioPlayer}>
                 <div onClick={toggleAudio} className={styles.playPauseBtn}>
@@ -344,19 +345,19 @@ const CallDetails = () => {
                   onTimeUpdate={handleAudioProgress}
                 />
               </div>
-            </div>
+            </div>}
           </div>
           <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
-              <h2>Call summary</h2>
+              <h2>{callData.chat_type == "api_chat" ? "Chat summary" : "Call summary"}</h2>
             </div>
             <p className={styles.Ptext}>
-              {callData.call_analysis?.call_summary || "No data"}
+              {callData.chat_type == "api_chat" ? callData.call_analysis?.chat_summary : callData.call_analysis?.call_summary || "No data"}
             </p>
           </div>
           <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
-              <h2>Call Transcript</h2>
+              <h2> {callData.chat_type == "api_chat" ? "Chat Transcript" : "Call Transcript"}</h2>
             </div>
             <div className={styles.ChatBox}>
               {transcript.find((msg) => msg.role === "agent") && (

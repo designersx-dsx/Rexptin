@@ -3,83 +3,209 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import styles from "./AgentAnalysis.module.css";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
-import axios from "axios";
-import { API_BASE_URL, getAgentCalls, getAgentCallsByMonth } from "../../../Store/apiStore";
+import {
+  API_BASE_URL,
+  getAgentCallsByMonth,
+  getAppointments,
+} from "../../../Store/apiStore";
 import { useNavigate } from "react-router-dom";
-import { useCallHistoryStore, useCallHistoryStore1 } from "../../../Store/useCallHistoryStore ";
+
+import {
+  useCallHistoryStore,
+  useCallHistoryStore1,
+} from "../../../Store/useCallHistoryStore ";
 import { DateTime } from "luxon";
 // Helper function to format date
+
+import decodeToken from "../../../lib/decodeToken"; // ⬅️ NEW
 function formatDateISO(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
 }
-
-// Helper function to format time
-function formatTime(isoDate) {
-  const date = new Date(isoDate);
-  return `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
+function toDateSafe(value) {
+  if (!value && value !== 0) return null;
+  if (value instanceof Date) return isNaN(value.getTime()) ? null : value;
+  const asNum = Number(value);
+  if (!Number.isNaN(asNum)) {
+    const ms = asNum < 1e12 ? asNum * 1000 : asNum;
+    const d = new Date(ms);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? null : d;
 }
+function formatTimeLikeClock(value) {
+  const d = toDateSafe(value);
+  if (!d) return "00:00";
+  const h = String(d.getHours()).padStart(2, "0");
+  const m = String(d.getMinutes()).padStart(2, "0");
+  return `${h}:${m}`;
+}
+// build Date from (YYYY-MM-DD) + ("HH:mm:ss"|"HH:mm")
+function joinDateTime(dateStr, timeStr) {
+  if (!dateStr || !timeStr) return null;
+  // normalize "06:00:00" -> "06:00"
+  const [hh = "00", mm = "00"] = timeStr.split(":");
+  return `${dateStr}T${hh.padStart(2, "0")}:${mm.padStart(2, "0")}:00`;
+}
+// --------------------------------
 
-const AgentAnalysis = ({ data, callVolume, agentId }) => {
+const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
   const [callHistory, setCallHistory] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [callsForSelectedDate, setCallsForSelectedDate] = useState([]);
-  console.log(callsForSelectedDate, "callsForSelectedDate")
+  console.log(callsForSelectedDate, "callsForSelectedDate");
   const { mergeCallHistoryData } = useCallHistoryStore1();
+  const [itemsForSelectedDate, setItemsForSelectedDate] = useState([]);
+  const [dateMap, setDateMap] = useState({}); // ⬅️ merged map: { "YYYY-MM-DD": [ items ] }
   const bookingsRef = useRef(null);
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("token") || "";
+  const userId = decodeToken(token)?.id || ""; // ⬅️ for DB appointments
   const today = new Date();
-
   const dayName = today.toLocaleDateString("en-GB", { weekday: "long" });
   const dateString = today.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "long",
     year: "numeric",
-  }); // 09 July 2025
+  });
 
-  // Fetch Call History
-  const fetchCallHistory = async () => {
+  // ---- Calls (per month) ----
+  const fetchCallHistory = async (m, y) => {
+    if (!agentId) {
+      setCallHistory([]);
+      return;
+    }
     try {
       if (!agentId) return;
       const currentDate = new Date();
       const month = currentDate.getMonth() + 1;
       const year = currentDate.getFullYear();
-
-      // const response = await axios.get(
-      //   `${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`,
-      //   {
-      //     headers: { Authorization: `Bearer ${token}` },
-      //   }
-      // );
-      // const agentCalls = response.data.filteredCalls || [];
-      // const response=await getAgentCalls(agentId) ||[]
-      const response = await getAgentCallsByMonth(agentId, month, year)
+      const response = await getAgentCallsByMonth(agentId, month, year);
       // console.log('response,response',response)
-
       setCallHistory(response?.calls || []);
     } catch (error) {
       // console.error("Error fetching call history:", error);
+
       setCallHistory([]);
     }
   };
 
   useEffect(() => {
-    fetchCallHistory();
+    const d = new Date();
+    fetchCallHistory(d.getMonth() + 1, d.getFullYear());
   }, [agentId]);
 
-  // Handle Date Click
+  // ---- Cal.com bookings (optional) ----
+  const fetchCalBookings = async () => {
+    if (!calApiKey) return [];
+    try {
+      const resp = await fetch(
+        `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
+          calApiKey
+        )}`
+      );
+      if (!resp.ok) throw new Error("Cal.com fetch failed");
+      const json = await resp.json();
+      let arr = json?.bookings || [];
+      if (eventId) {
+        arr = arr.filter((b) => Number(b.eventTypeId) === Number(eventId));
+      }
+      // Normalize
+      return arr.map((b) => ({
+        type: "meeting",
+        id: b.id ?? b.uid ?? `cal_${b.startTime}`,
+        title: b.title || b.eventType?.title || "Cal Booking",
+        startTime: b.startTime, // ISO
+        endTime: b.endTime,
+      }));
+    } catch (e) {
+      console.error("Cal.com booking error:", e);
+      return [];
+    }
+  };
+
+  // ---- DB Appointments ----
+  const fetchDbAppointments = async () => {
+    if (!userId) return [];
+    try {
+      // Pass agentId to limit to this agent; or null for all of user's agents.
+      const res = await getAppointments(userId, agentId || null);
+      const list = Array.isArray(res?.data) ? res.data : [];
+      return list.map((appt) => {
+        // Build an ISO-ish startTime from date & time fields
+        const start =
+          appt?.startTime ||
+          joinDateTime(appt?.appointmentDate, appt?.appointmentTime);
+        return {
+          type: "db-appointment",
+          id: appt.id ?? `db_${start}`,
+          title: appt?.reason
+            ? `${appt.reason}${
+                appt?.attendeeName ? ` — ${appt.attendeeName}` : ""
+              }`
+            : `Appointment${
+                appt?.attendeeName ? ` — ${appt.attendeeName}` : ""
+              }`,
+          startTime: start,
+          endTime: null,
+          icsFile: appt?.icsFile || null,
+          raw: appt,
+        };
+      });
+    } catch (e) {
+      console.error("DB appointments error:", e);
+      return [];
+    }
+  };
+
+  // ---- Build merged date map (calls + cal + db) ----
+  const rebuildDateMap = async () => {
+    // Calls -> normalized
+    const callItems = (callHistory || []).map((c, i) => ({
+      type: "call",
+      id: c.call_id || `call_${i}`,
+      title: c?.custom_analysis_data?.name
+        ? `Caller — ${c.custom_analysis_data.name}`
+        : "Caller",
+      startTime: c.start_timestamp,
+      endTime: c.end_timestamp || null,
+      raw: c,
+    }));
+
+    const [calItems, dbItems] = await Promise.all([
+      fetchCalBookings(),
+      fetchDbAppointments(),
+    ]);
+
+    const merged = [...callItems, ...calItems, ...dbItems];
+
+    const map = merged.reduce((acc, item) => {
+      const d = toDateSafe(item.startTime);
+      if (!d) return acc;
+      const key = formatDateISO(d);
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(item);
+      return acc;
+    }, {});
+
+    setDateMap(map);
+    setItemsForSelectedDate(map[formatDateISO(selectedDate)] || []);
+  };
+
+  // Rebuild when inputs change
+  useEffect(() => {
+    rebuildDateMap();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [callHistory, calApiKey, eventId, selectedDate, userId]);
+
+  // ---- UI handlers ----
   const handleDateClick = (date) => {
     setSelectedDate(date);
-
-    const dateStr = formatDateISO(date);
-    const callsForDate = callHistory.filter(
-      (call) => formatDateISO(new Date(call.start_timestamp)) === dateStr
-    );
-    setCallsForSelectedDate(callsForDate);
-
+    setItemsForSelectedDate(dateMap[formatDateISO(date)] || []);
     if (bookingsRef.current) {
       bookingsRef.current.scrollIntoView({
         behavior: "smooth",
@@ -87,23 +213,25 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
       });
     }
   };
-  const navigate = useNavigate();
 
-  // Calendar Tile Content (only shows orange dots for calls)
+  // ---- calendar dots (green = bookings, orange = calls) ----
   const tileContent = ({ date, view }) => {
     if (view !== "month") return null;
+    const items = dateMap[formatDateISO(date)] || [];
+    const calls = items.filter((x) => x.type === "call").length;
+    const bookings = items.filter((x) => x.type !== "call").length;
+    const cap = (n) => (n > 99 ? "99+" : n);
 
-    const dateStr = formatDateISO(date);
-    const callsForDate = callHistory.filter(
-      (call) => formatDateISO(new Date(call.start_timestamp)) === dateStr
-    );
-
-    const callCount = callsForDate.length;
     return (
       <div className={styles.bookingDotContainer}>
-        {callCount > 0 && (
+        {bookings > 0 && (
+          <div className={`${styles.dot} ${styles.greenDot}`}>
+            {cap(bookings)}
+          </div>
+        )}
+        {calls > 0 && (
           <div className={`${styles.dot} ${styles.orangeDot}`}>
-            {callCount > 99 ? "99+" : callCount}
+            {cap(calls)}
           </div>
         )}
       </div>
@@ -116,7 +244,6 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
         const res = await getAgentCallsByMonth(agentId, month, year);
         setCallHistory(res.calls || []);
       }
-
     } catch (error) {
       console.error("Error fetching month data:", error);
       setCallHistory([]);
@@ -128,6 +255,7 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
       .setZone(timezone || "UTC")
       .toFormat("hh:mm:ss a");
   };
+
   return (
     <div className={styles.container}>
       <div className={styles.CallFlex}>
@@ -192,54 +320,76 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
         </div>
       </div>
 
-      {callsForSelectedDate.length > 0 && (
+      {itemsForSelectedDate.length > 0 && (
         <div className={styles.bookingsList} ref={bookingsRef}>
-          <h3>Calls for {selectedDate.toDateString()}:</h3>
-
+          <h3>Items for {selectedDate.toDateString()}:</h3>
           <ul>
-            {callsForSelectedDate.map((call, index) => {
-              return (
-                <li
-                  key={index}
-                  className={styles.bookingCard}
-                  onClick={() => {
-                    if (call.call_id) {
-                      // navigate(`/call-details/${call.call_id}`);
-                      navigate(`/call-details/${call.call_id}`, {
-                        state: {
-                          agentId: call.agent_id,
-                          start_timestamp: call.start_timestamp
-                        }
-                      });
-
-                    }
-                  }}
-                  style={{ cursor: call.call_id ? "pointer" : "default" }}
-                >
-                  <div className={styles.time}>
-                    {getTimeFromTimestamp(call.start_timestamp, call?.timezone)}{" "}
-                    {call.end_timestamp &&
-                      `- ${getTimeFromTimestamp(call.end_timestamp, call?.timezone)}`}
-                  </div>
-
-                  <div className={styles.detailColumn}>
-                    <div className={styles.line}>
-                      <span className={styles.titleText}>
-                        <b>Caller:</b>{" "}
-                        {call.custom_analysis_data
-                          ? call.custom_analysis_data[
-                          "name"
-                          ] || "N/A"
-                          : "N/A"}
-                      </span>
+            {itemsForSelectedDate
+              .sort((a, b) => {
+                const da = toDateSafe(a.startTime)?.getTime() || 0;
+                const db = toDateSafe(b.startTime)?.getTime() || 0;
+                return da - db;
+              })
+              .map((item) => {
+                const isCall = item.type === "call";
+                const isDb = item.type === "db-appointment";
+                const timeLabel = formatTimeLikeClock(item.startTime);
+                return (
+                  <li
+                    key={`${item.type}_${item.id}`}
+                    className={styles.bookingCard}
+                    onClick={() => {
+                      if (isCall && item.raw?.call_id) {
+                        navigate(`/call-details/${item.raw.call_id}`, {
+                          state: {
+                            agentId: item.raw.agent_id,
+                            start_timestamp: item.raw.start_timestamp,
+                          },
+                        });
+                      }
+                    }}
+                    style={{
+                      cursor:
+                        isCall && item.raw?.call_id ? "pointer" : "default",
+                    }}
+                  >
+                    <div className={styles.time}>
+                      {
+                        item.type === "call"
+                          ? [
+                              getTimeFromTimestamp(
+                                item?.raw?.start_timestamp,
+                                item?.raw?.timezone
+                              ),
+                              item?.raw?.end_timestamp
+                                ? ` - ${getTimeFromTimestamp(
+                                    item?.raw?.end_timestamp,
+                                    item?.raw?.timezone
+                                  )}`
+                                : "",
+                            ].join("")
+                          : timeLabel
+                      }
                     </div>
-                    <div className={styles.timeRange}>
-                      <b>Phone:</b> {call.call_type}
+
+                    <div className={styles.detailColumn}>
+                      <div className={styles.line}>
+                        <span className={styles.titleText}>
+                          <b>{isCall ? "Caller:" : "Title:"}</b>{" "}
+                          {isDb ? item.title : item.title || "N/A"}
+                        </span>
+                      </div>
+
+                      {/* show phone / call type for calls */}
+                      {isCall && (
+                        <div className={styles.timeRange}>
+                          <b>Phone:</b> {item.raw?.call_type}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </li>
-              );
-            })}
+                  </li>
+                );
+              })}
           </ul>
         </div>
       )}
