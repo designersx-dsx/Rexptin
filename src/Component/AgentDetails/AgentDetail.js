@@ -1446,7 +1446,7 @@ Do you want to proceed with deleting this assigned number?`
                   <span className={styles.messages}><strong>Total {(() => {
                     const total = (agentinfo?.agent?.addOnsMins || 0) + (agentinfo?.agent?.messageLeft || 0);
                     return total >= 1000 ? (total / 1000).toFixed(1) + "K" : total;
-                  })()}</strong> ({agentinfo?.agent?.messageLeft} + {agentinfo?.agent?.addOnsMins})per month</span>
+                  })()}</strong> ({agentinfo?.agent?.messagePurchase} + {agentinfo?.agent?.addOnsMins})per month</span>
 
                   <button onClick={handleMessagePlanUpgarde} className={styles.buyMore}><img src="/svg/plus-icon.svg" alt="plus-icon" />UPGRADE</button>
                 </div>
