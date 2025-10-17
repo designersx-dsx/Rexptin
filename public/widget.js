@@ -1315,6 +1315,32 @@ function extractBotText(resp) {
   return t;
 }
 
+// async function createChatCompletion(userText) {
+//   let chatId = localStorage.getItem("chat_id");
+//   const agentIdHdr =
+//     localStorage.getItem("chat_agent_id") || getAgentIdFromScript();
+//   const chat_agent_id = localStorage.getItem("chat_agent_id");
+
+//   if (!chatId) {
+//     await createChatSession(localStorage.getItem("chat_agent_id") || undefined);
+//     chatId = localStorage.getItem("chat_id");
+//     if (!chatId) throw new Error("chat_id missing; cannot send message");
+//   }
+
+//   const res = await fetch(`${API_URL}/Chatbot/create-chat-completion`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       ...(agentIdHdr ? { agent_id: agentIdHdr } : {}),
+//     },
+//     body: JSON.stringify({ chat_id: chatId, content: userText, chat_agent_id }),
+//   });
+
+//   if (!res.ok) throw new Error(`HTTP ${res.status}`);
+//   const data = await res.json();
+//   const botText = extractBotText(data) || "";
+//   return { data, botText };
+// }
 async function createChatCompletion(userText) {
   let chatId = localStorage.getItem("chat_id");
   const agentIdHdr =
@@ -1336,8 +1362,55 @@ async function createChatCompletion(userText) {
     body: JSON.stringify({ chat_id: chatId, content: userText, chat_agent_id }),
   });
 
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
+  // Parse response safely (JSON or text or empty)
+  let data = null;
+  try {
+    data = await res.clone().json();
+  } catch {
+    try {
+      const txt = await res.text();
+      data = txt ? { error: txt } : null;
+    } catch {
+      data = null;
+    }
+  }
+
+  // Helper: only reload once per 10s to avoid loops
+  const shouldReloadOnce = (reason) => {
+    const key = "reload_guard_missing_agent";
+    const last = Number(sessionStorage.getItem(key) || 0);
+    const now = Date.now();
+    if (now - last < 10_000) return false;
+    sessionStorage.setItem(key, String(now));
+    console.warn("Reloading due to:", reason);
+    return true;
+  };
+
+  // Normalize known “missing agent / not found” signals
+  const agentMissing =
+    data?.error === "Agent not found" ||
+    data?.detail?.message === "Not Found" ||
+    data?.error?.includes?.("Agent not found") ||
+    res.status === 404;
+
+  if (agentMissing) {
+    localStorage.removeItem("chat_id");
+    localStorage.removeItem("rex_chat_history");
+
+    if (
+      shouldReloadOnce(
+        data?.detail?.message || data?.error || `HTTP ${res.status}`
+      )
+    ) {
+      window.location.reload();
+    }
+    throw new Error("Agent/session missing; cleared chat_id and reloaded.");
+  }
+  if (!res.ok) {
+    const msg = data?.error || data?.detail?.message || `HTTP ${res.status}`;
+    throw new Error(msg);
+  }
+
   const botText = extractBotText(data) || "";
   return { data, botText };
 }
@@ -2677,6 +2750,8 @@ function createReviewWidget() {
     closeButton.addEventListener("click", async () => {
       modal.style.display = "none";
       rexAgent.classList.remove("noFloat");
+      setWidgetLocked(false);
+
       if (onCall) {
         try {
           await retellWebClient.stopCall();
@@ -2686,7 +2761,6 @@ function createReviewWidget() {
         try {
           localStorage.removeItem("rex_last_ui");
         } catch {}
-        setWidgetLocked(false);
         callBtn.classList.remove("reddiv");
         callBtn.classList.add("greendiv");
         phoneIcon.src = "https://rexptin.vercel.app/svg/Phone-call.svg";
@@ -4213,7 +4287,7 @@ function createReviewWidget() {
 
           const errMsg = "Sorry, couldn't send your message. Please try again.";
           appendMessage("bot", errMsg, Date.now());
-          saveChatMessage("bot", errMsg);
+          // saveChatMessage("bot", errMsg);
         } finally {
           $input.disabled = false;
           $send.disabled = false;
