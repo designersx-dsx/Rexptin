@@ -42,6 +42,8 @@ const IntegrateAgent = () => {
   // const script = agentId
   //   ? `<script id="rex-widget-script" src="https://rexptin.vercel.app/widget.js?agentId=${agentId}"></script>`
   //   : "";
+  // fdf
+  // fd
  const script = agentId
     ? `<script id="rex-widget-script" src="https://app.rexpt.in/widget.js?agentId=${agentId}"></script>`
     : "";
