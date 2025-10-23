@@ -987,7 +987,7 @@ function clearOnlyUserAutoEndTimer() {
   }
 }
 async function hardEndChatNow() {
-  console.log("hard end chat");
+  // console.log("hard end chat");
   if (window.__rex_only_user_end_fired) return;
   window.__rex_only_user_end_fired = true;
 
