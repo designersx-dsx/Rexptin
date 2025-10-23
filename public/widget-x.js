@@ -1,7 +1,7 @@
 //USER SCRIPT
 function injectCSS() {
-  const style = document.createElement("style");
-  style.innerHTML = `
+    const style = document.createElement("style");
+    style.innerHTML = `
              @keyframes float {
      0% { transform: translateY(0); }
      50% { transform: translateY(-8px); }
@@ -496,343 +496,355 @@ function injectCSS() {
           }
           
           `;
-  document.head.appendChild(style);
+    document.head.appendChild(style);
 }
 const currentSiteURL = window.location.origin;
 const API_URL = "https://rexptin.truet.net/api/";
-// const API_URL = "http://localhost:2512/api";
-const getAgentIdFromScript = () => {
-  const currentScript = document.getElementById("rex-widget-script");
-  if (!currentScript) {
-    console.warn("Script with ID 'rex-widget-script' not found");
-    return null;
-  }
-  const rawSrc = currentScript.getAttribute("src");
-  try {
-    const url = new URL(rawSrc, window.location.href);
-    const agentId = url.searchParams.get("agentId");
-    const pureId = agentId?.replace("agentId=", "");
-    return pureId;
-  } catch (err) {
-    console.error("Error parsing script src for agentId:", err);
-    return null;
-  }
+// const API_URL = "http://localhost:2513/api";
+const getAgentIdFromScript = async () => {
+    const currentScript = document.getElementById("rex-widget-script");
+    if (!currentScript) {
+        console.warn("Script with ID 'rex-widget-script' not found");
+        return null;
+    }
+    const rawSrc = currentScript.getAttribute("src");
+    try {
+        const url = new URL(rawSrc, window.location.href);
+        const agentId = url.searchParams.get("agentId");
+        const agentCode = agentId?.replace("agentId=", "");
+        const response = await fetch(`${API_URL}/agent/fetchAgentIdByAgentCode/agentdetais?agent_code=${agentCode}`, {
+            method: "GET", // you can switch to GET if backend expects query params
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const result = await response.json();
+        if (result.success && result.data?.agent_id) {
+
+            return result.data.agent_id;
+        } else {
+            console.error("⚠️ Failed to fetch agent ID:", result.message);
+            return null;
+        }
+    } catch (err) {
+        console.error("Error parsing script src for agentId:", err);
+        return null;
+    }
 };
 async function shouldLoadWidget() {
-  try {
-    const agentId = getAgentIdFromScript();
-    if (!agentId) return false;
+    try {
+        const agentId = await getAgentIdFromScript();
+        if (!agentId) return false;
 
-    const response = await fetch(`${API_URL}/agent/checkAgentWidgetUrlAllowed`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        agent_id: agentId,
-        url: currentSiteURL
-      })
-    });
+        const response = await fetch(`${API_URL}/agent/checkAgentWidgetUrlAllowed`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                agent_id: agentId,
+                url: currentSiteURL
+            })
+        });
 
-    if (!response.ok) return false;
-    const data = await response.json();
-    console.log(data, "data")
-    return data?.allowed === true;
-  } catch (error) {
-    console.error("Widget load check failed:", error);
-    return false;
-  }
+        if (!response.ok) return false;
+        const data = await response.json();
+        return data?.allowed === true;
+    } catch (error) {
+        console.error("Widget load check failed:", error);
+        return false;
+    }
 }
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", async () => {
-    const allowLoad = await shouldLoadWidget();
-    if (allowLoad) createReviewWidget();
-    else console.log("Widget load skipped due to API check.");
-  });
+    document.addEventListener("DOMContentLoaded", async () => {
+        const allowLoad = await shouldLoadWidget();
+        if (allowLoad) createReviewWidget();
+        else console.log("Widget load skipped due to API check.");
+    });
 } else {
-  (async () => {
-    const allowLoad = await shouldLoadWidget();
-    if (allowLoad) createReviewWidget();
-    else console.log("Widget load skipped due to API check.");
-  })();
+    (async () => {
+        const allowLoad = await shouldLoadWidget();
+        if (allowLoad) createReviewWidget();
+        else console.log("Widget load skipped due to API check.");
+    })();
 }
 function createReviewWidget() {
-  if (window.__REX_WIDGET_INITIALIZED__) {
-    console.log("Rex widget already initialized.");
-    return;
-  }
-  window.__REX_WIDGET_INITIALIZED__ = true;
+    if (window.__REX_WIDGET_INITIALIZED__) {
+        console.log("Rex widget already initialized.");
+        return;
+    }
+    window.__REX_WIDGET_INITIALIZED__ = true;
 
-  const existingAgentBtn = document.getElementById("agentButton");
-  const existingPopup = document.getElementById("agentPopup");
-  if (existingAgentBtn && existingPopup) {
-    console.log("Review widget already exists. Skipping re-render.");
-    return;
-  }
-
-  // Remove duplicates
-  document.querySelectorAll(".floating-agent").forEach((el) => {
-    if (el.id !== "agentButton") el.remove();
-  });
-
-  let app = document.getElementById("review-widget");
-  if (!app) {
-    app = document.createElement("div");
-    app.id = "review-widget";
-    document.body.appendChild(app);
-  }
-  const createElement = (tag, options = {}) => {
-    const el = document.createElement(tag);
-    Object.entries(options).forEach(([key, value]) => {
-      if (key in el) el[key] = value;
-      else el.setAttribute(key, value);
-    });
-    return el;
-  };
-
-  const initWidget = async () => {
-    const { RetellWebClient } = await import(
-      "https://cdn.jsdelivr.net/npm/retell-client-js-sdk@2.0.7/+esm"
-    );
-    const retellWebClient = new RetellWebClient();
-    const agentId = getAgentIdFromScript();
-
-    let agentName = "REX";
-    let agentVoiceId = "";
-    let agentVoiceName = "";
-    let callId = "";
-    let onCall = false;
-    let userId = "";
-    let businessName = "Rexptin";
-    let avatar = ""
-    let callContent = `Call ${agentName}`
-    let agentRole = "GENERAL"
-    let agentVoipNumber = "NA"
-    // REUSE or CREATE agent button
-    try {
-      const agentRes = await fetch(
-        `${API_URL}/agent/fetchAgentDetailsFromRetell/${agentId}`,
-        {
-          method: "GET",
-        }
-      );
-      const text = await agentRes.text();
-      try {
-        const json = JSON.parse(text);
-        agentName = json.agentName || agentName;
-        agentVoiceId = json.agentVoice || "";
-        agentRole = json.agentRole
-        userId = json.userId;
-        avatar = json.avatar
-        agentVoipNumber = json.voip_numbers
-
-      } catch (e) {
-        console.log("Response is not JSON");
-      }
-      const voicesRes = await fetch(
-        `${API_URL}/agent/fetchAgentVoiceDetailsFromRetell`,
-        {
-          method: "POST",
-        }
-      );
-      if (voicesRes.ok) {
-        const voicesData = await voicesRes.json();
-        const voice = voicesData.find((v) => v.voice_id === agentVoiceId);
-        if (voice) {
-          agentVoiceName = voice.avatar_url || "https:i.pravatar.cc/100?img=68";
-        }
-      }
-    } catch (err) {
-      console.error("Error fetching data:", err);
+    const existingAgentBtn = document.getElementById("agentButton");
+    const existingPopup = document.getElementById("agentPopup");
+    if (existingAgentBtn && existingPopup) {
+        console.log("Review widget already exists. Skipping re-render.");
+        return;
     }
 
-    try {
-      const bussinessDetails = await fetch(
-        `${API_URL}/businessDetails/getBusinessDetailsById/${userId}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      ).then(async (res) => {
-        const text = await res.text();
-        const json = JSON.parse(text);
-        businessName = json.businessName;
-      });
-    } catch (err) {
-      console.error("Error fetching data:", err);
+    // Remove duplicates
+    document.querySelectorAll(".floating-agent").forEach((el) => {
+        if (el.id !== "agentButton") el.remove();
+    });
+
+    let app = document.getElementById("review-widget");
+    if (!app) {
+        app = document.createElement("div");
+        app.id = "review-widget";
+        document.body.appendChild(app);
     }
-    let rexAgent = document.getElementById("agentButton");
-    if (!rexAgent) {
-      rexAgent = createElement("div", {
-        id: "agentButton",
-        className: "floating-agent animate",
-      });
-      document.body.appendChild(rexAgent);
-    } else {
-      rexAgent.innerHTML = "";
-    }
+    const createElement = (tag, options = {}) => {
+        const el = document.createElement(tag);
+        Object.entries(options).forEach(([key, value]) => {
+            if (key in el) el[key] = value;
+            else el.setAttribute(key, value);
+        });
+        return el;
+    };
 
-    const agentWrapper = createElement("div", { className: "agent-wrapper" });
+    const initWidget = async () => {
+        const { RetellWebClient } = await import(
+            "https://cdn.jsdelivr.net/npm/retell-client-js-sdk@2.0.7/+esm"
+        );
+        const retellWebClient = new RetellWebClient();
+        const agentId = await getAgentIdFromScript();
 
-    const wrapperBlink = createElement("div", { className: "WraperBlink" });
-
-    const pulseRing = createElement("div", { className: "pulse-ring" });
-    const pulseDot = createElement("div", { className: "pulse-dot" });
-
-    wrapperBlink.appendChild(pulseRing);
-    wrapperBlink.appendChild(pulseDot);
-
-    const rexImg = createElement("img", {
-      src: `https://rexptin.vercel.app/${avatar}`,
-      alt: "AI Agent",
-    });
-
-    agentWrapper.appendChild(wrapperBlink);
-    const badge2 = createElement("div", { className: "badge2" });
-    const logoImg = createElement("img", {
-      src: "https://rexptin.truet.net/images/favicon-final.svg",
-      alt: "Badge Icon",
-    });
-
-    badge2.appendChild(logoImg);
-    agentWrapper.appendChild(rexImg);
-    agentWrapper.appendChild(badge2);
-    rexAgent.appendChild(agentWrapper);
-
-
-    // POPUP
-    const modal = createElement("div", {
-      id: "agentPopup",
-      className: "popup",
-    });
-    modal.style.display = "none";
-
-    const popupHeader = createElement("div", { className: "popup-header" });
-    // const poweredBy = createElement("a", {
-    //   href: "https://www.rexpt.us/",
-    //   target: "_blank",
-    //   rel: "noopener noreferrer",
-    //   innerHTML: "Powered by rexpt.us",
-    // });
-    const popupBody = createElement("div", { className: "popup-body" });
-    const imageWrapper = document.createElement("div");
-    imageWrapper.className = "pulse-ring-wrapper";
-    const agentImg = document.createElement("img");
-    agentImg.className = "agent-img";
-    agentImg.src = `https://rexptin.vercel.app/${avatar}`;
-    agentImg.alt = "Agent";
-    const callBtn = createElement("div", {
-      id: "start-call",
-      className: "greendiv",
-    });
-
-    // info wrapper
-    const infoWrapper = document.createElement("div");
-    infoWrapper.className = "agent-info";
-
-    const callLabel = document.createElement("p");
-    callLabel.className = "call-label";
-    callLabel.textContent = `Call ${agentName}`;
-    const phoneNumber = document.createElement("h2");
-    phoneNumber.className = "phone-number";
-    phoneNumber.textContent = JSON.parse(agentVoipNumber) || "NA";
-    const tag = document.createElement("span");
-    tag.className = "tag-label";
-    tag.textContent = `${agentRole?.split(" ")[0]} RECEPTIONIST`;
-    const phoneIconWrapper = createElement("div", { className: "phoneIcon" });
-    const phoneIcon = createElement("img", {
-      id: "phoneIcon",
-      src: "https://rexptin.vercel.app/svg/Phone-call.svg",
-    });
-    phoneIconWrapper.appendChild(phoneIcon);
-
-    const callText = createElement("div", {
-      id: "callText",
-      className: "callText",
-    });
-
-    callText.innerHTML = `<p>Call <span class="agentTag">${agentName.length > 10 ? `${agentName.substring(0, 7)}..` : agentName
-      }</span></p><small>${businessName?.length > 10
-        ? `${businessName.substring(0, 8)}..`
-        : businessName
-      } Agent is LIVE</small>`;
-
-    callBtn.appendChild(phoneIconWrapper);
-    callBtn.appendChild(callText);
-
-    const closeButton = createElement("button", {
-      className: "close-button",
-      innerHTML: "×",
-    });
-    const agentIntro = document.createElement("p");
-    agentIntro.className = "agent-intro";
-    agentIntro.innerHTML = `By Clicking Call ${agentName} You agree to <b class="terms-text">Terms of Use</b>`;
-    popupBody.appendChild(agentImg);
-    popupBody.appendChild(callBtn);
-    popupBody.appendChild(closeButton);
-    // popupHeader.appendChild(poweredBy);
-    modal.appendChild(popupHeader);
-    modal.appendChild(popupBody);
-    document.body.appendChild(modal);
-    infoWrapper.appendChild(callLabel);
-    infoWrapper.appendChild(phoneNumber);
-    infoWrapper.appendChild(tag);
-    imageWrapper.appendChild(agentImg);
-    popupBody.appendChild(imageWrapper);
-    popupBody.appendChild(imageWrapper);
-    popupBody.appendChild(infoWrapper);
-
-    popupBody.appendChild(callBtn);
-    popupBody.appendChild(agentIntro);
-    popupBody.appendChild(closeButton);
-    // popupHeader.appendChild(poweredBy);
-    modal.appendChild(popupHeader);
-    modal.appendChild(popupBody);
-    document.body.appendChild(modal);
-    rexAgent.addEventListener("click", () => {
-      modal.style.display = "block";
-      rexAgent.classList.add("noFloat");
-    });
-    closeButton.addEventListener("click", async () => {
-      modal.style.display = "none";
-      rexAgent.classList.remove("noFloat");
-      if (onCall) {
+        let agentName = "REX";
+        let agentVoiceId = "";
+        let agentVoiceName = "";
+        let callId = "";
+        let onCall = false;
+        let userId = "";
+        let businessName = "Rexptin";
+        let avatar = ""
+        let callContent = `Call ${agentName}`
+        let agentRole = "GENERAL"
+        let agentVoipNumber = "NA"
+        // REUSE or CREATE agent button
         try {
-          await retellWebClient.stopCall();
-        } catch (err) {
-          console.error("Call stop failed:", err);
-        }
-        callBtn.classList.remove("reddiv");
-        callBtn.classList.add("greendiv");
-        phoneIcon.src = "https://rexptin.vercel.app/svg/Phone-call.svg";
-        callText.innerHTML = `<p>Call <span class="agentTag">${agentName.length > 8 ? `${agentName.substring(0, 8)}..` : agentName
-          }</span></p><small>${businessName.length > 10
-            ? `${businessName.substring(0, 8)}..`
-            : businessName
-          } Agent is LIVE</small>`;
-        onCall = false;
-      }
-    });
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) {
-        modal.style.display = "none";
-        rexAgent.classList.remove("noFloat");
-      }
-    });
-// Create Terms Popup
-const termsWrapper = document.createElement("div");
-termsWrapper.className = "terms-wrapper";
-termsWrapper.style.position = "relative";
-termsWrapper.style.top = "-15.5rem";
-termsWrapper.style.zIndex = "11";
-popupBody.appendChild(termsWrapper);
+            const agentRes = await fetch(
+                `${API_URL}/agent/fetchAgentDetailsFromRetell/${agentId}`,
+                {
+                    method: "GET",
+                }
+            );
+            const text = await agentRes.text();
+            try {
+                const json = JSON.parse(text);
+                agentName = json.agentName || agentName;
+                agentVoiceId = json.agentVoice || "";
+                agentRole = json.agentRole
+                userId = json.userId;
+                avatar = json.avatar
+                agentVoipNumber = json.voip_numbers
 
-// Create Terms Popup (inside wrapper)
-const termsPopup = document.createElement("div");
-termsPopup.id = "termsPopup";
-termsPopup.className = "terms-popup";
-termsPopup.style.display = "none";
-termsPopup.innerHTML = `
+            } catch (e) {
+                console.log("Response is not JSON");
+            }
+            const voicesRes = await fetch(
+                `${API_URL}/agent/fetchAgentVoiceDetailsFromRetell`,
+                {
+                    method: "POST",
+                }
+            );
+            if (voicesRes.ok) {
+                const voicesData = await voicesRes.json();
+                const voice = voicesData.find((v) => v.voice_id === agentVoiceId);
+                if (voice) {
+                    agentVoiceName = voice.avatar_url || "https:i.pravatar.cc/100?img=68";
+                }
+            }
+        } catch (err) {
+            console.error("Error fetching data:", err);
+        }
+
+        try {
+            const bussinessDetails = await fetch(
+                `${API_URL}/businessDetails/getBusinessDetailsById/${userId}`,
+                {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                }
+            ).then(async (res) => {
+                const text = await res.text();
+                const json = JSON.parse(text);
+                businessName = json.businessName;
+            });
+        } catch (err) {
+            console.error("Error fetching data:", err);
+        }
+        let rexAgent = document.getElementById("agentButton");
+        if (!rexAgent) {
+            rexAgent = createElement("div", {
+                id: "agentButton",
+                className: "floating-agent animate",
+            });
+            document.body.appendChild(rexAgent);
+        } else {
+            rexAgent.innerHTML = "";
+        }
+
+        const agentWrapper = createElement("div", { className: "agent-wrapper" });
+
+        const wrapperBlink = createElement("div", { className: "WraperBlink" });
+
+        const pulseRing = createElement("div", { className: "pulse-ring" });
+        const pulseDot = createElement("div", { className: "pulse-dot" });
+
+        wrapperBlink.appendChild(pulseRing);
+        wrapperBlink.appendChild(pulseDot);
+
+        const rexImg = createElement("img", {
+            src: `https://rexptin.vercel.app/${avatar}`,
+            alt: "AI Agent",
+        });
+
+        agentWrapper.appendChild(wrapperBlink);
+        const badge2 = createElement("div", { className: "badge2" });
+        const logoImg = createElement("img", {
+            src: "https://rexptin.truet.net/images/favicon-final.svg",
+            alt: "Badge Icon",
+        });
+
+        badge2.appendChild(logoImg);
+        agentWrapper.appendChild(rexImg);
+        agentWrapper.appendChild(badge2);
+        rexAgent.appendChild(agentWrapper);
+
+
+        // POPUP
+        const modal = createElement("div", {
+            id: "agentPopup",
+            className: "popup",
+        });
+        modal.style.display = "none";
+
+        const popupHeader = createElement("div", { className: "popup-header" });
+        // const poweredBy = createElement("a", {
+        //   href: "https://www.rexpt.us/",
+        //   target: "_blank",
+        //   rel: "noopener noreferrer",
+        //   innerHTML: "Powered by rexpt.us",
+        // });
+        const popupBody = createElement("div", { className: "popup-body" });
+        const imageWrapper = document.createElement("div");
+        imageWrapper.className = "pulse-ring-wrapper";
+        const agentImg = document.createElement("img");
+        agentImg.className = "agent-img";
+        agentImg.src = `https://rexptin.vercel.app/${avatar}`;
+        agentImg.alt = "Agent";
+        const callBtn = createElement("div", {
+            id: "start-call",
+            className: "greendiv",
+        });
+
+        // info wrapper
+        const infoWrapper = document.createElement("div");
+        infoWrapper.className = "agent-info";
+
+        const callLabel = document.createElement("p");
+        callLabel.className = "call-label";
+        callLabel.textContent = `Call ${agentName}`;
+        const phoneNumber = document.createElement("h2");
+        phoneNumber.className = "phone-number";
+        phoneNumber.textContent = JSON.parse(agentVoipNumber) || "NA";
+        const tag = document.createElement("span");
+        tag.className = "tag-label";
+        tag.textContent = `${agentRole?.split(" ")[0]} RECEPTIONIST`;
+        const phoneIconWrapper = createElement("div", { className: "phoneIcon" });
+        const phoneIcon = createElement("img", {
+            id: "phoneIcon",
+            src: "https://rexptin.vercel.app/svg/Phone-call.svg",
+        });
+        phoneIconWrapper.appendChild(phoneIcon);
+
+        const callText = createElement("div", {
+            id: "callText",
+            className: "callText",
+        });
+
+        callText.innerHTML = `<p>Call <span class="agentTag">${agentName.length > 10 ? `${agentName.substring(0, 7)}..` : agentName
+            }</span></p><small>${businessName?.length > 10
+                ? `${businessName.substring(0, 8)}..`
+                : businessName
+            } Agent is LIVE</small>`;
+
+        callBtn.appendChild(phoneIconWrapper);
+        callBtn.appendChild(callText);
+
+        const closeButton = createElement("button", {
+            className: "close-button",
+            innerHTML: "×",
+        });
+        const agentIntro = document.createElement("p");
+        agentIntro.className = "agent-intro";
+        agentIntro.innerHTML = `By Clicking Call ${agentName} You agree to <b class="terms-text">Terms of Use</b>`;
+        popupBody.appendChild(agentImg);
+        popupBody.appendChild(callBtn);
+        popupBody.appendChild(closeButton);
+        // popupHeader.appendChild(poweredBy);
+        modal.appendChild(popupHeader);
+        modal.appendChild(popupBody);
+        document.body.appendChild(modal);
+        infoWrapper.appendChild(callLabel);
+        infoWrapper.appendChild(phoneNumber);
+        infoWrapper.appendChild(tag);
+        imageWrapper.appendChild(agentImg);
+        popupBody.appendChild(imageWrapper);
+        popupBody.appendChild(imageWrapper);
+        popupBody.appendChild(infoWrapper);
+
+        popupBody.appendChild(callBtn);
+        popupBody.appendChild(agentIntro);
+        popupBody.appendChild(closeButton);
+        // popupHeader.appendChild(poweredBy);
+        modal.appendChild(popupHeader);
+        modal.appendChild(popupBody);
+        document.body.appendChild(modal);
+        rexAgent.addEventListener("click", () => {
+            modal.style.display = "block";
+            rexAgent.classList.add("noFloat");
+        });
+        closeButton.addEventListener("click", async () => {
+            modal.style.display = "none";
+            rexAgent.classList.remove("noFloat");
+            if (onCall) {
+                try {
+                    await retellWebClient.stopCall();
+                } catch (err) {
+                    console.error("Call stop failed:", err);
+                }
+                callBtn.classList.remove("reddiv");
+                callBtn.classList.add("greendiv");
+                phoneIcon.src = "https://rexptin.vercel.app/svg/Phone-call.svg";
+                callText.innerHTML = `<p>Call <span class="agentTag">${agentName.length > 8 ? `${agentName.substring(0, 8)}..` : agentName
+                    }</span></p><small>${businessName.length > 10
+                        ? `${businessName.substring(0, 8)}..`
+                        : businessName
+                    } Agent is LIVE</small>`;
+                onCall = false;
+            }
+        });
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.style.display = "none";
+                rexAgent.classList.remove("noFloat");
+            }
+        });
+        // Create Terms Popup
+        const termsWrapper = document.createElement("div");
+        termsWrapper.className = "terms-wrapper";
+        termsWrapper.style.position = "relative";
+        termsWrapper.style.top = "-15.5rem";
+        termsWrapper.style.zIndex = "11";
+        popupBody.appendChild(termsWrapper);
+
+        // Create Terms Popup (inside wrapper)
+        const termsPopup = document.createElement("div");
+        termsPopup.id = "termsPopup";
+        termsPopup.className = "terms-popup";
+        termsPopup.style.display = "none";
+        termsPopup.innerHTML = `
   <div class="terms-content" style="position: relative; padding: 5px;">
     <span class="close-terms" 
           style="position: absolute; top: 0; right: 0px; font-size: 20px; font-weight: bold; cursor: pointer;">
@@ -840,122 +852,122 @@ termsPopup.innerHTML = `
     </span>
     <h2>Terms of Use
     </h2>
-    <p> By clicking the Call button to talk to Rexpt AI agent on ${businessName?.length > 15? `${businessName.substring(0, 20)}..`: businessName} named ${agentName}, You Agree to Terms of Use for Rexpt AI Agents published on <a href="https://www.rexpt.in/Terms-Condition" target="_blank" style="color: #007bff; text-decoration: underline;">TERMS & CONDITIONS</a>. Each time You interact with this Al agent, You consent to the recording, storage, and sharing of my communications with ${businessName?.length > 15? `${businessName.substring(0, 20)}..` : businessName}, Rexpt & Other third-party service providers, and as described in the <a href="https://www.rexpt.in/Privacy-Policy" target="_blank" style="color: #007bff; text-decoration: underline;">
+    <p> By clicking the Call button to talk to Rexpt AI agent on ${businessName?.length > 15 ? `${businessName.substring(0, 20)}..` : businessName} named ${agentName}, You Agree to Terms of Use for Rexpt AI Agents published on <a href="https://www.rexpt.in/Terms-Condition" target="_blank" style="color: #007bff; text-decoration: underline;">TERMS & CONDITIONS</a>. Each time You interact with this Al agent, You consent to the recording, storage, and sharing of my communications with ${businessName?.length > 15 ? `${businessName.substring(0, 20)}..` : businessName}, Rexpt & Other third-party service providers, and as described in the <a href="https://www.rexpt.in/Privacy-Policy" target="_blank" style="color: #007bff; text-decoration: underline;">
     Privacy Policy</a>. If you do not wish to have your conversations recorded, please refrain from using this service & DO NOT MAKE THE CALL.
     </p>
   </div>
 `;
 
-termsWrapper.appendChild(termsPopup);
-// Add Event Listener on "Terms of Use"
-agentIntro.querySelector(".terms-text").addEventListener("click", () => {
-  termsPopup.style.display = "block";
-});
-// Close button
-termsPopup.querySelector(".close-terms").addEventListener("click", () => {
-  termsPopup.style.display = "none";
-});
+        termsWrapper.appendChild(termsPopup);
+        // Add Event Listener on "Terms of Use"
+        agentIntro.querySelector(".terms-text").addEventListener("click", () => {
+            termsPopup.style.display = "block";
+        });
+        // Close button
+        termsPopup.querySelector(".close-terms").addEventListener("click", () => {
+            termsPopup.style.display = "none";
+        });
 
 
-    callBtn.onclick = async () => {
-      if (navigator?.mediaDevices) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          // Store the stream globally or in state if needed
-          micStream = stream;
-        } catch (err) {
+        callBtn.onclick = async () => {
+            if (navigator?.mediaDevices) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    // Store the stream globally or in state if needed
+                    micStream = stream;
+                } catch (err) {
 
-          console.error("Microphone access denied or error:", err);
-          alert("Please allow microphone access to proceed with the call.");
-          // setPopupMessage("Microphone access is required to test agent.");
-          // setPopupType("failed");
-          return;
-        }
-        if (!onCall) {
-          callBtn.disabled = true;
-          callContent = "Calling...";
-          callLabel.textContent = callContent;
-          callText.innerHTML = `<p>Connecting...</p>`;
-          try {
-            const res = await fetch(`${API_URL}/agent/createWidegetWebCall`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ agent_id: agentId, url: currentSiteURL }),
-            });
-
-            if (res.ok) {
-              const data = await res.json();
-
-              // Validate response structure
-              if (data?.access_token && data?.call_id) {
-
-                const access_token = data.access_token;
-                callId = data.call_id;
-
-                await retellWebClient.startCall({ accessToken: access_token });
-                callContent = "Connected";
-                callLabel.textContent = callContent;
-                callBtn.classList.remove("greendiv");
-                callBtn.classList.add("reddiv");
-                phoneIcon.src = "https://rexptin.vercel.app/svg/Hangup.svg";
-                callText.innerHTML = `<p>Hang up Now</p><small>In Call with ${agentName.length > 10 ? `${agentName.substring(0, 8)}..` : agentName
-                  }</small>`;
-                onCall = true;
-                // Add pulse rings when call starts
-                imageWrapper.classList.add("active");
-                // Remove existing rings to avoid duplicates
-                imageWrapper.querySelectorAll(".pulse-ring2").forEach((ring) => ring.remove());
-                // Add three new pulse rings
-                for (let i = 0; i < 3; i++) {
-                  const ring = document.createElement("span");
-                  ring.className = "pulse-ring2";
-                  imageWrapper.insertBefore(ring, agentImg); // Add before agent image
+                    console.error("Microphone access denied or error:", err);
+                    alert("Please allow microphone access to proceed with the call.");
+                    // setPopupMessage("Microphone access is required to test agent.");
+                    // setPopupType("failed");
+                    return;
                 }
-              } else {
-                console.error("Invalid response data:", data);
-                throw new Error("Invalid response data");
-              }
-            } else {
+                if (!onCall) {
+                    callBtn.disabled = true;
+                    callContent = "Calling...";
+                    callLabel.textContent = callContent;
+                    callText.innerHTML = `<p>Connecting...</p>`;
+                    try {
+                        const res = await fetch(`${API_URL}/agent/createWidegetWebCall`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ agent_id: agentId, url: currentSiteURL }),
+                        });
 
-              throw new Error("Failed to fetch access token");
-            }
-          } catch (err) {
-            console.error("Call failed:", err.message);
-            callText.innerHTML = `<p style="color: red;">Unauthorized Access</p>`;
-          } finally {
-            callBtn.disabled = false;
-          }
-        } else {
-          await retellWebClient.stopCall();
-          callBtn.classList.remove("reddiv");
-          callBtn.classList.add("greendiv");
-          phoneIcon.src = "https://rexptin.vercel.app/svg/Phone-call.svg";
-          callText.innerHTML = `<p style="color:white">Call <span class="agentTag">${agentName.length > 8 ? `${agentName.substring(0, 8)}..` : agentName
-            }</span></p>
+                        if (res.ok) {
+                            const data = await res.json();
+
+                            // Validate response structure
+                            if (data?.access_token && data?.call_id) {
+
+                                const access_token = data.access_token;
+                                callId = data.call_id;
+
+                                await retellWebClient.startCall({ accessToken: access_token });
+                                callContent = "Connected";
+                                callLabel.textContent = callContent;
+                                callBtn.classList.remove("greendiv");
+                                callBtn.classList.add("reddiv");
+                                phoneIcon.src = "https://rexptin.vercel.app/svg/Hangup.svg";
+                                callText.innerHTML = `<p>Hang up Now</p><small>In Call with ${agentName.length > 10 ? `${agentName.substring(0, 8)}..` : agentName
+                                    }</small>`;
+                                onCall = true;
+                                // Add pulse rings when call starts
+                                imageWrapper.classList.add("active");
+                                // Remove existing rings to avoid duplicates
+                                imageWrapper.querySelectorAll(".pulse-ring2").forEach((ring) => ring.remove());
+                                // Add three new pulse rings
+                                for (let i = 0; i < 3; i++) {
+                                    const ring = document.createElement("span");
+                                    ring.className = "pulse-ring2";
+                                    imageWrapper.insertBefore(ring, agentImg); // Add before agent image
+                                }
+                            } else {
+                                console.error("Invalid response data:", data);
+                                throw new Error("Invalid response data");
+                            }
+                        } else {
+
+                            throw new Error("Failed to fetch access token");
+                        }
+                    } catch (err) {
+                        console.error("Call failed:", err.message);
+                        callText.innerHTML = `<p style="color: red;">Unauthorized Access</p>`;
+                    } finally {
+                        callBtn.disabled = false;
+                    }
+                } else {
+                    await retellWebClient.stopCall();
+                    callBtn.classList.remove("reddiv");
+                    callBtn.classList.add("greendiv");
+                    phoneIcon.src = "https://rexptin.vercel.app/svg/Phone-call.svg";
+                    callText.innerHTML = `<p style="color:white">Call <span class="agentTag">${agentName.length > 8 ? `${agentName.substring(0, 8)}..` : agentName
+                        }</span></p>
                 <small>${businessName.length > 10 ? `${businessName.substring(0, 8)}..` : businessName
-            } Agent is LIVE</small>`;
-          onCall = false;
-          callLabel.textContent = `Call ${agentName}`;
-          imageWrapper.classList.remove("active");
-          imageWrapper.querySelectorAll(".pulse-ring2").forEach((ring) => ring.remove());
-          const data = {
-            agentId: getAgentIdFromScript(), callId: callId
-          }
-          // const res = await fetch(`${API_URL}/agent/updateAgentMinutesLeft`, {
-          //     method: "PATCH",
-          //     headers: { "Content-Type": "application/json" },
-          //     body: JSON.stringify({  agentId: getAgentIdFromScript(), callId: callId }),
-          //   });
-        }
-      }
+                        } Agent is LIVE</small>`;
+                    onCall = false;
+                    callLabel.textContent = `Call ${agentName}`;
+                    imageWrapper.classList.remove("active");
+                    imageWrapper.querySelectorAll(".pulse-ring2").forEach((ring) => ring.remove());
+                    const data = {
+                        agentId: getAgentIdFromScript(), callId: callId
+                    }
+                    // const res = await fetch(`${API_URL}/agent/updateAgentMinutesLeft`, {
+                    //     method: "PATCH",
+                    //     headers: { "Content-Type": "application/json" },
+                    //     body: JSON.stringify({  agentId: getAgentIdFromScript(), callId: callId }),
+                    //   });
+                }
+            }
+        };
     };
-  };
 
 
 
-  injectCSS();
-  (async () => {
-    await initWidget();
-  })();
+    injectCSS();
+    (async () => {
+        await initWidget();
+    })();
 }
 
