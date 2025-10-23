@@ -1115,6 +1115,7 @@ const Planss = () => {
                         );
                         
                     })}
+                    {!hasCustomPlan ?
 
                       <div  className={styles.slide}>
         <div className={`${styles.card} ${styles.customColor}`} onClick={CustomhandleClick} style={{ cursor: "pointer" }}>
@@ -1144,7 +1145,7 @@ const Planss = () => {
             />
           </div>
         </div>
-      </div>
+      </div> : null}
                 </Slider>
             </div>
             <FreeTrialModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>

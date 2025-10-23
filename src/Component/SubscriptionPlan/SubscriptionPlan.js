@@ -792,6 +792,9 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                 </div>
                             );
                         })}
+
+
+                        {!hasCustomPlan ? 
                        <div key="custom-plan" className={styles.slide}>
   <div
     className={`${styles.card} ${styles.customColor}`}
@@ -843,7 +846,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
       />
     </div>
   </div>
-</div>
+</div> : null}
 
                     </Slider>
                 </div>
