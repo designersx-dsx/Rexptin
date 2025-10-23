@@ -7,6 +7,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import Start from "./Component/Start/Start";
+import BuildPlan from "./Component/BuildPlan/BuildPlan";
 import SignUp from "./Component/SignUp/SignUp";
 import Details from "./Component/Details/Details";
 import Step from "./Component/Step/Step";
@@ -80,7 +81,7 @@ import NotificationView from "./Component/Notifications/NotificationView";
 import ThankYouPage from "./Component/hubspotThankyouPage/HubspotThankyou";
 
 import OwnPlan from './Component/OwnPlan/OwnPlan'
-import CustomPlan from "./Component/OwnPlan/CustomPlan";
+import CustomPlan from "./Component/BuildPlan/CustomPlan";
 
 // import Test from "./utils/Test";
 function App() {
@@ -325,6 +326,14 @@ function App() {
                     </SecureRoute>
                   }
                 />
+                 <Route
+                  path="/build-own-plan"
+                  element={
+                    <SecureRoute>
+                      <CustomPlan/>
+                    </SecureRoute>
+                  }
+                />
                 <Route
                   path="/plan"
                   element={
@@ -346,6 +355,10 @@ function App() {
                       <AssignNumber />
                     </SecureRoute>
                   }
+                />
+                   <Route
+                  path="/build-plan"
+                  element={<BuildPlan />}
                 />
                 <Route
                   path="/details"

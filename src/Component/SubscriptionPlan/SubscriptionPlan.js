@@ -130,7 +130,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
             const countryCurrencyMap = {
 
 
-                // IN: "inr",
+                IN: "inr",
 
                 US: "usd",
                 CA: "cad",
@@ -287,7 +287,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     }, [userCurrency]);
 
     const CustomhandleClick = () => {
-        navigate("/own-plan");
+        navigate("/build-own-plan");
     };
     const fetchAgentCountFromUser = async () => {
         try {
@@ -552,8 +552,8 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     <h2>Subscriptions Plans </h2>
                     <p>Choose a suitable plan for your agent & business case</p>
                 </div>
-{/* 
-                {!hasCustomPlan ?
+
+                {/* {!hasCustomPlan ?
                   <div className={styless.sectionPart}>
                                 <div className={styless.cutomPlan} onClick={CustomhandleClick}>
                                     <div><img src='svg/edit-custom-plan.svg' alt='edit-custom-plan' /></div>
@@ -792,6 +792,59 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                 </div>
                             );
                         })}
+                       <div key="custom-plan" className={styles.slide}>
+  <div
+    className={`${styles.card} ${styles.customColor}`}
+    onClick={CustomhandleClick}
+    style={{ cursor: "pointer" }}
+  >
+    {/* Top Section */}
+    <div className={`${styles.sectionTop} ${styles.customColorBg}`}>
+      <div className={styles.CardiSection}>
+        <div className={styles.header}>
+          <div className={styles.priceTop}>
+            <div>
+              <img src="/path/to/custom-icon.png" alt="Custom Plan" />
+            </div>
+            <div className={styles.pricdec}>
+              <p className={styles.subPrice}>Custom</p>
+              <p className={styles.billedText}>Tailored to your needs</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 className={`${styles.Title} ${styles.customText}`}>
+          Custom Plan
+        </h3>
+
+        <p className={styles.mainPrice}>
+          <b className={styles.doolor}>Flexible</b> /month per agent
+        </p>
+
+        <p className={styles.description}>
+          Build your perfect plan based on your usage and business scale.
+        </p>
+      </div>
+    </div>
+
+    {/* Features Section */}
+    <ul className={styles.featuresList}>
+      <li className={styles.featureItem}>Fully customizable features</li>
+      <li className={styles.featureItem}>Choose your own pricing</li>
+      <li className={styles.featureItem}>Add-on integrations</li>
+    </ul>
+
+    {/* Button Section */}
+    <div className={styles.stickyWrapper}>
+      <AnimatedButton
+        label="Build Plan"
+        position={{ position: "relative" }}
+        onClick={() => navigate("/build-own-plan")}
+      />
+    </div>
+  </div>
+</div>
+
                     </Slider>
                 </div>
             </div>
