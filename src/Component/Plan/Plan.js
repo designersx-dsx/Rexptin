@@ -76,7 +76,7 @@ const Planss = () => {
 
 
     const CustomhandleClick = () => {
-        navigate("/own-custom-plan" , {
+        navigate("/build-plan" , {
             state : {
                 locationPath :locationPath , 
                 agentID : agentID
@@ -1113,7 +1113,38 @@ const Planss = () => {
                                 </div>
                             </div>
                         );
+                        
                     })}
+
+                      <div  className={styles.slide}>
+        <div className={`${styles.card} ${styles.customColor}`} onClick={CustomhandleClick} style={{ cursor: "pointer" }}>
+          <div className={`${styles.sectionTop} ${styles.customColorBg}`}>
+            <div className={styles.CardiSection}>
+              <div className={styles.header}>
+                <div className={styles.priceTop}>
+                  <div><img src="/path/to/growth-icon.png" alt="Custom" /></div>
+                  <div className={styles.pricdec}>
+                    <p className={styles.subPrice}>Custom</p>
+                  </div>
+                </div>
+              </div>
+              <h3 className={`${styles.Title} ${styles.customText}`}>Custom Plan</h3>
+              <p className={styles.mainPrice}>Build your own plan</p>
+            </div>
+          </div>
+          <ul className={styles.featuresList}>
+            <li className={styles.featureItem}>Fully customizable features</li>
+            <li className={styles.featureItem}>Choose your pricing</li>
+          </ul>
+          <div className={styles.stickyWrapper} onClick={CustomhandleClick}>
+            <AnimatedButton
+              label="Build Plan"
+              position={{ position: "relative" }}
+              
+            />
+          </div>
+        </div>
+      </div>
                 </Slider>
             </div>
             <FreeTrialModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
