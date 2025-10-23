@@ -559,13 +559,13 @@ if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", async () => {
         const allowLoad = await shouldLoadWidget();
         if (allowLoad) createReviewWidget();
-        else console.log("Widget load skipped due to API check.");
+        else console.log("This domain is not whitelisted for the Widget Installation. Please update URL in app or contact Administration Support.");
     });
 } else {
     (async () => {
         const allowLoad = await shouldLoadWidget();
         if (allowLoad) createReviewWidget();
-        else console.log("Widget load skipped due to API check.");
+        else console.log("This domain is not whitelisted for the Widget Installation. Please update URL in app or contact Administration Support.");
     })();
 }
 function createReviewWidget() {
