@@ -476,7 +476,7 @@ function injectCSS() {
             width: 225px;
             background: #fff;
             border: 1px solid #ddd;
-            border-radius: 10px;
+            border-radius: 14px;
             box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
             padding: 10px;
             text-align: justify;
@@ -823,7 +823,7 @@ function createReviewWidget() {
 const termsWrapper = document.createElement("div");
 termsWrapper.className = "terms-wrapper";
 termsWrapper.style.position = "relative";
-termsWrapper.style.top = "-16.4rem";
+termsWrapper.style.top = "-15.5rem";
 termsWrapper.style.zIndex = "11";
 popupBody.appendChild(termsWrapper);
 
