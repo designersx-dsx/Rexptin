@@ -29,7 +29,7 @@ const Planss = () => {
     const [userCurrency, setUserCurrency] = useState("usd");
     const [agentCount, setAgentCount] = useState()
     const [expanded, setExpanded] = useState(false);
-
+    const [plans, setPlans] = useState()
     const [expandedz, setExpandedz] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [freeTrial, setFreeTrial] = useState(false);
@@ -72,18 +72,35 @@ const Planss = () => {
             localStorage.setItem("isPayg", true)
         }
     }, [])
-
-
+const a = ()=>{
+  const allPlans = products.map(p => {
+        const price = p.prices.find(pr => pr.interval === "month");
+        return price ? {
+            title: p.title,
+            priceId: price.id,
+            interval: "month"
+        } : null;
+    })
+    setPlans(allPlans)
+}
+  useEffect(()=>{
+    a()
+  } ,  [products])
+  console.log({plans});
+  
 
     const CustomhandleClick = () => {
-        navigate("/build-plan" , {
-            state : {
-                locationPath :locationPath , 
-                agentID : agentID ,
-                subscriptionID : subscriptionID
+        navigate("/build-plan", {
+            state: {
+                locationPath: locationPath,
+                agentID: agentID,
+                subscriptionID: subscriptionID,
+                plans: plans
             }
         });
     };
+
+
 
     const handleClick = () => {
         setFreeTrial(!freeTrial);
@@ -618,7 +635,7 @@ const Planss = () => {
 
     const checkCustom = async () => {
         let res = await customPlanCheck(decodeTokenData?.id)
-        console.log(res?.data?.hasCustomPlan , "data")
+        console.log(res?.data?.hasCustomPlan, "data")
         setHasCustomPlan(res?.data?.hasCustomPlan)
     }
     useEffect(() => {
@@ -635,8 +652,8 @@ const Planss = () => {
                 maxUnits: 200,
                 successUrl: window.location.origin + `/thankyou/update?agentId=${agentID}&userId=${decodeTokenData?.id}`, // origin + path
                 cancelUrl: window.location.origin + "/cancel-payment",
-                userId: decodeTokenData?.id ,
-               
+                userId: decodeTokenData?.id,
+
             });
 
             if (res?.data?.url) {
@@ -776,7 +793,7 @@ const Planss = () => {
                         )}
                     </span>
                 </label> : null}
-                 {/* {!hasCustomPlan  ? 
+                {/* {!hasCustomPlan  ? 
  <label className={styles.freeTrialBtn} onChange={handleClick2}>
                     Custom Plan
                     <input
@@ -810,10 +827,10 @@ const Planss = () => {
 
 
             </div>
-             <div className={styles.sectionPart}>
-                    <h2>Subscriptions Plans </h2>
-                    <p>Choose a suitable plan for your agent & business case</p>
-                </div>
+            <div className={styles.sectionPart}>
+                <h2>Subscriptions Plans </h2>
+                <p>Choose a suitable plan for your agent & business case</p>
+            </div>
             {/* {!hasCustomPlan ? 
                <div className={styles.sectionPart}>
                 <div className={styles.cutomPlan} onClick={CustomhandleClick}>
@@ -823,7 +840,7 @@ const Planss = () => {
                
             </div>
             : null} */}
-         
+
             <div className={styles.wrapper}>
                 <Slider ref={sliderRef} {...settings}>
                     {products.map((plan, index) => {
@@ -1071,7 +1088,7 @@ const Planss = () => {
                                                                 interval: currentInterval
                                                             } : null;
                                                         }).filter(Boolean); // remove nulls (in case some plans lack the interval)
-
+                                                        setPlans(allPlans)
 
                                                         const selectedPlanData = {
                                                             priceId: priceForInterval.id,
@@ -1114,39 +1131,39 @@ const Planss = () => {
                                 </div>
                             </div>
                         );
-                        
+
                     })}
                     {!hasCustomPlan ?
 
-                      <div  className={styles.slide}>
-        <div className={`${styles.card} ${styles.customColor}`} onClick={CustomhandleClick} style={{ cursor: "pointer" }}>
-          <div className={`${styles.sectionTop} ${styles.customColorBg}`}>
-            <div className={styles.CardiSection}>
-              <div className={styles.header}>
-                <div className={styles.priceTop}>
-                  <div><img src="/path/to/growth-icon.png" alt="Custom" /></div>
-                  <div className={styles.pricdec}>
-                    <p className={styles.subPrice}>Custom</p>
-                  </div>
-                </div>
-              </div>
-              <h3 className={`${styles.Title} ${styles.customText}`}>Custom Plan</h3>
-              <p className={styles.mainPrice}>Build your own plan</p>
-            </div>
-          </div>
-          <ul className={styles.featuresList}>
-            <li className={styles.featureItem}>Fully customizable features</li>
-            <li className={styles.featureItem}>Choose your pricing</li>
-          </ul>
-          <div className={styles.stickyWrapper} onClick={CustomhandleClick}>
-            <AnimatedButton
-              label="Build Plan"
-              position={{ position: "relative" }}
-              
-            />
-          </div>
-        </div>
-      </div> : null}
+                        <div className={styles.slide}>
+                            <div className={`${styles.card} ${styles.customColor}`} onClick={CustomhandleClick} style={{ cursor: "pointer" }}>
+                                <div className={`${styles.sectionTop} ${styles.customColorBg}`}>
+                                    <div className={styles.CardiSection}>
+                                        <div className={styles.header}>
+                                            <div className={styles.priceTop}>
+                                                <div><img src="/path/to/growth-icon.png" alt="Custom" /></div>
+                                                <div className={styles.pricdec}>
+                                                    <p className={styles.subPrice}>Custom</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h3 className={`${styles.Title} ${styles.customText}`}>Custom Plan</h3>
+                                        <p className={styles.mainPrice}>Build your own plan</p>
+                                    </div>
+                                </div>
+                                <ul className={styles.featuresList}>
+                                    <li className={styles.featureItem}>Fully customizable features</li>
+                                    <li className={styles.featureItem}>Choose your pricing</li>
+                                </ul>
+                                <div className={styles.stickyWrapper} onClick={CustomhandleClick}>
+                                    <AnimatedButton
+                                        label="Build Plan"
+                                        position={{ position: "relative" }}
+
+                                    />
+                                </div>
+                            </div>
+                        </div> : null}
                 </Slider>
             </div>
             <FreeTrialModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -1175,7 +1192,7 @@ const Planss = () => {
                         <p className={styles.toggleText} onClick={handleToggle}>
                             ~ {expanded ? 'Hide Features' : 'See All Features'}
                         </p>
-                      
+
                         <AnimatedButton label='Subscribe' position={{ position: "relative" }}
                             onClick={() => navigate('/steps', {
                                 state: {
@@ -1185,7 +1202,7 @@ const Planss = () => {
                         />
 
                     </div>
-                  
+
 
                 </div>
 

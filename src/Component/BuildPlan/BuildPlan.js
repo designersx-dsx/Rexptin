@@ -35,7 +35,7 @@ const handleChange = (e) => {
   const location = useLocation();
   let agentID = location?.state?.agentID;
   let locationPath = location?.state?.locationPath
-
+  let plans = location?.state?.plans
 
     let subscriptionID = location?.state?.subscriptionID
   console.log(locationPath);
@@ -143,6 +143,8 @@ const handleChange = (e) => {
             sessionStorage.setItem("selectedPlan" ,plan )
             sessionStorage.setItem("selectedPlanInterval" , "month" )
             sessionStorage.setItem("price" , 100 )
+            localStorage.setItem("allPlans" , JSON.stringify(plans) )
+
             navigate("/steps")
 
 
