@@ -13,7 +13,7 @@ const BuildPlan = () => {
     const [animate, setAnimate] = useState(false);
 
     const min = 99;
-    const max = 999;
+    const max = 10000;
 
 const handleChange = (e) => {
     const qty = parseInt(e.target.value);
