@@ -731,18 +731,17 @@ const AgentDashboard = () => {
       handleInactiveAgentAlert();
       return;
     }
-
     const planName = agent?.subscription?.plan_name || "Free";
-    if (!agent.subscriptionId) {
-      openAssignNumberModal();
-    } else {
+    // if (!agent.subscriptionId) {
+    //   openAssignNumberModal();
+    // } else {
 
       // setSelectedAgentForAssign(agent);
       // setIsAssignModalOpen(true);
       navigate("/assign-number", {
         state: { agent: agent, business: business },
       });
-    }
+    // }
     setBusinessDetails(business);
   };
   const handleUpgradeClick = (agent) => {
@@ -2242,7 +2241,7 @@ Do you want to proceed with deleting this assigned number?`
               setRefresh((prev) => !prev);
             }}
           />
-          {isAssignNumberModalOpen && (
+          {/* {isAssignNumberModalOpen && (
             <div
               className={styles.modalBackdrop}
               onClick={closeAssignNumberModal}
@@ -2271,7 +2270,7 @@ Do you want to proceed with deleting this assigned number?`
                 </button>
               </div>
             </div>
-          )}
+          )} */}
 
           {isAssignNumberModal && (
             <CommingSoon
