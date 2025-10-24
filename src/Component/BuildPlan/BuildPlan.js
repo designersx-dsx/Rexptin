@@ -35,6 +35,9 @@ const handleChange = (e) => {
   const location = useLocation();
   let agentID = location?.state?.agentID;
   let locationPath = location?.state?.locationPath
+
+
+    let subscriptionID = location?.state?.subscriptionID
   console.log(locationPath);
   
   const token = localStorage.getItem("token") || "";
@@ -108,6 +111,50 @@ const handleChange = (e) => {
     }
   };
 
+  const planPriceMap = {
+    STARTER: "price_1RUNGj4T6s9Z2zBzHAWaIZz3",
+    SCALER: "price_1RVXQI4T6s9Z2zBz3udYE9sO",
+    GROWTH: "price_1RVXSV4T6s9Z2zBzpoLwTIzY",
+    CORPORATE: "price_1RXgkd4T6s9Z2zBzxvVFBRMs"
+  };
+    const handlePlanCheckout = async () => {
+    try {
+        if(locationPath === "/dashboard") {
+  const origin = window.location.origin;
+      const priceId = planPriceMap[plan]; // current plan
+      if (!priceId) throw new Error("Price ID not found for selected plan");
+  
+      const res = await axios.post(`${API_BASE}/create-checkout-session`, {
+        customerId: decodeTokenData?.customerId,
+        priceId,
+        userId,
+       
+        url: `${origin}/thankyou/update?subscriptionId=${subscriptionID}&agentId=${agentID}&userId=${userId}`,
+        cancelUrl: `${origin}/cancel-payment`,
+      });
+  
+      if (res?.data?.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl;
+      }
+        }
+        else{
+            const priceId = planPriceMap[plan];
+            sessionStorage.setItem("priceId" , priceId)
+            sessionStorage.setItem("selectedPlan" ,plan )
+            sessionStorage.setItem("selectedPlanInterval" , "month" )
+            sessionStorage.setItem("price" , 100 )
+            navigate("/steps")
+
+
+
+        }
+    
+    } catch (error) {
+      console.error("Checkout error:", error);
+      alert("Something went wrong during checkout. Please try again.");
+    }
+  };
+
     return (
         <div className={styles.containerBox}>
             <HeaderBar title="Build your own plan" />
@@ -120,7 +167,7 @@ const handleChange = (e) => {
                     </div>
 
                     {/* Plan Image */}
-                    <div className={`${styles.imageWrapper} ${animate ? styles.slideIn : ""}`}>
+                    <div className={`${styles.imageWrapper} ${animate ? styles.slideIn : ""}`} onClick={handlePlanCheckout}>
                         <img src={image} alt={plan} className={styles.planImage} />
                     </div>
                 </div>

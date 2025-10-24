@@ -98,6 +98,37 @@ const handleChange = (e) => {
       alert("Something went wrong during checkout. Please try again.");
     }
   };
+
+const planPriceMap = {
+  STARTER: "price_1RUNGj4T6s9Z2zBzHAWaIZz3",
+  SCALER: "price_1RVXQI4T6s9Z2zBz3udYE9sO",
+  GROWTH: "price_1RVXSV4T6s9Z2zBzpoLwTIzY",
+  CORPORATE: "price_1RXgkd4T6s9Z2zBzxvVFBRMs"
+};
+  const handlePlanCheckout = async () => {
+  try {
+    const origin = window.location.origin;
+    const priceId = planPriceMap[plan]; // current plan
+    if (!priceId) throw new Error("Price ID not found for selected plan");
+
+    const res = await axios.post(`${API_BASE}/create-checkout-session`, {
+      customerId: decodeTokenData?.customerId,
+      priceId,
+      userId,
+     
+      url: `${origin}/steps?mode=create&userId=${userId}`,
+      cancelUrl: `${origin}/cancel-payment`,
+    });
+
+    if (res?.data?.checkoutUrl) {
+      window.location.href = res.data.checkoutUrl;
+    }
+  } catch (error) {
+    console.error("Checkout error:", error);
+    alert("Something went wrong during checkout. Please try again.");
+  }
+};
+
     return (
         <div className={styles.containerBox}>
             <HeaderBar title="Build your own plan" />
@@ -110,7 +141,7 @@ const handleChange = (e) => {
                     </div>
 
                     {/* Plan Image */}
-                    <div className={`${styles.imageWrapper} ${animate ? styles.slideIn : ""}`}>
+                    <div className={`${styles.imageWrapper} ${animate ? styles.slideIn : ""}`} onClick={handlePlanCheckout}>
                         <img src={image} alt={plan} className={styles.planImage} />
                     </div>
                 </div>

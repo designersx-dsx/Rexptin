@@ -79,7 +79,8 @@ const Planss = () => {
         navigate("/build-plan" , {
             state : {
                 locationPath :locationPath , 
-                agentID : agentID
+                agentID : agentID ,
+                subscriptionID : subscriptionID
             }
         });
     };
