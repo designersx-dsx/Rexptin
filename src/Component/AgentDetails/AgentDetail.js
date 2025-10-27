@@ -397,7 +397,7 @@ const AgentDashboard = () => {
       const agentInfo = response?.data;
       setAgentCalApiKey(agentInfo?.agent?.calApiKey);
       let numbersArray = [];
-      console.log(agentInfo, "agentinfo")
+      // console.log(agentInfo, "agentinfo")
       setAgentInfo(agentInfo)
       const voipNumbersStr = agentInfo?.agent?.voip_numbers;
       if (voipNumbersStr) {
@@ -432,7 +432,7 @@ const AgentDashboard = () => {
       setLoading(false);
     }
   };
-  console.log(agentinfo, "chatke");
+  // console.log(agentinfo, "chatke");
 
   useEffect(() => {
     getAgentDetailsAndBookings();
@@ -561,7 +561,7 @@ const AgentDashboard = () => {
   const handleCallHistoryNavigation = () => {
     sessionStorage.setItem("agentId", agentDetails?.agentId);
     sessionStorage.setItem("userId", userId);
-    navigate("/totalcall-list");
+    navigate("/totalcall-list?filter=callHistory");
     localStorage.setItem("filterType", "single");
   };
   const handleCloseEditagentModalOpen = () => {
@@ -855,7 +855,7 @@ const AgentDashboard = () => {
     const subscriptionId = agentData?.subscription?.subscription_id;
     const agentId = agentData?.agent?.agent_id;
     const subscriptionStatus = agentData?.subscription?.status // canceled   , cancel_scheduled
-    console.log("subscriptionStatus", subscriptionStatus)
+    // console.log("subscriptionStatus", subscriptionStatus)
     // Only proceed for "free" or "Pay-As-You-Go"
     const isFreeOrPayg = ["free", "Pay-As-You-Go"].includes(agentPlan);
 
@@ -873,12 +873,12 @@ const AgentDashboard = () => {
 
         if (!res.ok) {
           const text = await res.text().catch(() => "");
-          console.log(`assign-number-resume failed (${res.status}): ${text}`);
+          // console.log(`assign-number-resume failed (${res.status}): ${text}`);
         }
         const data = await res.json(); // ← parse body
 
         if (data?.subscription) {
-          console.log("Assign Number Subscription Resume successfully");
+          // console.log("Assign Number Subscription Resume successfully");
           setHasFetched(false)
           setRefresh(prev => !prev)
 

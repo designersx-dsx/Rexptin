@@ -12,6 +12,7 @@ const CallDetails = () => {
   const { agentId, start_timestamp } = location.state || {}; //adding json call history
   const [isChatModalOpen, setChatModalOpen] = useState(false);
   const [callData, setCallData] = useState(null);
+  // console.log(callData, "callData")
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [visibleCount, setVisibleCount] = useState(0);
@@ -167,7 +168,7 @@ const CallDetails = () => {
     }
   }
   const currentAgent = agents.find((a) => a.agent_id === callData?.agent_id);
-  console.log(callData, "callData")
+  // console.log(callData, "callData")
   return (
     <div className={styles.CallDetailsMain}>
       <div className={styles.forSticky}>
@@ -273,7 +274,20 @@ const CallDetails = () => {
             <div className={styles.channel}>
               <p className={styles.Ptext}>Channel</p>
               <div className={styles.PhoneDiv}>
-                <p>{callData.chat_type == "api_chat" ? callData.chat_type : callData.call_type}</p>
+                <p>
+
+
+                  {callData?.call_type === "phone_call"
+                    ? callData?.from_number
+                    : callData?.call_type === "api_chat"
+                      ? "chat"
+                      : callData?.chat_type === "api_chat"
+                        ? "chat"
+                        : callData?.call_type}
+
+                  {" "}
+
+                </p>
               </div>
             </div>
             <div className={styles.channel}>

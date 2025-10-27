@@ -38,7 +38,6 @@ export default function Home() {
     totalAgentView === "all" ? "all" : sessionAgentId || ""
   );
   const [data, setData] = useState([]);
-  console.log(data, "DAYTA")
   const [selectedDateRange, setSelectedDateRange] = useState({
     startDate: "",
     endDate: "",
@@ -46,7 +45,6 @@ export default function Home() {
   const [selectedSentiment, setSelectedSentiment] = useState(
     sessionStorage.getItem("selectedfilterOption") || "All"
   );
-
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token") || "";
@@ -148,11 +146,17 @@ export default function Home() {
       .toFormat("yyyy-MM-dd");
   };
   const filteredData = data?.filter((call) => {
-
+    // If selected sentiment is "Chat", only include api_chat type
+    const chatTypeMatch =
+      selectedSentiment === "Chat" ? call?.call_type === "api_chat" : true;
+    const callTypeMatch =
+      selectedSentiment === "Call" ? call?.call_type === "phone_call" || call?.call_type === "web_call" : true;
     const sentimentMatch =
       selectedSentiment === "All" ||
+      selectedSentiment === "Chat" || selectedSentiment === "Call" ||
       call?.user_sentiment === selectedSentiment ||
       call?.call_analysis?.user_sentiment === selectedSentiment;
+    // console.log(sentimentMatch, "sentimentMatch")
     const inDateRange = (() => {
       if (!selectedDateRange.startDate || !selectedDateRange.endDate)
         return true;
@@ -178,21 +182,14 @@ export default function Home() {
       );
     const channelMatch =
       filters?.channel === "" || call?.call_type === filters?.channel;
-        // Chat type filter: show only api_chat if selectedSentiment is "Chat" or your custom label
-  // const chatTypeMatch =
-  //   selectedSentiment.toLowerCase() === "chat"
-  //     ? call.call_type === "api_chat"
-  //     : true
-  //   console.log(chatTypeMatch,"chatTypeMatchchatTypeMatch")
-    return sentimentMatch && inDateRange && leadTypeMatch && channelMatch;
+    return sentimentMatch && inDateRange && leadTypeMatch && channelMatch && chatTypeMatch && callTypeMatch;
   });
+
   // Pagination
   const totalPages = Math.ceil(filteredData?.length / callsPerPage);
   const indexOfLastCall = currentPage * callsPerPage;
   const indexOfFirstCall = indexOfLastCall - callsPerPage;
   const currentCalls = filteredData.slice(indexOfFirstCall, indexOfLastCall);
-  console.log(currentCalls,"currentCallscurrentCalls")
-  console.log(currentCalls)
   // Handle page change
   const handlePageChange = (pageNum) => {
     if (pageNum < 1 || pageNum > totalPages) return;
@@ -266,22 +263,19 @@ export default function Home() {
       setIsLoadingSubmit(false);
     }
   };
-  // const handleChatFilter = (filterType) => {
-  //   setSelectedSentiment(filterType); // Update the selected sentiment
-  //   setCurrentPage(1);                // Reset pagination
-  // };
-// useEffect(() => {
-//   const queryParams = new URLSearchParams(location.search);
-//   const filterParam = queryParams.get("filter");
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const filterParam = queryParams.get("filter");
 
-//   if (filterParam === "chatHistory") {
-//     // alert("ok")
-//     // make sure it matches the logic in filteredData
-//     setSelectedSentiment("Chat"); // sets the filter to only show api_chat
-//     setCurrentPage(1); // reset pagination
-//   }
-// }, [location.search]);
-
+    if (filterParam === "chatHistory") {
+      setSelectedSentiment("Chat");
+      setCurrentPage(1);
+    }
+    else if (filterParam === "callHistory") {
+      setSelectedSentiment("Call");
+      setCurrentPage(1);
+    }
+  }, [location.search]);
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -315,7 +309,7 @@ export default function Home() {
             setFilters(newFilters);
             setCurrentPage(1);
           }}
-          // onChatFilter={handleChatFilter} // ✅ Pass the function here
+        // onChatFilter={handleChatFilter} // ✅ Pass the function here
 
         />
         <button className={styles.exportButton} onClick={handleExportClick}>
@@ -463,7 +457,7 @@ export default function Home() {
                       >
                         {call?.call_type == "phone_call"
                           ? call?.from_number
-                          : call?.call_type}{" "}
+                          : call?.call_type == "api_chat" ? "chat" : call?.call_type}{" "}
                       </p>
                     </td>
 

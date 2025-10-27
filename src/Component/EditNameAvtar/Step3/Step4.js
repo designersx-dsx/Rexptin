@@ -31,24 +31,6 @@ const Step4 = ({onValidationChange,originalRole}) => {
       sessionStorage.setItem("agentNote", agentNote);
     }, [agentNote]);
 
-    // Pass validation and note back to parent
-    // useImperativeHandle(ref, () => ({
-    //   validate: () => {
-    //     if (!selectedRole?.trim()) {
-    //       onValidationError?.({
-    //         type: "failed",
-    //         message: "Please select a Receptionist Type!",
-    //       });
-    //       return false;
-    //     }
-
-    //     return {
-    //       isValid: true,
-    //       agentNote: agentNote.trim(),
-    //     };
-
-    //   },
-    // }));
     const roles = [
       {
         title: "General Receptionist",

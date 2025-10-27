@@ -133,26 +133,22 @@ const Step = () => {
   const [isAgentCreated, setIsAgentCreated] = useState(false);
 
   const [reactNativeStatus, setreactNativeStatus] = useState(false);
-  // console.log("reactNativeStatus",reactNativeStatus)
 
   useEffect(() => {
     const handleNativeMessage = (event) => {
       try {
-        // console.log("event",event.data)
         const raw = typeof event?.data === "string" ? event.data : null;
         if (!raw) return;
 
         const data = JSON.parse(raw);
-        console.log("data?.type", data?.type);
 
         if (data?.type === "IAP_STARTED") {
-          console.log("✅ Native IAP started for", data.productId);
           // flag to skip web checkout
           window.skipCheckout = true;
         }
 
         if (data?.type === "IAP_SUCCESS") {
-          console.log("🎉 Purchase success", data.receipt);
+        
           // handle success flow...
         }
 

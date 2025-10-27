@@ -5,7 +5,6 @@ import React, {
   useImperativeHandle,
 } from "react";
 import styles from "./Step2.module.css";
-// import { getRetellVoices } from "../../Store/apiStore";
 import { getRetellVoices } from "../../../Store/apiStore";
 import PopUp from "../../Popup/Popup";
 const Step2 = ({ onValidationChange ,originalGender, originalVoice }) => {
@@ -24,22 +23,14 @@ const Step2 = ({ onValidationChange ,originalGender, originalVoice }) => {
   const [isVoiceDirty, setIsVoiceDirty] = useState(false);
 
 const handleGenderChange = (gender) => {
-  if (gender !== selectedGender) { // ✅ Only if actual change
+  if (gender !== selectedGender) { 
     setSelectedGender(gender);
-    // setSelectedVoice(null);
-    // sessionStorage.removeItem('agentVoice');
-    // sessionStorage.removeItem('agentVoiceAccent');
-    // sessionStorage.removeItem('VoiceAgentName');
     setIsVoiceDirty(false);
     setIsGenderChanging(true);
-
     const dirty = gender.toLowerCase() != originalGender?.toLowerCase();
-  // console.log(originalGender,gender,dirty)
-
-    // 🪝 Tell parent gender changed & no voice selected
     onValidationChange?.({
       genderChanged: true,
-      voiceSelected: false, // 🔥 Force false here
+      voiceSelected: false, 
       isDirty: dirty, 
     });
   }
@@ -86,7 +77,7 @@ const handleGenderChange = (gender) => {
       selectedVoice &&
       selectedVoice.voice_id &&
       selectedVoice.voice_name &&
-      selectedVoice.accent &&     !isGenderChanging // Block if gender is being changed
+      selectedVoice.accent &&     !isGenderChanging 
 
     ) {
       sessionStorage.setItem("agentVoice", selectedVoice.voice_id);
@@ -180,27 +171,6 @@ const handleGenderChange = (gender) => {
     }
   }, [listVoices]);
 
-  // useImperativeHandle(ref, () => ({
-  //   validate: () => {
-  //     if (!selectedGender) {
-  //       onValidationError?.({
-  //         type: "failed",
-  //         message: "Please select a gender!",
-  //       });
-  //       return false;
-  //     }
-  //     if (!selectedVoice || !selectedVoice.voice_name) {
-  //       onValidationError?.({
-  //         type: "failed",
-  //         message: "Please select a voice!",
-  //       });
-  //       return false;
-  //     }
-  //     onStepChange?.(7);
-  //     return true;
-  //   },
-  // }));
-
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -211,53 +181,9 @@ const handleGenderChange = (gender) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  
-  //user not refresh
-  // useEffect(() => {
-  //   const blockKeyboardRefresh = (e) => {
-  //     if (
-  //       e.key === "F5" ||
-  //       (e.ctrlKey && e.key === "r") ||
-  //       (e.metaKey && e.key === "r") // For Mac ⌘+R
-  //     ) {
-  //       e.preventDefault();
-  //       e.stopPropagation();
-  //     }
-  //   };
-
-  //   const blockMouseRefresh = (e) => {
-  //     // Block middle-click (mouse button 1) or right-click (mouse button 2)
-  //     if (e.button === 1 || e.button === 2) {
-  //       e.preventDefault();
-  //     }
-  //   };
-
-  //   const handleBeforeUnload = (e) => {
-  //     e.preventDefault();
-  //     e.returnValue = ""; // Required to trigger confirmation prompt
-  //   };
-
-  //   // Block browser refresh & warn
-  //   window.addEventListener("keydown", blockKeyboardRefresh);
-  //   window.addEventListener("mousedown", blockMouseRefresh);
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-  //   window.addEventListener("contextmenu", (e) => e.preventDefault()); // Disable right-click
-
-  //   return () => {
-  //     window.removeEventListener("keydown", blockKeyboardRefresh);
-  //     window.removeEventListener("mousedown", blockMouseRefresh);
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //     window.removeEventListener("contextmenu", (e) => e.preventDefault());
-  //   };
-  // }, []);
   return (
     <>
       <div className={styles.container}>
-        {/* <div className={styles.logoWrapper}>
-        <img src="/images/stepmask.png" alt="Logo" className={styles.logo} />
-      </div>
-
-      <h2 className={styles.sectionTitle}>Agent Gender</h2> */}
         <div className={styles.genderContainer}>
           {["Male", "Female"].map((gender) => (
             <label
@@ -279,10 +205,6 @@ const handleGenderChange = (gender) => {
                 value={gender}
                 checked={selectedGender === gender}
                 onChange={() => {
-                  // setSelectedGender(gender);
-                  //   sessionStorage.setItem('prevAgentGender',gender);
-                  //    sessionStorage.setItem('agentVoice','');
-                  //    setSelectedVoice(null);
                   handleGenderChange(gender)
                     }
                     }
@@ -314,15 +236,14 @@ const handleGenderChange = (gender) => {
                 checked={selectedVoice?.voice_name?.replace(/\s*\(.*?\)/, "") === voice?.voice_name?.replace(/\s*\(.*?\)/, "")}
                 onChange={() => {
                   setSelectedVoice(voice);
-                  playAudio(idx); // play when selected
+                  playAudio(idx); 
                   setIsVoiceDirty(true);
 
                   const dirty = voice.voice_id != originalVoice;
-                    // console.log(originalVoice,voice.voice_id,dirty)
-
+                    
                   onValidationChange?.({
-                  genderChanged: false, // gender already selected
-                  voiceSelected: true,  // voice just selected
+                  genderChanged: false, 
+                  voiceSelected: true,  
                   isDirty: dirty, 
                 });                  
                 }}

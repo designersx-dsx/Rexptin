@@ -6,7 +6,6 @@ import EditHeader from '../EditHeader/EditHeader';
 export default function Documentation() {
   const navigate = useNavigate();
     useEffect(() => {
-    // Remove any auto-focus on mount
     setTimeout(() => {
       if (document.activeElement) {
         document.activeElement.blur();

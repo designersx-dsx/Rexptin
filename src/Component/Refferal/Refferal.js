@@ -12,7 +12,7 @@ const Refferal = ({referralCode,setShowDashboardReferral,showDashboardReferral,u
     navigator.clipboard.writeText(referralLink)
       .then(() => {
         setCopied(true);
-        setTimeout(() => setCopied(false), 1000); // hide after 2 seconds
+        setTimeout(() => setCopied(false), 1000); 
       })
       .catch((err) => {
         console.error("Copy failed:", err);

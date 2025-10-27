@@ -93,7 +93,6 @@ function Dashboard() {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [agentDetails, setAgentDetails] = useState(null);
-  // console.log("agentDetails",agentDetails)
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -163,27 +162,16 @@ function Dashboard() {
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
   const [agentToPaygActivate, setagentToPaygActivate] = useState(null);
-  // console.log("agentToPaygActivate", agentToPaygActivate)
-
   const [agentId, setagentId] = useState();
   const [subscriptionId, setsubscriptionId] = useState();
   const [assignNumberPaid, setAssignNumberPaid] = useState(false);
-  // console.log("assignNumberPaid", assignNumberPaid)
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
-  //dev_Shorya1
   const closeAssignNumberModal = () => {
     setIsAssignNumberModalOpen(false)
     setisAssignApi(false)
   }
-  //   const dropdownRef = useRef(null);
-  // =======
-  // const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
-  // const dropdownRef = useRef(null);
   const dropdownRefs = useRef({});
-  // >>>>>>> live_copy
   const location = useLocation();
-
-
   const [pendingUpgradeAgent, setPendingUpgradeAgent] = useState(null);
   const [showUpgradeConfirmModal, setShowUpgradeConfirmModal] = useState(false);
   const [upgradeLoading, setUpgradeLoading] = useState(false);
@@ -250,9 +238,6 @@ function Dashboard() {
       try {
         const resp = await getDashboardTourStatus(userId);
         const d = resp?.data ?? resp;
-
-        // console.log("tourStatus raw ->", d);
-
         let shouldShow;
         if (typeof d?.shouldShow === "boolean") {
           shouldShow = d.shouldShow;
@@ -587,7 +572,7 @@ function Dashboard() {
     setAgentDetails(agent);
     e.stopPropagation();
     const isValid = await handleAssignNumberValidtyCheck(agent.agent_id);
-    // console.log("isValid", isValid)
+
     if (agent?.isDeactivated === 1) {
       handleInactiveAgentAlert();
       return;
@@ -919,7 +904,6 @@ function Dashboard() {
     if (!userId) return;
     try {
       const res = await fetchDashboardDetails(userId, token);
-      // console.log(res, "res")
       setUserCalApiKey(res?.calApiKey);
       sessionStorage.setItem("userCalApiKey", res?.calApiKey);
       let agentsWithCalKeys = res.agents || [];
@@ -1355,17 +1339,13 @@ function Dashboard() {
   };
 
   const handleCancelSubscription = async (agent) => {
-    // console.log("agentttttt", agent)
     const agent_id = agent?.agent_id;
     const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
-
     try {
       setdeleteloading(true);
-
       try {
         let res = null
         if (assignNumberPaid === true && (agent.agentPlan === "free" || agent.agentPlan === "Pay-As-You-Go")) {
-          console.log("Cancel Schedule")
           res = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
             method: "POST",
             headers: {
@@ -1394,7 +1374,6 @@ function Dashboard() {
           else {
             console.log('Failed to send the request to save the agent.')
           }
-          console.log("assign cancel")
           await checkAssignNumber()
         }
         else {
@@ -1402,7 +1381,7 @@ function Dashboard() {
             agent_id,
             mins_left
           );
-          console.log("cancel for all")
+          // console.log("cancel for all")
         }
         if (res) {
           setTimeout(() => {
@@ -1662,231 +1641,6 @@ function Dashboard() {
   const handleEditProfile = () => {
     navigate("/edit-profile");
   };
-  //   const handleDeactivateAgent = async () => {
-  //     try {
-  //       setDeactivateLoading(true);
-  //       const dashboardState = JSON.parse(
-  //         sessionStorage.getItem("dashboard-session-storage")
-  //       );
-
-  //       const agentData = dashboardState?.state?.agents?.find(
-  //         (ag) => ag.agent_id === agentToDeactivate.agent_id
-  //       );
-  //       console.log("agentToDeactivate", agentToDeactivate)
-
-  //       const knowledgeBaseId = agentData?.knowledgeBaseId;
-  //       const businessId = agentData?.businessId;
-
-  //       const isCurrentlyDeactivated = agentToDeactivate.isDeactivated === 1;
-  //       if (!isCurrentlyDeactivated && knowledgeBaseId) {
-
-  //         // try{
-  //         //      await fetch(
-  //         //   `https://api.retellai.com/delete-knowledge-base/${knowledgeBaseId}`,
-  //         //   {
-  //         //     method: "DELETE",
-  //         //     headers: {
-  //         //       Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-  //         //       "Content-Type": "application/json",
-  //         //     },
-  //         //   }
-  //         // );
-  //         // }catch(error){
-  //         //   console.log(error,"Error while deleting delete-knowledge-base")
-  //         // }
-
-  // try {
-  //   console.log("Checking if knowledge base exists:", knowledgeBaseId);
-
-  //   const checkRes = await axios.get(
-  //     `https://api.retellai.com/get-knowledge-base/${knowledgeBaseId}`,
-  //     {
-  //       headers: {
-  //         Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-  //       },
-  //     }
-  //   );
-
-  //   // If found, try deleting
-  //   try {
-  //     const deleteRes = await axios.delete(
-  //       `https://api.retellai.com/delete-knowledge-base/${knowledgeBaseId}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-  //         },
-  //       }
-  //     );
-  //     console.log("Knowledge base deleted:", deleteRes.data);
-  //   } catch (deleteErr) {
-  //     console.error("Error during delete:", deleteErr.response?.data || deleteErr.message);
-  //   }
-  // } catch (checkErr) {
-  //   if (checkErr.response?.status === 404) {
-  //     console.warn(`Knowledge base ${knowledgeBaseId} not found. Skipping delete.`);
-  //     // ✅ Do not throw, continue to next part
-  //   } else {
-  //     console.error("Error checking knowledge base:", checkErr.response?.data || checkErr.message);
-  //   }
-  // }
-
-  // // ✅ Control will continue here, e.g. pause subscription
-  // console.log("Continuing with subscription pause or next steps...");
-
-  //         // try {
-  //         //   const pauseRes = await fetch(`${process.env.REACT_APP_API_BASE_URL}/subscription-pause`, {
-  //         //     method: "POST",
-  //         //     headers: {
-  //         //       "Content-Type": "application/json",
-  //         //     },
-  //         //     body: JSON.stringify({
-  //         //       subscriptionId: agentToDeactivate.subscriptionId,
-  //         //     }),
-  //         //   });
-
-  //         //   if (!pauseRes.ok) {
-  //         //     const pauseErr = await pauseRes.json();
-  //         //     console.error("Subscription pause failed:", pauseErr);
-  //         //     throw new Error("Failed to pause subscription");
-  //         //   }
-  //         // } catch (pauseError) {
-  //         //   console.error("Error pausing subscription:", pauseError);
-  //         // }
-  //       }
-  //       if (isCurrentlyDeactivated && businessId) {
-  //         const businessDetails = await getBusinessDetailsByBusinessId(
-  //           businessId
-  //         );
-  //         const packageMap = {
-  //           Free: 1,
-  //           Starter: 2,
-  //           Scaler: 3,
-  //           Growth: 4,
-  //           Corporate: 5,
-  //           Enterprise: 6,
-  //         };
-  //         const packageValue = packageMap[packageName] || 1;
-
-  //         // const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
-  //         const knowledgeBaseName = await getKnowledgeBaseName(
-  //           businessDetails,
-  //           userId,
-  //           packageValue
-  //         );
-  //         const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
-  //         // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
-  //         const businessData = businessDetails.knowledge_base_texts;
-  //         const knowledgeBaseText = {
-  //           title: businessDetails?.businessType || "Business Info",
-  //           text: `
-  //                 Business Name: ${businessData?.name}
-  //                 Address: ${businessData?.address}
-  //                 Phone: ${businessData?.phone}
-  //                 Website: ${businessData?.website}
-  //                 Rating: ${businessData?.rating} (${businessData?.totalRatings} reviews)
-  //                 Business Status: ${businessData?.businessStatus}
-  //                 Categories: ${businessData?.categories}
-  //                 Opening Hours: ${businessData?.hours}
-  //                 `.trim(),
-  //         };
-
-  //         // Step 1: Create Knowledge Base
-  //         const formData = new FormData();
-  //         formData.append("knowledge_base_name", knowledgeBaseName);
-  //         formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
-  //         formData.append("enable_auto_refresh", "true");
-  //         formData.append(
-  //           "knowledge_base_texts",
-  //           JSON.stringify([knowledgeBaseText])
-  //         );
-
-  //         const createRes = await fetch(
-  //           `https://api.retellai.com/create-knowledge-base`,
-  //           {
-  //             method: "POST",
-  //             headers: {
-  //               Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-  //             },
-  //             body: formData,
-  //           }
-  //         );
-
-  //         if (!createRes.ok) {
-  //           const errData = await createRes.json();
-  //           console.error("Knowledge base creation failed:", errData);
-  //           throw new Error("Failed to create knowledge base during activation");
-  //         }
-
-  //         const createdKB = await createRes.json();
-  //         const knowledgeBaseId = createdKB.knowledge_base_id;
-  //         sessionStorage.setItem("knowledgeBaseId", knowledgeBaseId);
-
-  //         // Step 2: Update LLM for the agent
-  //         const llmId =
-  //           agentToDeactivate?.llmId ||
-  //           localStorage.getItem("llmId") ||
-  //           sessionStorage.getItem("llmId");
-
-  //         if (llmId && knowledgeBaseId) {
-  //           const llmPayload = {
-  //             knowledge_base_ids: [knowledgeBaseId],
-  //           };
-
-  //           try {
-  //             const updateLLMRes = await fetch(
-  //               `https://api.retellai.com/update-retell-llm/${llmId}`,
-  //               {
-  //                 method: "PATCH",
-  //                 headers: {
-  //                   "Content-Type": "application/json",
-  //                   Authorization: `Be arer ${process.env.REACT_APP_API_RETELL_API}`,
-  //                 },
-  //                 body: JSON.stringify(llmPayload),
-  //               }
-  //             );
-
-  //             if (!updateLLMRes.ok) {
-  //               const err = await updateLLMRes.json();
-  //               console.error("Failed to update LLM:", err);
-  //               throw new Error("LLM update failed");
-  //             }
-  //           } catch (error) {
-  //             console.error("Error updating LLM:", error);
-  //           }
-  //           // Resume subscription
-  //           try {
-  //             const resumeRes = await fetch(`${process.env.REACT_APP_API_BASE_URL}/subscription-resume`, {
-  //               method: "POST",
-  //               headers: {
-  //                 "Content-Type": "application/json",
-  //               },
-  //               body: JSON.stringify({
-  //                 subscriptionId: agentToDeactivate.subscriptionId,
-  //               }),
-  //             });
-
-  //             if (!resumeRes.ok) {
-  //               const resumeErr = await resumeRes.json();
-  //               console.error("Subscription resume failed:", resumeErr);
-  //               throw new Error("Failed to resume subscription");
-  //             } else {
-  //               console.log("Subscription resumed successfully");
-  //             }
-  //           } catch (resumeError) {
-  //             console.error("Error resuming subscription:", resumeError);
-  //           }
-  //         } else {
-  //           console.warn(
-  //             "LLM ID or Knowledge Base ID missing. LLM update skipped."
-  //           );
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error("Error during agent deactivation/reactivation:", error);
-  //     } finally {
-  //       setDeactivateLoading(false);
-  //     }
-  //   };
   const handleDeactivateAgent = async () => {
     try {
       setDeactivateLoading(true);

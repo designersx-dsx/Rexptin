@@ -76,13 +76,9 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import NotificationView from "./Component/Notifications/NotificationView";
-
 import ThankYouPage from "./Component/hubspotThankyouPage/HubspotThankyou";
-
 import OwnPlan from './Component/OwnPlan/OwnPlan'
 import CustomPlan from "./Component/OwnPlan/CustomPlan";
-
-// import Test from "./utils/Test";
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const token = localStorage.getItem("token");
@@ -96,8 +92,7 @@ function App() {
   const toggleFlag = useNotificationStore((state) => state.toggleFlag);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0); // State for unreadCount
-  // const [refreshNotification,setRefreshNoitification]=useState(false)
+  const [unreadCount, setUnreadCount] = useState(0); 
   const navigate = useNavigate()
   useEffect(() => {
     const script = document.createElement("script");
@@ -125,63 +120,14 @@ function App() {
     if (userID) {
       getUserNotifications(userID)
         .then((resp) => {
-          console.log("user notifications ", resp);
           loadNotifications(resp?.notifications || []);
         })
         .catch((err) => console.log("error while fetching user Notifications", err));
     }
   }, [userID, token]);
-
-  // useEffect(() => {
-  //   const handleBeforeInstallPrompt = (e) => {
-  //     const alreadyShown = localStorage.getItem("installPromptShown");
-  //     if (alreadyShown) return;  // only block if already shown
-
-  //     e.preventDefault();
-  //     console.log("📱 beforeinstallprompt fired");
-  //     setDeferredPrompt(e);
-  //     setShowPopup(true);  // show your popup
-  //   };
-
-  //   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-  //   return () => {
-  //     window.removeEventListener(
-  //       "beforeinstallprompt",
-  //       handleBeforeInstallPrompt
-  //     );
-  //   };
-  // }, []);
-
-  // const handleInstall = async () => {
-  //   if (!deferredPrompt) return;
-
-  //   deferredPrompt.prompt();
-  //   const { outcome } = await deferredPrompt.userChoice;
-
-  //   if (outcome === "accepted") {
-  //     console.log("✅ User accepted install");
-  //   } else {
-  //     console.log("❌ User dismissed install");
-  //   }
-
-  //   // mark as shown no matter what
-  //   localStorage.setItem("installPromptShown", "true"); 
-  //   setDeferredPrompt(null);
-  //   setShowPopup(false);
-  // };
-
-
-  //   const handleClose = () => {
-  //     localStorage.setItem("installPromptShown", "true"); // save flag
-  //     setShowPopup(false);
-  //   };
-
   useEffect(() => {
     const count = notifications?.filter((n) => n?.status === "unread")?.length;
     setUnreadCount(count);
-    // console.log("Notifications:", notifications);
-    // console.log("Unread Count:", count);
   }, [notifications]);
 
   useEffect(() => {
@@ -195,29 +141,10 @@ function App() {
 
     socket.on("connect", () => {
       console.log("🟢 Connected:", socket.id);
-      socket.emit("register", userID); // register user
+      socket.emit("register", userID);
     });
-
     // 📩 Listen for notification
     socket.on("notification", (msg) => {
-      // console.log("📩 New Notification:", msg);
-      //  window.alert(`${msg.title || "Notification"}: ${msg.message}`);
-      // alert(`${msg.title || "Notification"}: ${msg.message}`)
-      //   toast.info(`${msg.title || "Notification"}: ${msg.message}`, {
-      //   position: "top-right",
-      //   autoClose: 3000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   progress: undefined,
-      //   theme: "light",
-      // });
-      // toast.info(`${msg.title || "Notification"}: ${msg.message}`, {
-      //   position: "top-right",
-      //   autoClose: 3000,
-      // });
-      // setRefreshNoitification((prev)=>!prev)
       // console.log('new notification')
     });
 
@@ -233,12 +160,6 @@ function App() {
     const ref = document.referrer;
     console.log('Referrer URL:', ref);
   }, []);
-
-
-  //  const handleClose = () => {
-  //   setShowPopup(false);
-  // };
-
   return (
     <>
       {/* <ForcePortraitOnly /> */}

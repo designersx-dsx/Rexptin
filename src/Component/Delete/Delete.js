@@ -51,8 +51,6 @@ const Delete = () => {
           <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
         </div>
         <div>
-          {/* <img src='/svg/Delete-svg.svg' alt='Delete-svg'/> */}
-
           <svg
             width="100"
             height="100"

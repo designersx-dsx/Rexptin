@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./CreateTicketModal.module.css";
 import axios from "axios";
 import imageCompression from "browser-image-compression";
-// import Swal from "sweetalert2";
-// import { X } from "lucide-react";
+
 
 const CreateTicketModal = ({
   isOpen,

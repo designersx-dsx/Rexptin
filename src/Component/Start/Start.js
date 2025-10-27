@@ -13,7 +13,6 @@ function Start() {
   const referral = searchParams.get("referral") || "";
   const selectedPlan = searchParams.get("plan") || "";
   const isUser = searchParams.get("isUser") || "";
-  // console.log({isUser})
   const businessType = searchParams.get("businessType") || "";
   const [step, setStep] = useState(0);
   const handleClick = () => {
@@ -26,7 +25,6 @@ function Start() {
       navigate("/signup");
     }, 700);
   };
-  console.log(referral, selectedPlan)
   useEffect(() => {
     const handleReferral = async () => {
       const currentDomain = window.location.hostname;

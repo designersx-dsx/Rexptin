@@ -298,8 +298,7 @@ const Planss = () => {
                         };
                     });
 
-                    // console.log("product",product)
-                    // console.log("matchedData",matchedData)
+                   
 
 
 
@@ -423,7 +422,7 @@ const Planss = () => {
             // Prepare the request data
 
             if (activeCount === 1 && isCurrentlyEnabled) {
-                console.log("Cancel Run")
+                // console.log("Cancel Run")
                 try {
                     const cancelResponse = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
                         method: 'POST',
@@ -617,7 +616,7 @@ const Planss = () => {
 
     const checkCustom = async () => {
         let res = await customPlanCheck(decodeTokenData?.id)
-        console.log(res?.data?.hasCustomPlan , "data")
+        // console.log(res?.data?.hasCustomPlan , "data")
         setHasCustomPlan(res?.data?.hasCustomPlan)
     }
     useEffect(() => {

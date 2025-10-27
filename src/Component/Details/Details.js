@@ -180,7 +180,6 @@ const Details = () => {
       try {
         const response = await axios.get("https://ipapi.co/json/");
         const userCountry = response.data.country_code?.toLowerCase();
-        console.log(userCountry, "userCountry");
         if (userCountry) {
           setCountry("us" || userCountry);
         }

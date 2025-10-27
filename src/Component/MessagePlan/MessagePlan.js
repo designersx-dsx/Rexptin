@@ -23,7 +23,7 @@ const min = 500;
 const [value, setValue] = useState(initialValue);
   
   
-   console.log({agent})
+  //  console.log({agent})
      const packs = [
     { label: "1k", value: 1000 },
     { label: "2.5k", value: 2500 },

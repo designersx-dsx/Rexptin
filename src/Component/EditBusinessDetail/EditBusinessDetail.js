@@ -62,7 +62,6 @@ const EditBusinessDetail = () => {
   useEffect(() => {
     const storedDetails = sessionStorage.getItem("placeDetailsExtract");
     if (storedDetails) {
-      // console.log('storedDetails',storedDetails)
       const details = JSON.parse(storedDetails);
       setBusinessName(details?.businessName || "");
       setPhoneNumber(details.internationalPhone || details?.phone || "");
@@ -167,7 +166,6 @@ const EditBusinessDetail = () => {
         setPopupMessage("Please fill all required fields.");
         return;
       }
-      // console.log("businessName", phoneNumber, address);
       const updatedPlaceDetails = {
         ...placeDetails,
         businessName: businessName || placeDetails?.businessName,
@@ -309,7 +307,6 @@ const EditBusinessDetail = () => {
               },
             }
           );
-          // console.log("prev Knowledgbase deleted");
         } catch (error) {
           console.log("error while removing prev Knowledgbase ", error);
         }
@@ -527,10 +524,6 @@ const EditBusinessDetail = () => {
       }
     }, 300);
   }, []);
-
-
-  
-  // console.log(isDirty,originalData)
   return (
     <>
       <EditHeader title="Edit Agent " agentName={agentnm} />

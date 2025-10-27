@@ -109,9 +109,6 @@ useEffect(() => {
     // const isAddMoreChecked = extraServices.length > 0;
 
     const icon = filteredBusinessType.icon
-    // console.log(filteredBusinessType, "filteredBusinessType")
-    // console.log(selectedService, "selectedService")
-
      const handleContinue = async () => {
     if (Loading) return; // Prevent double call
     if(selectedService?.length==0){

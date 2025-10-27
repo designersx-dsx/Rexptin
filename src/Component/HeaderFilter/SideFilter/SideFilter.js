@@ -8,6 +8,7 @@ function SideFilter({ filters, onFilterChange, isLeadTypeSummary, onSelectAll })
   const channelOptions = [
     { label: 'Web widget', value: 'web_call' },
     { label: 'Phone number', value: 'phone_call' },
+    { label: 'Chat ', value: 'api_chat' },
     { label: 'All', value: '' }
   ];
 
@@ -45,7 +46,7 @@ function SideFilter({ filters, onFilterChange, isLeadTypeSummary, onSelectAll })
   // Filter the lead types and channels based on the searchText
   const filteredLeadTypes = [...new Set(
     isLeadTypeSummary
-      .map(item => item?.custom_analysis_data?.lead_type||item?.call_analysis?.custom_analysis_data?.lead_type)
+      .map(item => item?.custom_analysis_data?.lead_type || item?.call_analysis?.custom_analysis_data?.lead_type)
       .filter(Boolean)
   )].filter(type => type.toLowerCase().includes(searchText.toLowerCase()));
   const filteredChannels = channelOptions.filter(({ label }) => label.toLowerCase().includes(searchText.toLowerCase()));

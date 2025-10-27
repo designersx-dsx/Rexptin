@@ -1175,7 +1175,7 @@ async function endChatArchiveNow({ silent = false } = {}) {
                         chat_id: chatId,
                     }),
                 });
-                console.log("end chat (archive)", res);
+                // console.log("end chat (archive)", res);
                 if (!res.ok) {
                     const txt = await res.text().catch(() => "");
                     throw new Error(`end-chat-archive HTTP ${res.status}: ${txt}`);
@@ -1184,7 +1184,7 @@ async function endChatArchiveNow({ silent = false } = {}) {
                 // simple end (no history or no KB)
                 const url = `${API_URL}/Chatbot/end-chat/${encodeURIComponent(chatId)}`;
                 const res = await fetch(url, { method: "PATCH" });
-                console.log("end chat (simple)", res);
+                // console.log("end chat (simple)", res);
                 if (!res.ok) {
                     const txt = await res.text().catch(() => "");
                     throw new Error(`end-chat HTTP ${res.status}: ${txt}`);
@@ -1471,7 +1471,7 @@ const getAgentIdFromScript = async () => {
             localStorage.getItem("agent_id");
 
         const agentCode = agentId?.replace("agentId=", "");
-        console.log(agentCode)
+        // console.log(agentCode)
         const response = await fetch(`${API_URL}/agent/fetchAgentIdByAgentCode/agentdetais?agent_code=${agentCode}`, {
             method: "GET", // you can switch to GET if backend expects query params
             headers: {
@@ -1479,7 +1479,7 @@ const getAgentIdFromScript = async () => {
             },
         });
         const result = await response.json();
-        console.log(result)
+        // console.log(result)
         if (result.success && result.data?.agent_id) {
             localStorage.setItem("agent_id", result.data.agent_id);
             return result.data.agent_id;
@@ -1537,7 +1537,7 @@ async function shouldLoadWidget() {
 
         if (!response.ok) return false;
         const data = await response.json();
-        console.log(data, "data");
+        // console.log(data, "data");
         return data?.allowed === true;
     } catch (error) {
         console.error("Widget load check failed:", error);
@@ -1739,7 +1739,7 @@ function createReviewWidget() {
 
                 enforceRexIfNoMinutes();
 
-                console.log(json, "json of wfwe");
+                // console.log(json, "json of wfwe");
                 agentName = json.agentName || agentName;
                 agentVoiceId = json.agentVoice || "";
                 agentRole = json.agentRole;
@@ -1766,7 +1766,7 @@ function createReviewWidget() {
             if (voicesRes.ok) {
                 const voicesData = await voicesRes.json();
                 const voice = voicesData.find((v) => v.voice_id === agentVoiceId);
-                console.log(voice, "voice ");
+                // console.log(voice, "voice ");
                 if (voice) {
                     agentVoiceName = voice.avatar_url || "https:i.pravatar.cc/100?img=68";
                 }
@@ -3577,10 +3577,10 @@ function createReviewWidget() {
         async function archiveOpenChatIfAny() {
             const chatId = localStorage.getItem("chat_id");
             const knowledgeBaseId = localStorage.getItem("knowledge_base_id");
-            console.log("[Rex] archiveOpenChatIfAny: start", {
-                chatId,
-                knowledgeBaseId,
-            });
+            // console.log("[Rex] archiveOpenChatIfAny: start", {
+            //     chatId,
+            //     knowledgeBaseId,
+            // });
 
             try {
                 if (!chatId) {
@@ -3605,20 +3605,20 @@ function createReviewWidget() {
                 const hasUserMsg = hist.some(
                     (m) => String(m?.role).toLowerCase() === "user"
                 );
-                console.log("[Rex] archiveOpenChatIfAny: decision", {
-                    histLen: hist.length,
-                    hasUserMsg,
-                    chatId,
-                    knowledgeBaseId,
-                });
+                // console.log("[Rex] archiveOpenChatIfAny: decision", {
+                //     histLen: hist.length,
+                //     hasUserMsg,
+                //     chatId,
+                //     knowledgeBaseId,
+                // });
 
                 if (!hasUserMsg || !knowledgeBaseId) {
                     const url = `${API_URL}/Chatbot/end-chat/${encodeURIComponent(
                         chatId
                     )}`;
-                    console.log("[Rex] END chat via PATCH →", url);
+                    // console.log("[Rex] END chat via PATCH →", url);
                     const res = await fetch(url, { method: "PATCH" });
-                    console.log(res, "response of end chat");
+                    // console.log(res, "response of end chat");
                     if (!res.ok) {
                         const txt = await res.text().catch(() => "");
                         throw new Error(`end-chat HTTP ${res.status}: ${txt}`);
@@ -3629,11 +3629,11 @@ function createReviewWidget() {
                         typeof CHAT_LS_KEY === "string" ? CHAT_LS_KEY : "rex_chat_history"
                     );
                     localStorage.removeItem("chat_id");
-                    console.log("[Rex] archiveOpenChatIfAny: END done + cleaned");
+                    // console.log("[Rex] archiveOpenChatIfAny: END done + cleaned");
                     return "end";
                 } else {
                     const url = `${API_URL}/agent/end-chat-archive`;
-                    console.log("[Rex] ARCHIVE via POST →", url);
+                    // console.log("[Rex] ARCHIVE via POST →", url);
                     const res = await fetch(url, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -3652,7 +3652,7 @@ function createReviewWidget() {
                         typeof CHAT_LS_KEY === "string" ? CHAT_LS_KEY : "rex_chat_history"
                     );
                     localStorage.removeItem("chat_id");
-                    console.log("[Rex] archiveOpenChatIfAny: ARCHIVE done + cleaned");
+                    // console.log("[Rex] archiveOpenChatIfAny: ARCHIVE done + cleaned");
                     return "archive";
                 }
             } catch (e) {
@@ -4082,7 +4082,7 @@ function createReviewWidget() {
                             console.log("[Rex] No open chat found. Skipping end/archive.");
                         }
 
-                        console.log("[Rex] proceed to call? endStatus =", endStatus);
+                        // console.log("[Rex] proceed to call? endStatus =", endStatus);
 
                         chatModalEl.classList.remove("show");
                         modal.style.display = "block";

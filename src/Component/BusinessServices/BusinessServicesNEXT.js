@@ -40,12 +40,12 @@ const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuc
   });
   const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
   const businesServices = JSON.parse(sessionStorage.getItem("businesServices"));
-  console.log(businesServices)
+  // console.log(businesServices)
   const servicesType= Object.values(businesServices).filter(
   (val) => typeof val === "string" && val !== "" && val !== "email"
 );
   
-  console.log(servicesType, "servicesType")
+  // console.log(servicesType, "servicesType")
   const rawCustomServices =
     JSON.parse(sessionStorage.getItem("selectedCustomServices")) || [];
   useEffect(() => {

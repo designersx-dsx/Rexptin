@@ -81,7 +81,6 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
           voice.provider == "elevenlabs" &&
           voice.gender === selectedGender?.toLocaleLowerCase()
       );
-      // console.log("Filtered voices:", filtered);
       setFilteredVoices(filtered);
       sessionStorage.setItem("agentGender", selectedGender);
     }
@@ -90,22 +89,17 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   const togglePlay = (idx) => {
     const thisAudio = audioRefs.current[idx];
     if (!thisAudio) return;
-
-    // if user taps the card that’s already playing → pause it
     if (playingIdx === idx) {
       thisAudio.pause();
       setPlayingIdx(null);
       return;
     }
 
-    // pause whichever clip is currently playing
     if (playingIdx !== null) {
       const playingAudio = audioRefs.current[playingIdx];
       playingAudio?.pause();
       playingAudio.currentTime = 0;
     }
-
-    // play the new clip
     thisAudio.play();
     setPlayingIdx(idx);
 
