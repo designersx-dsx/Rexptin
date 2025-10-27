@@ -11,8 +11,8 @@ function Thankyou2() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [sessionData, setSessionData] = useState(null);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Button disable state
-  const [isLoadingRequest, setIsLoadingRequest] = useState(false); // API request loading state
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false); 
+  const [isLoadingRequest, setIsLoadingRequest] = useState(false); 
   const [emails, setEmail] = useState()
   const [hasUserCreated, setHasUserCreated] = useState(false);
   const sessionId = new URLSearchParams(location.search).get("session_id");
@@ -20,7 +20,7 @@ function Thankyou2() {
   const [setSubscriptionDetails, setsetSubscriptionDetails] = useState();
   const [data, setData] = useState()
   const [isSubscriptionDetailsLoading, setIsSubscriptionDetailsLoading] =
-    useState(true); // Subscription details loading state
+    useState(true); 
 
   const { user, setUser } = useUser();
 
@@ -74,9 +74,9 @@ function Thankyou2() {
       } catch (err) {
         console.error("Failed to fetch subscription details:", err);
       } finally {
-        setIsSubscriptionDetailsLoading(false); // Subscription details are done loading
+        setIsSubscriptionDetailsLoading(false); 
         if (!isSubscriptionDetailsLoading && !loading) {
-          setLoading(false); // If both session and subscription data are loaded, set loading to false
+          setLoading(false);
         }
       }
     };
@@ -139,7 +139,6 @@ function Thankyou2() {
 
       // Make the API call to verify or create the user
       const response = await verifyOrCreateUser(email, fullOtp, customerId);
-      console.log("response", response);
 
       const data = await response;
       setData(data); // Store the data in state if necessary

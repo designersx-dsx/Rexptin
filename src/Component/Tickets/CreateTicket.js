@@ -139,7 +139,7 @@ const navigate=useNavigate();
           },
         }
       );
-      console.log("Ticket created", res.data);
+      // console.log("Ticket created", res.data);
       setPopupMessage(`Ticket Created: Ticket ID: ${res?.data?.ticket?.ticketId}`);
       setPopupType("success");
 

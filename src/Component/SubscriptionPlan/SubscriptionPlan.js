@@ -24,7 +24,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     const [expanded, setExpanded] = useState(false);
 
     const [expandedCustom, setExpandedCustom] = useState(false);
-    const [toggleStates, setToggleStates] = useState({}); // { planId: true/false }
+    const [toggleStates, setToggleStates] = useState({}); 
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [freeTrial, setFreeTrial] = useState(false);
@@ -75,7 +75,6 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
     const checkCustom = async () => {
         let res = await customPlanCheck(decodeTokenData?.id)
-        // console.log(res?.data?.hasCustomPlan)
         setHasCustomPlan(res?.data?.hasCustomPlan)
     }
     useEffect(() => {
@@ -196,12 +195,6 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                             currency: currency.toLowerCase(),
                         };
                     });
-
-                    // console.log("product",product)
-                    // console.log("matchedData",matchedData)
-
-
-
                     return {
                         ...product,
                         title: product.name || `Plan`,
@@ -319,16 +312,16 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 if (!raw) return;
 
                 const data = JSON.parse(raw);
-                console.log("data?.type", data?.type)
+                // console.log("data?.type", data?.type)
 
                 if (data?.type === "IAP_STARTED") {
-                    console.log("✅ Native IAP started for", data.productId);
+                    // console.log("✅ Native IAP started for", data.productId);
                     // flag to skip web checkout
                     window.skipCheckout = true;
                 }
 
                 if (data?.type === "IAP_SUCCESS") {
-                    console.log("🎉 Purchase success", data.receipt);
+                    // console.log("🎉 Purchase success", data.receipt);
                     // handle success flow...
                 }
 

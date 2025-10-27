@@ -16,8 +16,8 @@ const useUser = create(
         })),
     }),
     {
-      name: 'user-storage', // localStorage key
-      getStorage: () => localStorage, // use sessionStorage if needed
+      name: 'user-storage', 
+      getStorage: () => localStorage,
     }
   )
 );

@@ -177,20 +177,15 @@ const EditBusinessType = () => {
     sessionStorage.setItem("businessDetails", JSON.stringify(updated));
   };
   const handleBusinessTypeChange = (item) => {
-    // console.log(e.target.value)
     setSubType(item.subType);
     setBusinessType(item.businessType);
-
-
     if (item.businessType !== "Other") {
-      setcustomBuisness(""); // Clear textbox if not "Other"
+      setcustomBuisness("");
       updateSessionBusinessDetails("businessType", item.businessType);
       sessionStorage.removeItem("showInput");
     }
     updateSessionBusinessDetails("businessType", item.businessType);
     updateSessionBusinessDetails("subType", item.subType);
-
-    // console.log("businessTypeSubmitted", businessTypeSubmitted);
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
     }
@@ -226,13 +221,7 @@ const EditBusinessType = () => {
     } else {
       setBusinessTypeError("");
     }
-    // const sizeError = validateBusinessSize(businessSize);
-    // if (sizeError) {
-    //   setBusinessSizeError(sizeError);
-    //   hasError = true;
-    // } else {
-    //   setBusinessSizeError("");
-    // }
+
     const serviceError = validateServices(customBuisness);
     if (serviceError) {
       setErrors((prev) => ({ ...prev, customBuisness: serviceError }));
@@ -250,7 +239,6 @@ const EditBusinessType = () => {
         customBuisness: customBuisness.trim(),
         businessSize,
       };
-      // navigate("/about-business-next");
     } else {
       businessData = {
         userId,
@@ -262,7 +250,6 @@ const EditBusinessType = () => {
       // navigate("/business-services");
     }
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    // console.log('dsdsdsdsd',prevBuisnessType, businessType)
     if (sessionStorage.getItem("prevBuisnessType") != businessType) {
       setPopupType("confirm");
       setPopupMessage(
@@ -324,37 +311,6 @@ const EditBusinessType = () => {
 
           <div className={styles.ListDiv}>
             <div className={styles.optionList}>
-              {/* {filteredBusinessTypes.length > 0 ? (
-                // filteredBusinessTypes
-                [...filteredBusinessTypes]
-                  .sort((a, b) => a.type.localeCompare(b.type))
-                  .map((item, index) => (
-                    <label className={styles.option} key={index}  ref={businessType === item.type ? selectedRef : null}> 
-                      <div className={styles.forflex}>
-                        <div className={styles.icon}>
-                          <img src={item.icon} alt={`${item.type} icon`} className={styles.iconImg} />
-                        </div>
-                        <div className={styles.strongDiv}>
-                          <strong>{item.type}</strong>
-                          <p className={styles.subType}>{item.subtype}</p>
-                        </div>
-                      </div>
-
-                      <div>
-                        <input
-                          type='radio'
-                          name='businessType'
-                          value={item.type}
-                          checked={businessType === item.type}
-                          onChange={handleBusinessTypeChange}
-                          
-                        />
-                      </div>
-                    </label>
-                  ))
-              ) : (
-                <div className={styles.noResult}>No results found</div>
-              )} */}
               {filteredBusinessTypes(searchTerm).length > 0 ? (
                 filteredBusinessTypes(searchTerm).map((item, index) => (
                   <label className={styles.option} key={index}>
@@ -408,42 +364,7 @@ const EditBusinessType = () => {
               </div>
             </div>
           )}
-          {/* <div className={styles.inputGroup}>
-            <label>Business Size (Number of Emp.)</label>
-            <select className={styles.selectInput}
-              value={businessSize}
-              onChange={handleBusinessSizeChange}
-            >
-              <option value="" disabled className={styles.selectOption}>
-                Number of Employe
-              </option>
-              <option value="1 to 10 employees" className={styles.selectOption}>
-                1 to 10 employees
-              </option>
-              <option value="10 to 50 employees" className={styles.selectOption}>
-                10 to 50 employees
-              </option>
-              <option value="50 to 100 employees" className={styles.selectOption}>
-                50 to 100 employees
-              </option>
-              <option value="100 to 250 employees" className={styles.selectOption}>
-                100 to 250 employees
-              </option>
-              <option value="250 to 500 employees" className={styles.selectOption}>
-                250 to 500 employees
-              </option>
-              <option value="500 to 1000 employees" className={styles.selectOption}>
-                500 to 1000 employees
-              </option>
-              <option value="1000+ employees" className={styles.selectOption}>
-                1000+ employees
-              </option>
-            </select>
-
-
-          </div> */}
           <div className={styles.stickyWrapper}
-            // onClick={handlesave}
             style={{
               position: "sticky",
               bottom: 0,

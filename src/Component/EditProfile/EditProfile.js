@@ -57,7 +57,6 @@ const EditProfile = () => {
   // Payg states
   const params = new URLSearchParams(window.location.search);
   const isPayg = params.get('isPayg');
-  // console.log("isPayg:", isPayg);
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
   const [customerId, setcustomerId] = useState()
   const [userId1, setuserId1] = useState()
@@ -424,7 +423,7 @@ const EditProfile = () => {
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // latest first
     .map(invoice => invoice.subscription_id)[0]; // get first sub id
 
-  // console.log("PaygSubscriptionId", PaygSubscriptionId);
+
 
 
 

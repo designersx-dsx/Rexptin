@@ -41,12 +41,6 @@ const [stepValidation, setStepValidation] = useState({
   isDirty: false,   // ✅ new flag
 
 });
-// console.log(stepValidation)
-
-  
-// const handleValidationChange = (validation) => {
-//   setStepValidation(validation);
-// };
    const handleValidationChange = (validation) => {
   setStepValidation((prev) => ({
     ...prev,
@@ -56,7 +50,6 @@ const [stepValidation, setStepValidation] = useState({
   const handleClick = () => {
   const storedGender = sessionStorage.getItem("agentGender");
   const prevAgentGender = sessionStorage.getItem('prevAgentGender');
-  // console.log(storedGender.toLocaleLowerCase(),prevAgentGender?.toLocaleLowerCase())
   if (storedGender.toLocaleLowerCase() != prevAgentGender?.toLocaleLowerCase() ) {
     if (!stepValidation.voiceSelected) {
       setPopupType("failed");
@@ -67,7 +60,7 @@ const [stepValidation, setStepValidation] = useState({
     setPopupType("confirm");
     setPopupMessage("Agent Gender Changed. Would you like to Update Agent Avatar?");
     setShowPopup(true);
-    return; // 🔥 Stop further processing
+    return; 
 
   } else {
     handleCreateAgent();

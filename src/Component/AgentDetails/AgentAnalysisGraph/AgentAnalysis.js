@@ -56,7 +56,7 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
   const [callHistory, setCallHistory] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [callsForSelectedDate, setCallsForSelectedDate] = useState([]);
-  console.log(callsForSelectedDate, "callsForSelectedDate");
+  // console.log(callsForSelectedDate, "callsForSelectedDate");
   const { mergeCallHistoryData } = useCallHistoryStore1();
   const [itemsForSelectedDate, setItemsForSelectedDate] = useState([]);
   const [dateMap, setDateMap] = useState({}); // ⬅️ merged map: { "YYYY-MM-DD": [ items ] }
@@ -383,7 +383,16 @@ const AgentAnalysis = ({ data, callVolume, agentId, calApiKey, eventId }) => {
                       {/* show phone / call type for calls */}
                       {isCall && (
                         <div className={styles.timeRange}>
-                          <b>Phone:</b> {item.raw?.call_type}
+                          <b>Phone:</b> 
+
+
+                               {item.raw?.call_type === "phone_call"
+                    ? item.raw?.from_number
+                    : item.raw?.call_type === "api_chat"
+                      ? "chat"
+                      : item.raw?.chat_type === "api_chat"
+                        ? "chat"
+                        : item.raw?.call_type}
                         </div>
                       )}
                     </div>

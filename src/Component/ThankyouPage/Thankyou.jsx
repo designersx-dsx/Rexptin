@@ -24,8 +24,6 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   const hasRunRef = useRef(false);
 
   const convFiredRef = useRef(false);
-  // console.log("isAgentCreated", isAgentCreated);
-
   const navigate = useNavigate();
   const { id: paramMode } = useParams();
   const [searchParams] = useSearchParams();
@@ -50,10 +48,10 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   const subscriptionId = getQueryParam("subscriptionId");
   const agentId = getQueryParam("agentId");
   const userId = getQueryParam("userId");
-  const subsid = getQueryParam("subscriptionId"); // 👈 Old subscription to cancel
-  const agentName1 = getQueryParam("agentName"); // 👈 Old subscription to cancel
-  const agentCode1 = getQueryParam("agentCode"); // 👈 Old subscription to cancel
-  const businessName1 = getQueryParam("businessName"); // 👈 Old subscription to cancel
+  const subsid = getQueryParam("subscriptionId"); 
+  const agentName1 = getQueryParam("agentName"); 
+  const agentCode1 = getQueryParam("agentCode"); 
+  const businessName1 = getQueryParam("businessName"); 
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
   const [currencySymbol, setCurrencySymbol] = useState("");
 
@@ -142,7 +140,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
         }
 
 
-        // 👇 Deactivate older subs with subscription_status = 9 for this agent
+        //  Deactivate older subs with subscription_status = 9 for this agent
         if (agentId) {
           const deact = await deactivateAgentSubs(agentId);
           if (!deact.ok) {
@@ -265,7 +263,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
       }
 
       if (key === "msgPlan") {
-        console.log("dadadsadada")
+        // console.log("dadadsadada")
         let aa = sessionStorage.getItem("bussinessName")
           setAgentCode(sessionStorage.getItem("AgentCode"));
         setAgentName(sessionStorage.getItem("agentName"));
@@ -277,7 +275,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
           ? JSON.parse(storedBusinessDetails)
           : null;
 
-        console.log("businessData",businessData);
+        // console.log("businessData",businessData);
         
         const placeData = storedPlaceDetails
           ? JSON.parse(storedPlaceDetails)
@@ -298,7 +296,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
           businessNameVal = placeData.businessName;
         }
 
-        console.log("businessNameVal",businessNameVal)
+        // console.log("businessNameVal",businessNameVal)
 
         setBusinessName(businessNameVal || "Your Business");
         // ✅ Load plan details from localStorage
@@ -329,45 +327,6 @@ function Thankyou({ onSubmit, isAgentCreated }) {
       console.error("Failed to parse session storage values:", e);
     }
   }, [agentId, key]);
-
-  // useEffect(() => {
-  //   const priceIdFromSession = sessionStorage.getItem("priceId");
-  //   if (!priceIdFromSession) return;
-
-  //   const fetchPlanFromAPI = async () => {
-  //     try {
-  //       const res = await fetch("http://localhost:2512/api/products");
-  //       const products = await res.json();
-
-  //       for (const plan of products) {
-  //         const price = plan.prices.find((p) => p.id === priceIdFromSession);
-  //         if (price) {
-  //           const today = new Date();
-  //           const nextDate =
-  //             price.interval === "month"
-  //               ? new Date(today.setMonth(today.getMonth() + 1))
-  //               : new Date(today.setFullYear(today.getFullYear() + 1));
-  //           setSubscriptionInfo((prev) => ({
-  //             ...prev,
-  //             planName: plan.name,
-  //             planAmount: (price.unit_amount / 100).toFixed(2),
-  //             interval: price.interval,
-  //             planMins: price.metadata || plan.metadata?.minutes || "N/A",
-  //             nextRenewalDate: nextDate.toISOString(),
-  //             currentPeriodStart:
-  //               plan.currentPeriodStart || new Date().toISOString(),
-  //           }));
-  //           break;
-  //         }
-  //       }
-  //     } catch (err) {
-  //       console.error("Error loading plan from API:", err);
-  //     }
-  //   };
-
-  //   fetchPlanFromAPI();
-  // }, []);
-
   const cancelOldSubscription = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
@@ -397,7 +356,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   };
 
   const callNextApiAndRedirect = async () => {
-    // console.log("Calling updateFreeAgent API with:", { userId, agentId });
+  
 
     try {
       const res = await fetch(
@@ -417,17 +376,9 @@ function Thankyou({ onSubmit, isAgentCreated }) {
       if (data.success) {
         setPopupType("success");
         setPopupMessage("Agent upgraded successfully!");
-
-        // Cancel old subscription after upgrade
         if (subsid) {
           await cancelOldSubscription();
         }
-
-        // setTimeout(() => {
-        //   navigate("/dashboard", {
-        //     state: { currentLocation },
-        //   });
-        // }, 2000);
       } else {
         setPopupType("failed");
         setPopupMessage("Error completing subscription.");
@@ -459,13 +410,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
       // console.log("Subscription Info:", data);
 
       if (data && !data.error) {
-        // const { planAmount, ...rest } = data; // ignore planAmount
-        // setSubscriptionInfo((prev) => ({
-        //   ...prev,
-        //   ...rest, // keep existing planAmount
-        // }));
         setSubscriptionInfo(data);
-        // Extract currency symbol
         const currencyMap = {
           USD: "$",
           INR: "₹",
@@ -515,11 +460,6 @@ function Thankyou({ onSubmit, isAgentCreated }) {
       // console.log("Subscription Info:", data);
 
       if (data && !data.error) {
-        // const { planAmount, ...rest } = data; // ignore planAmount
-        // setSubscriptionInfo((prev) => ({
-        //   ...prev,
-        //   ...rest, // keep existing planAmount
-        // }));
         setSubscriptionInfo(data);
         // Extract currency symbol
         const currencyMap = {
@@ -547,7 +487,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
 
   useEffect(() => {
-    console.log("dddddddddd");
+    // console.log("dddddddddd");
 
 
     if (hasRunRef.current) return;
@@ -556,14 +496,14 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     const hasHandledThankYou = localStorage.getItem("hasHandledThankYou");
 
     localStorage.setItem("hasHandledThankYou", "true");
-    console.log("hasHandledThankYou", hasHandledThankYou)
+    // console.log("hasHandledThankYou", hasHandledThankYou)
 
     const shouldRunUpdateAgent = key === "update" && agentId && userId;
     const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
     const shouldRunCreateFlow = key === "create" && userId;
 
     const shouldMsgCheck = key === "msgPlan"
-    console.log(shouldMsgCheck, "gashas");
+    // console.log(shouldMsgCheck, "gashas");
 
 const cancelOldSubscription = async () => {
   try {
@@ -575,7 +515,7 @@ const cancelOldSubscription = async () => {
       subscriptionId,
     });
 
-    console.log("Cancel response:", response.data);
+    // console.log("Cancel response:", response.data);
 
   
   } catch (error) {
@@ -588,7 +528,7 @@ const cancelOldSubscription = async () => {
       try {
         setLoading(true);
         if (shouldMsgCheck) {
-          console.log("doneeeee this workkkk");
+          // console.log("doneeeee this workkkk");
 
           await new Promise((resolve) => setTimeout(resolve, 1500));
          
@@ -604,7 +544,7 @@ const cancelOldSubscription = async () => {
          
         }
         else if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
-          await callNextApiAndRedirect(); // handles update + cancellation
+          await callNextApiAndRedirect(); 
           await new Promise((resolve) => setTimeout(resolve, 1500));
           await fetchSubscriptionInfo();
         } else if (shouldRunCreateFlow) {
@@ -647,32 +587,16 @@ const cancelOldSubscription = async () => {
 
     return `${upperCurrency} ${symbol}${Number(amount).toLocaleString()}`;
   };
-  // useEffect(() => {
-  //   if (loading || !subscriptionInfo) return; // wait until subscription data is loaded
-  //   if (convFiredRef.current) return; // run only once
-  //   if (typeof window.gtag !== "function") return; // ensure gtag is available
-
-  //   window.gtag("event", "conversion", {
-  //     send_to: "AW-17437749926/M6gmCJzi-v8aEKbl-_pA",
-  //     value: Number(subscriptionInfo.planAmount || 1.0),
-  //     currency: (subscriptionInfo.currency || "USD").toUpperCase(),
-  //     transaction_id:
-  //       subscriptionInfo.subscriptionId ||
-  //       `${userId || "uid"}-${Date.now()}`, // unique id to prevent double counting
-  //   });
-
-  //   convFiredRef.current = true;
-  // }, [loading, subscriptionInfo, subscriptionId, userId]);
   useEffect(() => {
-    fetch("/animations/Lottie_Loader.json")  // public folder ka path
+    fetch("/animations/Lottie_Loader.json")
       .then((res) => res.json())
       .then((data) => setAnimationData(data))
       .catch((err) => console.error("Error loading animation:", err));
   }, []);
   useEffect(() => {
-    if (loading || !subscriptionInfo) return; // wait until subscription data is loaded
-    if (convFiredRef.current) return; // run only once
-    if (typeof window.gtag !== "function") return; // ensure gtag is available
+    if (loading || !subscriptionInfo) return; 
+    if (convFiredRef.current) return; 
+    if (typeof window.gtag !== "function") return; 
 
     window.gtag("event", "conversion", {
       send_to: "AW-17437749926/M6gmCJzi-v8aEKbl-_pA",
@@ -680,18 +604,12 @@ const cancelOldSubscription = async () => {
       currency: (subscriptionInfo.currency || "USD").toUpperCase(),
       transaction_id:
         subscriptionInfo.subscriptionId ||
-        `${userId || "uid"}-${Date.now()}`, // unique id to prevent double counting
+        `${userId || "uid"}-${Date.now()}`, 
     });
     convFiredRef.current = true;
   }, [loading, subscriptionInfo, subscriptionId, userId]);
   return (
-    // <div className={styles.container}>
-    //   <div className={styles.card}>
-    //     <h1 className={styles.heading}>🎉 Thank You!</h1>
-    //     {/* <p className={styles.subtext}>Redirecting for agent creation...</p> */}
-    //     {popupMessage && <p className={styles.popup}>{popupMessage}</p>}
-    //   </div>
-    // </div>
+
     <>
 
       {showAnimation ?

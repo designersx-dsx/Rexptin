@@ -208,15 +208,6 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 autoComplete="off"
                 inputMode="text"
               />
-              {/* <button
-                type="button"
-                className={styles.editBtn}
-                onClick={handleEditClick}
-                aria-label="Edit agent name"
-                title="Edit agent name"
-              >
-                <img src="/svg/edit-svg.svg" alt="edit" />
-              </button> */}
             </div>
           </div>
         </div>

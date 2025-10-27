@@ -37,7 +37,7 @@ const IntegrateAgent = () => {
   };
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
   const agentId = agentDetails?.agent_id;
-  const agentCode=agentDetails?.agentCode
+  const agentCode = agentDetails?.agentCode
   const webUrl = agentDetails?.business?.webUrl
   const agentWidgetDomain = agentDetails
   // const script = agentId
@@ -45,7 +45,7 @@ const IntegrateAgent = () => {
   //   : "";
   // fdf
   // fd
- const script = agentId
+  const script = agentId
     ? `<script id="rex-widget-script" src="https://app.rexpt.in/widget.js?agentId=${agentCode}"></script>`
     : "";
   const [isModalOpen, setIsModalOpen] = useState(false);

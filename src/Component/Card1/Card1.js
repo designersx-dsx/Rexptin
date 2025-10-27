@@ -2,7 +2,7 @@ import React from 'react'
 import styles from '../Card1/Card1.module.css'
 
 const Card1 = ({ data }) => {
-    console.log(data, "data")
+    // console.log(data, "data")
  const formatServices = (services) => {
   if (typeof services === 'string') {
     try {

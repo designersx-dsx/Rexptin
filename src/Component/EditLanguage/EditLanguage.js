@@ -39,10 +39,6 @@ function EditLanguage() {
       navigate,
       setHasFetched,
     });
-
-  // const handleClick=()=>{
-  //   handleCreateAgent();
-  // }
      const handleClick=()=>{
       if(isFormChanged){
         handleCreateAgent();

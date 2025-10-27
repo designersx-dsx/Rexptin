@@ -15,7 +15,7 @@ const RoutePersistence = () => {
     };
   }, [location]);
 
-  return null; // nothing rendered
+  return null;
 };
 
 export default RoutePersistence;

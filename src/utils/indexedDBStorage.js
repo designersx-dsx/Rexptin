@@ -22,8 +22,6 @@ export const indexedDBStorage = {
     if (!value) return null;
 
     try {
-      // Pehle encrypted parse koshish karo
-      // console.log('get with enc',decryptData(value))
       return { state: decryptData(value) };
 
     } catch (err) {

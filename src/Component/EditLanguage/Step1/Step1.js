@@ -290,8 +290,6 @@ useEffect(() => {
                 });
                 return false;
             }
-
-            // Save selected language to session or do further steps if needed
             sessionStorage.setItem("selectedLang", selectedLang);
             sessionStorage.setItem("selectedLangCode", selectedLangCode);
             onStepChange?.(6);

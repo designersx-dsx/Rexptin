@@ -28,7 +28,7 @@ const Step4 = forwardRef(
     const [isChatWidgetEnabled, setIsChatWidgetEnabled] = useState(
       storedWidgetState ? storedWidgetState === "true" : true
     );
-    console.log(isChatWidgetEnabled,"isChatWidgetEnabled")
+    
     useEffect(() => {
       const storedAgentRole = sessionStorage.getItem("agentRole");
       const storedNote = sessionStorage.getItem("agentNote");
@@ -90,42 +90,6 @@ const Step4 = forwardRef(
           "A LEAD Qualifier handles inbound sales queries and helps identify potential leads for your business.",
       },
     ];
-    // Block refresh and context menu
-    // useEffect(() => {
-    //   const blockKeyboardRefresh = (e) => {
-    //     if (
-    //       e.key === "F5" ||
-    //       (e.ctrlKey && e.key === "r") ||
-    //       (e.metaKey && e.key === "r")
-    //     ) {
-    //       e.preventDefault();
-    //       e.stopPropagation();
-    //     }
-    //   };
-
-    //   const blockMouseRefresh = (e) => {
-    //     if (e.button === 1 || e.button === 2) {
-    //       e.preventDefault();
-    //     }
-    //   };
-
-    //   const handleBeforeUnload = (e) => {
-    //     e.preventDefault();
-    //     e.returnValue = "";
-    //   };
-
-    //   window.addEventListener("keydown", blockKeyboardRefresh);
-    //   window.addEventListener("mousedown", blockMouseRefresh);
-    //   window.addEventListener("beforeunload", handleBeforeUnload);
-    //   window.addEventListener("contextmenu", (e) => e.preventDefault());
-
-    //   return () => {
-    //     window.removeEventListener("keydown", blockKeyboardRefresh);
-    //     window.removeEventListener("mousedown", blockMouseRefresh);
-    //     window.removeEventListener("beforeunload", handleBeforeUnload);
-    //     window.removeEventListener("contextmenu", (e) => e.preventDefault());
-    //   };
-    // }, []);
     return (
       <>
         <div>

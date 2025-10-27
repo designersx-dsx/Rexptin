@@ -36,8 +36,7 @@ const Step3 = ({onValidationChange,originalRole,originalName,originalAvatar}) =>
   const [agentNote, setAgentNote] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
   const [loading,setLoading]=useState(false)
-  // console.log('gender',gender,availableAvatars)
- 
+
   useEffect(() => {
     const storedGender = sessionStorage.getItem("agentGender") ;
     const capitalizeGender = gender.charAt(0).toUpperCase() + gender.slice(1);
@@ -106,7 +105,6 @@ const Step3 = ({onValidationChange,originalRole,originalName,originalAvatar}) =>
   return (
     <>
     <div className={styles.sliderContainer}>
-      {/* <h2 className={styles.heading}>{EditingMode ? 'Edit: Name and Avtar' : 'Name and Avtar'}</h2> */}
       <Slider ref={sliderRef} {...settings}>
         {availableAvatars?.map((avatar, index) => (
           <div key={index} className={styles.slide} id="slideradio">

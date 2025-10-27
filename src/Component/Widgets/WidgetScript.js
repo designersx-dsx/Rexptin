@@ -16,7 +16,6 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
   const [existingDomain, setExistingDomain] = useState([]);
   const [loading, setLoading] = useState(false);
   const [generateMode, setGenerateMode] = useState(false);
-  // Each domain input keeps value, isVerified, loading, error, debounceTimer
   const [domainInputs, setDomainInputs] = useState([
     { value: url, isVerified: false, loading: false, error: "", debounceTimer: null },
   ]);
