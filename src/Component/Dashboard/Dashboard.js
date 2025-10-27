@@ -55,14 +55,19 @@ import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import NotificationView from "../Notifications/NotificationView";
 
 function Dashboard() {
-  const { agents, totalCalls, total_chat, hasFetched, setDashboardData, setHasFetched } =
-    useDashboardStore();
-
+  const {
+    agents,
+    totalCalls,
+    total_chat,
+    hasFetched,
+    setDashboardData,
+    setHasFetched,
+  } = useDashboardStore();
 
   const allAgentsData = JSON.parse(
     sessionStorage.getItem("dashboard-session-storage")
   );
-  const currentAgents = allAgentsData?.state?.agents
+  const currentAgents = allAgentsData?.state?.agents;
 
   const [showDelayedPopup, setShowDelayedPopup] = useState(false);
 
@@ -80,7 +85,6 @@ function Dashboard() {
 
     return () => clearTimeout(timer);
   }, [currentAgents]);
-
 
   const isRefreshing = useContext(RefreshContext);
 
@@ -131,7 +135,6 @@ function Dashboard() {
   const [dbBookingCount, setDbBookingCount] = useState(0);
   const [bookingCount, setBookingCount] = useState(0);
 
-
   const [callId, setCallId] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
@@ -152,13 +155,13 @@ function Dashboard() {
   const [isAssignApi, setisAssignApi] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
-  const [checkPaygStatus, setcheckPaygStatus] = useState()
-  const [paygEnabledPopup, setpaygEnabledPopup] = useState(false)
+  const [checkPaygStatus, setcheckPaygStatus] = useState();
+  const [paygEnabledPopup, setpaygEnabledPopup] = useState(false);
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
   const [show, setShow] = useState(false);
   const [showPaygConfirm, setshowPaygConfirm] = useState(false);
   const [close, setClose] = useState(false);
-  const [assignNumberNavigate, setassignNumberNavigate] = useState(false)
+  const [assignNumberNavigate, setassignNumberNavigate] = useState(false);
   const [modelOpen, setModelOpen] = useState(false);
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
@@ -172,9 +175,9 @@ function Dashboard() {
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   //dev_Shorya1
   const closeAssignNumberModal = () => {
-    setIsAssignNumberModalOpen(false)
-    setisAssignApi(false)
-  }
+    setIsAssignNumberModalOpen(false);
+    setisAssignApi(false);
+  };
   //   const dropdownRef = useRef(null);
   // =======
   // const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
@@ -182,7 +185,6 @@ function Dashboard() {
   const dropdownRefs = useRef({});
   // >>>>>>> live_copy
   const location = useLocation();
-
 
   const [pendingUpgradeAgent, setPendingUpgradeAgent] = useState(null);
   const [showUpgradeConfirmModal, setShowUpgradeConfirmModal] = useState(false);
@@ -215,7 +217,7 @@ function Dashboard() {
   const notifications = useNotificationStore((state) => state.notifications);
   const unreadCount = notifications.filter((n) => n.status === "unread").length;
   const [redirectButton, setredirectButton] = useState(false);
-  const [disableLoading, setDisableLoading] = useState(false)
+  const [disableLoading, setDisableLoading] = useState(false);
 
   const [showDashboardTour, setShowDashboardTour] = useState(false);
   const [tourStatusLoaded, setTourStatusLoaded] = useState(false);
@@ -223,8 +225,7 @@ function Dashboard() {
   const [tourDropdownPos, setTourDropdownPos] = useState(null);
   const [forceTourOpenAgentId, setForceTourOpenAgentId] = useState(null);
   const [lockBgForTour, setLockBgForTour] = useState(false);
-  const [notificatioView, setNotificationsView] = useState(false)
-
+  const [notificatioView, setNotificationsView] = useState(false);
 
   const closeTourMenu = () => {
     setOpenDropdown(null);
@@ -239,7 +240,7 @@ function Dashboard() {
       setTourElevateDropdown(false);
     });
   };
-  sessionStorage.removeItem("isUser")
+  sessionStorage.removeItem("isUser");
   useEffect(() => {
     if (!userId) return;
     let cancelled = false;
@@ -276,6 +277,20 @@ function Dashboard() {
     };
   }, [userId]);
 
+const startGoogleCalendarOAuth = async () => {
+  try {
+    const base = (process.env.REACT_APP_API_BASE_URL || "").replace(/\/$/, "");
+    const baseNoApi = base.replace(/\/api\/?$/, "");
+    const u = `${baseNoApi}/google/oauth2/url?userId=${encodeURIComponent(userId)}`;
+
+    const res = await fetch(u);
+    const { url } = await res.json();
+    window.location.assign(url); 
+  } catch (e) {
+    setPopupType("failed");
+    setPopupMessage(e.message || "Could not start Google connection");
+  }
+};
 
   const introRef = useRef(null);
   const tourStartLockRef = useRef(false);
@@ -401,15 +416,10 @@ function Dashboard() {
       const rect = triggerEl?.getBoundingClientRect();
       if (!rect) return;
 
-
       // Assign Number
-
-
-
 
       const GAP = 8;
       const DROPDOWN_WIDTH = 170;
-
 
       setTourDropdownPos({
         top: rect.bottom + GAP,
@@ -440,10 +450,7 @@ function Dashboard() {
       highlightClass: styles.tourHighlight,
     });
 
-
     // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
-
-
 
     const isMenuId = (id = "") =>
       id.startsWith("tour-menu-trigger-") ||
@@ -480,7 +487,6 @@ function Dashboard() {
         setLockBgForTour(false);
       }
     });
-
 
     intro.onafterchange(() => {
       requestAnimationFrame(() => intro.refresh());
@@ -591,25 +597,21 @@ function Dashboard() {
     if (agent?.isDeactivated === 1) {
       handleInactiveAgentAlert();
       return;
-    }
-    else if (isValid.paymentVerified === true) {
+    } else if (isValid.paymentVerified === true) {
       navigate("/assign-number", {
         state: { agent: agent },
       });
-    }
-    else if (isValid.success === true && assignNumberPaid === false) {
+    } else if (isValid.success === true && assignNumberPaid === false) {
       // alert("Your Assign Number for 1 mpnth is expired now charge again");
       // return
       // openAssignNumberModal();
-      setShowUpgradeConfirmModal(true)
-      return
-    }
-    else if (isValid.isAssignFreeDone === 1 && isValid.success === false) {
+      setShowUpgradeConfirmModal(true);
+      return;
+    } else if (isValid.isAssignFreeDone === 1 && isValid.success === false) {
       // openAssignNumberModal();
-      setShowUpgradeConfirmModal(true)
-      return
+      setShowUpgradeConfirmModal(true);
+      return;
     }
-
 
     // const planName = agent?.subscription?.plan_name || "Free";
     // if (planName.toLowerCase() === "free" && !assignNumberPaid) {
@@ -703,8 +705,8 @@ function Dashboard() {
       sessionStorage.removeItem("agentCode");
       sessionStorage.removeItem("businessUrl");
       sessionStorage.removeItem("selectedServices");
-      sessionStorage.removeItem("chatWebWidget")
-       sessionStorage.removeItem("subType")
+      sessionStorage.removeItem("chatWebWidget");
+      sessionStorage.removeItem("subType");
     } else {
       localStorage.removeItem("UpdationMode");
       localStorage.removeItem("displayBusinessName");
@@ -805,12 +807,9 @@ function Dashboard() {
       sessionStorage.removeItem("selectedSiteMapUrls");
       sessionStorage.removeItem("urls");
       sessionStorage.removeItem("chat_agent_id");
-      sessionStorage.removeItem("chat_llm_id")
-      sessionStorage.removeItem("chatWebWidget")
-            sessionStorage.removeItem("subType")
-      
-
-
+      sessionStorage.removeItem("chat_llm_id");
+      sessionStorage.removeItem("chatWebWidget");
+      sessionStorage.removeItem("subType");
     }
   }, []);
 
@@ -844,7 +843,7 @@ function Dashboard() {
           const json = await resp.json();
 
           const filtered =
-            json?.bookings?.filter(b =>
+            json?.bookings?.filter((b) =>
               ag?.eventId ? Number(b.eventTypeId) === Number(ag.eventId) : true
             ) ?? [];
 
@@ -934,7 +933,11 @@ function Dashboard() {
         calApiKey: calApiKeyMap[agent.agent_id] || null,
       }));
 
-      setDashboardData(agentsWithCalKeys, res.total_call || 0, res.total_chat || 0);
+      setDashboardData(
+        agentsWithCalKeys,
+        res.total_call || 0,
+        res.total_chat || 0
+      );
       setHasFetched(true);
       // localStorage.setItem("userId", userId);
       // localStorage.setItem("agents", JSON.stringify(agentsWithCalKeys));
@@ -943,10 +946,10 @@ function Dashboard() {
       console.error("Error fetching dashboard data or Cal API keys:", error);
     }
   };
-  const [showInActive, setShowInActive] = useState(false)
+  const [showInActive, setShowInActive] = useState(false);
   const handleInactivePopUp = () => {
-    setShowInActive(true)
-  }
+    setShowInActive(true);
+  };
   useEffect(() => {
     if (!hasFetched || !agents.length) {
       fetchAndMergeCalApiKeys();
@@ -1363,9 +1366,12 @@ function Dashboard() {
       setdeleteloading(true);
 
       try {
-        let res = null
-        if (assignNumberPaid === true && (agent.agentPlan === "free" || agent.agentPlan === "Pay-As-You-Go")) {
-          console.log("Cancel Schedule")
+        let res = null;
+        if (
+          assignNumberPaid === true &&
+          (agent.agentPlan === "free" || agent.agentPlan === "Pay-As-You-Go")
+        ) {
+          console.log("Cancel Schedule");
           res = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
             method: "POST",
             headers: {
@@ -1378,31 +1384,28 @@ function Dashboard() {
             customerId: customer_id,
             agentId: agent_id,
             status: "inactive",
-            isFree: (agent.agentPlan === "free") || (agent.agentPlan === "Pay-As-You-Go" ? true : false)
-
+            isFree:
+              agent.agentPlan === "free" ||
+              (agent.agentPlan === "Pay-As-You-Go" ? true : false),
           };
           const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(requestData),
           });
-          if (response.ok) { console.log('Agent Payg Cancelled Succesfully') }
-
-          else {
-            console.log('Failed to send the request to save the agent.')
+          if (response.ok) {
+            console.log("Agent Payg Cancelled Succesfully");
+          } else {
+            console.log("Failed to send the request to save the agent.");
           }
-          console.log("assign cancel")
-          await checkAssignNumber()
-        }
-        else {
-          res = await refundAndCancelSubscriptionAgnetApi(
-            agent_id,
-            mins_left
-          );
-          console.log("cancel for all")
+          console.log("assign cancel");
+          await checkAssignNumber();
+        } else {
+          res = await refundAndCancelSubscriptionAgnetApi(agent_id, mins_left);
+          console.log("cancel for all");
         }
         if (res) {
           setTimeout(() => {
@@ -1418,8 +1421,8 @@ function Dashboard() {
       setPopupMessage("Subscription Cancelled successfully!");
       setPopupType("success");
       fetchAndMergeCalApiKeys();
-      checkAssignNumber()
-      checkAgentPaygStatus(agentId)
+      checkAssignNumber();
+      checkAgentPaygStatus(agentId);
     } catch (error) {
       setPopupMessage(`Failed to Cancel Subscription: ${error.message}`);
       setPopupType("failed");
@@ -2128,10 +2131,9 @@ function Dashboard() {
     }
   };
 
-
   const handlePaymentAssignNumber = async (agentId) => {
     try {
-      setDisableLoading(true)
+      setDisableLoading(true);
       const baseUrl = window.location.origin;
       let res = await axios.post(`${API_BASE_URL}/pay-as-you-go-checkout`, {
         agentId: agentId,
@@ -2139,8 +2141,8 @@ function Dashboard() {
         userId: decodeTokenData?.id,
         url: `${baseUrl}/dashboard?AssignNumber=true`,
         cancelUrl: `${baseUrl}/dashboard?AssignNumber=false`,
-        isAssignNumber: true
-      })
+        isAssignNumber: true,
+      });
       if (res?.data?.checkoutUrl) {
         console.log("Redirecting to:", res.data.checkoutUrl);
         window.location.href = res.data.checkoutUrl; // 👈 redirect karega
@@ -2149,17 +2151,10 @@ function Dashboard() {
       }
     } catch (error) {
       console.log({ error });
-
-
+    } finally {
+      setDisableLoading(false);
     }
-    finally {
-      setDisableLoading(false)
-    }
-
-
-
-  }
-
+  };
 
   // const handleUpgradeClick = (agent) => {
   //   // console.log("agent", agent)
@@ -2347,12 +2342,11 @@ function Dashboard() {
     return number;
   }
 
-  const customer_id = decodeTokenData?.customerId
+  const customer_id = decodeTokenData?.customerId;
 
-  const [paygStatusLoading, setpaygStatusLoading] = useState(true)
+  const [paygStatusLoading, setpaygStatusLoading] = useState(true);
 
   const [isPaygActive, setisPaygActive] = useState();
-
 
   // const [paygStatusLoading, setpaygStatusLoading] = useState(true);
 
@@ -2393,12 +2387,8 @@ function Dashboard() {
       console.error("Error checking Payg status:", error);
       // setPopupMessage("Failed to check agent's Pay-as-you-go status.");
       // setPopupType("failed");
-
-
-    }
-    finally {
-      setpaygStatusLoading(false)
-
+    } finally {
+      setpaygStatusLoading(false);
     }
   };
 
@@ -2409,8 +2399,7 @@ function Dashboard() {
   }, [agentId]);
 
   const handleTogglePayG = async () => {
-
-    setpaygStatusLoading(true)
+    setpaygStatusLoading(true);
     // console.log("agentToPaygActivate", agentToPaygActivate)
 
     try {
@@ -2419,8 +2408,11 @@ function Dashboard() {
         customerId: customer_id,
         agentId: agentId,
         status: isPaygActive ? "inactive" : "active",
-        isFree: (agentToPaygActivate.agentPlan === "free") || (agentToPaygActivate.agentPlan === "Pay-As-You-Go" ? true : false),
-        isByAdmin: agentToPaygActivate?.subscriptionId === "byAdmin" ? true : false
+        isFree:
+          agentToPaygActivate.agentPlan === "free" ||
+          (agentToPaygActivate.agentPlan === "Pay-As-You-Go" ? true : false),
+        isByAdmin:
+          agentToPaygActivate?.subscriptionId === "byAdmin" ? true : false,
       };
       // Call the API to save the agent's payg status
       const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
@@ -2454,7 +2446,7 @@ function Dashboard() {
         // console.log("dasdd", responseData)
         setredirectButton(true);
         setPopupMessage(responseData?.error);
-        setpaygStatusLoading(false)
+        setpaygStatusLoading(false);
         setPopupType("failed"); // Pop-up for disabled
       } else {
         console.error("Failed to send the request to save the agent.");
@@ -2467,10 +2459,10 @@ function Dashboard() {
   };
 
   const handleAssignNumberBuy = async () => {
-    const agentAssignNumberdetailsData = agentDetails
-    setisAssignApi(true)
+    const agentAssignNumberdetailsData = agentDetails;
+    setisAssignApi(true);
     // console.log("agentAssignNumberdetailsData", agentAssignNumberdetailsData)
-    const currentUrl = window.location.origin
+    const currentUrl = window.location.origin;
     const requestData = {
       customerId: customer_id,
       // priceId: "price_1RximE4T6s9Z2zBzdfpTUy20", // EXTRA MINUTES 5 dollar
@@ -2479,16 +2471,16 @@ function Dashboard() {
       userId: userId,
       url: `${currentUrl}/dashboard?AssignNumber=true`,
       cancelUrl: `${currentUrl}/dashboard?AssignNumber=false`,
-      agentId: agentDetails?.agent_id ? agentDetails?.agent_id : null
+      agentId: agentDetails?.agent_id ? agentDetails?.agent_id : null,
     };
     try {
       const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(requestData)
+        body: JSON.stringify(requestData),
       });
 
       if (response.ok) {
@@ -2497,22 +2489,22 @@ function Dashboard() {
           window.location.href = responseData.checkoutUrl;
         }
 
-        console.log('API response:', responseData); // You can handle the API response heree
+        console.log("API response:", responseData); // You can handle the API response heree
       } else {
-        console.error('Failed to send the request');
+        console.error("Failed to send the request");
       }
-
     } catch (error) {
-      console.error('Error While doing payment for Assign Number:', error);
+      console.error("Error While doing payment for Assign Number:", error);
     }
-  }
-
+  };
 
   const checkAssignNumber = async () => {
     try {
       // setLoading(true);
 
-      const res = await axios.post(`${API_BASE_URL}/assign-number-check`, { customer_id });
+      const res = await axios.post(`${API_BASE_URL}/assign-number-check`, {
+        customer_id,
+      });
 
       if (res.data.success) {
         setAssignNumberPaid(true);
@@ -2527,39 +2519,41 @@ function Dashboard() {
 
   // Check Assign Number payment
   useEffect(() => {
-    checkAssignNumber()
-  }, [])
+    checkAssignNumber();
+  }, []);
 
   const urlParams = new URLSearchParams(window.location.search);
-  const isAssignNumber = urlParams.get('AssignNumber');
+  const isAssignNumber = urlParams.get("AssignNumber");
   useEffect(() => {
     if (isAssignNumber === "false") {
       setPopupType("failed");
       setPopupMessage(`Payment Cancelled for Assign Number`);
-    }
-    else if (isAssignNumber === "true") {
+    } else if (isAssignNumber === "true") {
       setPopupType("success");
-      setPopupMessage(`Payment Success for Assign Number, Now you can Assign Numbers to Your Free Agent`);
+      setPopupMessage(
+        `Payment Success for Assign Number, Now you can Assign Numbers to Your Free Agent`
+      );
       setTimeout(() => {
         navigate("/assign-number", {
           state: { agent: agentDetails?.agent_id },
-        })
+        });
       }, 2000);
 
       if (assignNumberNavigate === true) {
         navigate("/assign-number", {
           state: { agent: agentDetails?.agent_id },
-        })
+        });
       }
-
     }
-  }, [])
+  }, []);
 
   const checkUserPayg = async () => {
     try {
       // setLoading(true);
 
-      const res = await axios.post(`${API_BASE_URL}/check-payg-enable`, { customer_id });
+      const res = await axios.post(`${API_BASE_URL}/check-payg-enable`, {
+        customer_id,
+      });
 
       if (res?.data?.success) {
         setcheckPaygStatus(res?.data?.paygStatus);
@@ -2570,37 +2564,39 @@ function Dashboard() {
       console.error("Error checking payg status:", error);
       setcheckPaygStatus(false);
     }
-
-  }
+  };
   useEffect(() => {
-
-    checkUserPayg()
-  }, [checkPaygStatus, paygEnabledPopup])
+    checkUserPayg();
+  }, [checkPaygStatus, paygEnabledPopup]);
 
   // Payg Error
   useEffect(() => {
     // console.log("checkPaygStatus",checkPaygStatus)
-    if (paygEnabledPopup === true && (checkPaygStatus === null || checkPaygStatus === 0)) {
-      setredirectButton(true)
+    if (
+      paygEnabledPopup === true &&
+      (checkPaygStatus === null || checkPaygStatus === 0)
+    ) {
+      setredirectButton(true);
       setPopupMessage("Pay-As-You-Go is not enabled for your Account.");
-      setpaygStatusLoading(false)
+      setpaygStatusLoading(false);
       setPopupType("failed"); // Pop-up for disabled
     }
-  }, [checkPaygStatus, paygEnabledPopup])
-
-
+  }, [checkPaygStatus, paygEnabledPopup]);
 
   const handleAssignNumberValidtyCheck = async (agentId) => {
     try {
-      const res = await axios.post(`${API_BASE_URL}/check-assign-number-month`, { agentId });
+      const res = await axios.post(
+        `${API_BASE_URL}/check-assign-number-month`,
+        { agentId }
+      );
       return res.data;
     } catch (error) {
       console.error("Error checking assign number:", error);
       return false;
     }
   };
-  const currentPlan1 = pendingUpgradeAgent?.agentPlan ?? agentDetails?.agentPlan; // fallback
-
+  const currentPlan1 =
+    pendingUpgradeAgent?.agentPlan ?? agentDetails?.agentPlan; // fallback
 
   return (
     <div>
@@ -2615,7 +2611,6 @@ function Dashboard() {
         />
       ) : null}
 
-
       {lockBgForTour && (
         <div
           className={styles.tourClickShield}
@@ -2623,8 +2618,6 @@ function Dashboard() {
           onClick={(e) => e.stopPropagation()}
         />
       )}
-
-
 
       <div className={styles.forSticky}>
         <header className={styles.header}>
@@ -2660,7 +2653,7 @@ function Dashboard() {
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationWrapper}>
-              {!notificatioView ?
+              {!notificatioView ? (
                 <div
                   className={styles.notificationIcon}
                   onClick={() => setNotificationsView((prev) => !prev)} //  navigate("/notifications")
@@ -2698,17 +2691,30 @@ function Dashboard() {
                     <span className={styles.unreadBadge}>{unreadCount}</span>
                   )}
                 </div>
-                :
+              ) : (
                 <div
                   className={styles.notificationIcon}
                   onClick={() => setNotificationsView((prev) => !prev)} //  navigate("/notifications")
                 >
-                  <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg
+                    width="50"
+                    height="50"
+                    viewBox="0 0 50 50"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
                     <rect width="50" height="50" rx="25" fill="#F9F9F9" />
-                    <path d="M30.4346 18.4346C30.747 18.1222 31.253 18.1222 31.5654 18.4346C31.8778 18.747 31.8778 19.253 31.5654 19.5654L26.2725 24.8584C26.235 24.8959 26.2139 24.947 26.2139 25C26.2139 25.053 26.235 25.1041 26.2725 25.1416L31.5654 30.4346C31.8778 30.747 31.8778 31.253 31.5654 31.5654C31.253 31.8778 30.747 31.8778 30.4346 31.5654L25.1416 26.2725C25.1041 26.235 25.053 26.2139 25 26.2139C24.947 26.2139 24.8959 26.235 24.8584 26.2725L19.5654 31.5654C19.253 31.8778 18.747 31.8778 18.4346 31.5654C18.1222 31.253 18.1222 30.747 18.4346 30.4346L23.7275 25.1416C23.765 25.1041 23.7861 25.053 23.7861 25C23.7861 24.947 23.765 24.8959 23.7275 24.8584L18.4346 19.5654C18.1222 19.253 18.1222 18.747 18.4346 18.4346C18.747 18.1222 19.253 18.1222 19.5654 18.4346L24.8584 23.7275C24.8959 23.765 24.947 23.7861 25 23.7861C25.053 23.7861 25.1041 23.765 25.1416 23.7275L30.4346 18.4346Z" fill="#222222" stroke="white" stroke-width="0.4" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                      d="M30.4346 18.4346C30.747 18.1222 31.253 18.1222 31.5654 18.4346C31.8778 18.747 31.8778 19.253 31.5654 19.5654L26.2725 24.8584C26.235 24.8959 26.2139 24.947 26.2139 25C26.2139 25.053 26.235 25.1041 26.2725 25.1416L31.5654 30.4346C31.8778 30.747 31.8778 31.253 31.5654 31.5654C31.253 31.8778 30.747 31.8778 30.4346 31.5654L25.1416 26.2725C25.1041 26.235 25.053 26.2139 25 26.2139C24.947 26.2139 24.8959 26.235 24.8584 26.2725L19.5654 31.5654C19.253 31.8778 18.747 31.8778 18.4346 31.5654C18.1222 31.253 18.1222 30.747 18.4346 30.4346L23.7275 25.1416C23.765 25.1041 23.7861 25.053 23.7861 25C23.7861 24.947 23.765 24.8959 23.7275 24.8584L18.4346 19.5654C18.1222 19.253 18.1222 18.747 18.4346 18.4346C18.747 18.1222 19.253 18.1222 19.5654 18.4346L24.8584 23.7275C24.8959 23.765 24.947 23.7861 25 23.7861C25.053 23.7861 25.1041 23.765 25.1416 23.7275L30.4346 18.4346Z"
+                      fill="#222222"
+                      stroke="white"
+                      stroke-width="0.4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
                   </svg>
                 </div>
-              }
+              )}
             </div>
             <div className={styles.notificationIcon} onClick={handleLogout}>
               <svg
@@ -2736,7 +2742,7 @@ function Dashboard() {
         </header>
 
         {/* Ankush Code Start */}
-        {!notificatioView &&
+        {!notificatioView && (
           <section className={styles.agentCard}>
             <div
               id="tour-total-calls"
@@ -2744,8 +2750,9 @@ function Dashboard() {
               onClick={handleTotalCallClick}
             >
               <h2
-                className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
-                  }`}
+                className={`${styles.agentHeading} ${
+                  isSmallFont ? styles.smallFont : ""
+                }`}
               >
                 {totalCalls || 0}
               </h2>
@@ -2760,422 +2767,439 @@ function Dashboard() {
             >
               {" "}
               <h2
-                className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
-                  }`}
+                className={`${styles.agentHeading} ${
+                  isSmallFont ? styles.smallFont : ""
+                }`}
               >
                 {bookingCount}
               </h2>
               <img src="svg/calender-booking.svg" alt="calender-booking" />
             </div>
           </section>
-        }
+        )}
         {/* Ankush code end */}
       </div>
-      {!notificatioView ?
-        (
-          <div className={styles.main}>
-            {show ? (
-              <Modal isOpen={show} onClose={handleCLose}>
-                <></>
-                <h2 className={styles.apologyHead}>Comming Soon</h2>
+      {!notificatioView ? (
+        <div className={styles.main}>
+          {show ? (
+            <Modal isOpen={show} onClose={handleCLose}>
+              <></>
+              <h2 className={styles.apologyHead}>Comming Soon</h2>
 
-                <p className={styles.apologyHeadText} apologyHeadText>
-                  We apologise, But our paid plans are being tested to pass our
-                  "Rigorous QA Process" For now, If your sign-up for a "Free
-                  Account", We promise to send you Upgradation Options in your email
-                  within next 2 weeks.
-                </p>
+              <p className={styles.apologyHeadText} apologyHeadText>
+                We apologise, But our paid plans are being tested to pass our
+                "Rigorous QA Process" For now, If your sign-up for a "Free
+                Account", We promise to send you Upgradation Options in your
+                email within next 2 weeks.
+              </p>
 
-                <div className={styles.zz}></div>
-              </Modal>
-            ) : null}
+              <div className={styles.zz}></div>
+            </Modal>
+          ) : null}
 
-            {localAgents?.map((agent) => {
-              const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
-              // console.log("agentagentagent", agent)
-              const randomPlan = `${agent?.subscription?.plan_name}Plan`;
-              // console.log("randomPlan",randomPlan)
+          {localAgents?.map((agent) => {
+            const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
+            // console.log("agentagentagent", agent)
+            const randomPlan = `${agent?.subscription?.plan_name}Plan`;
+            // console.log("randomPlan",randomPlan)
 
-              let assignedNumbers = [];
-              if (agent.voip_numbers) {
-                try {
-                  assignedNumbers = JSON.parse(agent?.voip_numbers);
-                } catch {
-                  assignedNumbers = [];
-                }
+            let assignedNumbers = [];
+            if (agent.voip_numbers) {
+              try {
+                assignedNumbers = JSON.parse(agent?.voip_numbers);
+              } catch {
+                assignedNumbers = [];
               }
-              const isTourOpen =
-                openDropdown === agent.agent_id ||
-                forceTourOpenAgentId === agent.agent_id;
+            }
+            const isTourOpen =
+              openDropdown === agent.agent_id ||
+              forceTourOpenAgentId === agent.agent_id;
 
-              return (
-                <div
-                  key={agent.agent_id}
-                  className={`${styles.LangStyle} ${styles[randomPlan]}`}
-                  onClick={() => handleCardClick(agent)}
-                >
-                  <div className={styles?.PlanPriceMain}>
-                    <h3 className={styles?.PlanPrice}>
-                      {/* {agent?.subscription?.plan_name === "Add-on Services"
+            return (
+              <div
+                key={agent.agent_id}
+                className={`${styles.LangStyle} ${styles[randomPlan]}`}
+                onClick={() => handleCardClick(agent)}
+              >
+                <div className={styles?.PlanPriceMain}>
+                  <h3 className={styles?.PlanPrice}>
+                    {/* {agent?.subscription?.plan_name === "Add-on Services"
                     // {agent?.subscription?.plan_name === "PAYG Extra" // Live Acccount
                     ? "Pay-As-You-Go"
                     : agent?.subscription?.plan_name || "Free"}
                   {" Plan"} */}
-                      {(
-                        agent?.subscription?.plan_name
-                          ? agent?.subscription?.plan_name === "Add-on Services"
-                            ? "Pay-As-You-Go"
-                            : agent?.subscription?.plan_name
-                          : agent?.agentPlan || "Free"
-                      ) + " Plan"}
-                    </h3>
-                  </div>
-                  <div className={styles.Lang}>
-                    <div className={styles.LangItem}>
-                      <div className={styles.LangIcon}>
-                        <div className={styles.agentAvatarContainer}>
-                          <img
-                            src={agent?.avatar || "images/SofiaAgent.png"}
-                            alt="English"
-                          />
-                        </div>
-                        {/* <img src={"images/SofiaAgent.png"}alt="English" /> */}
+                    {(agent?.subscription?.plan_name
+                      ? agent?.subscription?.plan_name === "Add-on Services"
+                        ? "Pay-As-You-Go"
+                        : agent?.subscription?.plan_name
+                      : agent?.agentPlan || "Free") + " Plan"}
+                  </h3>
+                </div>
+                <div className={styles.Lang}>
+                  <div className={styles.LangItem}>
+                    <div className={styles.LangIcon}>
+                      <div className={styles.agentAvatarContainer}>
+                        <img
+                          src={agent?.avatar || "images/SofiaAgent.png"}
+                          alt="English"
+                        />
                       </div>
-                      <div className={styles.LangText}>
-                        <h3 className={styles.agentName}>
-                          {formatAgentName(agent?.agentName)}
-                          <span
-                            className={
-                              agent.isDeactivated === 1
-                                ? styles.InactiveText
-                                : styles.activeText
-                            }
-                          >
-                            {agent.isDeactivated === 1 ? "Inactive" : "Active"}
-                          </span>
-                        </h3>
-
-                        <p className={styles.agentAccent}>
-                          {agent?.agentLanguage} •{agent?.agentAccent}
-                        </p>
-                      </div>
+                      {/* <img src={"images/SofiaAgent.png"}alt="English" /> */}
                     </div>
-                    <div className={styles.AgentTwoIcon}>
-                      <div className={styles.TestAgentIcon} onMouseDown={(e) => {
+                    <div className={styles.LangText}>
+                      <h3 className={styles.agentName}>
+                        {formatAgentName(agent?.agentName)}
+                        <span
+                          className={
+                            agent.isDeactivated === 1
+                              ? styles.InactiveText
+                              : styles.activeText
+                          }
+                        >
+                          {agent.isDeactivated === 1 ? "Inactive" : "Active"}
+                        </span>
+                      </h3>
+
+                      <p className={styles.agentAccent}>
+                        {agent?.agentLanguage} •{agent?.agentAccent}
+                      </p>
+                    </div>
+                  </div>
+                  <div className={styles.AgentTwoIcon}>
+                    <div
+                      className={styles.TestAgentIcon}
+                      onMouseDown={(e) => {
                         e.stopPropagation();
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
                           handleOpenCallModal(agent);
                         }
-                      }}>
-                        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <rect width="30" height="30" rx="5" fill="white" />
-                          <path d="M7.5016 8.50027L8.50014 6.50061L10.5015 5.49981L12.5 8.00049L12 10.0005L14.5 13.5005L18 13.0005L19.5 14.5005L19.5 16.0005L18.5 17.5005L16 18.0005L14.5 17.5005L12.998 15.9997L10.4999 14.0006L9.0005 11.9999L7.5016 8.50027Z" fill="#1AA850" />
-                          <rect x="5" y="20" width="22" height="9" fill="white" />
-                          <path d="M12.229 20.875H10.049V27H8.70402V20.875H6.52402V19.77H12.229V20.875ZM15.0839 23.845C15.0839 23.685 15.0606 23.535 15.0139 23.395C14.9706 23.2517 14.9039 23.1267 14.8139 23.02C14.7239 22.9133 14.6089 22.83 14.4689 22.77C14.3323 22.7067 14.1723 22.675 13.9889 22.675C13.6323 22.675 13.3506 22.7767 13.1439 22.98C12.9406 23.1833 12.8106 23.4717 12.7539 23.845H15.0839ZM12.7289 24.59C12.7489 24.8533 12.7956 25.0817 12.8689 25.275C12.9423 25.465 13.0389 25.6233 13.1589 25.75C13.2789 25.8733 13.4206 25.9667 13.5839 26.03C13.7506 26.09 13.9339 26.12 14.1339 26.12C14.3339 26.12 14.5056 26.0967 14.6489 26.05C14.7956 26.0033 14.9223 25.9517 15.0289 25.895C15.1389 25.8383 15.2339 25.7867 15.3139 25.74C15.3973 25.6933 15.4773 25.67 15.5539 25.67C15.6573 25.67 15.7339 25.7083 15.7839 25.785L16.1389 26.235C16.0023 26.395 15.8489 26.53 15.6789 26.64C15.5089 26.7467 15.3306 26.8333 15.1439 26.9C14.9606 26.9633 14.7723 27.0083 14.5789 27.035C14.3889 27.0617 14.2039 27.075 14.0239 27.075C13.6673 27.075 13.3356 27.0167 13.0289 26.9C12.7223 26.78 12.4556 26.605 12.2289 26.375C12.0023 26.1417 11.8239 25.855 11.6939 25.515C11.5639 25.1717 11.4989 24.775 11.4989 24.325C11.4989 23.975 11.5556 23.6467 11.6689 23.34C11.7823 23.03 11.9439 22.7617 12.1539 22.535C12.3673 22.305 12.6256 22.1233 12.9289 21.99C13.2356 21.8567 13.5806 21.79 13.9639 21.79C14.2873 21.79 14.5856 21.8417 14.8589 21.945C15.1323 22.0483 15.3673 22.2 15.5639 22.4C15.7606 22.5967 15.9139 22.84 16.0239 23.13C16.1373 23.4167 16.1939 23.745 16.1939 24.115C16.1939 24.3017 16.1739 24.4283 16.1339 24.495C16.0939 24.5583 16.0173 24.59 15.9039 24.59H12.7289ZM20.2507 22.87C20.2174 22.9233 20.1824 22.9617 20.1457 22.985C20.1091 23.005 20.0624 23.015 20.0057 23.015C19.9457 23.015 19.8807 22.9983 19.8107 22.965C19.7441 22.9317 19.6657 22.895 19.5757 22.855C19.4857 22.8117 19.3824 22.7733 19.2657 22.74C19.1524 22.7067 19.0174 22.69 18.8607 22.69C18.6174 22.69 18.4257 22.7417 18.2857 22.845C18.1491 22.9483 18.0807 23.0833 18.0807 23.25C18.0807 23.36 18.1157 23.4533 18.1857 23.53C18.2591 23.6033 18.3541 23.6683 18.4707 23.725C18.5907 23.7817 18.7257 23.8333 18.8757 23.88C19.0257 23.9233 19.1774 23.9717 19.3307 24.025C19.4874 24.0783 19.6407 24.14 19.7907 24.21C19.9407 24.2767 20.0741 24.3633 20.1907 24.47C20.3107 24.5733 20.4057 24.6983 20.4757 24.845C20.5491 24.9917 20.5857 25.1683 20.5857 25.375C20.5857 25.6217 20.5407 25.85 20.4507 26.06C20.3641 26.2667 20.2341 26.4467 20.0607 26.6C19.8874 26.75 19.6724 26.8683 19.4157 26.955C19.1624 27.0383 18.8691 27.08 18.5357 27.08C18.3591 27.08 18.1857 27.0633 18.0157 27.03C17.8491 27 17.6874 26.9567 17.5307 26.9C17.3774 26.8433 17.2341 26.7767 17.1007 26.7C16.9707 26.6233 16.8557 26.54 16.7557 26.45L17.0407 25.98C17.0774 25.9233 17.1207 25.88 17.1707 25.85C17.2207 25.82 17.2841 25.805 17.3607 25.805C17.4374 25.805 17.5091 25.8267 17.5757 25.87C17.6457 25.9133 17.7257 25.96 17.8157 26.01C17.9057 26.06 18.0107 26.1067 18.1307 26.15C18.2541 26.1933 18.4091 26.215 18.5957 26.215C18.7424 26.215 18.8674 26.1983 18.9707 26.165C19.0774 26.1283 19.1641 26.0817 19.2307 26.025C19.3007 25.9683 19.3507 25.9033 19.3807 25.83C19.4141 25.7533 19.4307 25.675 19.4307 25.595C19.4307 25.475 19.3941 25.3767 19.3207 25.3C19.2507 25.2233 19.1557 25.1567 19.0357 25.1C18.9191 25.0433 18.7841 24.9933 18.6307 24.95C18.4807 24.9033 18.3257 24.8533 18.1657 24.8C18.0091 24.7467 17.8541 24.685 17.7007 24.615C17.5507 24.5417 17.4157 24.45 17.2957 24.34C17.1791 24.23 17.0841 24.095 17.0107 23.935C16.9407 23.775 16.9057 23.5817 16.9057 23.355C16.9057 23.145 16.9474 22.945 17.0307 22.755C17.1141 22.565 17.2357 22.4 17.3957 22.26C17.5591 22.1167 17.7607 22.0033 18.0007 21.92C18.2441 21.8333 18.5241 21.79 18.8407 21.79C19.1941 21.79 19.5157 21.8483 19.8057 21.965C20.0957 22.0817 20.3374 22.235 20.5307 22.425L20.2507 22.87ZM23.2253 27.08C22.7786 27.08 22.4353 26.955 22.1953 26.705C21.9586 26.4517 21.8403 26.1033 21.8403 25.66V22.795H21.3153C21.2486 22.795 21.1919 22.7733 21.1453 22.73C21.0986 22.6867 21.0753 22.6217 21.0753 22.535V22.045L21.9003 21.91L22.1603 20.51C22.1769 20.4433 22.2086 20.3917 22.2553 20.355C22.3019 20.3183 22.3619 20.3 22.4353 20.3H23.0753V21.915H24.4453V22.795H23.0753V25.575C23.0753 25.735 23.1136 25.86 23.1903 25.95C23.2703 26.04 23.3786 26.085 23.5153 26.085C23.5919 26.085 23.6553 26.0767 23.7053 26.06C23.7586 26.04 23.8036 26.02 23.8403 26C23.8803 25.98 23.9153 25.9617 23.9453 25.945C23.9753 25.925 24.0053 25.915 24.0353 25.915C24.0719 25.915 24.1019 25.925 24.1253 25.945C24.1486 25.9617 24.1736 25.9883 24.2003 26.025L24.5703 26.625C24.3903 26.775 24.1836 26.8883 23.9503 26.965C23.7169 27.0417 23.4753 27.08 23.2253 27.08Z" fill="#6524EB" />
-                          <path fill-rule="evenodd" clip-rule="evenodd" d="M18.5728 12.9247C17.8719 12.2238 16.735 12.2238 16.0331 12.9247L16.0314 12.9273C15.6671 13.2907 15.0767 13.2907 14.7132 12.9273C14.0874 12.3015 13.2759 11.49 12.6509 10.865C12.2866 10.5007 12.2866 9.91024 12.6509 9.54595L12.6527 9.54423C13.3536 8.84327 13.3536 7.70638 12.6527 7.00455C12.3358 6.68774 11.9785 6.33035 11.6452 5.99713C11.2404 5.59227 10.6914 5.36523 10.119 5.36523C9.54668 5.36523 8.99765 5.59227 8.59278 5.99713C8.3597 6.23021 8.11627 6.47365 7.88578 6.70413C6.99749 7.59242 6.75059 8.93736 7.26682 10.082L7.26856 10.0864C8.84572 13.4064 12.0518 16.616 15.4936 18.2588L15.4962 18.2605C16.64 18.7888 17.9893 18.5497 18.8801 17.6623C19.1141 17.4499 19.3523 17.2125 19.5802 16.9846C19.9851 16.5797 20.2121 16.0307 20.2121 15.4584C20.2121 14.886 19.9851 14.337 19.5802 13.9321C19.247 13.5989 18.8897 13.2424 18.5728 12.9247ZM17.9625 13.535L18.9699 14.5425C19.2125 14.7859 19.3489 15.1148 19.3489 15.4584C19.3489 15.802 19.2125 16.1308 18.9699 16.3743L18.2741 17.0476C17.6397 17.6821 16.6771 17.8539 15.8631 17.4784C12.5948 15.9176 9.54926 12.8729 8.05238 9.72379C7.6855 8.90715 7.86247 7.94807 8.4961 7.31531L9.2031 6.60745C9.44654 6.36488 9.77544 6.22849 10.119 6.22849C10.4626 6.22849 10.7915 6.36488 11.0349 6.60745L12.0423 7.61486C12.4066 7.97915 12.4066 8.56961 12.0423 8.93391L12.0398 8.93565C11.3388 9.63661 11.3388 10.7735 12.0398 11.4753C12.6656 12.1003 13.477 12.9118 14.102 13.5376C14.8039 14.2386 15.9408 14.2386 16.6417 13.5376L16.6435 13.535C17.0077 13.1707 17.5982 13.1707 17.9625 13.535Z" fill="#1AA850" />
-                          <path d="M16.7265 10.3376C16.7265 9.62287 16.1464 9.04276 15.4316 9.04276C15.1934 9.04276 15 8.84939 15 8.61114C15 8.37288 15.1934 8.17951 15.4316 8.17951C16.6229 8.17951 17.5898 9.14635 17.5898 10.3376C17.5898 10.5759 17.3964 10.7693 17.1581 10.7693C16.9199 10.7693 16.7265 10.5759 16.7265 10.3376Z" fill="#6524EB" />
-                          <path d="M19.3163 10.3376C19.3163 8.19332 17.5759 6.45301 15.4316 6.45301C15.1934 6.45301 15 6.25964 15 6.02138C15 5.78312 15.1934 5.58976 15.4316 5.58976C18.0525 5.58976 20.1795 7.71681 20.1795 10.3376C20.1795 10.5759 19.9861 10.7693 19.7479 10.7693C19.5096 10.7693 19.3163 10.5759 19.3163 10.3376Z" fill="#6524EB" />
-                          <path d="M21.906 10.3376C21.906 6.76464 19.0046 3.86325 15.4316 3.86325C15.1934 3.86325 15 3.66988 15 3.43163C15 3.19337 15.1934 3 15.4316 3C19.4811 3 22.7693 6.28813 22.7693 10.3376C22.7693 10.5759 22.5759 10.7693 22.3376 10.7693C22.0994 10.7693 21.906 10.5759 21.906 10.3376Z" fill="#6524EB" />
-                        </svg>
-                      </div>
-                      <div
-                        className={styles.FilterIcon}
-                        id={`tour-menu-trigger-${agent.agent_id}`}
-                        onClick={(e) => {
-                          toggleDropdown(e, agent.agent_id);
-                          setagentId(agent.agent_id);
-                          setPendingUpgradeAgent(agent);
-                        }}
-                        ref={(el) => {
-                          dropdownRefs.current[agent.agent_id] = el;
-                        }}
+                      }}
+                    >
+                      <svg
+                        width="30"
+                        height="30"
+                        viewBox="0 0 30 30"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
-
-                        <svg
-                          width="30"
-                          height="30"
-                          viewBox="0 0 30 30"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <rect width="30" height="30" rx="5" fill="white" />
-                          <circle cx="8" cy="15" r="2" fill="#24252C" />
-                          <circle cx="15" cy="15" r="2" fill="#24252C" />
-                          <circle cx="22" cy="15" r="2" fill="#24252C" />
-                        </svg>
-                        <div
-                          className={styles.OptionsDropdown}
-                          style={{
-                            display: isTourOpen ? "block" : "none",
-                            visibility: isTourOpen ? "visible" : "hidden",
-                            opacity: isTourOpen ? 1 : 0,
-                            pointerEvents: isTourOpen ? "auto" : "none",
-                            minWidth: 170,
-                            zIndex: 99999,
-                            ...(tourElevateDropdown && tourDropdownPos
-                              ? {
+                        <rect width="30" height="30" rx="5" fill="white" />
+                        <path
+                          d="M7.5016 8.50027L8.50014 6.50061L10.5015 5.49981L12.5 8.00049L12 10.0005L14.5 13.5005L18 13.0005L19.5 14.5005L19.5 16.0005L18.5 17.5005L16 18.0005L14.5 17.5005L12.998 15.9997L10.4999 14.0006L9.0005 11.9999L7.5016 8.50027Z"
+                          fill="#1AA850"
+                        />
+                        <rect x="5" y="20" width="22" height="9" fill="white" />
+                        <path
+                          d="M12.229 20.875H10.049V27H8.70402V20.875H6.52402V19.77H12.229V20.875ZM15.0839 23.845C15.0839 23.685 15.0606 23.535 15.0139 23.395C14.9706 23.2517 14.9039 23.1267 14.8139 23.02C14.7239 22.9133 14.6089 22.83 14.4689 22.77C14.3323 22.7067 14.1723 22.675 13.9889 22.675C13.6323 22.675 13.3506 22.7767 13.1439 22.98C12.9406 23.1833 12.8106 23.4717 12.7539 23.845H15.0839ZM12.7289 24.59C12.7489 24.8533 12.7956 25.0817 12.8689 25.275C12.9423 25.465 13.0389 25.6233 13.1589 25.75C13.2789 25.8733 13.4206 25.9667 13.5839 26.03C13.7506 26.09 13.9339 26.12 14.1339 26.12C14.3339 26.12 14.5056 26.0967 14.6489 26.05C14.7956 26.0033 14.9223 25.9517 15.0289 25.895C15.1389 25.8383 15.2339 25.7867 15.3139 25.74C15.3973 25.6933 15.4773 25.67 15.5539 25.67C15.6573 25.67 15.7339 25.7083 15.7839 25.785L16.1389 26.235C16.0023 26.395 15.8489 26.53 15.6789 26.64C15.5089 26.7467 15.3306 26.8333 15.1439 26.9C14.9606 26.9633 14.7723 27.0083 14.5789 27.035C14.3889 27.0617 14.2039 27.075 14.0239 27.075C13.6673 27.075 13.3356 27.0167 13.0289 26.9C12.7223 26.78 12.4556 26.605 12.2289 26.375C12.0023 26.1417 11.8239 25.855 11.6939 25.515C11.5639 25.1717 11.4989 24.775 11.4989 24.325C11.4989 23.975 11.5556 23.6467 11.6689 23.34C11.7823 23.03 11.9439 22.7617 12.1539 22.535C12.3673 22.305 12.6256 22.1233 12.9289 21.99C13.2356 21.8567 13.5806 21.79 13.9639 21.79C14.2873 21.79 14.5856 21.8417 14.8589 21.945C15.1323 22.0483 15.3673 22.2 15.5639 22.4C15.7606 22.5967 15.9139 22.84 16.0239 23.13C16.1373 23.4167 16.1939 23.745 16.1939 24.115C16.1939 24.3017 16.1739 24.4283 16.1339 24.495C16.0939 24.5583 16.0173 24.59 15.9039 24.59H12.7289ZM20.2507 22.87C20.2174 22.9233 20.1824 22.9617 20.1457 22.985C20.1091 23.005 20.0624 23.015 20.0057 23.015C19.9457 23.015 19.8807 22.9983 19.8107 22.965C19.7441 22.9317 19.6657 22.895 19.5757 22.855C19.4857 22.8117 19.3824 22.7733 19.2657 22.74C19.1524 22.7067 19.0174 22.69 18.8607 22.69C18.6174 22.69 18.4257 22.7417 18.2857 22.845C18.1491 22.9483 18.0807 23.0833 18.0807 23.25C18.0807 23.36 18.1157 23.4533 18.1857 23.53C18.2591 23.6033 18.3541 23.6683 18.4707 23.725C18.5907 23.7817 18.7257 23.8333 18.8757 23.88C19.0257 23.9233 19.1774 23.9717 19.3307 24.025C19.4874 24.0783 19.6407 24.14 19.7907 24.21C19.9407 24.2767 20.0741 24.3633 20.1907 24.47C20.3107 24.5733 20.4057 24.6983 20.4757 24.845C20.5491 24.9917 20.5857 25.1683 20.5857 25.375C20.5857 25.6217 20.5407 25.85 20.4507 26.06C20.3641 26.2667 20.2341 26.4467 20.0607 26.6C19.8874 26.75 19.6724 26.8683 19.4157 26.955C19.1624 27.0383 18.8691 27.08 18.5357 27.08C18.3591 27.08 18.1857 27.0633 18.0157 27.03C17.8491 27 17.6874 26.9567 17.5307 26.9C17.3774 26.8433 17.2341 26.7767 17.1007 26.7C16.9707 26.6233 16.8557 26.54 16.7557 26.45L17.0407 25.98C17.0774 25.9233 17.1207 25.88 17.1707 25.85C17.2207 25.82 17.2841 25.805 17.3607 25.805C17.4374 25.805 17.5091 25.8267 17.5757 25.87C17.6457 25.9133 17.7257 25.96 17.8157 26.01C17.9057 26.06 18.0107 26.1067 18.1307 26.15C18.2541 26.1933 18.4091 26.215 18.5957 26.215C18.7424 26.215 18.8674 26.1983 18.9707 26.165C19.0774 26.1283 19.1641 26.0817 19.2307 26.025C19.3007 25.9683 19.3507 25.9033 19.3807 25.83C19.4141 25.7533 19.4307 25.675 19.4307 25.595C19.4307 25.475 19.3941 25.3767 19.3207 25.3C19.2507 25.2233 19.1557 25.1567 19.0357 25.1C18.9191 25.0433 18.7841 24.9933 18.6307 24.95C18.4807 24.9033 18.3257 24.8533 18.1657 24.8C18.0091 24.7467 17.8541 24.685 17.7007 24.615C17.5507 24.5417 17.4157 24.45 17.2957 24.34C17.1791 24.23 17.0841 24.095 17.0107 23.935C16.9407 23.775 16.9057 23.5817 16.9057 23.355C16.9057 23.145 16.9474 22.945 17.0307 22.755C17.1141 22.565 17.2357 22.4 17.3957 22.26C17.5591 22.1167 17.7607 22.0033 18.0007 21.92C18.2441 21.8333 18.5241 21.79 18.8407 21.79C19.1941 21.79 19.5157 21.8483 19.8057 21.965C20.0957 22.0817 20.3374 22.235 20.5307 22.425L20.2507 22.87ZM23.2253 27.08C22.7786 27.08 22.4353 26.955 22.1953 26.705C21.9586 26.4517 21.8403 26.1033 21.8403 25.66V22.795H21.3153C21.2486 22.795 21.1919 22.7733 21.1453 22.73C21.0986 22.6867 21.0753 22.6217 21.0753 22.535V22.045L21.9003 21.91L22.1603 20.51C22.1769 20.4433 22.2086 20.3917 22.2553 20.355C22.3019 20.3183 22.3619 20.3 22.4353 20.3H23.0753V21.915H24.4453V22.795H23.0753V25.575C23.0753 25.735 23.1136 25.86 23.1903 25.95C23.2703 26.04 23.3786 26.085 23.5153 26.085C23.5919 26.085 23.6553 26.0767 23.7053 26.06C23.7586 26.04 23.8036 26.02 23.8403 26C23.8803 25.98 23.9153 25.9617 23.9453 25.945C23.9753 25.925 24.0053 25.915 24.0353 25.915C24.0719 25.915 24.1019 25.925 24.1253 25.945C24.1486 25.9617 24.1736 25.9883 24.2003 26.025L24.5703 26.625C24.3903 26.775 24.1836 26.8883 23.9503 26.965C23.7169 27.0417 23.4753 27.08 23.2253 27.08Z"
+                          fill="#6524EB"
+                        />
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M18.5728 12.9247C17.8719 12.2238 16.735 12.2238 16.0331 12.9247L16.0314 12.9273C15.6671 13.2907 15.0767 13.2907 14.7132 12.9273C14.0874 12.3015 13.2759 11.49 12.6509 10.865C12.2866 10.5007 12.2866 9.91024 12.6509 9.54595L12.6527 9.54423C13.3536 8.84327 13.3536 7.70638 12.6527 7.00455C12.3358 6.68774 11.9785 6.33035 11.6452 5.99713C11.2404 5.59227 10.6914 5.36523 10.119 5.36523C9.54668 5.36523 8.99765 5.59227 8.59278 5.99713C8.3597 6.23021 8.11627 6.47365 7.88578 6.70413C6.99749 7.59242 6.75059 8.93736 7.26682 10.082L7.26856 10.0864C8.84572 13.4064 12.0518 16.616 15.4936 18.2588L15.4962 18.2605C16.64 18.7888 17.9893 18.5497 18.8801 17.6623C19.1141 17.4499 19.3523 17.2125 19.5802 16.9846C19.9851 16.5797 20.2121 16.0307 20.2121 15.4584C20.2121 14.886 19.9851 14.337 19.5802 13.9321C19.247 13.5989 18.8897 13.2424 18.5728 12.9247ZM17.9625 13.535L18.9699 14.5425C19.2125 14.7859 19.3489 15.1148 19.3489 15.4584C19.3489 15.802 19.2125 16.1308 18.9699 16.3743L18.2741 17.0476C17.6397 17.6821 16.6771 17.8539 15.8631 17.4784C12.5948 15.9176 9.54926 12.8729 8.05238 9.72379C7.6855 8.90715 7.86247 7.94807 8.4961 7.31531L9.2031 6.60745C9.44654 6.36488 9.77544 6.22849 10.119 6.22849C10.4626 6.22849 10.7915 6.36488 11.0349 6.60745L12.0423 7.61486C12.4066 7.97915 12.4066 8.56961 12.0423 8.93391L12.0398 8.93565C11.3388 9.63661 11.3388 10.7735 12.0398 11.4753C12.6656 12.1003 13.477 12.9118 14.102 13.5376C14.8039 14.2386 15.9408 14.2386 16.6417 13.5376L16.6435 13.535C17.0077 13.1707 17.5982 13.1707 17.9625 13.535Z"
+                          fill="#1AA850"
+                        />
+                        <path
+                          d="M16.7265 10.3376C16.7265 9.62287 16.1464 9.04276 15.4316 9.04276C15.1934 9.04276 15 8.84939 15 8.61114C15 8.37288 15.1934 8.17951 15.4316 8.17951C16.6229 8.17951 17.5898 9.14635 17.5898 10.3376C17.5898 10.5759 17.3964 10.7693 17.1581 10.7693C16.9199 10.7693 16.7265 10.5759 16.7265 10.3376Z"
+                          fill="#6524EB"
+                        />
+                        <path
+                          d="M19.3163 10.3376C19.3163 8.19332 17.5759 6.45301 15.4316 6.45301C15.1934 6.45301 15 6.25964 15 6.02138C15 5.78312 15.1934 5.58976 15.4316 5.58976C18.0525 5.58976 20.1795 7.71681 20.1795 10.3376C20.1795 10.5759 19.9861 10.7693 19.7479 10.7693C19.5096 10.7693 19.3163 10.5759 19.3163 10.3376Z"
+                          fill="#6524EB"
+                        />
+                        <path
+                          d="M21.906 10.3376C21.906 6.76464 19.0046 3.86325 15.4316 3.86325C15.1934 3.86325 15 3.66988 15 3.43163C15 3.19337 15.1934 3 15.4316 3C19.4811 3 22.7693 6.28813 22.7693 10.3376C22.7693 10.5759 22.5759 10.7693 22.3376 10.7693C22.0994 10.7693 21.906 10.5759 21.906 10.3376Z"
+                          fill="#6524EB"
+                        />
+                      </svg>
+                    </div>
+                    <div
+                      className={styles.FilterIcon}
+                      id={`tour-menu-trigger-${agent.agent_id}`}
+                      onClick={(e) => {
+                        toggleDropdown(e, agent.agent_id);
+                        setagentId(agent.agent_id);
+                        setPendingUpgradeAgent(agent);
+                      }}
+                      ref={(el) => {
+                        dropdownRefs.current[agent.agent_id] = el;
+                      }}
+                    >
+                      <svg
+                        width="30"
+                        height="30"
+                        viewBox="0 0 30 30"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <rect width="30" height="30" rx="5" fill="white" />
+                        <circle cx="8" cy="15" r="2" fill="#24252C" />
+                        <circle cx="15" cy="15" r="2" fill="#24252C" />
+                        <circle cx="22" cy="15" r="2" fill="#24252C" />
+                      </svg>
+                      <div
+                        className={styles.OptionsDropdown}
+                        style={{
+                          display: isTourOpen ? "block" : "none",
+                          visibility: isTourOpen ? "visible" : "hidden",
+                          opacity: isTourOpen ? 1 : 0,
+                          pointerEvents: isTourOpen ? "auto" : "none",
+                          minWidth: 170,
+                          zIndex: 99999,
+                          ...(tourElevateDropdown && tourDropdownPos
+                            ? {
                                 position: "fixed",
                                 top: tourDropdownPos.top,
                                 left: tourDropdownPos.left,
                               }
-                              : {}),
-                          }}
-                          id={`tour-menu-dropdown-${agent.agent_id}`}
-                        >
-                          <div
-                            className={styles.OptionItem}
-                            id={`tour-menu-test-${agent.agent_id}`}
-                            onMouseDown={(e) => {
-                              e.stopPropagation();
-                              if (agent?.isDeactivated === 1) {
-                                handleInactiveAgentAlert();
-                              } else {
-                                handleOpenCallModal(agent);
-                              }
-                            }}
-                          >
-                            Test Agent
-                          </div>
-                          <div
-                            id={`tour-menu-integrate-${agent.agent_id}`}
-                            className={styles.OptionItem}
-                            onMouseDown={(e) => {
-                              e.stopPropagation();
-                              if (agent?.isDeactivated === 1) {
-                                handleInactiveAgentAlert();
-                              } else {
-                                navigate("/integrate-agent", {
-                                  state: {
-                                    agentDetails: agent,
-                                  },
-                                });
-                              }
-                            }}
-                          >
-                            Integrate
-                          </div>
-                          <div
-                            className={styles.OptionItem}
-                            onMouseDown={(e) => {
-                              e.stopPropagation();
-                              if (agent?.isDeactivated === 1) {
-                                handleInactiveAgentAlert();
-                              } else {
-                                handleEditAgent(agent);
-                              }
-                            }}
-                          >
-                            Edit Agent
-                          </div>
-                          <div
-                            className={styles.OptionItem}
-                            onMouseDown={(e) => {
-                              e.stopPropagation();
-                              handleUpgradeClick(agent);
-                              setPendingUpgradeAgent(agent);
-                            }}
-                          >
-                            Upgrade
-                          </div>
-                          {(() => {
-                            const subscriptionStart =
-                              agent?.subscription?.current_period_start;
-                            const planName = agent?.agentPlan?.toLowerCase();
-                            // console.log("agent",agent)
-                            const isFreePlan = planName === "free";
-                            const subscriptionAgeInDays = subscriptionStart
-                              ? dayjs().diff(dayjs(subscriptionStart), "day")
-                              : Infinity;
-
-                            const isEligibleToDelete =
-                              isFreePlan || subscriptionAgeInDays <= 2;
-
-                            if (isEligibleToDelete) {
-                              return (
-                                <div key={agent.agent_id}>
-                                  <div
-                                    className={styles.OptionItem}
-                                    onMouseDown={(e) => {
-                                      e.stopPropagation();
-                                      setAgentToDelete(agent);
-                                      setShowDeleteConfirm(true);
-                                    }}
-                                  >
-                                    Delete Agent
-                                  </div>
-                                </div>
-                              );
+                            : {}),
+                        }}
+                        id={`tour-menu-dropdown-${agent.agent_id}`}
+                      >
+                        <div
+                          className={styles.OptionItem}
+                          id={`tour-menu-test-${agent.agent_id}`}
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            if (agent?.isDeactivated === 1) {
+                              handleInactiveAgentAlert();
+                            } else {
+                              handleOpenCallModal(agent);
                             }
+                          }}
+                        >
+                          Test Agent
+                        </div>
+                        <div
+                          id={`tour-menu-integrate-${agent.agent_id}`}
+                          className={styles.OptionItem}
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            if (agent?.isDeactivated === 1) {
+                              handleInactiveAgentAlert();
+                            } else {
+                              navigate("/integrate-agent", {
+                                state: {
+                                  agentDetails: agent,
+                                },
+                              });
+                            }
+                          }}
+                        >
+                          Integrate
+                        </div>
+                        <div
+                          className={styles.OptionItem}
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            if (agent?.isDeactivated === 1) {
+                              handleInactiveAgentAlert();
+                            } else {
+                              handleEditAgent(agent);
+                            }
+                          }}
+                        >
+                          Edit Agent
+                        </div>
+                        <div
+                          className={styles.OptionItem}
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            handleUpgradeClick(agent);
+                            setPendingUpgradeAgent(agent);
+                          }}
+                        >
+                          Upgrade
+                        </div>
+                        {(() => {
+                          const subscriptionStart =
+                            agent?.subscription?.current_period_start;
+                          const planName = agent?.agentPlan?.toLowerCase();
+                          // console.log("agent",agent)
+                          const isFreePlan = planName === "free";
+                          const subscriptionAgeInDays = subscriptionStart
+                            ? dayjs().diff(dayjs(subscriptionStart), "day")
+                            : Infinity;
 
-                            return null;
-                          })()}
+                          const isEligibleToDelete =
+                            isFreePlan || subscriptionAgeInDays <= 2;
 
-                          <div
-                            className={styles.OptionItem}
-                            onMouseDown={(e) => {
-                              e.stopPropagation();
-                              setAgentToDeactivate(agent);
-                              setShowDeactivateConfirm(true);
-                            }}
-                          >
-                            {agent.isDeactivated === 1
-                              ? "Activate Agent"
-                              : "Deactivate Agent"}
-                          </div>
-
-                          {(
-                            (
-                              (agent?.subscription &&
-                                agent?.subscription?.plan_name?.toLowerCase() !== "free") ||
-                              (assignNumberPaid && agent?.isDeactivated === 0)
-                            ) &&
-                            agent?.subscription?.subscription_status !== 9
-                          ) && (
-                              <>
-                                <div>
-                                  <div
-                                    className={styles.OptionItem}
-                                    onMouseDown={(e) => {
-                                      e.stopPropagation();
-                                      setAgentToCancel(agent);
-                                      setShowCancelConfirm(true);
-                                    }}
-                                  >
-                                    Cancel Subscription
-                                  </div>
+                          if (isEligibleToDelete) {
+                            return (
+                              <div key={agent.agent_id}>
+                                <div
+                                  className={styles.OptionItem}
+                                  onMouseDown={(e) => {
+                                    e.stopPropagation();
+                                    setAgentToDelete(agent);
+                                    setShowDeleteConfirm(true);
+                                  }}
+                                >
+                                  Delete Agent
                                 </div>
+                              </div>
+                            );
+                          }
 
-                              </>
-                            )}
-                          {(
+                          return null;
+                        })()}
 
-                            (agent?.subscription &&
-                              agent?.subscription?.plan_name?.toLowerCase() !== "free") ||
-                            (assignNumberPaid && agent?.isDeactivated === 0) ||
-                            agent?.agentPlan === "Pay-As-You-Go" ||
-                            agent?.agentPlan === "free"
-
-
-
-                          ) && (
-
-                              <>
-                                <div>
-                                  <div
-                                    onMouseDown={(e) => {
-
-                                      // handleTogglePayG()
-                                      // console.log("agent", agent)
-                                      setshowPaygConfirm(true)
-                                      setagentToPaygActivate(agent)
-                                      setpaygEnabledPopup(checkPaygStatus === null || checkPaygStatus === 0 ? true : false)
-
-
-                                    }}
-
-                                    className={styles.OptionItem}
-                                  >
-                                    {paygStatusLoading
-                                      ? "Loading.."
-                                      : isPaygActive === true
-                                        ? "Deactivate Pay as you go"
-                                        : "Active Pay as you go"}
-                                  </div>
-                                </div>
-
-                              </>
-                            )}
-
+                        <div
+                          className={styles.OptionItem}
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            setAgentToDeactivate(agent);
+                            setShowDeactivateConfirm(true);
+                          }}
+                        >
+                          {agent.isDeactivated === 1
+                            ? "Activate Agent"
+                            : "Deactivate Agent"}
                         </div>
 
+                        {((agent?.subscription &&
+                          agent?.subscription?.plan_name?.toLowerCase() !==
+                            "free") ||
+                          (assignNumberPaid && agent?.isDeactivated === 0)) &&
+                          agent?.subscription?.subscription_status !== 9 && (
+                            <>
+                              <div>
+                                <div
+                                  className={styles.OptionItem}
+                                  onMouseDown={(e) => {
+                                    e.stopPropagation();
+                                    setAgentToCancel(agent);
+                                    setShowCancelConfirm(true);
+                                  }}
+                                >
+                                  Cancel Subscription
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        {((agent?.subscription &&
+                          agent?.subscription?.plan_name?.toLowerCase() !==
+                            "free") ||
+                          (assignNumberPaid && agent?.isDeactivated === 0) ||
+                          agent?.agentPlan === "Pay-As-You-Go" ||
+                          agent?.agentPlan === "free") && (
+                          <>
+                            <div>
+                              <div
+                                onMouseDown={(e) => {
+                                  // handleTogglePayG()
+                                  // console.log("agent", agent)
+                                  setshowPaygConfirm(true);
+                                  setagentToPaygActivate(agent);
+                                  setpaygEnabledPopup(
+                                    checkPaygStatus === null ||
+                                      checkPaygStatus === 0
+                                      ? true
+                                      : false
+                                  );
+                                }}
+                                className={styles.OptionItem}
+                              >
+                                {paygStatusLoading
+                                  ? "Loading.."
+                                  : isPaygActive === true
+                                  ? "Deactivate Pay as you go"
+                                  : "Active Pay as you go"}
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
-                  <hr className={styles.agentLine} />
+                </div>
+                <hr className={styles.agentLine} />
 
-                  <div className={styles.LangPara}>
-                    <p className={styles.agentPara}>
-                      For:{" "}
-                      <strong>
-                        {formatBusinessName(
-                          agent?.business?.businessName ||
+                <div className={styles.LangPara}>
+                  <p className={styles.agentPara}>
+                    For:{" "}
+                    <strong>
+                      {formatBusinessName(
+                        agent?.business?.businessName ||
                           agent?.business?.knowledge_base_texts?.name ||
                           agent?.business?.googleBusinessName
-                        )}
-                      </strong>
-                    </p>
-
-                    <div className={styles.VIA}>
-                      {agent.calApiKey ? (
-                        <img
-                          id="tour-cal-com"
-                          src="svg/cal-svg.svg"
-                          alt="cal-svg"
-                          style={{ cursor: "pointer" }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (agent?.isDeactivated === 1) {
-                              handleInactiveAgentAlert();
-                            } else {
-                              handleConnectCal(agent);
-                            }
-                          }}
-                        />
-                      ) : (
-                        <img
-                          id="tour-cal-com"
-                          src="svg/call-cross.svg"
-                          alt="No API Key"
-                          style={{ cursor: "pointer" }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (agent?.isDeactivated === 1) {
-                              handleInactiveAgentAlert();
-                            } else {
-                              if (
-                                userCalApiKey &&
-                                userCalApiKey !== "null" &&
-                                userCalApiKey !== "" &&
-                                userCalApiKey !== "undefined"
-                              ) {
-                                handleConnectCalApiAlready(agent);
-                              } else {
-                                handleConnectCal(agent);
-                              }
-                            }
-                          }}
-                          title="Cal API Key not set"
-                        />
                       )}
-                    </div>
+                    </strong>
+                  </p>
+
+                  <div className={styles.VIA}>
+                    {agent.calApiKey ? (
+                      <img
+                        id="tour-cal-com"
+                        src="svg/cal-svg.svg"
+                        alt="cal-svg"
+                        style={{ cursor: "pointer" }}
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (agent?.isDeactivated === 1)
+                            return handleInactiveAgentAlert();
+                          await startGoogleCalendarOAuth();
+                        }}
+                      />
+                    ) : (
+                      <img
+                        id="tour-cal-com"
+                        src="svg/call-cross.svg"
+                        alt="Connect Google Calendar"
+                        style={{ cursor: "pointer" }}
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (agent?.isDeactivated === 1)
+                            return handleInactiveAgentAlert();
+                          await startGoogleCalendarOAuth();
+                        }}
+                        title="Connect Google Calendar"
+                      />
+                    )}
                   </div>
+                </div>
 
-
-                  <div className={styles.LangButton}>
-                    {assignedNumbers.length > 0 ? (
-                      <div id="tour-assign-number" className={styles.AssignNumText}>
-                        Phone Number
-                        <p className={styles.NumberCaller}>
-                          {assignedNumbers.length > 1 ? "s" : ""}{" "}
-                          {assignedNumbers.map(formatE164USNumber).join(", ")}
-                        </p>
-                        {agent?.agentPlan === "free" && !agent?.subscriptionId && agent?.voip_numbers_created ? (
-                          (() => {
-                            const created = new Date(agent.voip_numbers_created);
+                <div className={styles.LangButton}>
+                  {assignedNumbers.length > 0 ? (
+                    <div
+                      id="tour-assign-number"
+                      className={styles.AssignNumText}
+                    >
+                      Phone Number
+                      <p className={styles.NumberCaller}>
+                        {assignedNumbers.length > 1 ? "s" : ""}{" "}
+                        {assignedNumbers.map(formatE164USNumber).join(", ")}
+                      </p>
+                      {agent?.agentPlan === "free" &&
+                      !agent?.subscriptionId &&
+                      agent?.voip_numbers_created
+                        ? (() => {
+                            const created = new Date(
+                              agent.voip_numbers_created
+                            );
                             const today = new Date();
 
                             // normalize to date-only
-                            const createdDateOnly = new Date(created.getFullYear(), created.getMonth(), created.getDate());
-                            const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                            const createdDateOnly = new Date(
+                              created.getFullYear(),
+                              created.getMonth(),
+                              created.getDate()
+                            );
+                            const todayDateOnly = new Date(
+                              today.getFullYear(),
+                              today.getMonth(),
+                              today.getDate()
+                            );
 
                             // expiry = created + 15 days
                             const expiry = new Date(createdDateOnly);
                             expiry.setDate(expiry.getDate() + 14);
 
                             const msPerDay = 1000 * 60 * 60 * 24;
-                            const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);
+                            const daysRemaining = Math.ceil(
+                              (expiry - todayDateOnly) / msPerDay
+                            );
 
                             return (
                               <>
@@ -3196,38 +3220,62 @@ function Dashboard() {
                                         title="Free Trial Expired"
                                         message="Your free trial for the assigned number has ended. To continue using this feature and keep your number active, you’ll need to subscribe to one of our available plans. Without a subscription, the assigned number will remain inactive, and related services may not work as expected."
                                         type="warning"
-                                        confirmText={disableLoading ? "Loading..." : "Subscribe"}
+                                        confirmText={
+                                          disableLoading
+                                            ? "Loading..."
+                                            : "Subscribe"
+                                        }
                                         cancelText="Cancel"
                                         showCancel={true}
                                         isLoading={disableLoading}
-                                        onConfirm={() => handlePaymentAssignNumber(agent.agent_id)}
-
+                                        onConfirm={() =>
+                                          handlePaymentAssignNumber(
+                                            agent.agent_id
+                                          )
+                                        }
                                       />
                                     </>
                                   )}
                                   {/* Days Remaining dikhao jab > 0 */}
                                   <span
                                     className={
-                                      daysRemaining > 0 ? styles.daysRemainActive : styles.daysRemainInactive
+                                      daysRemaining > 0
+                                        ? styles.daysRemainActive
+                                        : styles.daysRemainInactive
                                     }
                                   >
                                     {daysRemaining > 0 ? (
                                       `${daysRemaining} days remaining`
                                     ) : (
-                                      <div onClick={(e) => {
-                                        e.stopPropagation();
-                                        setShowUpgradeConfirmModal(true)
-                                        setAgentDetails(agent)
-
-                                      }}>
+                                      <div
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setShowUpgradeConfirmModal(true);
+                                          setAgentDetails(agent);
+                                        }}
+                                      >
                                         {/* Inactive{" "} */}
-                                        <svg width="24" height="24" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <svg
+                                          width="24"
+                                          height="24"
+                                          viewBox="0 0 50 50"
+                                          fill="none"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
                                           <g clip-path="url(#clip0_656_992)">
-                                            <path className={styles.exclamMark} d="M25 0C11.1667 0 0 11.1667 0 25C0 38.8333 11.1667 50 25 50C38.8333 50 50 38.8333 50 25C50 11.1667 38.8333 0 25 0ZM24.7778 6C27 5.88889 28.8333 7.61111 28.9444 9.77778C28.9444 9.88889 28.9444 10.0556 28.9444 10.1667L28 29.2222C27.9444 30.8889 26.5 32.2222 24.7778 32.1111C23.2222 32.0556 21.9444 30.7778 21.8889 29.2222L20.9444 10.1667C20.8889 8 22.6111 6.11111 24.7778 6ZM27.9444 42.7778C27.1667 43.5556 26.1111 44 25 44C23.8889 44 22.8333 43.5556 22.0556 42.7778C21.2778 42 20.8333 40.9444 20.8333 39.8333C20.8333 38.7222 21.2778 37.6667 22.0556 36.8889C22.8333 36.1111 23.8889 35.6667 25 35.6667C26.1111 35.6667 27.1667 36.1111 27.9444 36.8889C28.7222 37.6667 29.1667 38.7222 29.1667 39.8333C29.1667 40.9444 28.7222 42 27.9444 42.7778Z" fill="#EB0000" />
+                                            <path
+                                              className={styles.exclamMark}
+                                              d="M25 0C11.1667 0 0 11.1667 0 25C0 38.8333 11.1667 50 25 50C38.8333 50 50 38.8333 50 25C50 11.1667 38.8333 0 25 0ZM24.7778 6C27 5.88889 28.8333 7.61111 28.9444 9.77778C28.9444 9.88889 28.9444 10.0556 28.9444 10.1667L28 29.2222C27.9444 30.8889 26.5 32.2222 24.7778 32.1111C23.2222 32.0556 21.9444 30.7778 21.8889 29.2222L20.9444 10.1667C20.8889 8 22.6111 6.11111 24.7778 6ZM27.9444 42.7778C27.1667 43.5556 26.1111 44 25 44C23.8889 44 22.8333 43.5556 22.0556 42.7778C21.2778 42 20.8333 40.9444 20.8333 39.8333C20.8333 38.7222 21.2778 37.6667 22.0556 36.8889C22.8333 36.1111 23.8889 35.6667 25 35.6667C26.1111 35.6667 27.1667 36.1111 27.9444 36.8889C28.7222 37.6667 29.1667 38.7222 29.1667 39.8333C29.1667 40.9444 28.7222 42 27.9444 42.7778Z"
+                                              fill="#EB0000"
+                                            />
                                           </g>
                                           <defs>
                                             <clipPath id="clip0_656_992">
-                                              <rect width="50" height="50" fill="white" />
+                                              <rect
+                                                width="50"
+                                                height="50"
+                                                fill="white"
+                                              />
                                             </clipPath>
                                           </defs>
                                         </svg>
@@ -3235,136 +3283,226 @@ function Dashboard() {
                                     )}
                                   </span>
 
-
                                   {/* Subscribe button dikhao jab daysRemaining > -30 */}
                                 </div>
-
-
                               </>
                             );
                           })()
-                        ) : null}
-
-                      </div>
-                    ) : (
-                      <div
-                        className={styles.AssignNum}
-                        id="tour-assign-number"
-                        onClick={(e) => handleAssignNumberClick(agent, e)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <img src="/svg/assign-number.svg" />
-                      </div>
-                    )}
-
-                    <div className={styles.minLeft}>
-                      <span className={styles.MinL}>{agent.agentPlan === "Pay-As-You-Go" && agent.mins_left === 0 ? "Mins Usage" : 'Min Left'}</span>{" "}
-                      {agent.agentPlan === "Pay-As-You-Go" && agent.mins_left === 0 ? agent?.payg_mins : agent?.callSummary?.remaining?.minutes}
+                        : null}
                     </div>
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Cal API Modal */}
-            {isCalModalOpen && (
-              <div
-                className={styles.modalBackdrop}
-                onClick={(e) => {
-                  if (e.target === e.currentTarget) {
-                    e.stopPropagation();
-                  }
-                }}
-              >
-                <div
-                  className={styles.modalContainer}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <h2>Connect with Cal</h2>
-                  <p>
-                    Click on the link to connect with Cal:{" "}
-                    <a
-                      href="https://refer.cal.com/designersx"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  ) : (
+                    <div
+                      className={styles.AssignNum}
+                      id="tour-assign-number"
+                      onClick={(e) => handleAssignNumberClick(agent, e)}
+                      style={{ cursor: "pointer" }}
                     >
-                      Click to connect with cal
-                    </a>
-                  </p>
-
-                  <p>
-                    {" "}
-                    Need a hand connecting with Cal.com?{" "}
-                    <a href="/calinfo" target="_blank" rel="noopener noreferrer">
-                      See quick setup guide
-                    </a>
-                  </p>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      marginBottom: "16px",
-                    }}
-                  >
-                    <label htmlFor="apiKey">Enter your API Key:</label>
-                    <input
-                      id="apiKey"
-                      type="text"
-                      value={apiKey}
-                      onChange={(e) => setApiKey(e.target.value)}
-                      placeholder="API Key"
-                      className={styles.modalInput}
-                      disabled={!isApiKeyEditable && !!apiKey}
-                    />
-                    {apiKey && !isApiKeyEditable && (
-                      <button
-                        type="button"
-                        onClick={() => setIsApiKeyEditable(true)}
-                        style={{
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          padding: 0,
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                        title="Edit API Key"
-                        aria-label="Edit API Key"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          height="20"
-                          width="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M12 20h9" />
-                          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                  {showCalKeyInfo && (
-                    <div className={styles.infoBanner}>
-                      Your Cal API key is added. Now create your Cal event.
+                      <img src="/svg/assign-number.svg" />
                     </div>
                   )}
 
-                  {!showEventInputs && (
-                    <div className={styles.modalButtons}>
+                  <div className={styles.minLeft}>
+                    <span className={styles.MinL}>
+                      {agent.agentPlan === "Pay-As-You-Go" &&
+                      agent.mins_left === 0
+                        ? "Mins Usage"
+                        : "Min Left"}
+                    </span>{" "}
+                    {agent.agentPlan === "Pay-As-You-Go" &&
+                    agent.mins_left === 0
+                      ? agent?.payg_mins
+                      : agent?.callSummary?.remaining?.minutes}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Cal API Modal */}
+          {isCalModalOpen && (
+            <div
+              className={styles.modalBackdrop}
+              onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                  e.stopPropagation();
+                }
+              }}
+            >
+              <div
+                className={styles.modalContainer}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2>Connect with Cal</h2>
+                <p>
+                  Click on the link to connect with Cal:{" "}
+                  <a
+                    href="https://refer.cal.com/designersx"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Click to connect with cal
+                  </a>
+                </p>
+
+                <p>
+                  {" "}
+                  Need a hand connecting with Cal.com?{" "}
+                  <a href="/calinfo" target="_blank" rel="noopener noreferrer">
+                    See quick setup guide
+                  </a>
+                </p>
+
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    marginBottom: "16px",
+                  }}
+                >
+                  <label htmlFor="apiKey">Enter your API Key:</label>
+                  <input
+                    id="apiKey"
+                    type="text"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="API Key"
+                    className={styles.modalInput}
+                    disabled={!isApiKeyEditable && !!apiKey}
+                  />
+                  {apiKey && !isApiKeyEditable && (
+                    <button
+                      type="button"
+                      onClick={() => setIsApiKeyEditable(true)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        padding: 0,
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                      title="Edit API Key"
+                      aria-label="Edit API Key"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="20"
+                        width="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {showCalKeyInfo && (
+                  <div className={styles.infoBanner}>
+                    Your Cal API key is added. Now create your Cal event.
+                  </div>
+                )}
+
+                {!showEventInputs && (
+                  <div className={styles.modalButtons}>
+                    <button
+                      className={`${styles.modalButton} ${styles.cancel}`}
+                      onClick={closeModal}
+                    >
+                      Cancel
+                    </button>
+                    {calapiloading ? (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        Updating <Loader size={18} />
+                      </button>
+                    ) : (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        onClick={handleApiKeySubmit}
+                        disabled={!isValidCalApiKey(apiKey.trim())}
+                      >
+                        {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
+                      </button>
+                    )}
+                    {/* <button
+                    className={`${styles.modalButton} ${styles.submit}`}
+                    onClick={handleApiKeySubmit}
+                    disabled={!isValidCalApiKey(apiKey.trim())}
+                  >
+                    {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
+                  </button> */}
+                  </div>
+                )}
+
+                {showEventInputs && (
+                  <>
+                    <div className={styles.createEventSection}>
+                      <h3>Create Event</h3>
+                      <div className={styles.inputGroup}>
+                        <label htmlFor="title">Event Name</label>
+                        <input
+                          id="title"
+                          type="text"
+                          placeholder="Enter event name"
+                          className={styles.modalInput}
+                          value={eventName}
+                          onChange={(e) => setEventName(e.target.value)}
+                        />
+                      </div>
+                      <div className={styles.inputGroup}>
+                        <label htmlFor="slug">Description</label>
+                        <input
+                          id="slug"
+                          type="text"
+                          placeholder="Enter Description"
+                          className={styles.modalInput}
+                          value={eventSlug}
+                          onChange={(e) => setEventSlug(e.target.value)}
+                        />
+                      </div>
+                      <div className={styles.inputGroup}>
+                        <label htmlFor="length">Length (minutes)</label>
+                        <input
+                          id="length"
+                          type="number"
+                          placeholder="Enter length"
+                          className={styles.modalInput}
+                          value={eventLength}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value <= 999) {
+                              setEventLength(value);
+                            }
+                          }}
+                          max="999"
+                          min="1"
+                        />
+                      </div>
+                    </div>
+
+                    <div
+                      className={styles.modalButtons}
+                      style={{ marginTop: "10px" }}
+                    >
                       <button
                         className={`${styles.modalButton} ${styles.cancel}`}
-                        onClick={closeModal}
+                        onClick={() => setShowEventInputs(false)}
                       >
                         Cancel
                       </button>
-                      {calapiloading ? (
+                      {calloading ? (
                         <button
                           className={`${styles.modalButton} ${styles.submit}`}
                           style={{
@@ -3373,498 +3511,434 @@ function Dashboard() {
                             gap: "8px",
                           }}
                         >
-                          Updating <Loader size={18} />
+                          Add Event <Loader size={18} />
                         </button>
                       ) : (
                         <button
                           className={`${styles.modalButton} ${styles.submit}`}
-                          onClick={handleApiKeySubmit}
-                          disabled={!isValidCalApiKey(apiKey.trim())}
+                          onClick={createCalEvent}
+                          disabled={
+                            !isApiKeySubmitted ||
+                            !eventName.trim() ||
+                            !eventSlug.trim() ||
+                            !eventLength.trim()
+                          }
                         >
-                          {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
+                          Add Event
                         </button>
                       )}
-                      {/* <button
-                    className={`${styles.modalButton} ${styles.submit}`}
-                    onClick={handleApiKeySubmit}
-                    disabled={!isValidCalApiKey(apiKey.trim())}
-                  >
-                    {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
-                  </button> */}
                     </div>
-                  )}
 
-                  {showEventInputs && (
-                    <>
-                      <div className={styles.createEventSection}>
-                        <h3>Create Event</h3>
-                        <div className={styles.inputGroup}>
-                          <label htmlFor="title">Event Name</label>
-                          <input
-                            id="title"
-                            type="text"
-                            placeholder="Enter event name"
-                            className={styles.modalInput}
-                            value={eventName}
-                            onChange={(e) => setEventName(e.target.value)}
-                          />
-                        </div>
-                        <div className={styles.inputGroup}>
-                          <label htmlFor="slug">Description</label>
-                          <input
-                            id="slug"
-                            type="text"
-                            placeholder="Enter Description"
-                            className={styles.modalInput}
-                            value={eventSlug}
-                            onChange={(e) => setEventSlug(e.target.value)}
-                          />
-                        </div>
-                        <div className={styles.inputGroup}>
-                          <label htmlFor="length">Length (minutes)</label>
-                          <input
-                            id="length"
-                            type="number"
-                            placeholder="Enter length"
-                            className={styles.modalInput}
-                            value={eventLength}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              if (value <= 999) {
-                                setEventLength(value);
-                              }
-                            }}
-                            max="999"
-                            min="1"
-                          />
-                        </div>
-                      </div>
-
-                      <div
-                        className={styles.modalButtons}
-                        style={{ marginTop: "10px" }}
+                    {eventCreateStatus && (
+                      <p
+                        style={{
+                          color:
+                            eventCreateStatus === "success" ? "green" : "red",
+                          marginTop: "10px",
+                          fontWeight: "600",
+                        }}
                       >
-                        <button
-                          className={`${styles.modalButton} ${styles.cancel}`}
-                          onClick={() => setShowEventInputs(false)}
-                        >
-                          Cancel
-                        </button>
-                        {calloading ? (
-                          <button
-                            className={`${styles.modalButton} ${styles.submit}`}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                            }}
-                          >
-                            Add Event <Loader size={18} />
-                          </button>
-                        ) : (
-                          <button
-                            className={`${styles.modalButton} ${styles.submit}`}
-                            onClick={createCalEvent}
-                            disabled={
-                              !isApiKeySubmitted ||
-                              !eventName.trim() ||
-                              !eventSlug.trim() ||
-                              !eventLength.trim()
-                            }
-                          >
-                            Add Event
-                          </button>
-                        )}
-                      </div>
+                        {eventCreateMessage}
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+          {showDeleteConfirm &&
+            agentToDelete &&
+            (() => {
+              const totalMins =
+                Number(agentToDelete?.subscription?.plan_mins) || 0;
+              const minsLeft = agentToDelete?.mins_left || 0;
+              const planMins = totalMins;
 
-                      {eventCreateStatus && (
-                        <p
+              const usedPercentage =
+                planMins > 0 ? ((planMins - minsLeft) / planMins) * 100 : 100;
+
+              const currentPeriodStart =
+                agentToDelete?.subscription?.current_period_start;
+              const currentPeriodEnd =
+                agentToDelete?.subscription?.current_period_end;
+
+              const subscriptionAgeDays = currentPeriodStart
+                ? dayjs().diff(dayjs(currentPeriodStart), "day")
+                : Infinity;
+
+              const isRefundEligible =
+                usedPercentage < 5 && subscriptionAgeDays <= 2;
+
+              return (
+                <div
+                  className={styles.modalBackdrop}
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  <div
+                    className={styles.modalContainer}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <h2>Are you sure?</h2>
+                    <p>
+                      Do you want to delete agent{" "}
+                      <strong>{agentToDelete.agentName}</strong>?
+                    </p>
+
+                    {agentToDelete?.subscription && (
+                      <p style={{ marginTop: "12px" }}>
+                        {isRefundEligible ? (
+                          <>
+                            Since this agent's subscription is within 2 days and
+                            less than 5% of minutes are used, a refund (minus 3%
+                            Stripe fee) will be issued to the original payment
+                            method within 5–7 business days.
+                          </>
+                        ) : (
+                          <>
+                            This subscription is either older than 2 days or
+                            more than 5% of the minutes are used. No refund will
+                            be provided per our policy.
+                          </>
+                        )}
+                      </p>
+                    )}
+
+                    <div className={styles.modalButtons}>
+                      <button
+                        className={`${styles.modalButton} ${styles.cancel}`}
+                        onClick={() => setShowDeleteConfirm(false)}
+                      >
+                        No
+                      </button>
+                      {deleteloading ? (
+                        <button
+                          className={`${styles.modalButton} ${styles.submit}`}
                           style={{
-                            color:
-                              eventCreateStatus === "success" ? "green" : "red",
-                            marginTop: "10px",
-                            fontWeight: "600",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
                           }}
                         >
-                          {eventCreateMessage}
-                        </p>
+                          Deleting <Loader size={18} />
+                        </button>
+                      ) : (
+                        <button
+                          className={`${styles.modalButton} ${styles.submit}`}
+                          onClick={async () => {
+                            try {
+                              await handleDelete(agentToDelete);
+                              setShowDeleteConfirm(false);
+                              setAgentToDelete(null);
+                            } catch (error) {
+                              setPopupMessage(
+                                `Failed to delete agent: ${error.message}`
+                              );
+                              setPopupType("failed");
+                              setShowDeleteConfirm(false);
+                            }
+                          }}
+                        >
+                          Yes
+                        </button>
                       )}
-                    </>
-                  )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
-            {showDeleteConfirm &&
-              agentToDelete &&
-              (() => {
-                const totalMins =
-                  Number(agentToDelete?.subscription?.plan_mins) || 0;
-                const minsLeft = agentToDelete?.mins_left || 0;
-                const planMins = totalMins;
+              );
+            })()}
 
-                const usedPercentage =
-                  planMins > 0 ? ((planMins - minsLeft) / planMins) * 100 : 100;
+          {showCancelConfirm &&
+            agentToCancel &&
+            (() => {
+              const totalMins = agentToCancel?.subscription?.totalMinutes || 0;
+              const minsLeft = agentToCancel?.mins_left || 0;
+              const plan_name1 = agentToCancel?.agentPlan || "";
+              const plan_mins = totalMins;
+              const usedPercentage = ((plan_mins - minsLeft) / plan_mins) * 100;
+              const current_period_start =
+                agentToCancel?.subscription?.current_period_start;
+              const current_period_end =
+                agentToCancel?.subscription?.current_period_end;
+              const subscriptionAgeDays = dayjs().diff(
+                dayjs(current_period_start),
+                "day"
+              );
 
-                const currentPeriodStart =
-                  agentToDelete?.subscription?.current_period_start;
-                const currentPeriodEnd =
-                  agentToDelete?.subscription?.current_period_end;
+              const isRefundEligible =
+                usedPercentage < 5 && subscriptionAgeDays <= 5;
 
-                const subscriptionAgeDays = currentPeriodStart
-                  ? dayjs().diff(dayjs(currentPeriodStart), "day")
-                  : Infinity;
-
-                const isRefundEligible =
-                  usedPercentage < 5 && subscriptionAgeDays <= 2;
-
-                return (
+              return (
+                <div
+                  className={styles.modalBackdrop}
+                  onClick={() => setShowCancelConfirm(false)}
+                >
                   <div
-                    className={styles.modalBackdrop}
-                    onClick={() => setShowDeleteConfirm(false)}
+                    className={styles.modalContainer}
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <div
-                      className={styles.modalContainer}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <h2>Are you sure?</h2>
-                      <p>
-                        Do you want to delete agent{" "}
-                        <strong>{agentToDelete.agentName}</strong>?
-                      </p>
-
-                      {agentToDelete?.subscription && (
-                        <p style={{ marginTop: "12px" }}>
-                          {isRefundEligible ? (
-                            <>
-                              Since this agent's subscription is within 2 days and
-                              less than 5% of minutes are used, a refund (minus 3%
-                              Stripe fee) will be issued to the original payment
-                              method within 5–7 business days.
-                            </>
-                          ) : (
-                            <>
-                              This subscription is either older than 2 days or more
-                              than 5% of the minutes are used. No refund will be
-                              provided per our policy.
-                            </>
-                          )}
-                        </p>
+                    <h2>Are you sure?</h2>
+                    <p>
+                      {(plan_name1 === "free" ||
+                        plan_name1 === "Pay-As-You-Go") &&
+                      assignNumberPaid ? (
+                        <>
+                          You’re on a <strong>Free Plan</strong> with an{" "}
+                          <strong>assigned number. </strong>
+                          Cancelling this plan will remove your assigned number
+                          and you won’t be able to use it again or otherwise you
+                          have to buy again.
+                          <br />
+                        </>
+                      ) : isRefundEligible ? (
+                        <>
+                          Since you're canceling within 5 days of purchasing and
+                          have used less than 5% of your minutes, you're
+                          eligible for a refund! We'll process a refund of your
+                          subscription amount, minus a 3% payment gateway fee,
+                          back to your original payment method. You should see
+                          it in your account within 5-7 business days.
+                        </>
+                      ) : (
+                        <>
+                          It's been more than 5 days since your subscription
+                          started, or you've used a significant portion of your
+                          minutes. Due to our cancellation & refund policy,
+                          you're not eligible for a refund. Your subscription
+                          will be canceled on{" "}
+                          <strong>
+                            {dayjs(current_period_end).format("MMMM D, YYYY")}
+                          </strong>
+                          , and you can continue to use all features until then.
+                        </>
                       )}
+                    </p>
 
-                      <div className={styles.modalButtons}>
+                    <p style={{ marginTop: "16px" }}>
+                      Are you sure you want to cancel?
+                    </p>
+
+                    <div className={styles.modalButtons}>
+                      <button
+                        className={`${styles.modalButton} ${styles.cancel}`}
+                        onClick={() => setShowCancelConfirm(false)}
+                      >
+                        No
+                      </button>
+                      {deleteloading ? (
                         <button
-                          className={`${styles.modalButton} ${styles.cancel}`}
-                          onClick={() => setShowDeleteConfirm(false)}
+                          className={`${styles.modalButton} ${styles.submit}`}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                          }}
                         >
-                          No
+                          Cancelling <Loader size={18} />
                         </button>
-                        {deleteloading ? (
-                          <button
-                            className={`${styles.modalButton} ${styles.submit}`}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                            }}
-                          >
-                            Deleting <Loader size={18} />
-                          </button>
-                        ) : (
-                          <button
-                            className={`${styles.modalButton} ${styles.submit}`}
-                            onClick={async () => {
-                              try {
-                                await handleDelete(agentToDelete);
-                                setShowDeleteConfirm(false);
-                                setAgentToDelete(null);
-                              } catch (error) {
-                                setPopupMessage(
-                                  `Failed to delete agent: ${error.message}`
-                                );
-                                setPopupType("failed");
-                                setShowDeleteConfirm(false);
-                              }
-                            }}
-                          >
-                            Yes
-                          </button>
-                        )}
-                      </div>
+                      ) : (
+                        <button
+                          className={`${styles.modalButton} ${styles.submit}`}
+                          onClick={async () => {
+                            try {
+                              await handleCancelSubscription(agentToCancel);
+                              setShowCancelConfirm(false);
+                              setAgentToCancel(null);
+                            } catch (error) {
+                              setPopupMessage(
+                                `Failed to Cancel subscription: ${error.message}`
+                              );
+                              setPopupType("failed");
+                              setShowCancelConfirm(false);
+                            }
+                          }}
+                        >
+                          Yes
+                        </button>
+                      )}
                     </div>
                   </div>
-                );
-              })()}
+                </div>
+              );
+            })()}
 
-            {showCancelConfirm &&
-              agentToCancel &&
-              (() => {
-                const totalMins = agentToCancel?.subscription?.totalMinutes || 0;
-                const minsLeft = agentToCancel?.mins_left || 0;
-                const plan_name1 = agentToCancel?.agentPlan || ""
-                const plan_mins = totalMins;
-                const usedPercentage = ((plan_mins - minsLeft) / plan_mins) * 100;
-                const current_period_start =
-                  agentToCancel?.subscription?.current_period_start;
-                const current_period_end =
-                  agentToCancel?.subscription?.current_period_end;
-                const subscriptionAgeDays = dayjs().diff(
-                  dayjs(current_period_start),
-                  "day"
-                );
+          {/* PAYG MODAL */}
+          {showPaygConfirm &&
+            agentToPaygActivate &&
+            checkPaygStatus === 1 &&
+            (() => {
+              const totalMins =
+                agentToPaygActivate?.subscription?.totalMinutes || 0;
+              // console.log("agentToPaygActivate", agentToPaygActivate)
+              const minsLeft = agentToPaygActivate?.mins_left || 0;
+              const plan_name1 = agentToPaygActivate?.agentPlan || "";
+              const plan_mins = totalMins;
+              const subscriptionStatus =
+                agentToPaygActivate?.subscription?.subscription_status;
+              const usedPercentage = ((plan_mins - minsLeft) / plan_mins) * 100;
+              const current_period_start =
+                agentToCancel?.subscription?.current_period_start;
+              const current_period_end =
+                agentToCancel?.subscription?.current_period_end;
+              const subscriptionAgeDays = dayjs().diff(
+                dayjs(current_period_start),
+                "day"
+              );
 
+              const checkPaygActivate = agentToPaygActivate?.is_payg || 0;
 
-                const isRefundEligible =
-                  usedPercentage < 5 && subscriptionAgeDays <= 5;
+              const isRefundEligible =
+                usedPercentage < 5 && subscriptionAgeDays <= 2;
 
-                return (
+              return (
+                // <> {checkPaygStatus === null || checkPaygStatus === 0 ? <>
+
+                // </> :
+                <div
+                  className={styles.modalBackdrop}
+                  onClick={() => setshowPaygConfirm(false)}
+                >
                   <div
-                    className={styles.modalBackdrop}
-                    onClick={() => setShowCancelConfirm(false)}
+                    className={styles.modalContainer}
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <div
-                      className={styles.modalContainer}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <h2>Are you sure?</h2>
-                      <p>
-                        {(plan_name1 === "free" || plan_name1 === "Pay-As-You-Go") && assignNumberPaid ? (
-                          <>
-                            You’re on a <strong>Free Plan</strong> with an <strong>assigned number. </strong>
-                            Cancelling this plan will remove your assigned number and you
-                            won’t be able to use it again or otherwise you have to buy again.
-                            <br />
-                          </>
-                        ) : isRefundEligible ? (
-                          <>
-                            Since you're canceling within 5 days of purchasing and
-                            have used less than 5% of your minutes, you're eligible
-                            for a refund! We'll process a refund of your
-                            subscription amount, minus a 3% payment gateway fee,
-                            back to your original payment method. You should see it
-                            in your account within 5-7 business days.
-                          </>
-                        ) : (
-                          <>
-                            It's been more than 5 days since your subscription
-                            started, or you've used a significant portion of your
-                            minutes. Due to our cancellation & refund policy, you're
-                            not eligible for a refund. Your subscription will be
-                            canceled on{" "}
-                            <strong>
-                              {dayjs(current_period_end).format("MMMM D, YYYY")}
-                            </strong>
-                            , and you can continue to use all features until then.
-                          </>
-                        )}
-                      </p>
+                    <h2>Are you sure?</h2>
+                    <p>
+                      {subscriptionStatus === 9 ? (
+                        <>
+                          🔔 <strong>Deferred → PAYG</strong>: Your deferred
+                          plan will switch to a full{" "}
+                          <strong>Pay-As-You-Go</strong> plan. Billing will
+                          follow the PAYG rules — the fixed assigned-number fee
+                          (if applicable) will be charged at the end of each
+                          month, and your PAYG usage will be billed at the end
+                          of the PAYG billing cycle based on actual minutes
+                          used.
+                          <br />
+                          <br />
+                          <strong>Note:</strong> Any remaining deferred minutes
+                          will be cleared when the switch happens. From then on,
+                          calls will continue under PAYG with no interruption.
+                        </>
+                      ) : plan_name1 === "free" && assignNumberPaid ? (
+                        <>
+                          🎉 Your Assigned Number has been successfully
+                          activated! You can now convert your free plan into a
+                          full Pay-As-You-Go plan by activating it. The fixed
+                          assigned-number fee will be charged at the end of each
+                          month, and your PAYG usage will also be billed at the
+                          end of your PAYG billing cycle based on what you’ve
+                          used. For more features, flexibility, and
+                          opportunities, we recommend upgrading your plan.
+                        </>
+                      ) : checkPaygActivate === 1 &&
+                        plan_name1 === "Pay-As-You-Go" ? (
+                        <>
+                          Are you sure you want to deactivate Pay-As-You-Go for
+                          this agent? Once disabled, calls will stop after the
+                          included minutes are used, and your PAYG plan will
+                          automatically be converted into a{" "}
+                          <strong>free plan</strong>.
+                        </>
+                      ) : checkPaygActivate === 1 ? (
+                        <>
+                          Are you sure you want to deactivate Pay-As-You-Go for
+                          this agent? Your current plan will remain the same,
+                          but PAYG will be disabled for this agent. Once
+                          disabled, calls will no longer continue after the
+                          included minutes are used.
+                        </>
+                      ) : (
+                        <>
+                          🚀 Activate PAYG for your agent to stay connected
+                          without limits. After your included plan minutes are
+                          used, calls will seamlessly continue under PAYG — so
+                          there’s no interruption for your agents. PAYG usage
+                          will be billed at the end of its billing cycle. This
+                          is the best way to ensure smooth operations and
+                          uninterrupted agent calls.
+                        </>
+                      )}
+                    </p>
 
-                      <p style={{ marginTop: "16px" }}>
-                        Are you sure you want to cancel?
-                      </p>
+                    <p style={{ marginTop: "16px" }}>
+                      Are you sure you want to Continue?
+                    </p>
 
-                      <div className={styles.modalButtons}>
+                    <div className={styles.modalButtons}>
+                      <button
+                        className={`${styles.modalButton} ${styles.cancel}`}
+                        onClick={() => setshowPaygConfirm(false)}
+                      >
+                        No
+                      </button>
+                      {deleteloading ? (
                         <button
-                          className={`${styles.modalButton} ${styles.cancel}`}
-                          onClick={() => setShowCancelConfirm(false)}
+                          className={`${styles.modalButton} ${styles.submit}`}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                          }}
                         >
-                          No
+                          Cancelling <Loader size={18} />
                         </button>
-                        {deleteloading ? (
-                          <button
-                            className={`${styles.modalButton} ${styles.submit}`}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                            }}
-                          >
-                            Cancelling <Loader size={18} />
-                          </button>
-                        ) : (
-                          <button
-                            className={`${styles.modalButton} ${styles.submit}`}
-                            onClick={async () => {
-                              try {
-                                await handleCancelSubscription(agentToCancel);
-                                setShowCancelConfirm(false);
-                                setAgentToCancel(null);
-                              } catch (error) {
-                                setPopupMessage(
-                                  `Failed to Cancel subscription: ${error.message}`
-                                );
-                                setPopupType("failed");
-                                setShowCancelConfirm(false);
-                              }
-                            }}
-                          >
-                            Yes
-                          </button>
-                        )}
-                      </div>
+                      ) : (
+                        <button
+                          className={`${styles.modalButton} ${styles.submit}`}
+                          onClick={async () => {
+                            handleTogglePayG();
+                            setshowPaygConfirm(false);
+                            setagentToPaygActivate(null);
+                          }}
+                        >
+                          Yes
+                        </button>
+                      )}
                     </div>
                   </div>
-                );
-              })()}
+                </div>
+                // }</>
+              );
+            })()}
 
-            {/* PAYG MODAL */}
-            {showPaygConfirm &&
-              agentToPaygActivate && checkPaygStatus === 1 &&
-              (() => {
-                const totalMins = agentToPaygActivate?.subscription?.totalMinutes || 0;
-                // console.log("agentToPaygActivate", agentToPaygActivate)
-                const minsLeft = agentToPaygActivate?.mins_left || 0;
-                const plan_name1 = agentToPaygActivate?.agentPlan || ""
-                const plan_mins = totalMins;
-                const subscriptionStatus = agentToPaygActivate?.subscription?.subscription_status
-                const usedPercentage = ((plan_mins - minsLeft) / plan_mins) * 100;
-                const current_period_start =
-                  agentToCancel?.subscription?.current_period_start;
-                const current_period_end =
-                  agentToCancel?.subscription?.current_period_end;
-                const subscriptionAgeDays = dayjs().diff(
-                  dayjs(current_period_start),
-                  "day"
-                );
-
-                const checkPaygActivate = agentToPaygActivate?.is_payg || 0
-
-                const isRefundEligible =
-                  usedPercentage < 5 && subscriptionAgeDays <= 2;
-
-
-
-                return (
-                  // <> {checkPaygStatus === null || checkPaygStatus === 0 ? <>
-
-                  // </> :
-                  <div
-                    className={styles.modalBackdrop}
-                    onClick={() => setshowPaygConfirm(false)}
-                  >
-                    <div
-                      className={styles.modalContainer}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <h2>Are you sure?</h2>
-                      <p>
-                        {
-                          subscriptionStatus === 9 ? (
-                            <>
-                              🔔 <strong>Deferred → PAYG</strong>: Your deferred plan will switch to a full <strong>Pay-As-You-Go</strong> plan.
-                              Billing will follow the PAYG rules — the fixed assigned-number fee (if applicable) will be charged at the end of each month, and your PAYG usage will be billed at the end of the PAYG billing cycle based on actual minutes used.
-                              <br /><br />
-                              <strong>Note:</strong> Any remaining deferred minutes will be cleared when the switch happens. From then on, calls will continue under PAYG with no interruption.
-                            </>
-                          ) :
-                            plan_name1 === "free" && assignNumberPaid ? (
-                              <>
-                                🎉 Your Assigned Number has been successfully activated!
-                                You can now convert your free plan into a full Pay-As-You-Go plan by activating it.
-                                The fixed assigned-number fee will be charged at the end of each month, and your PAYG usage will also be billed at the end of your PAYG billing cycle based on what you’ve used.
-                                For more features, flexibility, and opportunities, we recommend upgrading your plan.
-                              </>
-                            ) : checkPaygActivate === 1 && plan_name1 === "Pay-As-You-Go" ? (
-                              <>
-                                Are you sure you want to deactivate Pay-As-You-Go for this agent?
-                                Once disabled, calls will stop after the included minutes are used, and your PAYG plan will automatically be converted into a <strong>free plan</strong>.
-                              </>
-                            ) : checkPaygActivate === 1 ? (
-                              <>
-                                Are you sure you want to deactivate Pay-As-You-Go for this agent?
-                                Your current plan will remain the same, but PAYG will be disabled for this agent.
-                                Once disabled, calls will no longer continue after the included minutes are used.
-                              </>
-                            ) : (
-                              <>
-                                🚀 Activate PAYG for your agent to stay connected without limits.
-                                After your included plan minutes are used, calls will seamlessly continue under PAYG — so there’s no interruption for your agents.
-                                PAYG usage will be billed at the end of its billing cycle.
-                                This is the best way to ensure smooth operations and uninterrupted agent calls.
-                              </>
-                            )
-                        }
-                      </p>
-
-                      <p style={{ marginTop: "16px" }}>
-                        Are you sure you want to Continue?
-                      </p>
-
-                      <div className={styles.modalButtons}>
-                        <button
-                          className={`${styles.modalButton} ${styles.cancel}`}
-                          onClick={() => setshowPaygConfirm(false)}
-                        >
-                          No
-                        </button>
-                        {deleteloading ? (
-                          <button
-                            className={`${styles.modalButton} ${styles.submit}`}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                            }}
-                          >
-                            Cancelling <Loader size={18} />
-                          </button>
-                        ) : (
-                          <button
-                            className={`${styles.modalButton} ${styles.submit}`}
-                            onClick={async () => {
-                              handleTogglePayG()
-                              setshowPaygConfirm(false);
-                              setagentToPaygActivate(null);
-                            }}
-                          >
-                            Yes
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  // }</>
-                );
-              })()}
-
-            {/* Call Test Modal */}
-            {openCallModal && (
-              <Modal3
-                isOpen={openCallModal}
-                onClose={handleCloseCallModal}
+          {/* Call Test Modal */}
+          {openCallModal && (
+            <Modal3
+              isOpen={openCallModal}
+              onClose={handleCloseCallModal}
+              isEndingRef={isEndingRef}
+              isCallInProgress={isCallInProgress}
+            >
+              <CallTest
+                isCallActive={isCallActive}
+                onStartCall={handleStartCall}
+                onEndCall={handleEndCall}
+                callLoading={callLoading}
+                setCallLoading={setCallLoading}
+                isliveTranscript={liveTranscript}
+                agentName={agentDetails?.agentName}
+                agentAvatar={agentDetails?.avatar}
+                businessName={agentDetails?.business?.businessName}
                 isEndingRef={isEndingRef}
-                isCallInProgress={isCallInProgress}
-              >
-                <CallTest
-                  isCallActive={isCallActive}
-                  onStartCall={handleStartCall}
-                  onEndCall={handleEndCall}
-                  callLoading={callLoading}
-                  setCallLoading={setCallLoading}
-                  isliveTranscript={liveTranscript}
-                  agentName={agentDetails?.agentName}
-                  agentAvatar={agentDetails?.avatar}
-                  businessName={agentDetails?.business?.businessName}
-                  isEndingRef={isEndingRef}
-                />
-              </Modal3>
-            )}
+              />
+            </Modal3>
+          )}
 
-            {/* WidgetModal */}
-            {openWidgetModal && (
-              <Modal2 isOpen={openWidgetModal} onClose={handleCloseWidgetModal}>
-                <WidgetScript
-                  isAgentDetails={agentDetails}
-                  onClose={handleCloseWidgetModal}
-                  refreshFuntion={handleRefresh}
-                  alertPopUp={handleAlertPopUp}
-                />
-              </Modal2>
-            )}
-          </div>
-        )
-        :
+          {/* WidgetModal */}
+          {openWidgetModal && (
+            <Modal2 isOpen={openWidgetModal} onClose={handleCloseWidgetModal}>
+              <WidgetScript
+                isAgentDetails={agentDetails}
+                onClose={handleCloseWidgetModal}
+                refreshFuntion={handleRefresh}
+                alertPopUp={handleAlertPopUp}
+              />
+            </Modal2>
+          )}
+        </div>
+      ) : (
         <NotificationView />
-      }
+      )}
 
       {isAssignNumberModalOpen && (
         <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>
@@ -3874,11 +3948,10 @@ function Dashboard() {
           >
             <h2>Upgrade Required!</h2>
             <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
-
               {/* To use the Assign Number feature on the free plan, you’ll need to pay a small additional charge.<br></br>
               For the best experience and access to premium features, we recommend upgrading to a higher plan. */}
-              Your free one-month Assign Number has expired. You now need to pay to continue using the Assign Number feature.
-
+              Your free one-month Assign Number has expired. You now need to pay
+              to continue using the Assign Number feature.
             </p>
             <div className={`${styles.assignBtn}`}>
               <button
@@ -3927,15 +4000,15 @@ function Dashboard() {
             onClick={(e) => e.stopPropagation()}
           >
             {agentToDeactivate.agentPlan === "free" &&
-              agentToDeactivate.mins_left === 0 &&
-              agentToDeactivate.isDeactivated === 1 ? (
+            agentToDeactivate.mins_left === 0 &&
+            agentToDeactivate.isDeactivated === 1 ? (
               // 👉 Special Upgrade Popup
               <>
                 <h2>Upgrade Required</h2>
                 <p>
                   You’ve used up all your free minutes. To continue using{" "}
-                  <strong>{formatName(agentToDeactivate?.agentName)}</strong>, please
-                  upgrade your plan.
+                  <strong>{formatName(agentToDeactivate?.agentName)}</strong>,
+                  please upgrade your plan.
                 </p>
 
                 <div className={styles.modalButtons}>
@@ -3992,7 +4065,9 @@ function Dashboard() {
                     onClick={() => setShowDeactivateConfirm(false)}
                     disabled={deactivateLoading}
                   >
-                    {agentToDeactivate?.isDeactivated === 1 ? "No" : "Keep Active"}
+                    {agentToDeactivate?.isDeactivated === 1
+                      ? "No"
+                      : "Keep Active"}
                   </button>
                   <button
                     className={`${styles.modalButton} ${styles.submit}`}
@@ -4022,10 +4097,6 @@ function Dashboard() {
           </div>
         </div>
       )}
-
-
-
-
 
       {isUploadModalOpen && (
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
@@ -4158,24 +4229,22 @@ function Dashboard() {
           type={popupType}
           message={popupMessage}
           onClose={() => {
-
-            setPopupMessage("")
-            setredirectButton(false)
-            setassignNumberNavigate(true)
-            setcheckPaygStatus(false)
-            setpaygEnabledPopup(false)
+            setPopupMessage("");
+            setredirectButton(false);
+            setassignNumberNavigate(true);
+            setcheckPaygStatus(false);
+            setpaygEnabledPopup(false);
 
             setPopupMessage("");
             setredirectButton(false);
-
           }}
           onConfirm={handleLogoutConfirm}
           extraButton={
             redirectButton
               ? {
-                label: "Activate Payg",
-                onClick: () => navigate("/edit-profile#payg-toggle"),
-              }
+                  label: "Activate Payg",
+                  onClick: () => navigate("/edit-profile#payg-toggle"),
+                }
               : undefined
           }
         />
@@ -4198,22 +4267,16 @@ function Dashboard() {
           currentPlan1 === "Pay-As-You-Go"
             ? "Your current Pay-As-You-Go plan will be upgraded to a Paid plan, giving you more benefits and features."
             : currentPlan1 === "free"
-              ? "You're about to upgrade this Free plan to a Paid plan. Once upgraded, you'll unlock premium features and additional benefits."
-              : "You're about to upgrade this agent's plan. Your remaining minutes will be added on top of the new plan’s minutes."
-        } type="info"
+            ? "You're about to upgrade this Free plan to a Paid plan. Once upgraded, you'll unlock premium features and additional benefits."
+            : "You're about to upgrade this agent's plan. Your remaining minutes will be added on top of the new plan’s minutes."
+        }
+        type="info"
         confirmText={upgradeLoading ? "Redirecting..." : "Yes, Upgrade"}
         cancelText="Cancel"
         showCancel={true}
         isLoading={upgradeLoading}
         onConfirm={handleUpgradePaygConfirmed}
       />
-
-
-
-
-
-
-
 
       <Popup
         type={popupType3}
@@ -4224,7 +4287,7 @@ function Dashboard() {
           }
           isConfirmedRef.current = false;
           setPopupMessage3("");
-          setpaygStatusLoading(false)
+          setpaygStatusLoading(false);
         }}
         onConfirm={() => {
           isConfirmedRef.current = true;
@@ -4236,4 +4299,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard
+export default Dashboard;
