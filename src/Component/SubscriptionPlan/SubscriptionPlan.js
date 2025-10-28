@@ -39,6 +39,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     const [hasCustomPlan, setHasCustomPlan] = useState()
     const [value, setValue] = useState(0);
     const [agentCount, setAgentCount] = useState()
+    const [showAll2, setShowAll2] = useState(false);
 
 
     const navigate = useNavigate();
@@ -420,7 +421,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 successUrl: url, // origin + path
                 cancelUrl: window.location.origin + "/cancel-payment",
 
-                userId: userId , 
+                userId: userId,
                 priceId: "price_1RypKj4T6s9Z2zBzesn9ijNz"
 
             });
@@ -478,7 +479,24 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         }
     };
 
+    const features2 = [
+        "Fully customizable features",
+        "Choose your own pricing",
+        "Add-on integrations",
+        "24/7 Availability",
+        "Email Notifications",
+        "Website Widget Integration",
+        "Team Collaboration Tools",
+        "Advanced Call Analytics",
+        "Multi-language Support",
+        "Custom Branding Options",
+        "Dedicated Account Manager",
+    ];
 
+
+
+    // Only show first 7 if not expanded
+    const visibleFeatures2 = showAll2 ? features2 : features2.slice(0, 5);
 
     return (
         <div className={styles.MainPlanDiv}>
@@ -563,7 +581,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                             </div>
                  : null}  */}
 
-                   
+
                 <div className={styles.wrapper}>
                     <Slider ref={sliderRef} {...settings}>
                         {products.map((plan, index) => {
@@ -794,59 +812,82 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                         })}
 
 
-                        {!hasCustomPlan ? 
-                       <div key="custom-plan" className={styles.slide}>
-  <div
-    className={`${styles.card} ${styles.customColor}`}
-    onClick={CustomhandleClick}
-    style={{ cursor: "pointer" }}
-  >
-    {/* Top Section */}
-    <div className={`${styles.sectionTop} ${styles.customColorBg}`}>
-      <div className={styles.CardiSection}>
-        <div className={styles.header}>
-          <div className={styles.priceTop}>
-            <div>
-              <img src="/path/to/custom-icon.png" alt="Custom Plan" />
-            </div>
-            <div className={styles.pricdec}>
-              <p className={styles.subPrice}>Custom</p>
-              <p className={styles.billedText}>Tailored to your needs</p>
-            </div>
-          </div>
-        </div>
+                        {!hasCustomPlan ?
+                            <div key="custom-plan" className={styles.slide}>
+                                <div
+                                    className={`${styles.card} ${styles.customColor}`}
+                                    // onClick={CustomhandleClick}
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    {/* Top Section */}
+                                    <div className={`${styles.sectionTop} ${styles.customColorBg}`}>
+                                        <div className={`${styles.CardiSection} ${styles.CustomPlanSection}`}>
+                                            <div className={styles.header}>
+                                                <div className={styles.priceTop}>
+                                                    <div>
+                                                        <img src="/svg/premium-icon.svg" alt="Custom Plan" />
+                                                    </div>
+                                                    <div className={styles.pricdec}>
+                                                        <p className={styles.subPrice}>Custom</p>
+                                                        <p className={styles.billedText}>Tailored to your needs</p>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-        <h3 className={`${styles.Title} ${styles.customText}`}>
-          Custom Plan
-        </h3>
+                                            <h3 className={`${styles.Title} ${styles.customText}`}>
+                                                Custom Plan
+                                            </h3>
 
-        <p className={styles.mainPrice}>
-          <b className={styles.doolor}>Flexible</b> /month per agent
-        </p>
+                                            <p className={styles.mainPrice}>
+                                                <b className={styles.doolor}>Flexible</b> /month per agent
+                                            </p>
 
-        <p className={styles.description}>
-          Build your perfect plan based on your usage and business scale.
-        </p>
-      </div>
-    </div>
+                                            <p className={styles.description}>
+                                                Build your perfect plan based on your usage and business scale.Customize features, control costs.
+                                            </p>
 
-    {/* Features Section */}
-    <ul className={styles.featuresList}>
-      <li className={styles.featureItem}>Fully customizable features</li>
-      <li className={styles.featureItem}>Choose your own pricing</li>
-      <li className={styles.featureItem}>Add-on integrations</li>
-    </ul>
 
-    {/* Button Section */}
-    <div className={styles.stickyWrapper}>
-      <AnimatedButton
-        label="Build Plan"
-        position={{ position: "relative" }}
-        onClick={() => navigate("/build-own-plan")}
-      />
-    </div>
-  </div>
-</div> : null}
+                                        </div>
+                                        <ul className={styles.featuresList2}>
+                                            <div
+                                                className={`${styles.featuresWrapper} ${showAll2 ? styles.expanded : ""}`}
+                                            >
+
+                                                {visibleFeatures2.map((feature, index) => (
+                                                    <li key={index} className={styles.featureItem2}>
+                                                        <img src="/svg/purpol-circle 1.svg" alt="" />
+                                                        {feature}
+                                                    </li>
+                                                ))}
+                                            </div>
+
+                                            {features2.length > 5 && (
+                                                <button
+                                                    className={styles.toggleBtn2}
+                                                    onClick={() => setShowAll2((prev) => !prev)}
+                                                >
+                                                    {showAll2 ? "Show Less" : "~ See All Features"}
+                                                </button>
+                                            )}
+                                        </ul>
+
+
+
+                                    </div>
+
+                                    {/* Features Section */}
+
+
+                                    {/* Button Section */}
+                                    <div className={styles.stickyWrapper}>
+                                        <AnimatedButton
+                                            label="Build Plan"
+                                            position={{ position: "relative" }}
+                                            onClick={() => navigate("/build-own-plan")}
+                                        />
+                                    </div>
+                                </div>
+                            </div> : null}
 
                     </Slider>
                 </div>
