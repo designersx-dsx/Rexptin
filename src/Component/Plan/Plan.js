@@ -12,7 +12,7 @@ import { customPlanCheck, listAgents } from '../../Store/apiStore';
 import FreeTrialModal from '../FreeTrialModal/FreeTrialModal';
 import decodeToken from "../../lib/decodeToken";
 import PopUp from '../Popup/Popup';
-
+import styless from '../SubscriptionPlan/SubscriptionPlan.module.css';
 
 import axios from 'axios'
 
@@ -41,7 +41,7 @@ const Planss = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [currentPlanIdx, setCurrentPlanIdx] = useState(null);
-
+const [showAll2, setShowAll2] = useState(false);
     const [popupMessage, setPopupMessage] = useState("");
     const [popupType, setPopupType] = useState("success");
     const [renderHTML, setRenderHTML] = useState(false); // NEW
@@ -88,7 +88,7 @@ const a = ()=>{
   } ,  [products])
   console.log({plans});
   
-
+    
     const CustomhandleClick = () => {
         navigate("/build-plan", {
             state: {
@@ -126,18 +126,20 @@ const a = ()=>{
         setIsModalOpenz(true);
     };
     const features2 = [
-        '5464564564620 minutes FREE Usage on Us',
-        'No VOIP Number',
-        'Agent Characterization',
-        'Starter Package Feature',
-        'No Call Recording',
-        'Priority Email Support',
-        'Analytics Dashboard',
-        'Custom Greeting Message',
-        'User Management',
+        "Fully customizable features",
+        "Choose your own pricing",
+        "Add-on integrations",
+        "24/7 Availability",
+        "Email Notifications",
+        "Website Widget Integration",
+        "Team Collaboration Tools",
+        "Advanced Call Analytics",
+        "Multi-language Support",
+        "Custom Branding Options",
+        "Dedicated Account Manager",
     ];
     const visibleFeatures = expanded ? features : features.slice(0, 5);
-    const visibleFeatures2 = expandedz ? features2 : features2.slice(0, 5);
+  const visibleFeatures2 = showAll2 ? features2 : features2.slice(0, 5);
     const handleToggle = () => {
         setExpanded((prev) => !prev);
     };
@@ -1133,37 +1135,85 @@ const a = ()=>{
                         );
 
                     })}
-                    {!hasCustomPlan ?
-
-                        <div className={styles.slide}>
-                            <div className={`${styles.card} ${styles.customColor}`} onClick={CustomhandleClick} style={{ cursor: "pointer" }}>
-                                <div className={`${styles.sectionTop} ${styles.customColorBg}`}>
-                                    <div className={styles.CardiSection}>
-                                        <div className={styles.header}>
-                                            <div className={styles.priceTop}>
-                                                <div><img src="/path/to/growth-icon.png" alt="Custom" /></div>
-                                                <div className={styles.pricdec}>
-                                                    <p className={styles.subPrice}>Custom</p>
+                   {/* {!hasCustomPlan ? */}
+                                            <div key="custom-plan" className={styless.slide}>
+                                                <div
+                                                    className={`${styless.card} ${styless.customColor}`}
+                                                    // onClick={CustomhandleClick}
+                                                    style={{ cursor: "pointer" }}
+                                                >
+                                                    {/* Top Section */}
+                                                    <div className={`${styless.sectionTop} ${styless.customColorBg}`}>
+                                                        <div className={`${styless.CardiSection} ${styless.CustomPlanSection}`}>
+                                                            <div className={styless.header}>
+                                                                <div className={styless.priceTop}>
+                                                                    <div>
+                                                                        <img src="/svg/premium-icon.svg" alt="Custom Plan" />
+                                                                    </div>
+                                                                    <div className={styless.pricdec}>
+                                                                        <p className={styless.subPrice}>Custom</p>
+                                                                        <p className={styless.billedText}>Tailored to your needs</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                
+                                                            <h3 className={`${styless.Title} ${styless.customText}`}>
+                                                                Custom Plan
+                                                            </h3>
+                
+                                                            <p className={styless.mainPrice}>
+                                                                <b className={styless.doolor}>Flexible</b> /month per agent
+                                                            </p>
+                
+                                                            <p className={styless.description}>
+                                                                Build your perfect plan based on your usage and business scale.Customize features, control costs.
+                                                            </p>
+                
+                
+                                                        </div>
+                                                        <ul className={styless.featuresList2}>
+                                                            <div
+                                                                className={`${styless.featuresWrapper} ${showAll2 ? styless.expanded : ""}`}
+                                                            >
+                
+                                                                {visibleFeatures2.map((feature, index) => (
+                                                                    <li key={index} className={styless.featureItem2}>
+                                                                        <img src="/svg/purpol-circle 1.svg" alt="" />
+                                                                        {feature}
+                                                                    </li>
+                                                                ))}
+                                                            </div>
+                
+                                                            {features2.length > 5 && (
+                                                                <button
+                                                                    className={styless.toggleBtn2}
+                                                                    onClick={() => setShowAll2((prev) => !prev)}
+                                                                >
+                                                                    {showAll2 ? "Show Less" : "~ See All Features"}
+                                                                </button>
+                                                            )}
+                                                        </ul>
+                
+                
+                
+                                                    </div>
+                
+                                                    {/* Features Section */}
+                
+                
+                                                    {/* Button Section */}
+                                                    <div className={styles.stickyWrapper}>
+                                                        <AnimatedButton
+                                                            label="Build Plan"
+                                                            position={{ position: "relative" }}
+                                                            onClick={CustomhandleClick}
+                                                        />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <h3 className={`${styles.Title} ${styles.customText}`}>Custom Plan</h3>
-                                        <p className={styles.mainPrice}>Build your own plan</p>
-                                    </div>
-                                </div>
-                                <ul className={styles.featuresList}>
-                                    <li className={styles.featureItem}>Fully customizable features</li>
-                                    <li className={styles.featureItem}>Choose your pricing</li>
-                                </ul>
-                                <div className={styles.stickyWrapper} onClick={CustomhandleClick}>
-                                    <AnimatedButton
-                                        label="Build Plan"
-                                        position={{ position: "relative" }}
-
-                                    />
-                                </div>
-                            </div>
-                        </div> : null}
+                                            </div> 
+                                            
+                                             {/* : null} */}
+                
                 </Slider>
             </div>
             <FreeTrialModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
