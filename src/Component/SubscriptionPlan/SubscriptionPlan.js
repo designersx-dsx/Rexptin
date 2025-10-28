@@ -642,6 +642,9 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                             </div>
                                         </div>
 
+
+                                        
+
                                         <ul className={styles.featuresList}>
                                             <div
                                                 className={`${styles.featuresWrapper} ${expandedPlans[index] ? styles.expanded : ""
