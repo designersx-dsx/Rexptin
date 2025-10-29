@@ -904,7 +904,7 @@ const Step = () => {
               type: "string",
               name: "address",
               description:
-                "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
+                "Extract the user's personal address from the conversation. If the user explicitly provides their own address, include and format it for CRM or contact forms. If no personal address is mentioned, do not add or infer any business location. If the address is spoken in Hindi, translate it to English before returning.",
               examples: [
                 "123 Main St, Delhi",
                 "42 Wallaby Way, Sydney",
@@ -916,6 +916,7 @@ const Step = () => {
               name: "phone_number",
               description:
                 "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
+               
             },
 
             ...appointmentBooking(businessType),
