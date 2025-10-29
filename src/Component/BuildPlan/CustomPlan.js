@@ -124,10 +124,10 @@ const handleChange = (e) => {
   };
 
 const planPriceMap = {
-  STARTER: "price_1RUNGj4T6s9Z2zBzHAWaIZz3",
-  SCALER: "price_1RVXQI4T6s9Z2zBz3udYE9sO",
-  GROWTH: "price_1RVXSV4T6s9Z2zBzpoLwTIzY",
-  CORPORATE: "price_1RXgkd4T6s9Z2zBzxvVFBRMs"
+    STARTER: "price_1RgnNeSCQQfKS3WDwz8Dt201",
+    SCALER: "price_1RcCWpSCQQfKS3WDnyGZU5LA",
+    GROWTH: "price_1RcCgoSCQQfKS3WDS0uuS1xy",
+    CORPORATE: "price_1RcCoeSCQQfKS3WDZqJ62RTi"
 };
   const handlePlanCheckout = async () => {
   try {
