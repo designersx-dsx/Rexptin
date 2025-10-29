@@ -161,15 +161,15 @@ const handleChange = (e) => {
         <div className={styles.containerBox}>
             <HeaderBar title="Build your own plan" />
 
-            <div className={styles.container} onClick={handlePlanCheckout}>
+            <div className={styles.container} >
                 <div className={styles.card}>
-                    <div className={styles.ellipseContainer}>
+                    <div className={styles.ellipseContainer} >
                         <img className={styles.ellipse1} src='/svg/Ellipse-build1.svg' alt='Ellipse1'/>
                         <img className={styles.ellipse2} src='/svg/Ellipse-build2.svg' alt='Ellipse2'/>
                     </div>
 
                     {/* Plan Image */}
-                    <div className={`${styles.imageWrapper} ${animate ? styles.slideIn : ""}`} >
+                    <div className={`${styles.imageWrapper} ${animate ? styles.slideIn : ""}`} onClick={handlePlanCheckout}>
                         <img src={image} alt={plan} className={styles.planImage} />
                     </div>
                 </div>
