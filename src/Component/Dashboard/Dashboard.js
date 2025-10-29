@@ -2570,18 +2570,14 @@ function Dashboard() {
                 >
                   <div className={styles?.PlanPriceMain}>
                     <h3 className={styles?.PlanPrice}>
-                      {/* {agent?.subscription?.plan_name === "Add-on Services"
-                    // {agent?.subscription?.plan_name === "PAYG Extra" // Live Acccount
-                    ? "Pay-As-You-Go"
-                    : agent?.subscription?.plan_name || "Free"}
-                  {" Plan"} */}
-                      {(
-                        agent?.subscription?.plan_name
-                          ? agent?.subscription?.plan_name === "Add-on Services"
-                            ? "Pay-As-You-Go"
-                            : agent?.subscription?.plan_name
-                          : agent?.agentPlan || "Free"
-                      ) + " Plan"}
+                  
+                      {agent?.subscription?.plan_name
+  ? agent?.subscription?.plan_name === "Add-on Services"
+    ? "Pay-As-You-Go Plan"
+    : agent?.subscription?.plan_name === "Custom Plan"
+      ? "Custom Plan"
+      : `${agent?.subscription?.plan_name} Plan`
+  : `${agent?.agentPlan || "Free"} Plan`}
                     </h3>
                   </div>
                   <div className={styles.Lang}>

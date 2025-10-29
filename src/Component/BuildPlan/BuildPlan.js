@@ -67,13 +67,16 @@ const handleChange = (e) => {
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
     const progressPercent = ((price - min) / (max - min)) * 100;
+const formatValue = (val, isTooltip = false) => {
+  if (val >= 1_000_000) {
+    return isTooltip ? `${(val / 1_000_000).toFixed(1)}M/m` : `${(val / 1_000_000).toFixed(1)}M/m`;
+  } else if (val >= 1_000) {
+    return isTooltip ? `${(val / 1_000).toFixed(1)}k/m` : `${(val / 1_000).toFixed(1)}k/m`;
+  } else {
+    return isTooltip ? `${val}m` : `${val}m`;
+  }
+};
 
-    const formatValue = (val, isTooltip = false) => {
-        if (val >= 1000) {
-            return isTooltip ? `${(val / 1000).toFixed(1)}K` : `${(val / 1000).toFixed(1)}K`;
-        }
-        return isTooltip ? `${val}` : val;
-    };
 
     useEffect(() => {
         let newPlan = "";
@@ -222,12 +225,12 @@ const handleChange = (e) => {
                                 background: `linear-gradient(to right, #a855f7, #6524EB ${progressPercent}%, #e7e7e7 ${progressPercent}%)`,
                             }}
                         />
-                        <div
-                            className={styles.sliderTooltip}
-                            style={{ left: `calc(${progressPercent}%)` }}
-                        >
-                            {formatValue(price, true)}m
-                        </div>
+                       <div
+  className={styles.sliderTooltip}
+  style={{ left: `calc(${progressPercent}%)` }}
+>
+  {formatValue(price, true)}
+</div>
                     </div>
 
                     <div className={styles.sliderLabels}>
