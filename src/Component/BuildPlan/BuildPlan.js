@@ -13,7 +13,7 @@ const BuildPlan = () => {
     const [animate, setAnimate] = useState(false);
 
     const min = 99;
-    const max = 999;
+    const max = 10000;
 
 const handleChange = (e) => {
     const qty = parseInt(e.target.value);
@@ -161,7 +161,7 @@ const handleChange = (e) => {
         <div className={styles.containerBox}>
             <HeaderBar title="Build your own plan" />
 
-            <div className={styles.container}>
+            <div className={styles.container} onClick={handlePlanCheckout}>
                 <div className={styles.card}>
                     <div className={styles.ellipseContainer}>
                         <img className={styles.ellipse1} src='/svg/Ellipse-build1.svg' alt='Ellipse1'/>
@@ -169,7 +169,7 @@ const handleChange = (e) => {
                     </div>
 
                     {/* Plan Image */}
-                    <div className={`${styles.imageWrapper} ${animate ? styles.slideIn : ""}`} onClick={handlePlanCheckout}>
+                    <div className={`${styles.imageWrapper} ${animate ? styles.slideIn : ""}`} >
                         <img src={image} alt={plan} className={styles.planImage} />
                     </div>
                 </div>

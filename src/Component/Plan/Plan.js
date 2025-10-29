@@ -1135,7 +1135,7 @@ const a = ()=>{
                         );
 
                     })}
-                   {/* {!hasCustomPlan ? */}
+                   {!hasCustomPlan ?
                                             <div key="custom-plan" className={styless.slide}>
                                                 <div
                                                     className={`${styless.card} ${styless.customColor}`}
@@ -1212,7 +1212,7 @@ const a = ()=>{
                                                 </div>
                                             </div> 
                                             
-                                             {/* : null} */}
+                                         : null} 
                 
                 </Slider>
             </div>

@@ -9,6 +9,7 @@
 
 }
 
+
 .innercontainer {
     padding-inline: 20px;
 }
@@ -71,6 +72,9 @@
     justify-content: center;
     position: relative;
     z-index: 10; /* image above ellipses */
+}
+.imageWrapper:hover{
+    cursor: pointer;
 }
 
 .planImage {
