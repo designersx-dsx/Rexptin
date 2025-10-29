@@ -12,7 +12,7 @@ import { customPlanCheck, listAgents } from '../../Store/apiStore';
 import FreeTrialModal from '../FreeTrialModal/FreeTrialModal';
 import decodeToken from "../../lib/decodeToken";
 import PopUp from '../Popup/Popup';
-
+import styless from '../SubscriptionPlan/SubscriptionPlan.module.css';
 
 import axios from 'axios'
 
@@ -29,7 +29,7 @@ const Planss = () => {
     const [userCurrency, setUserCurrency] = useState("usd");
     const [agentCount, setAgentCount] = useState()
     const [expanded, setExpanded] = useState(false);
-
+    const [plans, setPlans] = useState()
     const [expandedz, setExpandedz] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [freeTrial, setFreeTrial] = useState(false);
@@ -41,7 +41,7 @@ const Planss = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [currentPlanIdx, setCurrentPlanIdx] = useState(null);
-
+const [showAll2, setShowAll2] = useState(false);
     const [popupMessage, setPopupMessage] = useState("");
     const [popupType, setPopupType] = useState("success");
     const [renderHTML, setRenderHTML] = useState(false); // NEW
@@ -72,17 +72,35 @@ const Planss = () => {
             localStorage.setItem("isPayg", true)
         }
     }, [])
-
-
-
+const a = ()=>{
+  const allPlans = products.map(p => {
+        const price = p.prices.find(pr => pr.interval === "month");
+        return price ? {
+            title: p.title,
+            priceId: price.id,
+            interval: "month"
+        } : null;
+    })
+    setPlans(allPlans)
+}
+  useEffect(()=>{
+    a()
+  } ,  [products])
+  console.log({plans});
+  
+    
     const CustomhandleClick = () => {
-        navigate("/own-custom-plan" , {
-            state : {
-                locationPath :locationPath , 
-                agentID : agentID
+        navigate("/build-plan", {
+            state: {
+                locationPath: locationPath,
+                agentID: agentID,
+                subscriptionID: subscriptionID,
+                plans: plans
             }
         });
     };
+
+
 
     const handleClick = () => {
         setFreeTrial(!freeTrial);
@@ -108,18 +126,20 @@ const Planss = () => {
         setIsModalOpenz(true);
     };
     const features2 = [
-        '5464564564620 minutes FREE Usage on Us',
-        'No VOIP Number',
-        'Agent Characterization',
-        'Starter Package Feature',
-        'No Call Recording',
-        'Priority Email Support',
-        'Analytics Dashboard',
-        'Custom Greeting Message',
-        'User Management',
+        "Fully customizable features",
+        "Choose your own pricing",
+        "Add-on integrations",
+        "24/7 Availability",
+        "Email Notifications",
+        "Website Widget Integration",
+        "Team Collaboration Tools",
+        "Advanced Call Analytics",
+        "Multi-language Support",
+        "Custom Branding Options",
+        "Dedicated Account Manager",
     ];
     const visibleFeatures = expanded ? features : features.slice(0, 5);
-    const visibleFeatures2 = expandedz ? features2 : features2.slice(0, 5);
+  const visibleFeatures2 = showAll2 ? features2 : features2.slice(0, 5);
     const handleToggle = () => {
         setExpanded((prev) => !prev);
     };
@@ -228,7 +248,7 @@ const Planss = () => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                IN: "inr",
+                // IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -298,7 +318,8 @@ const Planss = () => {
                         };
                     });
 
-                   
+                    // console.log("product",product)
+                    // console.log("matchedData",matchedData)
 
 
 
@@ -422,7 +443,7 @@ const Planss = () => {
             // Prepare the request data
 
             if (activeCount === 1 && isCurrentlyEnabled) {
-                // console.log("Cancel Run")
+                console.log("Cancel Run")
                 try {
                     const cancelResponse = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
                         method: 'POST',
@@ -616,7 +637,7 @@ const Planss = () => {
 
     const checkCustom = async () => {
         let res = await customPlanCheck(decodeTokenData?.id)
-        // console.log(res?.data?.hasCustomPlan , "data")
+        console.log(res?.data?.hasCustomPlan, "data")
         setHasCustomPlan(res?.data?.hasCustomPlan)
     }
     useEffect(() => {
@@ -633,8 +654,8 @@ const Planss = () => {
                 maxUnits: 200,
                 successUrl: window.location.origin + `/thankyou/update?agentId=${agentID}&userId=${decodeTokenData?.id}`, // origin + path
                 cancelUrl: window.location.origin + "/cancel-payment",
-                userId: decodeTokenData?.id ,
-               
+                userId: decodeTokenData?.id,
+
             });
 
             if (res?.data?.url) {
@@ -774,7 +795,7 @@ const Planss = () => {
                         )}
                     </span>
                 </label> : null}
-                 {/* {!hasCustomPlan  ? 
+                {/* {!hasCustomPlan  ? 
  <label className={styles.freeTrialBtn} onChange={handleClick2}>
                     Custom Plan
                     <input
@@ -808,10 +829,10 @@ const Planss = () => {
 
 
             </div>
-             <div className={styles.sectionPart}>
-                    <h2>Subscriptions Plans </h2>
-                    <p>Choose a suitable plan for your agent & business case</p>
-                </div>
+            <div className={styles.sectionPart}>
+                <h2>Subscriptions Plans </h2>
+                <p>Choose a suitable plan for your agent & business case</p>
+            </div>
             {/* {!hasCustomPlan ? 
                <div className={styles.sectionPart}>
                 <div className={styles.cutomPlan} onClick={CustomhandleClick}>
@@ -821,7 +842,7 @@ const Planss = () => {
                
             </div>
             : null} */}
-         
+
             <div className={styles.wrapper}>
                 <Slider ref={sliderRef} {...settings}>
                     {products.map((plan, index) => {
@@ -1069,7 +1090,7 @@ const Planss = () => {
                                                                 interval: currentInterval
                                                             } : null;
                                                         }).filter(Boolean); // remove nulls (in case some plans lack the interval)
-
+                                                        setPlans(allPlans)
 
                                                         const selectedPlanData = {
                                                             priceId: priceForInterval.id,
@@ -1112,7 +1133,87 @@ const Planss = () => {
                                 </div>
                             </div>
                         );
+
                     })}
+                   {!hasCustomPlan ?
+                                            <div key="custom-plan" className={styless.slide}>
+                                                <div
+                                                    className={`${styless.card} ${styless.customColor}`}
+                                                    // onClick={CustomhandleClick}
+                                                    style={{ cursor: "pointer" }}
+                                                >
+                                                    {/* Top Section */}
+                                                    <div className={`${styless.sectionTop} ${styless.customColorBg}`}>
+                                                        <div className={`${styless.CardiSection} ${styless.CustomPlanSection}`}>
+                                                            <div className={styless.header}>
+                                                                <div className={styless.priceTop}>
+                                                                    <div>
+                                                                        <img src="/svg/premium-icon.svg" alt="Custom Plan" />
+                                                                    </div>
+                                                                    <div className={styless.pricdec}>
+                                                                        <p className={styless.subPrice}>Custom</p>
+                                                                        <p className={styless.billedText}>Tailored to your needs</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                
+                                                            <h3 className={`${styless.Title} ${styless.customText}`}>
+                                                                Custom Plan
+                                                            </h3>
+                
+                                                            <p className={styless.mainPrice}>
+                                                                <b className={styless.doolor}>Flexible</b> /month per agent
+                                                            </p>
+                
+                                                            <p className={styless.description}>
+                                                                Build your perfect plan based on your usage and business scale.Customize features, control costs.
+                                                            </p>
+                
+                
+                                                        </div>
+                                                        <ul className={styless.featuresList2}>
+                                                            <div
+                                                                className={`${styless.featuresWrapper} ${showAll2 ? styless.expanded : ""}`}
+                                                            >
+                
+                                                                {visibleFeatures2.map((feature, index) => (
+                                                                    <li key={index} className={styless.featureItem2}>
+                                                                        <img src="/svg/purpol-circle 1.svg" alt="" />
+                                                                        {feature}
+                                                                    </li>
+                                                                ))}
+                                                            </div>
+                
+                                                            {features2.length > 5 && (
+                                                                <button
+                                                                    className={styless.toggleBtn2}
+                                                                    onClick={() => setShowAll2((prev) => !prev)}
+                                                                >
+                                                                    {showAll2 ? "Show Less" : "~ See All Features"}
+                                                                </button>
+                                                            )}
+                                                        </ul>
+                
+                
+                
+                                                    </div>
+                
+                                                    {/* Features Section */}
+                
+                
+                                                    {/* Button Section */}
+                                                    <div className={styles.stickyWrapper}>
+                                                        <AnimatedButton
+                                                            label="Build Plan"
+                                                            position={{ position: "relative" }}
+                                                            onClick={CustomhandleClick}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                            
+                                         : null} 
+                
                 </Slider>
             </div>
             <FreeTrialModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -1141,7 +1242,7 @@ const Planss = () => {
                         <p className={styles.toggleText} onClick={handleToggle}>
                             ~ {expanded ? 'Hide Features' : 'See All Features'}
                         </p>
-                      
+
                         <AnimatedButton label='Subscribe' position={{ position: "relative" }}
                             onClick={() => navigate('/steps', {
                                 state: {
@@ -1151,7 +1252,7 @@ const Planss = () => {
                         />
 
                     </div>
-                  
+
 
                 </div>
 

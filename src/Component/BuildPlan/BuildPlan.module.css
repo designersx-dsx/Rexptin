@@ -1,0 +1,286 @@
+.containerBox {
+    width: 100%;
+    max-width: 500px;
+    margin-inline: auto;
+}
+
+.container {
+    overflow: hidden;
+
+}
+
+.innercontainer {
+    padding-inline: 20px;
+}
+
+.card {
+    background-color: #6524EB;
+    padding: 3rem 20px;
+    color: #fff;
+    position: relative;
+    text-align: center;
+    overflow: hidden; /* ensure ellipses stay inside */
+}
+
+/* Ellipses Container (behind image) */
+.ellipseContainer {
+    position: absolute;
+    inset: 0;
+    z-index: 0; 
+}
+
+.ellipse1, .ellipse2 {
+    position: absolute;
+}
+
+/* Ellipse 1 – float diagonally slowly */
+.ellipse1 {
+    top: 0%;
+    left: 0%;
+    animation: floatEllipse1 60s linear infinite alternate;
+}
+
+
+.ellipse2 {
+    bottom: 10%;
+    right: 5%;
+    animation: floatEllipse2 70s linear infinite alternate;
+}
+
+@keyframes floatEllipse1 {
+    0% { transform: translate(0,0) rotate(0deg);}
+    25% { transform: translate(150%,50%) rotate(45deg);}
+    50% { transform: translate(100%,150%) rotate(90deg);}
+    75% { transform: translate(-50%,100%) rotate(135deg);}
+    100% { transform: translate(0,0) rotate(180deg);}
+}
+
+@keyframes floatEllipse2 {
+    0% { transform: translate(0,0) rotate(0deg);}
+    25% { transform: translate(-150%,100%) rotate(30deg);}
+    50% { transform: translate(100%,-50%) rotate(60deg);}
+    75% { transform: translate(-50%,-100%) rotate(120deg);}
+    100% { transform: translate(0,0) rotate(180deg);}
+}
+
+/* Plan Image */
+.imageWrapper {
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 10; /* image above ellipses */
+}
+.imageWrapper:hover{
+    cursor: pointer;
+}
+
+.planImage {
+    transition: transform 0.6s ease, opacity 0.6s ease;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+
+
+.slideIn {
+    animation: slideInRight 0.6s ease forwards;
+}
+
+/* 👇 updated animation to slide from RIGHT to LEFT */
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(80px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.billBox {
+
+    border-radius: 12px;
+    padding: 15px;
+    background-color: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    position: relative;
+    margin-top: -2.5rem;
+    width: 100%;
+    margin-inline: auto;
+}
+
+.BillText {
+    font-size: 14px;
+    color: #24252C;
+}
+
+.ButtonPlan {
+    background-color: #6524EB;
+    color: #ffffff;
+    border-radius: 15px;
+    padding: 4px 10px;
+    font-size: 12px;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+
+}
+
+.billPrice {
+    font-size: 40px;
+    color: #24252C;
+}
+
+
+.customPlan {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.billBox h2 {
+    color: #24252C;
+    font-size: 40px;
+    font-weight: 800;
+    font-family: 'Inter', sans-serif;
+
+}
+
+.billBox span {
+    font-size: 15px;
+    color: #555555;
+    font-weight: 500;
+}
+
+
+.sliderSection {
+    /* text-align: center; */
+    margin-top: 25px;
+    background-color: #F8F4FF;
+    border: 1px solid #e6daff;
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.sliderValue {
+    font-size: 75px;
+    color: #6524EB;
+    font-weight: 800;
+    margin-bottom: 0;
+}
+
+.sliderText {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 4rem;
+}
+
+.sliderWrapper {
+    position: relative;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.slider {
+    width: 100%;
+    height: 12px;
+    border-radius: 10px;
+    background: #e7e7e7;
+    appearance: none;
+    outline: none;
+    border: 1px solid #CDCDCD;
+}
+
+/* Track fill gradient handled inline in React */
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #fff;
+    border: 5px solid #6524EB;
+    cursor: pointer;
+    margin-top: 0px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    position: relative;
+    top: 10%;
+    background: #fff;
+    border: 5px solid #6524EB;
+}
+
+/* Tooltip */
+.sliderTooltip {
+    position: absolute;
+    top: -45px;
+    transform: translateX(-50%);
+    background: #6524EB;
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 17px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: left 0.2s ease;
+    pointer-events: none;
+    font-family: 'Inter', sans-serif;
+
+}
+
+/* Notch/triangle */
+.sliderTooltip::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 12px;
+    height: 12px;
+    background: #6524EB;
+}
+
+/* Optional: smooth gradient fill on Firefox */
+.slider::-moz-range-track {
+    height: 12px;
+    border-radius: 10px;
+    background: #e7e7e7;
+}
+
+.sliderLabels {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 15px;
+    color: #555555;
+    font-family: 'Inter', sans-serif;
+
+}
+
+.rangeHint {
+    font-size: 14px;
+    color: #555555;
+    margin-top: 1rem;
+    text-align: left;
+}
+
+.PurchaseBtn {
+    margin-top: 2rem;
+}
+
+.NeedmOre {
+    text-align: center;
+    color: #888888;
+    text-decoration: underline;
+    margin-bottom: 1.5rem;
+}

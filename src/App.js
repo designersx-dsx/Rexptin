@@ -78,7 +78,9 @@ import { toast } from "react-toastify";
 import NotificationView from "./Component/Notifications/NotificationView";
 import ThankYouPage from "./Component/hubspotThankyouPage/HubspotThankyou";
 import OwnPlan from './Component/OwnPlan/OwnPlan'
-import CustomPlan from "./Component/OwnPlan/CustomPlan";
+// import CustomPlan from "./Component/OwnPlan/CustomPlan";
+import BuildPlan from "./Component/BuildPlan/BuildPlan";
+import CustomPlan from "./Component/BuildPlan/CustomPlan";
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const token = localStorage.getItem("token");
@@ -208,6 +210,18 @@ function App() {
                   element={
                     <SecureRoute>
                       <Dashboard />
+                    </SecureRoute>
+                  }
+                />
+                  <Route
+                  path="/build-plan"
+                  element={<SecureRoute><BuildPlan /> </SecureRoute>}
+                />
+                <Route
+                  path="/build-own-plan"
+                  element={
+                    <SecureRoute>
+                      <CustomPlan/>
                     </SecureRoute>
                   }
                 />
