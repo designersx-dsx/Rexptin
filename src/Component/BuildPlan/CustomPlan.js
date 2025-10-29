@@ -56,11 +56,14 @@ const handleChange = (e) => {
     const progressPercent = ((price - min) / (max - min)) * 100;
 
     const formatValue = (val, isTooltip = false) => {
-        if (val >= 1000) {
-            return isTooltip ? `${(val / 1000).toFixed(1)}K` : `${(val / 1000).toFixed(1)}K`;
-        }
-        return isTooltip ? `${val}` : val;
-    };
+  if (val >= 1_000_000) {
+    return isTooltip ? `${(val / 1_000_000).toFixed(1)}M/m` : `${(val / 1_000_000).toFixed(1)}M/m`;
+  } else if (val >= 1_000) {
+    return isTooltip ? `${(val / 1_000).toFixed(1)}k/m` : `${(val / 1_000).toFixed(1)}k/m`;
+  } else {
+    return isTooltip ? `${val}m` : `${val}m`;
+  }
+};
 
     useEffect(() => {
         let newPlan = "";
@@ -195,11 +198,11 @@ const planPriceMap = {
                             }}
                         />
                         <div
-                            className={styles.sliderTooltip}
-                            style={{ left: `calc(${progressPercent}%)` }}
-                        >
-                            {formatValue(price, true)}m
-                        </div>
+  className={styles.sliderTooltip}
+  style={{ left: `calc(${progressPercent}%)` }}
+>
+  {formatValue(price, true)}
+</div>
                     </div>
 
                     <div className={styles.sliderLabels}>
