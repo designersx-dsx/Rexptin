@@ -35,7 +35,7 @@ const AssignNumber = () => {
     const requestVersion = useRef(0)
     const popupShownRef = useRef(false);
     const token = localStorage.getItem("token")
-    const navigate=useNavigate()
+    const navigate = useNavigate()
     const languages = [
         {
             name: "English (US)",
@@ -255,7 +255,8 @@ const AssignNumber = () => {
     return (
         <div className={styles.AssignNumberMain}>
             <div className={styles.devHeadbar}>
-                <HeaderBar title="Assign Number" />
+                <HeaderBar title="Assign New number" bottomSubtitle="Choose your new Rexpt Phone Number" />
+
                 <div className={styles.dropdownWrapper}>
                     <div className={styles.dropdown} onClick={() => setOpen(!open)}>
                         <img src={`https://flagcdn.com/w80/${selectedLang?.locale
@@ -296,7 +297,12 @@ const AssignNumber = () => {
                     )}
                 </div>
             </div>
-
+            <div className={styles.disclaimerBox}>
+                <img src="/svg/important-icon.svg" alt="warning" />
+                <span>
+                    <strong>Important Note: </strong> This will be the dedicated business line your customers use to call your Agent.
+                </span>
+            </div>
             <div className={styles.container}>
                 <div className={styles.filters}>
                     <div className={styles.inputGroupSmall}>
