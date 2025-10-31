@@ -255,7 +255,7 @@ const AssignNumber = () => {
     return (
         <div className={styles.AssignNumberMain}>
             <div className={styles.devHeadbar}>
-                <HeaderBar title="Assign New number" bottomSubtitle="Choose your new Rexpt Phone Number" />
+                <HeaderBar title="Assign Phone number" bottomSubtitle="Choose your new Rexpt Phone Number" />
 
                 <div className={styles.dropdownWrapper}>
                     <div className={styles.dropdown} onClick={() => setOpen(!open)}>
@@ -297,7 +297,7 @@ const AssignNumber = () => {
                     )}
                 </div>
             </div>
-            <div className={styles.disclaimerBox}>
+            <div className={styles.disclaimerBox1}>
                 <img src="/svg/important-icon.svg" alt="warning" />
                 <span>
                     <strong>Important Note: </strong> This will be the dedicated business line your customers use to call your Agent.
