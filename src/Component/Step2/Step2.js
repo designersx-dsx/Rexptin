@@ -9,7 +9,7 @@ import styles from "./Step2.module.css";
 import { getRetellVoices } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
-  const [selectedGender, setSelectedGender] = useState("");
+  const [selectedGender, setSelectedGender] = useState("Female");
   const [selectedVoice, setSelectedVoice] = useState("");
   const [listVoices, setListVoices] = useState([]);
   const [filteredVoices, setFilteredVoices] = useState([]);

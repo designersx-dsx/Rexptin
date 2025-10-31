@@ -234,7 +234,7 @@ const EditAgentNew = () => {
           ? `${agent.agentGender.charAt(0).toUpperCase() + agent.agentGender.slice(1).toLowerCase()} , ${agent.agentVoice.split("-")[1] || ""}`
           : null,
         7: agent?.agentName
-          ? `${agent.agentName}, ${agent.agentRole || ""}`
+          ? `${agent.agentName}`
           : null,
       };
       // update steps (agar data mila toh overwrite, warna fallback desc hi rahegi)
