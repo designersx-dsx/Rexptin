@@ -302,7 +302,7 @@ function Dashboard() {
     const newSteps = [
       {
         element: "#tour-profile",
-        title: "Guide Tour",
+        title: "Account & Billing",
         intro:
           "Welcome! This is your profile. Click here to manage your account details, subscription, and billing information.",
         position: "right",
@@ -316,21 +316,21 @@ function Dashboard() {
       // },
       {
         element: "#tour-assign-number",
-        title: "Guide Tour",
+        title: "Assign Phone Number",
         intro:
           "To get your agent live, you need to assign it a dedicated phone number. This is how your customers will reach it.",
         position: "bottom",
       },
       {
         element: "#tour-cal-com",
-        title: "Guide Tour",
+        title: "Connect Calendar",
         intro:
           "Want your receptionist to book appointments? Connect your calendar here to enable seamless scheduling for your business.",
         position: "left",
       },
       {
         element: `#tour-menu-test-${targetAgentId}`,
-        title: "Guide Tour",
+        title: "Test Your Agent",
         intro:
           "Before going live, use this to call your agent and test its voice, conversational style, and overall performance.",
         position: "left",
@@ -340,7 +340,7 @@ function Dashboard() {
       },
       {
         element: `#tour-menu-integrate-${targetAgentId}`,
-        title: "Guide Tour",
+        title: "Website Integration",
         intro:
           "Extend your agent's reach! You can integrate it directly into your website to handle live calls and inquiries.",
         position: "left",
@@ -350,31 +350,25 @@ function Dashboard() {
       },
       {
         element: "#tour-total-calls",
-        title: "Guide Tour",
+        title: "Call History",
         intro:
           "This is where you can see the total number of calls your agent has handled for you.",
         position: "bottom",
       },
       {
         element: "#tour-total-bookings",
-        title: "Guide Tour",
+        title: "Scheduled Bookings ",
         intro:
           "View all the appointments your agent has scheduled for your business right here.",
         position: "bottom",
       },
 
-      {
-        element: "#tour-footer-calendar",
-        title: "Guide Tour",
-        intro:
-          "View and manage all the appointments scheduled by your Receptionist in one place.",
-        position: "top",
-      },
+  
       {
         element: "#tour-footer-support",
-        title: "Guide Tour",
+        title: " Help & Support",
         intro:
-          "Need help? Our support team is here for you. Find answers to your questions or reach out to us directly.",
+          "View and manage all the appointments scheduled by your Receptionist in one place.",
         position: "top",
       },
     ];

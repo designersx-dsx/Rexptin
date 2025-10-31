@@ -6,7 +6,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import Typography from "@mui/material/Typography";
 import decodeToken from "../../lib/decodeToken";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -36,6 +36,7 @@ const CalendarConnect = () => {
   const [apiSubmitting, setApiSubmitting] = useState(false);
   const [agentsDetails, setAgentsDetails] = useState([])
   const [timezone, setTimeZone] = useState("")
+  const navigate = useNavigate()
   //getTimeZone
   const fetchTimeZone = async () => {
     try {
@@ -156,7 +157,76 @@ const CalendarConnect = () => {
             description: "Check the available appointment slots in the calendar and return times strictly in the user's timezone. Use this timezone to suggest and book appointments.",
             timezone: timezone?.timezoneId
 
-          }
+          },
+          {
+            type: "end_call",
+            name: "end_call",
+            description: "End the call with user.",
+          },
+          {
+            type: "extract_dynamic_variable",
+            name: "extract_user_details",
+            description:
+              "Extract the user's details like name, email, phone number, address, and reason for calling from the conversation",
+            variables: [
+              {
+                type: "string",
+                name: "email",
+                description:
+                  "Extract the user's email address from the conversation",
+              },
+              {
+                type: "number",
+                name: "phone",
+                description:
+                  "Extract the user's phone number from the conversation",
+              },
+              {
+                type: "string",
+                name: "address",
+                description: "Extract the user's address from the conversation",
+              },
+              {
+                type: "string",
+                name: "reason",
+                description:
+                  "Extract the user's reason for calling from the conversation",
+              },
+              {
+                type: "string",
+                name: "name",
+                description: "Extract the user's name from the conversation\"",
+              },
+            ],
+          },
+          {
+            name: "get_conversation_history",
+            description: "Fetch previous coversation history by customer email address",
+            type: "custom",
+            method: "POST",
+            url: `${process.env.REACT_APP_API_BASE_URL}/Chatbot/get_chat_logs?email={{parameter.email}}`,
+            speak_after_execution: true,
+
+            // Query parameters for GET request
+            query_params: {
+              email: "{{parameter.email}}",
+            },
+
+            // Response variables to extract order status
+            parameters: {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "description": "Customer email address to fetch conversation history"
+                }
+              },
+              "required": [
+                "email"
+              ]
+            }
+          },
+
         ],
         states: [
           {
@@ -326,7 +396,7 @@ const CalendarConnect = () => {
         type: "success",
         message: "Cal API key added and event created successfully.",
       });
-
+      navigate("/dashboard")
       // setShowEventModal(false);
 
       return true;

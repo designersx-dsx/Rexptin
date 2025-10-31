@@ -924,6 +924,8 @@ const Step = () => {
           ],
           end_call_after_silence_ms: 30000,
           normalize_for_speech: true,
+          ambient_sound:"call-center",
+          ambient_sound_volume:1,
           webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
           // webhook_url: `https://da33c561d4a5.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
         };
