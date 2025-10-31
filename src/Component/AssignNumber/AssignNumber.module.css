@@ -311,7 +311,24 @@
     margin: 20px 0;
     text-align: left;
 }
-
+.disclaimerBox1{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: linear-gradient(180deg, #FFEFE3, #FFFBFB);
+    border: 1px solid #f1bfa4;
+    border-radius: 8px;
+    color: #24252C;
+    font-size: 11px;
+    margin: 20px 0;
+    text-align: left;
+    padding-inline: 20px;
+    padding-block: 16px;
+    max-width: 400px;
+    margin: auto;
+    font-family: sans-serif;
+}
 
 
 .assignBtn {

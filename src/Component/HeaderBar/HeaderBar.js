@@ -25,7 +25,7 @@ const HeaderBar = ({ title, subtitle,bottomSubtitle, dropdownOptions = [], onDro
           <div className={styles.title}>
             {subtitle && <h6>{subtitle}</h6>}
             <h2 style={{ color }}>{title}</h2 >
-            <h5>{bottomSubtitle}</h5>
+            {/* <h5>{bottomSubtitle}</h5> */}
           </div>
 
           {dropdownOptions.length > 0 && (
