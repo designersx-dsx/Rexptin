@@ -356,7 +356,7 @@
 /* If needed, force assign-number to accept events */
 #tour-assign-number {
   pointer-events: auto !important;
-  z-index: 99999 !important;
+  /* z-index: 99999 ; */
 }
 .introjs-overlay{
    pointer-events:none;
