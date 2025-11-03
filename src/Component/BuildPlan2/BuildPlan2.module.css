@@ -1,0 +1,499 @@
+.containerBox {
+    width: 100%;
+    max-width: 500px;
+    margin-inline: auto;
+    /* overflow-x: hidden; */
+    /* height: 100vh; */
+
+}
+
+.container {
+    background-color: #6524EB;
+    height: 320px;
+    padding-inline: 20px;
+    padding-top: 2rem;
+    width: 100%;
+    max-width: 500px;
+    margin-inline: auto;
+}
+
+.CustomPlanCard {
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    border-radius: 12px;
+    padding: 20px 10px;
+
+}
+
+.topBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+}
+
+.PlanTitleBar {
+    width: 50%;
+}
+
+
+.PlanTitle {
+    font-size: 30px;
+    color: #F7A000;
+    font-weight: 800;
+    font-family: 'Inter', sans-serif;
+    margin: 0px;
+}
+
+.PlanSubTitle {
+    font-size: 9px;
+    color: #24252C;
+}
+.priceGray {
+  color: #BFBFBF !important; 
+}
+.PriceBar {
+    width: 50%;
+    text-align: right;
+    line-height: 1;
+}
+
+.PriceBar h2 {
+    color: #24252C;
+    font-size: 60px;
+    font-weight: 800;
+    font-family: 'Inter', sans-serif;
+}
+
+.PriceBar span {
+    font-size: 40px;
+}
+
+.PriceBar p {
+    font-size: 9px;
+    color: #B1B1B1;
+}
+
+.Icon {
+    height: 50px;
+    width: 50px;
+}
+
+.centreBar {
+    margin-block: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+
+.leftBar {
+    width: 40%;
+}
+
+.rightBorder {
+    border-left: 10px solid #F7A000;
+    padding-left: 5px;
+}
+
+.totalMinutes {
+    font-size: 24px;
+    line-height: 0.8;
+    color: #24252C;
+
+}
+
+.iconbar {
+    margin-top: 1rem;
+}
+
+
+.RightBar {
+    width: 60%;
+}
+
+.RightBar {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 10px;
+}
+
+.RightBar p {
+    background: #fff4e5;
+    color: #f7a300;
+    font-weight: 500;
+    font-size: 10px;
+    padding: 6px 10px;
+    border-radius: 20px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.bottombar {
+    margin-top: 1rem;
+    padding-bottom: 1rem;
+    transition: all 0.5s ease;
+}
+
+.desc {
+    font-size: 14px;
+    color: #24252C;
+}
+
+.bottombar.hide {
+    opacity: 0;
+    max-height: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    border: none;
+}
+
+
+
+.checkboxBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #D9D9D9;
+    padding-top: 1rem;
+    margin-top: 1rem;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkboxBar2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #D9D9D9;
+    padding-top: 1rem;
+    /* margin-top: 1rem; */
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkboxBar2 h3 {
+    margin-bottom: 0;
+     font-size: 20px;
+}
+
+.bychecked {
+    font-size: 20px;
+    color: #6524EB;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.byuncheck {
+    font-size: 20px;
+    color: #c4c4c4;
+    text-transform: uppercase;
+    margin: 0;
+    font-weight: 300;
+}
+
+/* Hide real checkbox */
+.checkboxInput {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Custom box */
+.customBox {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+}
+
+/* SVG tick hidden initially */
+.checkIcon {
+    width: 16px;
+    height: 16px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s ease;
+}
+
+/* Checked state */
+.checkboxInput:checked+.customBox {
+    background-color: #6524EB;
+    border-color: #6524EB;
+}
+
+.checkboxInput:checked+.customBox .checkIcon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+
+.sliderDiv {
+    margin-top: 3rem;
+}
+
+.sliderBox {
+    background-color: #F8F4FF;
+    border: 1px solid #E6DAFF;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    max-width: 420px;
+}
+
+.rangeWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.valueBubble {
+    position: absolute;
+    top: -35px;
+    background-color: #6524eb;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    transition: left 0.05s linear;
+}
+
+/* Tooltip arrow */
+.valueBubble::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0 6px;
+    border-style: solid;
+    border-color: #6524eb transparent transparent transparent;
+}
+
+.rangeInput {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 10px;
+    border-radius: 10px;
+    background: linear-gradient(to right,
+            #6524eb 0%,
+            #6524eb var(--fill, 50%),
+            #ffffff var(--fill, 50%),
+            #ffffff 100%);
+    outline: none;
+    transition: background 0.2s ease;
+}
+
+.rangeInput.gray {
+    background: linear-gradient(to right,
+            #bfbfbf 0%,
+            #bfbfbf var(--fill, 50%),
+            #ffffff var(--fill, 50%),
+            #ffffff 100%) !important;
+}
+
+/* Thumb */
+.rangeInput::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid #6524eb;
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.rangeInput::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    border: 6px solid #6524eb;
+    cursor: pointer;
+}
+
+.labelRow {
+    display: flex;
+    justify-content: space-between;
+    color: #555;
+    font-size: 14px;
+}
+
+.caption {
+    font-size: 12px;
+    color: #555;
+    margin-top: 5px;
+}
+
+.MyPlanCard {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px;
+    animation: slideIn 0.5s ease forwards;
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.planHeader {
+    transition: color 0.4s ease, background 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.planDesc {
+    color: #24252C;
+    font-size: 12px;
+    margin-top: 6px;
+    transition: opacity 0.4s ease;
+}
+
+.planHeader h1 {
+    font-size: 22px;
+    font-weight: 800;
+    text-transform: capitalize;
+    margin: 0;
+    text-align: left;
+}
+
+.MyPlanRight h2 {
+    color: #24252C;
+    font-size: 40px;
+    font-weight: 800;
+    font-family: 'Inter', sans-serif;
+}
+
+.MyPlanRight span {
+    font-size: 25px;
+}
+
+.MyPlanCentre {
+    margin-top: 10px;
+}
+
+.MyPlanCentre {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    border-left: 10px solid red;
+    padding-left: 5px;
+    transition: all 0.4s ease;
+}
+
+/* When checkbox is checked */
+.MyPlanCentre {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(10px);
+    overflow: hidden;
+    pointer-events: none;
+    border-left: 10px solid red;
+    padding-left: 5px;
+    transition: all 0.4s ease ease-in-out;
+}
+
+/* ✅ When active */
+.showMyPlanCentre {
+    max-height: 200px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.features {
+    text-align: end;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: end;
+}
+
+.features p {
+    font-size: 9px;
+    padding: 4px 10px;
+    border-radius: 10px;
+    width: max-content;
+
+}
+
+/* gray Mode  */
+
+/* Disable look */
+.gray {
+    background-color: #bfbfbf !important;
+    border-color: #bfbfbf !important;
+    color: #fff !important;
+}
+
+.valueBubble.gray {
+    background-color: #bfbfbf !important;
+}
+
+.valueBubble.gray::after {
+    border-color: #bfbfbf transparent transparent transparent !important;
+}
+
+.rangeInput.gray::-webkit-slider-thumb {
+    border-color: #bfbfbf;
+}
+
+.rangeInput.gray::-moz-range-thumb {
+    border-color: #bfbfbf;
+}
+
+/* Disabled slider pointer */
+.rangeInput:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+
+.PurchaseBtn {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.NeedmOre {
+    text-align: center;
+    color: #888888;
+    text-decoration: underline;
+    padding-bottom: 1rem;
+}

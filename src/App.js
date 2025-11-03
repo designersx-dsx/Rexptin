@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import Start from "./Component/Start/Start";
 import BuildPlan from "./Component/BuildPlan/BuildPlan";
+import BuildPlan2 from "./Component/BuildPlan2/BuildPlan2";
 import SignUp from "./Component/SignUp/SignUp";
 import Details from "./Component/Details/Details";
 import Step from "./Component/Step/Step";
@@ -326,11 +327,11 @@ function App() {
                     </SecureRoute>
                   }
                 />
-                 <Route
+                <Route
                   path="/build-own-plan"
                   element={
                     <SecureRoute>
-                      <CustomPlan/>
+                      <CustomPlan />
                     </SecureRoute>
                   }
                 />
@@ -356,10 +357,15 @@ function App() {
                     </SecureRoute>
                   }
                 />
-                   <Route
+                <Route
                   path="/build-plan"
                   element={<BuildPlan />}
                 />
+                <Route
+                  path="/build-plan2"
+                  element={<BuildPlan2 />}
+                />
+
                 <Route
                   path="/details"
                   element={
