@@ -28,7 +28,7 @@ function injectCSS() {
     }
       
 
-        #rexSupportPopup .support-body,
+        .support-body,
         // #agentPopup .popup-body,
         #rexChatPopup .chat-body {
           max-height: 70vh;               
@@ -96,10 +96,10 @@ function injectCSS() {
    }
    .popup {
      position: fixed;
-     bottom: 155px;
+     bottom: 0px;
      right: 20px;
      width: 90%;
-     max-width:320px;
+    
      background-color: #fff;
      border-radius: 20px;
      border: 2px solid #eee;
@@ -111,21 +111,8 @@ function injectCSS() {
    .popup.show {
      display: block;
    }
-   .popup::after {
-   content: "";
-   position: absolute;
-   bottom: -18px;
-   right: 24px;
-   width: 36px;
-   height: 36px;
-   background-color: #fff;
-   transform: rotate(45deg);
-   box-shadow: 14px 15px 20px rgba(0, 0, 0, 0.1);
-   z-index: -1;
-   border-radius: 0px 0px 8px 0px;
-   }
+
    .popup-header {
-     padding: 5px 40px;
      font-size: 12px;
      color: #888;
      text-align: right;
@@ -133,15 +120,15 @@ function injectCSS() {
    .popup-body {
     position: relative;
     text-align: center;
-    padding: 15px 15px 10px 15px;
+    
     background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);
-    margin-inline: 22px;
-    margin-bottom: 22px;
+
     border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
     flex-direction: column;
+        height: 100vh;
     gap:1rem
    }
     .pulse-ring-wrapper {
@@ -227,7 +214,7 @@ function injectCSS() {
      padding: 8px 12px;
      border-radius: 32px;
      font-size: 14px;
-     max-width: 72%;
+  
      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
      display: flex;
      align-items: center;
@@ -490,25 +477,10 @@ function injectCSS() {
              border:1px solid #ECECEC;
              box-shadow:0 18px 40px rgba(0,0,0,.18);
              z-index:1002; display:none; font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
-             padding: 20px 20px 5px 20px;
+            
             }
                 .chat-popup.show{display:block}
-                .chat-popup::after{
-          content: "";
-            position: absolute;
-            bottom: -12px;
-            right: 24px;
-            width: 28px;
-            height: 28px;
-            background: #fff;
-            transform: rotate(45deg);
-            border: 1px solid #ececec;
-            border-top: 0;
-            border-left: 0;
-            border-radius: 0 0 8px 0;
-            box-shadow: 10px 10px 18px rgba(0,0,0,.08);
-            z-index: -1;
-                        }
+            
                           .chat-popup.expanded{
           max-width: 500px !important;
           transform: scale(1);
@@ -543,7 +515,7 @@ function injectCSS() {
                             .attio-title{line-height:1}
                             .attio-title .t{font-weight:700; font-size:14px}
                             .attio-title .s{font-size:12px; color:#7A7A7A}
-                            .attio-close{border:0; background:transparent; font-size:20px; color:#666; cursor:pointer}
+                           
                             .attio-body{padding:12px 16px 18px;background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);border-radius: 0px 0px 20px 20px;}
                           .attio-thread{
               height: 26dvh;
@@ -613,25 +585,7 @@ function injectCSS() {
                 cursor:pointer; font-weight:600; transition:background .2s
               }
               .attio-end:hover{ background:#c62828 }
-              .attio-close {
-                 position: absolute;
-              bottom: -13px;
-              right: 17px;
-              top: auto;
-              width: 44px;
-              display: flex
-          ;
-              align-items: center;
-              justify-content: center;
-              border: 0px solid #ececec;
-              border-radius: 999px;
-              background: #ffffff00;
-              color: #60666f;
-              font-size: 18px;
-              line-height: 1;
-              cursor: pointer;
-              z-index: 5;
-              }
+            
                 .msg .time {
               display:block;
               font-size:12px;
@@ -702,7 +656,6 @@ function injectCSS() {
           position: fixed;
           bottom: 155px;
           right: 20px;
-          max-width: 320px;
           width: 90%;
           background: #fff;
           border-radius: 16px;
@@ -711,15 +664,11 @@ function injectCSS() {
           z-index: 1002;
           display: none;
           font-family: Inter,system-ui,Segoe UI,Arial,sans-serif;
-          padding: 20px 20px 2px 20px;
+        
 
         }
         .support-popup.show{ display:block }
-        .support-popup::after{
-          content:""; position:absolute; bottom:-18px; right:24px; width:36px; height:36px;
-          background:#fff; transform:rotate(45deg); border-radius:0 0 8px 0;
-          box-shadow:14px 15px 20px rgba(0,0,0,.08);
-        }
+      
         .support-header{
           display:flex; align-items:center; justify-content:space-between;
           padding:14px 16px; border-bottom:1px solid #eff0f2; background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);border-radius: 20px 20px 0px 0px;
@@ -730,7 +679,7 @@ function injectCSS() {
         .support-title .t{ font-weight:500; font-size:18px; color:#fff;text-transform: uppercase; }
         .support-title .s{ font-size:12px; color:#D1DCED }
 /* Move X button to bottom-right of the support popup */
-.support-popup { position: fixed; } /* already hai, just ensure */
+
 
 .support-close{
   position: absolute;
@@ -776,16 +725,7 @@ function injectCSS() {
         .big-card.show { display: block; }
 
       /* arrow tail ko crisp border + subtle shadow */
-      .support-popup::after{
-        content:""; position:absolute; bottom:-12px; right:24px;
-        width:28px; height:28px;
-        background:#fff; transform:rotate(45deg);
-        border:1px solid #ececec;            /* NEW outline */
-        border-top:0; border-left:0;         /* taaki top/left double-border na lage */
-        border-radius:0 0 8px 0;
-        box-shadow:10px 10px 18px rgba(0,0,0,.08);
-        z-index:-1;
-      }ow{ margin-bottom:12px; display:flex; align-items:center; gap:8px }
+      ow{ margin-bottom:12px; display:flex; align-items:center; gap:8px }
         .status-row {
         background: #ffffff1c;      /* halka grey background */
         border-left: 3px solid #6524EB;
@@ -914,10 +854,10 @@ function injectCSS() {
           transform: translateY(0);
           pointer-events:auto;
         }
-        .support-popup .actions-ct.single {
+        .actions-ct.single {
           display: block;        
         }
-        .support-popup .actions-ct.single .btn {
+         .actions-ct.single .btn {
           width: 100%;
         }
         #agentButton.disabled { opacity: .6; cursor: not-allowed; }
@@ -930,7 +870,7 @@ function injectCSS() {
        
 
         @media (max-width:650px){
-          .support-popup{ max-width:320px !important; width:90% !important; right:20px !important; border-radius:20px !important }
+          .support-popup{  width:90% !important; right:20px !important; border-radius:20px !important }
           
           .support-body{
              height: 45dvh;
@@ -964,8 +904,8 @@ function injectCSS() {
 (function () {
     const currentSiteURL = window.location.origin;
     console.log(currentSiteURL, "currentSiteURL")
-    // const API_URL = "https://rexptin.truet.net/api/";
-    const API_URL = "http://localhost:2513/api";
+    const API_URL = "https://rexptin.truet.net/api/";
+    // const API_URL = "http://localhost:2513/api";
     const CHAT_LS_KEY = "rex_chat_history";
     let typingEl = null;
     function loadChatHistory() {
@@ -1243,9 +1183,9 @@ function injectCSS() {
                 }
 
                 // support/prechat modals off
-                try {
-                    document.getElementById("rexSupportPopup")?.classList.remove("show");
-                } catch { }
+                // try {
+                //     document.getElementById("rexSupportPopup")?.classList.remove("show");
+                // } catch { }
                 try {
                     const pcm = document.getElementById("rexPreChatModal");
                     if (pcm) pcm.style.display = "none";
@@ -1267,7 +1207,7 @@ function injectCSS() {
             // ---- SOFT RELOAD WIDGET (no page refresh) ----
             try {
                 // 1) remove any existing popups to avoid duplicate IDs
-                ["agentPopup", "rexChatPopup", "rexSupportPopup"].forEach((id) => {
+                ["agentPopup", "rexChatPopup"].forEach((id) => {
                     document.getElementById(id)?.remove();
                 });
 
@@ -1769,16 +1709,16 @@ function injectCSS() {
             } catch (err) {
                 console.error("Error fetching data:", err);
             }
-            let rexAgent = document.getElementById("agentButton");
-            if (!rexAgent) {
-                rexAgent = createElement("div", {
-                    id: "agentButton",
-                    className: "floating-agent animate",
-                });
-                document.body.appendChild(rexAgent);
-            } else {
-                rexAgent.innerHTML = "";
-            }
+            // let rexAgent = document.getElementById("agentButton");
+            // if (!rexAgent) {
+            //     rexAgent = createElement("div", {
+            //         id: "agentButton",
+            //         className: "floating-agent animate",
+            //     });
+            //     document.body.appendChild(rexAgent);
+            // } else {
+            //     rexAgent.innerHTML = "";
+            // }
 
             const agentWrapper = createElement("div", { className: "agent-wrapper" });
 
@@ -1805,7 +1745,7 @@ function injectCSS() {
             badge2.appendChild(logoImg);
             agentWrapper.appendChild(rexImg);
             agentWrapper.appendChild(badge2);
-            rexAgent.appendChild(agentWrapper);
+            // rexAgent.appendChild(agentWrapper);
             function playPrechatGreeting(
                 rootEl = document.getElementById("rexSupportPopup")
             ) {
@@ -1899,15 +1839,15 @@ function injectCSS() {
                 id: "agentPopup",
                 className: "popup",
             });
-            modal.style.display = "none";
+            // modal.style.display = "none";
 
             const popupHeader = createElement("div", { className: "popup-header" });
-            const poweredBy = createElement("a", {
-                href: "https://www.rexpt.us/",
-                target: "_blank",
-                rel: "noopener noreferrer",
-                innerHTML: "Powered by rexpt.us",
-            });
+            // const poweredBy = createElement("a", {
+            //     href: "https://www.rexpt.us/",
+            //     target: "_blank",
+            //     rel: "noopener noreferrer",
+            //     innerHTML: "Powered by rexpt.us",
+            // });
             const popupBody = createElement("div", { className: "popup-body" });
             const imageWrapper = document.createElement("div");
             imageWrapper.className = "pulse-ring-wrapper";
@@ -1929,6 +1869,7 @@ function injectCSS() {
             try {
                 modal.style.display = "none";
             } catch { }
+
             try {
                 document.getElementById("rexSupportPopup")?.classList.remove("show");
             } catch { }
@@ -2053,22 +1994,6 @@ function injectCSS() {
                     await new Promise((r) => setTimeout(r, delay));
                 }
             }
-
-            function uiAppendBotMessage(text) {
-                try {
-                    const msgs = document.getElementById("rexMessages");
-                    if (!msgs) return;
-                    const timeStr = new Date().toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                    });
-                    const div = document.createElement("div");
-                    div.className = "msg bot";
-                    div.innerHTML = `${text}<span class="time">${timeStr}</span>`;
-                    msgs.appendChild(div);
-                    msgs.scrollTop = msgs.scrollHeight;
-                } catch { }
-            }
             function showIntroTyping() {
                 try {
                     if (document.getElementById("rexTypingIntro")) return;
@@ -2155,12 +2080,7 @@ function injectCSS() {
                     String(localStorage.getItem("isChatEnabled") ?? "")
                 );
             }
-            function bothMinsZero() {
-                const chatEnabled = isChatEnabledLS();
-                const chatMins = num(localStorage.getItem("chat_mins_left"));
-                const callMins = num(localStorage.getItem("call_mins_left"));
-                return (!chatEnabled || chatMins <= 0) && callMins <= 0;
-            }
+
 
             chatBtn.onclick = (e) => {
                 e.stopPropagation();
@@ -2173,7 +2093,7 @@ function injectCSS() {
 
                 localStorage.setItem("rex_last_ui", "chat");
                 modal.style.display = "none";
-                rexAgent.classList.remove("noFloat");
+                // rexAgent.classList.remove("noFloat");
                 ensureUserProfileThen(async () => {
                     const cp = getOrCreateChatPopup();
                     cp.classList.add("show");
@@ -2212,21 +2132,22 @@ function injectCSS() {
                 return chatId;
             }
 
-            const closeButton = createElement("button", {
-                className: "close-button",
-                innerHTML: "×",
-            });
+            // const closeButton = createElement("button", {
+            //     className: "close-button",
+            //     innerHTML: "×",
+            // });
             const agentIntro = document.createElement("p");
             agentIntro.className = "agent-intro";
             agentIntro.innerHTML = `By Clicking Call ${agentName} You agree to <b class="terms-text">Terms of Use</b>`;
             popupBody.appendChild(agentImg);
             popupBody.appendChild(callBtn);
             popupBody.appendChild(buttonStack);
-            popupBody.appendChild(closeButton);
-            popupHeader.appendChild(poweredBy);
+            // popupBody.appendChild(closeButton);
+            // popupHeader.appendChild(poweredBy);
             modal.appendChild(popupHeader);
             modal.appendChild(popupBody);
             document.body.appendChild(modal);
+
             infoWrapper.appendChild(callLabel);
             infoWrapper.appendChild(phoneNumber);
             infoWrapper.appendChild(tag);
@@ -2237,8 +2158,8 @@ function injectCSS() {
             popupBody.appendChild(callBtn);
             popupBody.appendChild(buttonStack);
             popupBody.appendChild(agentIntro);
-            popupBody.appendChild(closeButton);
-            popupHeader.appendChild(poweredBy);
+            // popupBody.appendChild(closeButton);
+            // popupHeader.appendChild(poweredBy);
             modal.appendChild(popupHeader);
             modal.appendChild(popupBody);
             let supportEl = null;
@@ -2270,7 +2191,7 @@ function injectCSS() {
           <div class="s">Customer Success Agent</div>
         </div>
       </div>
-      <button class="support-close" aria-label="Close">&times;</button>
+     
     </div>
 
 
@@ -2342,19 +2263,16 @@ function injectCSS() {
       </div>
       
     </div>
-    <div class="PoweredBy">
-      <span><a href="https://www.rxpt.us/" target="_blank" rel="noopener noreferrer">Powered by rxpt.us</a></span>
 
-    </div>
   `;
                 document.body.appendChild(supportEl);
-                supportEl.querySelector(".support-close", ".CloseX").onclick = () => {
-                    setDefaultUIAfterProfile();
-                    supportEl.classList.remove("show");
-                    try {
-                        startCloseTimer();
-                    } catch { }
-                };
+                // supportEl.querySelector(".support-close", ".CloseX").onclick = () => {
+                //     setDefaultUIAfterProfile();
+                //     supportEl.classList.remove("show");
+                //     try {
+                //         startCloseTimer();
+                //     } catch { }
+                // };
 
                 // put this near your helpers
                 const toNum = (v) => {
@@ -2496,9 +2414,13 @@ function injectCSS() {
                                 .trim()
                                 .replace(/[^\d+]/g, "")
                         );
+
                     setDefaultUIAfterProfile();
+
                 }
 
+
+                // initWidget ends
                 let touched = { name: false, email: false, phone: false };
 
                 function setFieldError($input, $errBox, msg) {
@@ -2771,122 +2693,122 @@ function injectCSS() {
 
             let __rex_widget_clicking = false;
 
-            rexAgent.addEventListener("click", async () => {
-                if (onCall || isCallPopupOpen()) {
-                    pingBeep?.();
-                    if (!window.__rex_only_call_mode__) pingBeep?.();
-                    return;
-                }
-                const preferChat = localStorage.getItem("rex_last_ui") === "chat";
-                const preferCall = localStorage.getItem("rex_last_ui") === "call";
-                const hasHistory = (loadChatHistory() || []).length > 0;
-                const prefer = localStorage.getItem("rex_last_ui");
+            // rexAgent.addEventListener("click", async () => {
+            //     if (onCall || isCallPopupOpen()) {
+            //         pingBeep?.();
+            //         if (!window.__rex_only_call_mode__) pingBeep?.();
+            //         return;
+            //     }
+            //     const preferChat = localStorage.getItem("rex_last_ui") === "chat";
+            //     const preferCall = localStorage.getItem("rex_last_ui") === "call";
+            //     const hasHistory = (loadChatHistory() || []).length > 0;
+            //     const prefer = localStorage.getItem("rex_last_ui");
 
-                const chatEnabled = (() => {
-                    const v = localStorage.getItem("isChatEnabled");
-                    return v === "true" || v === "1";
-                })();
-                if (!hasCompleteProfile()) {
-                    const sp = getOrCreateSupportPopup();
-                    sp.classList.add("show");
-                    playPrechatGreeting();
-                    rexAgent.classList.add("noFloat");
-                    clearCloseTimer?.();
-                    lockBodyScroll();
-                    return;
-                }
+            //     const chatEnabled = (() => {
+            //         const v = localStorage.getItem("isChatEnabled");
+            //         return v === "true" || v === "1";
+            //     })();
+            //     if (!hasCompleteProfile()) {
+            //         const sp = getOrCreateSupportPopup();
+            //         sp.classList.add("show");
+            //         playPrechatGreeting();
+            //         rexAgent.classList.add("noFloat");
+            //         clearCloseTimer?.();
+            //         lockBodyScroll();
+            //         return;
+            //     }
 
-                if (!chatEnabled || prefer === "call") {
-                    const modal = document.getElementById("agentPopup");
-                    if (modal) {
-                        modal.style.display = "block";
-                        setWidgetLocked(true);
-                        rexAgent.classList.add("noFloat");
-                        clearCloseTimer?.();
-                        lockBodyScroll();
+            //     if (!chatEnabled || prefer === "call") {
+            //         const modal = document.getElementById("agentPopup");
+            //         if (modal) {
+            //             modal.style.display = "block";
+            //             setWidgetLocked(true);
+            //             rexAgent.classList.add("noFloat");
+            //             clearCloseTimer?.();
+            //             lockBodyScroll();
 
-                        setTimeout(() => {
-                            try {
-                                const host = modal.querySelector(".popup-body");
-                                const target = modal.querySelector(
-                                    ".greendiv, .reddiv, #start-call"
-                                );
-                                if (host && target) {
-                                    const top =
-                                        target.getBoundingClientRect().top -
-                                        host.getBoundingClientRect().top +
-                                        host.scrollTop -
-                                        8;
-                                    host.scrollTo({ top, behavior: "smooth" });
-                                }
-                            } catch { }
-                        }, 100);
-                        return;
-                    }
-                }
+            //             setTimeout(() => {
+            //                 try {
+            //                     const host = modal.querySelector(".popup-body");
+            //                     const target = modal.querySelector(
+            //                         ".greendiv, .reddiv, #start-call"
+            //                     );
+            //                     if (host && target) {
+            //                         const top =
+            //                             target.getBoundingClientRect().top -
+            //                             host.getBoundingClientRect().top +
+            //                             host.scrollTop -
+            //                             8;
+            //                         host.scrollTo({ top, behavior: "smooth" });
+            //                     }
+            //                 } catch { }
+            //             }, 100);
+            //             return;
+            //         }
+            //     }
 
-                if (prefer === "chat" || (chatEnabled && hasCompleteProfile())) {
-                    if (__rex_widget_clicking) return;
-                    __rex_widget_clicking = true;
-                    rexAgent.classList.add("is-busy");
-                    rexAgent.setAttribute("aria-busy", "true");
+            //     if (prefer === "chat" || (chatEnabled && hasCompleteProfile())) {
+            //         if (__rex_widget_clicking) return;
+            //         __rex_widget_clicking = true;
+            //         rexAgent.classList.add("is-busy");
+            //         rexAgent.setAttribute("aria-busy", "true");
 
-                    try {
-                        await ensureUserProfileThen(async () => {
-                            try {
-                                await ensureChatSession();
-                            } catch { }
+            //         try {
+            //             await ensureUserProfileThen(async () => {
+            //                 try {
+            //                     await ensureChatSession();
+            //                 } catch { }
 
-                            const cp = getOrCreateChatPopup();
-                            cp.classList.add("show");
-                            cp.classList.remove("expanded");
-                            void cp.offsetWidth;
-                            cp.classList.add("expanded");
-                            rexAgent.classList.add("noFloat");
-                            clearCloseTimer();
-                            lockBodyScroll();
-                        });
-                    } finally {
-                        rexAgent.classList.remove("is-busy");
-                        rexAgent.removeAttribute("aria-busy");
-                        __rex_widget_clicking = false;
-                    }
-                } else {
-                    const sp = getOrCreateSupportPopup();
-                    sp.classList.add("show");
-                    playPrechatGreeting();
-                    rexAgent.classList.add("noFloat");
-                    clearCloseTimer();
-                    unlockBodyScroll();
-                }
-            });
-            closeButton.addEventListener("click", async () => {
-                modal.style.display = "none";
-                rexAgent.classList.remove("noFloat");
-                setWidgetLocked(false);
-                unlockBodyScroll();
+            //                 const cp = getOrCreateChatPopup();
+            //                 cp.classList.add("show");
+            //                 cp.classList.remove("expanded");
+            //                 void cp.offsetWidth;
+            //                 cp.classList.add("expanded");
+            //                 rexAgent.classList.add("noFloat");
+            //                 clearCloseTimer();
+            //                 lockBodyScroll();
+            //             });
+            //         } finally {
+            //             rexAgent.classList.remove("is-busy");
+            //             rexAgent.removeAttribute("aria-busy");
+            //             __rex_widget_clicking = false;
+            //         }
+            //     } else {
+            //         const sp = getOrCreateSupportPopup();
+            //         sp.classList.add("show");
+            //         playPrechatGreeting();
+            //         rexAgent.classList.add("noFloat");
+            //         clearCloseTimer();
+            //         unlockBodyScroll();
+            //     }
+            // });
+            // closeButton.addEventListener("click", async () => {
+            //     modal.style.display = "none";
+            //     // rexAgent.classList.remove("noFloat");
+            //     setWidgetLocked(false);
+            //     unlockBodyScroll();
 
-                if (onCall) {
-                    try {
-                        await retellWebClient.stopCall();
-                    } catch (err) {
-                        console.error("Call stop failed:", err);
-                    }
-                    try {
-                        localStorage.removeItem("rex_last_ui");
-                    } catch { }
-                    callBtn.classList.remove("reddiv");
-                    callBtn.classList.add("greendiv");
-                    phoneIcon.src = "https://rexptin.vercel.app/svg/Phone-call.svg";
-                    callText.innerHTML = `<p>Call <span class="agentTag">${agentName.length > 8 ? `${agentName.substring(0, 8)}..` : agentName
-                        }</span></p><small>${businessName.length > 10
-                            ? `${businessName.substring(0, 8)}..`
-                            : businessName
-                        } Agent is LIVE</small>`;
-                    onCall = false;
-                    setWidgetLocked(false);
-                }
-            });
+            //     if (onCall) {
+            //         try {
+            //             await retellWebClient.stopCall();
+            //         } catch (err) {
+            //             console.error("Call stop failed:", err);
+            //         }
+            //         try {
+            //             localStorage.removeItem("rex_last_ui");
+            //         } catch { }
+            //         callBtn.classList.remove("reddiv");
+            //         callBtn.classList.add("greendiv");
+            //         phoneIcon.src = "https://rexptin.vercel.app/svg/Phone-call.svg";
+            //         callText.innerHTML = `<p>Call <span class="agentTag">${agentName.length > 8 ? `${agentName.substring(0, 8)}..` : agentName
+            //             }</span></p><small>${businessName.length > 10
+            //                 ? `${businessName.substring(0, 8)}..`
+            //                 : businessName
+            //             } Agent is LIVE</small>`;
+            //         onCall = false;
+            //         setWidgetLocked(false);
+            //     }
+            // });
 
             modal.addEventListener("click", async (e) => {
                 if (e.target === modal) {
@@ -2896,7 +2818,7 @@ function injectCSS() {
                     onCall = false;
                     setWidgetLocked(false);
                     modal.style.display = "none";
-                    rexAgent.classList.remove("noFloat");
+                    // rexAgent.classList.remove("noFloat");
                     setWidgetLocked(false);
                     unlockBodyScroll();
                 }
@@ -3632,7 +3554,7 @@ function injectCSS() {
         
 
       <!--  <button class="attio-end">End chat</button> -->
-        <button class="attio-close" aria-label="Close">&times;</button>
+       
       </div>
         </div>
 
@@ -3650,10 +3572,7 @@ function injectCSS() {
         </button>
           </div>
         </div>
- 
-      <div class="PoweredBy">
-        <span><a href="https://www.rxpt.us/" target="_blank" rel="noopener noreferrer">Powered by rxpt.us</a></span>
-        </div>
+
 
 `;
 
@@ -3828,18 +3747,18 @@ function injectCSS() {
                 }
 
                 const $endBtn = chatModalEl.querySelector(".attio-end");
-                const $closeBtn = chatModalEl.querySelector(".attio-close");
+                // const $closeBtn = chatModalEl.querySelector(".attio-close");
 
-                if ($closeBtn) {
-                    $closeBtn.onclick = () => {
-                        chatModalEl.classList.remove("show");
-                        clearOnlyUserAutoEndTimer();
-                        try {
-                            clearInactivityTimers();
-                            startCloseTimer();
-                        } catch { }
-                    };
-                }
+                // if ($closeBtn) {
+                //     $closeBtn.onclick = () => {
+                //         chatModalEl.classList.remove("show");
+                //         clearOnlyUserAutoEndTimer();
+                //         try {
+                //             clearInactivityTimers();
+                //             startCloseTimer();
+                //         } catch { }
+                //     };
+                // }
 
                 if ($endBtn) {
                     $endBtn.onclick = () => {
@@ -3882,14 +3801,14 @@ function injectCSS() {
                         });
                     };
                 }
-                chatModalEl.querySelector(".attio-close").onclick = () => {
-                    chatModalEl.classList.remove("expanded");
-                    chatModalEl.classList.remove("show");
-                    try {
-                        clearInactivityTimers();
-                        startCloseTimer();
-                    } catch { }
-                };
+                // chatModalEl.querySelector(".attio-close").onclick = () => {
+                //     chatModalEl.classList.remove("expanded");
+                //     chatModalEl.classList.remove("show");
+                //     try {
+                //         clearInactivityTimers();
+                //         startCloseTimer();
+                //     } catch { }
+                // };
 
                 const $msgs = chatModalEl.querySelector("#rexMessages");
                 const $input = chatModalEl.querySelector("#rexInput");
@@ -4204,7 +4123,73 @@ function injectCSS() {
                 })();
                 return chatModalEl;
             }
+            //openDirectCard
+            const openDirectCard = () => {
+                // 1. Close any other popups
+                document.getElementById("rexSupportPopup")?.classList.remove("show");
+                document.getElementById("rexPreChatModal")?.style && (document.getElementById("rexPreChatModal").style.display = "none");
+                document.getElementById("rexChatPopup")?.classList.remove("show");
 
+                // 2. Decide: Chat or Voice?
+                const preferChat = localStorage.getItem("rex_last_ui") === "chat";
+                const chatEnabled = localStorage.getItem("isChatEnabled") === "true";
+                const chatMinsLeft = Number(localStorage.getItem("chat_mins_left") || 0);
+                const callMinsLeft = Number(localStorage.getItem("call_mins_left") || 0);
+                const addOnsMins = Number(localStorage.getItem("addOnsMins") || 0);
+
+                const hasChat = chatEnabled && (chatMinsLeft > 0 || addOnsMins > 0);
+                const hasCall = callMinsLeft > 0;
+
+                if (!hasCompleteProfile()) {
+                    // Profile nahi → pre-chat form
+                    const sp = getOrCreateSupportPopup();
+                    sp.classList.add("show");
+                    playPrechatGreeting();
+                    lockBodyScroll();
+                    return;
+                }
+
+                if (preferChat && hasChat) {
+                    // OPEN CHAT CARD
+                    const cp = getOrCreateChatPopup();
+                    cp.classList.add("show");
+                    cp.classList.remove("expanded");
+                    void cp.offsetWidth;
+                    cp.classList.add("expanded");
+                    lockBodyScroll();
+                    if (window.ChatLily?.mount) {
+                        window.ChatLily.mount("#rexChatPopupMount", {
+                            agentId: localStorage.getItem("agent_id") || agentId,
+                            source: "auto_open",
+                        });
+                    }
+                } else if (hasCall) {
+                    // OPEN VOICE CARD
+                    modal.style.display = "block";
+                    lockBodyScroll();
+                    setWidgetLocked(true);
+
+                    // Scroll to Call button
+                    setTimeout(() => {
+                        const callBtn = modal.querySelector("#start-call");
+                        const popupBody = modal.querySelector(".popup-body") || modal;
+                        if (callBtn && popupBody) {
+                            const top = callBtn.getBoundingClientRect().top -
+                                popupBody.getBoundingClientRect().top +
+                                popupBody.scrollTop - 8;
+                            popupBody.scrollTo({ top, behavior: "smooth" });
+                        }
+                    }, 0);
+                } else {
+                    // Fallback: show pre-chat or voice
+                    modal.style.display = "block";
+                    lockBodyScroll();
+                    setWidgetLocked(true);
+                }
+            };
+
+            // Run immediately after DOM
+            openDirectCard();
             setDefaultUIAfterProfile();
         };
 
