@@ -5,6 +5,7 @@ import {
   Route,
   useNavigate,
   Navigate,
+  useParams
 } from "react-router-dom";
 import Start from "./Component/Start/Start";
 import SignUp from "./Component/SignUp/SignUp";
@@ -81,6 +82,7 @@ import OwnPlan from './Component/OwnPlan/OwnPlan'
 // import CustomPlan from "./Component/OwnPlan/CustomPlan";
 import BuildPlan from "./Component/BuildPlan/BuildPlan";
 import CustomPlan from "./Component/BuildPlan/CustomPlan";
+import PublicWidgetPage from "./Component/PublicWidgetPage/PublicWidgetPage"
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const token = localStorage.getItem("token");
@@ -92,9 +94,7 @@ function App() {
   const addNotification = useNotificationStore((state) => state.addNotification);
   const loadNotifications = useNotificationStore((state) => state.loadNotifications);
   const toggleFlag = useNotificationStore((state) => state.toggleFlag);
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0); 
+  const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate()
   useEffect(() => {
     const script = document.createElement("script");
@@ -162,6 +162,17 @@ function App() {
     const ref = document.referrer;
     console.log('Referrer URL:', ref);
   }, []);
+  //Public Widget Integration
+  const searchParams = new URLSearchParams(window.location.search);
+  const agent = searchParams.get("agent");
+
+  //Check if agent param is valid 6-char alphanumeric code
+  const isValidAgent = agent && /^[A-Za-z0-9]{6}$/.test(agent);
+
+  if (isValidAgent) {
+    console.log(" Valid agent detected:", agent);
+    return <PublicWidgetPage agentCode={agent} />;
+  }
   return (
     <>
       {/* <ForcePortraitOnly /> */}
@@ -213,7 +224,7 @@ function App() {
                     </SecureRoute>
                   }
                 />
-                  <Route
+                <Route
                   path="/build-plan"
                   element={<SecureRoute><BuildPlan /> </SecureRoute>}
                 />
@@ -221,7 +232,7 @@ function App() {
                   path="/build-own-plan"
                   element={
                     <SecureRoute>
-                      <CustomPlan/>
+                      <CustomPlan />
                     </SecureRoute>
                   }
                 />
