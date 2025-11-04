@@ -95,18 +95,17 @@ function injectCSS() {
     border:unset;
    }
    .popup {
-     position: fixed;
-     bottom: 0px;
-     right: 20px;
-     width: 90%;
-    
-     background-color: #fff;
-     border-radius: 20px;
-     border: 2px solid #eee;
-     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-     z-index: 1001;
-     display: none;
-     font-family: sans-serif;
+    position: fixed;
+    bottom: 0px;
+    /* right: 20px; */
+    width: 100%;
+    background-color: #fff;
+    /* border-radius: 20px; */
+    border: 2px solid #eee;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    display: none;
+    font-family: sans-serif;
    }
    .popup.show {
      display: block;
@@ -135,7 +134,7 @@ function injectCSS() {
       position: relative;
       width: 100px;
       height: 100px;
-      margin-top:2rem;
+      margin-top:4rem;
     }
     .agent-img {
       width: 100%;
@@ -293,7 +292,7 @@ function injectCSS() {
       align-items: center;
       gap: 10px;
       cursor: pointer;
-      width: 80%;
+      width: max-content;
 
       transition: background-color 0.4s ease, transform 0.4s ease;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -435,7 +434,7 @@ function injectCSS() {
           .terms-content h2 {
             margin-top: 0;
             font-size: 16px;
-            margin-bottom: -7px;
+            margin-bottom: 5px;
           }
           
           .close-terms {
@@ -496,6 +495,16 @@ function injectCSS() {
 
             /* Mobile: full width, no expand play (aapke existing rule ke saath compatible) */
             @media (max-width:650px){
+             .chat-popup.expanded{
+                     height: 100%;
+                      bottom: 0;
+              }
+            .attio-body{
+               height: 100%;
+             }
+              .chat-popup.expanded .attio-thread{
+              height:500px!important;
+              }
               .chat-popup{
                 max-width: none !important;
                 width: 100% !important;
@@ -654,13 +663,11 @@ function injectCSS() {
          /* === Pre-chat (Support) — White card + animated underline === */
         .support-popup{
           position: fixed;
-          bottom: 155px;
+          bottom: 0px;
           right: 20px;
-          width: 90%;
-          background: #fff;
-          border-radius: 16px;
-          border: 1px solid #ECECEC;
-          box-shadow: 0 18px 40px rgba(0,0,0,.18);
+          width: 100%;
+          height: 100%;
+         background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);
           z-index: 1002;
           display: none;
           font-family: Inter,system-ui,Segoe UI,Arial,sans-serif;
@@ -670,14 +677,32 @@ function injectCSS() {
         .support-popup.show{ display:block }
       
         .support-header{
-          display:flex; align-items:center; justify-content:space-between;
-          padding:14px 16px; border-bottom:1px solid #eff0f2; background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);border-radius: 20px 20px 0px 0px;
+          display:flex; 
+          align-items:center; 
+          justify-content:space-between;
+          padding:14px 16px;
+         border-bottom:1px solid #eff0f2;
+         background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);
+         border-radius: 20px 20px 0px 0px;
+         width: 100%;
+         max-width: 600px;
+         margin-inline: auto;
         }
         .support-brand{ display:flex; align-items:center; gap:5px }
-        .support-logo{ width:36px; height:36px; border-radius:100px; border:5px solid #c4c4c423; overflow:hidden;
+        .support-logo{ width:70px; height:70px; border-radius:100px; border:5px solid #c4c4c423; overflow:hidden;
           display:flex; align-items:center; justify-content:center; background:#111; }
-        .support-title .t{ font-weight:500; font-size:18px; color:#fff;text-transform: uppercase; }
-        .support-title .s{ font-size:12px; color:#D1DCED }
+        .support-title .t{
+            font-weight:500;
+            font-size:32px;
+            color:#fff;
+            text-transform: uppercase;
+        }
+        .support-title .s{ font-size:14px; color:#ffff }
+         .addresTitle{
+       color:#ffff;
+       font-size:12px;
+       margin-top: 3px;
+       }
 /* Move X button to bottom-right of the support popup */
 
 
@@ -700,8 +725,21 @@ function injectCSS() {
     cursor: pointer;
     z-index: 5;
 }
-
-        .support-body{ padding: 20px 20px 20px; background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);border-radius: 0px 0px 20px 20px; min-height:324px }
+   .mainDiv{
+     border:1px solid #7C7C7E;
+     border-radius:18px;
+     height: 800px;
+     position: relative;
+    }
+        .support-body{ 
+        padding: 20px 20px 20px;
+         background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);
+         border-radius: 0px 0px 20px 20px;
+         min-height:500px ;
+         width: 100%;
+         max-width: 600px;
+         margin-inline: auto;
+         }
 
       .big-card{
         display:none;        
@@ -727,16 +765,16 @@ function injectCSS() {
       /* arrow tail ko crisp border + subtle shadow */
       ow{ margin-bottom:12px; display:flex; align-items:center; gap:8px }
         .status-row {
-        background: #ffffff1c;      /* halka grey background */
+        background: #ffffff1c;      
         border-left: 3px solid #6524EB;
-        border-radius: 10px;      /* golai jaisa effect */
+        border-radius: 10px;      
         padding: 10px 15px;
-        display: inline-block;    /* message bubble jaisa lage */
+        display: inline-block;    
         max-width: 95%;
         margin-bottom: 10px;
-        font-size: 14px;
-        color: #ffffffff;              /* text thoda readable ho */
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* halka shadow */
+        font-size: 16px;
+        color: #ffffffff;              
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
         margin-right: 20px
         }
 
@@ -788,7 +826,9 @@ function injectCSS() {
           right: 26px;
           bottom: 37px;
           display: flex;
-          gap: 12px;
+         gap: 16px;
+    align-items: center;
+    justify-content: center;
          }
           .attio-call{
           background:#10b981; /* green */
@@ -800,18 +840,23 @@ function injectCSS() {
         .attio-call svg { display:block }
 
         .btn{
-           border:0; border-radius:25px; padding:10px 16px;
-          font-weight:500; letter-spacing:.2px; font-size:15px; cursor:pointer; color:#fff;
-          box-shadow:0 12px 24px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.08);
-          transition:transform .12s ease, filter .12s ease;
-          align-items: center;
-    display: flex
-;
-    justify-content: center;
-    gap: 10px;
+           border:0;
+            border-radius:25px;
+             padding:10px 16px;
+             font-weight:500;
+             letter-spacing:.2px;
+             font-size:25px;
+             cursor:pointer; 
+             color:#fff;
+             box-shadow:0 12px 24px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.08);
+             transition:transform .12s ease, filter .12s ease;
+             align-items: center;
+             display: flex;
+             justify-content: center;
+             gap: 10px;
         }
         .btn.primary{ background:#F7A600; }
-        .btn.secondary{ background:#1AA82A; color:#1f2937;  }
+        .btn.secondary{ background:#1AA82A; color:#fffff;  }
         .btn:not(:disabled):hover{ transform:translateY(-2px); filter:brightness(1.05) }
         .btn:disabled{ opacity:1; cursor:not-allowed }
         .rex-spinner{
@@ -844,15 +889,18 @@ function injectCSS() {
           }
 
           .ChatCallBtn{
-          margin-left:20px;
           margin-top:1rem;
           display:none
           }
           .ChatCallBtn.show{
-          display:block;            
-          opacity:1;
-          transform: translateY(0);
-          pointer-events:auto;
+               display: block;
+               opacity: 1;
+               transform: translate(0%, 0);
+               pointer-events: auto;
+               position: absolute;
+               bottom: 3%;
+               width: 100%;
+               left: 0;
         }
         .actions-ct.single {
           display: block;        
@@ -866,23 +914,205 @@ function injectCSS() {
           letter-spacing: normal; 
         }
         @keyframes rexSpin{ to{ transform: rotate(360deg); } }
+.company-info-left {
+  color: white;
+  width: 50%;
+  padding: 20px 0;
+}
 
-       
+.company-logo {
+  margin-bottom: 20px;
+}
+
+.company-logo img {
+  width: 150px;
+}
+
+.company-name {
+  font-size: 32px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  color: #ffffffff;
+}
+
+.company-address {
+  font-size: 18px;
+  line-height: 1.5;
+  color: #ffffffff;
+  margin-bottom: 10px;
+}
+  .company-address b{font-size: 22px;}
+.company-website b{font-size: 22px;}
+
+.company-website {
+  margin-bottom: 12px;
+}
+
+.company-website a {
+  color: #ffffffff;
+  font-size: 18px;
+  text-decoration: none;
+  padding-bottom: 1px;
+}
+
+.company-website a:hover {
+  color: #ffffff;
+  border-bottom-style: solid;
+}
+
+.google-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  color: #ffdd00;
+  font-weight: 600;
+}
+
+.google-rating .stars {
+  color: #ffdd00;
+}
+
+.google-rating .reviews {
+  color: #0062ffff;
+  font-weight: normal;
+}
+      
+/* Parent Wrapper - Center Align on Screen */
+.popup-wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px;
+  max-width: 1200px;
+  width: 90%;
+  z-index: 1003;
+  
+}
+
+/* Responsive: Stack on Mobile */
+@media (max-width: 768px) {
+  .popup-wrapper {
+    flex-direction: column;
+    align-items: center;
+    padding: 0px;
+    width: 100%;
+    gap: 20px;
+    height: 100%;
+  }
+
+  .company-info-left {
+    text-align: center;
+    max-width: 100%;
+  }
+
+  .mainDiv {
+    width: 100%;
+    position: relative;
+    border: none;
+    border-radius: 16px;
+    height: 100%;
+  }
+
+  .support-body {
+    min-height: auto;
+  }
+
+  .ChatCallBtn.show {
+    bottom: 5%;
+  }
+}
+
+
 
         @media (max-width:650px){
-          .support-popup{  width:90% !important; right:20px !important; border-radius:20px !important }
+        .mainDiv{
+          border:none;
+          top:unset;
+          left: unset;
+          transform: unset;
+          position: unset;
+          
+       }
+              .company-info-left{
+              display: none;
+              }
+        .ChatCallBtn.show{
+               display: block;
+               opacity: 1;
+               transform: translate(0%, 0);
+               pointer-events: auto;
+               position: absolute;
+               bottom: 10%;
+               width: 100%;
+               left: 0;
+        }
+          .support-popup{ 
+           width:100% !important; 
+           right:0px !important; 
+           border-radius:0px !important;
+           height: 100% !important;
+           bottom:0px !important;
+           }
+        .support-header{
+         border-radius:20px 20px 0px 0px;
+        }
           
           .support-body{
-             height: 45dvh;
+            height: 100%;
              overflow: auto;
           }
+             .support-title .t{
+            font-weight:500;
+             font-size:18px; 
+             color:#fff;
+             text-transform: uppercase; 
+             }
+        .support-title .s{ 
+             font-size:14px; 
+             color:#ffff 
         }
+         .addresTitle{
+            color:#ffff;
+            font-size:12px;
+           margin-top: 3px;
+       }
+.status-row {
+        background: #ffffff1c;      
+        border-left: 3px solid #6524EB;
+        border-radius: 10px;      
+        padding: 10px 15px;
+        display: inline-block;    
+        max-width: 95%;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #ffffffff;              
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+        margin-right: 20px
+        }
+ .btn{
+             font-size:15px;
+             
+        }
+
+
+        }
+           
+
+
+
+
 
          @media (max-width:450px){
         .input-dark input {
-    
-    font-size: 14px;
-   
+           font-size: 14px;
 }
         }
          
@@ -1638,6 +1868,8 @@ function injectCSS() {
             let callContent = `Call ${agentName}`;
             let agentRole = "GENERAL";
             let agentVoipNumber = "NA";
+            let address = ""
+            let url = ""
             try {
                 const agentRes = await fetch(
                     `${API_URL}/agent/fetchAgentDetailsFromRetell/${agentId}`,
@@ -1705,7 +1937,35 @@ function injectCSS() {
                     const text = await res.text();
                     const json = JSON.parse(text);
                     businessName = json.businessName;
+                    address = json.address1
+                    url = json.webUrl || json.Google_urls || "NA"
+                     kb = json.knowledge_base_texts || {};
                 });
+
+
+                // === STEP 2: UPDATE GOOGLE RATING DYNAMICALLY ===
+                 rating = parseFloat(kb.rating) || 0;
+                 totalRatings = kb.totalRatings || 0;
+
+                 fullStars = Math.floor(rating);
+                 hasHalfStar = rating % 1 >= 0.5;
+                 emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+
+                 starsHTML =
+                    '<span style="color:#ffdd00; font-size:25px;">' +
+                    '★'.repeat(fullStars) +
+                    (hasHalfStar ? '½' : '') +
+                    '☆'.repeat(emptyStars) +
+                    `</span> <span style="color:#ffdd00; font-weight:600; font-size:25px;">${rating.toFixed(1)}</span>`;
+
+                // Update DOM (after supportEl is created)
+                setTimeout(() => {
+                    const starsEl = document.querySelector('.google-rating .stars');
+                    const reviewsEl = document.querySelector('.google-rating .reviews');
+                    if (starsEl) starsEl.innerHTML = starsHTML;
+                    if (reviewsEl) reviewsEl.textContent = `${totalRatings} Google reviews`;
+                }, 100);
             } catch (err) {
                 console.error("Error fetching data:", err);
             }
@@ -2182,13 +2442,32 @@ function injectCSS() {
                 supportEl.id = "rexSupportPopup";
                 supportEl.className = "support-popup";
                 supportEl.innerHTML = `
+                <div class="popup-wrapper">
+            <div class="company-info-left">
+      <div class="company-logo">
+        <img src="/svg/widget-logo.svg" alt="rexpto" />
+      </div>
+      <div class="company-name">${businessName}</div>
+      <div class="company-address"><b>Address: </b>
+       ${address}
+      </div>
+      <div class="company-website"><b>Website: </b>
       
-    <div class="support-header">
+        <a href=${url} target="_blank">${url}</a>
+      </div>
+      <div class="google-rating">
+        <span class="stars">${starsHTML}</span>
+      <span class="reviews">${totalRatings} Google reviews</span>
+      </div>
+    </div>
+      <div class="mainDiv" >
+        <div class="support-header">
       <div class="support-brand">
         <div class="support-logo">    <img src="https://rexptin.vercel.app/${avatar}"  alt="" style="width:100%;height:100%"/></div>
         <div class="support-title">
           <div class="t">${agentName || "Support"}</div>
-          <div class="s">Customer Success Agent</div>
+          <div class="s">Samsung Customer Electronics</div>
+          <div class=addresTitle>New Delhi, India - 110001</div>
         </div>
       </div>
      
@@ -2257,13 +2536,15 @@ function injectCSS() {
                   <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M15.5554 5.5C16.6542 5.71439 17.6641 6.25179 18.4557 7.04343C19.2473 7.83507 19.7847 8.84492 19.9991 9.94375M15.5554 1C17.8383 1.25362 19.9672 2.27595 21.5924 3.89913C23.2176 5.52232 24.2426 7.64989 24.4991 9.9325M23.3741 18.91V22.285C23.3754 22.5983 23.3112 22.9084 23.1857 23.1955C23.0602 23.4826 22.8761 23.7403 22.6452 23.9521C22.4143 24.1639 22.1418 24.3252 21.845 24.4255C21.5482 24.5259 21.2337 24.5632 20.9216 24.535C17.4598 24.1588 14.1345 22.9759 11.2129 21.0813C8.49469 19.354 6.19013 17.0494 4.46288 14.3313C2.56161 11.3964 1.3784 8.05487 1.00913 4.5775C0.981018 4.2664 1.01799 3.95286 1.11769 3.65683C1.2174 3.3608 1.37765 3.08878 1.58824 2.85807C1.79884 2.62737 2.05516 2.44305 2.3409 2.31684C2.62663 2.19063 2.93551 2.12529 3.24788 2.125H6.62288C7.16885 2.11963 7.69815 2.31296 8.11211 2.66897C8.52608 3.02499 8.79647 3.51938 8.87288 4.06C9.01533 5.14007 9.27951 6.20057 9.66038 7.22125C9.81174 7.62391 9.8445 8.06153 9.75478 8.48224C9.66505 8.90295 9.4566 9.28913 9.15413 9.595L7.72538 11.0237C9.32688 13.8402 11.6589 16.1722 14.4754 17.7737L15.9041 16.345C16.21 16.0425 16.5962 15.8341 17.0169 15.7444C17.4376 15.6546 17.8752 15.6874 18.2779 15.8387C19.2986 16.2196 20.3591 16.4838 21.4391 16.6263C21.9856 16.7033 22.4847 16.9786 22.8415 17.3997C23.1983 17.8208 23.3878 18.3583 23.3741 18.91Z" stroke="#EBFFEE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
+                   Call Now
+                  
         </button>
 
         </div>
       </div>
       
     </div>
-
+</div></div>
   `;
                 document.body.appendChild(supportEl);
                 // supportEl.querySelector(".support-close", ".CloseX").onclick = () => {
