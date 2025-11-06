@@ -98,9 +98,9 @@ function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [confirmPopup, setConfirmPopup] = useState(false);
-
   const [unreadCount, setUnreadCount] = useState(0); // State for unreadCount
   // const [refreshNotification,setRefreshNoitification]=useState(false)
+  
   const navigate = useNavigate()
   useEffect(() => {
     const script = document.createElement("script");
@@ -137,10 +137,13 @@ function App() {
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
+          const token = localStorage.getItem("token"); // 👈 check token
+
       const alreadyShown = localStorage.getItem("installPromptShown");
       const sessionHidden = sessionStorage.getItem("hideBannerThisSession");
 
-      if (alreadyShown || sessionHidden) return; // don't show again
+        if (!token || alreadyShown || sessionHidden) return;
+
 
       e.preventDefault();
       console.log("📱 beforeinstallprompt fired");
@@ -379,8 +382,6 @@ function App() {
           <p>Launch Your AI Receptionist with Rexpt.in</p>
         </div>
         <div className="ForMobile">
-
-
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
             <div className="App" key={refreshKey}>
