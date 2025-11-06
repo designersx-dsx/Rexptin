@@ -133,50 +133,50 @@ function App() {
     }
   }, [userID, token]);
 
-  // useEffect(() => {
-  //   const handleBeforeInstallPrompt = (e) => {
-  //     const alreadyShown = localStorage.getItem("installPromptShown");
-  //     if (alreadyShown) return;  // only block if already shown
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      const alreadyShown = localStorage.getItem("installPromptShown");
+      if (alreadyShown) return;  // only block if already shown
 
-  //     e.preventDefault();
-  //     console.log("📱 beforeinstallprompt fired");
-  //     setDeferredPrompt(e);
-  //     setShowPopup(true);  // show your popup
-  //   };
+      e.preventDefault();
+      console.log("📱 beforeinstallprompt fired");
+      setDeferredPrompt(e);
+      setShowPopup(true);  // show your popup
+    };
 
-  //   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-  //   return () => {
-  //     window.removeEventListener(
-  //       "beforeinstallprompt",
-  //       handleBeforeInstallPrompt
-  //     );
-  //   };
-  // }, []);
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
+    };
+  }, []);
 
-  // const handleInstall = async () => {
-  //   if (!deferredPrompt) return;
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
 
-  //   deferredPrompt.prompt();
-  //   const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
 
-  //   if (outcome === "accepted") {
-  //     console.log("✅ User accepted install");
-  //   } else {
-  //     console.log("❌ User dismissed install");
-  //   }
+    if (outcome === "accepted") {
+      console.log("✅ User accepted install");
+    } else {
+      console.log("❌ User dismissed install");
+    }
 
-  //   // mark as shown no matter what
-  //   localStorage.setItem("installPromptShown", "true"); 
-  //   setDeferredPrompt(null);
-  //   setShowPopup(false);
-  // };
+    // mark as shown no matter what
+    localStorage.setItem("installPromptShown", "true");
+    setDeferredPrompt(null);
+    setShowPopup(false);
+  };
 
 
-  //   const handleClose = () => {
-  //     localStorage.setItem("installPromptShown", "true"); // save flag
-  //     setShowPopup(false);
-  //   };
+  const handleClose = () => {
+    localStorage.setItem("installPromptShown", "true"); // save flag
+    setShowPopup(false);
+  };
 
   useEffect(() => {
     const count = notifications?.filter((n) => n?.status === "unread")?.length;
@@ -201,25 +201,6 @@ function App() {
 
     // 📩 Listen for notification
     socket.on("notification", (msg) => {
-      // console.log("📩 New Notification:", msg);
-      //  window.alert(`${msg.title || "Notification"}: ${msg.message}`);
-      // alert(`${msg.title || "Notification"}: ${msg.message}`)
-      //   toast.info(`${msg.title || "Notification"}: ${msg.message}`, {
-      //   position: "top-right",
-      //   autoClose: 3000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   progress: undefined,
-      //   theme: "light",
-      // });
-      // toast.info(`${msg.title || "Notification"}: ${msg.message}`, {
-      //   position: "top-right",
-      //   autoClose: 3000,
-      // });
-      // setRefreshNoitification((prev)=>!prev)
-      // console.log('new notification')
     });
 
     socket.on("disconnect", () => {
@@ -243,8 +224,75 @@ function App() {
   return (
     <>
       {/* <ForcePortraitOnly /> */}
+        
+         
       <div className="DesktopPlusMobile">
+        {showPopup && (
+            <div
+              style={{
+             
+                width: "100%",
+                background: "linear-gradient(90deg, #6524EB, #8139FF)",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "10px 16px",
+                zIndex: 9999,
+                fontFamily: "Inter, sans-serif",
+                flexWrap: "wrap",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+              }}
+            >
+              {/* Left Section: Text */}
+              <div style={{ fontSize: "15px", fontWeight: "500" }}>
+                Add <strong>Rexpt</strong> to your Home Screen for a better experience!
+              </div>
+
+              {/* Right Section: Buttons */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginTop: "6px",
+                }}
+              >
+                <button
+                  onClick={handleInstall}
+                  style={{
+                    background: "white",
+                    color: "#6524EB",
+                    border: "none",
+                    borderRadius: "6px",
+                    padding: "6px 14px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                  }}
+                >
+                  Install
+                </button>
+
+                <button
+                  onClick={handleClose}
+                  style={{
+                    background: "transparent",
+                    color: "white",
+                    border: "none",
+                    fontSize: "18px",
+                    cursor: "pointer",
+                    lineHeight: "1",
+                  }}
+                  aria-label="Close banner"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
         <div className="ForDesktop">
+          
           <img src="svg/Rexpt-Logo.svg" />
           <h1>
             Launch Your <b>AI Receptionist</b> with Rexpt.in
@@ -252,6 +300,7 @@ function App() {
           <p>Launch Your AI Receptionist with Rexpt.in</p>
         </div>
         <div className="ForMobile">
+        
 
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
@@ -326,11 +375,11 @@ function App() {
                     </SecureRoute>
                   }
                 />
-                 <Route
+                <Route
                   path="/build-own-plan"
                   element={
                     <SecureRoute>
-                      <CustomPlan/>
+                      <CustomPlan />
                     </SecureRoute>
                   }
                 />
@@ -356,7 +405,7 @@ function App() {
                     </SecureRoute>
                   }
                 />
-                   <Route
+                <Route
                   path="/build-plan"
                   element={<BuildPlan />}
                 />
