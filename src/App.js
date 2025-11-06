@@ -137,12 +137,12 @@ function App() {
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
-          const token = localStorage.getItem("token"); // 👈 check token
+          const token = localStorage.getItem("token");
 
       const alreadyShown = localStorage.getItem("installPromptShown");
       const sessionHidden = sessionStorage.getItem("hideBannerThisSession");
 
-        if (!token || alreadyShown || sessionHidden) return;
+        if ( token ||alreadyShown || sessionHidden) return;
 
 
       e.preventDefault();
