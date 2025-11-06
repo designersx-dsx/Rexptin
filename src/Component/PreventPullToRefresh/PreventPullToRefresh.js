@@ -15,9 +15,20 @@ const isWebView = () => {
     (/(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/.test(userAgent))
   );
 };
+// ✅ Detect WebView
 
+
+// ✅ Detect if installed as PWA
+const isPWAInstalled = () => {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true
+  );
+};
 const PreventPullToRefresh = ({ children, setRefreshKey }) => {
-  const enablePullToRefresh = isWebView(); 
+  
+ const enablePullToRefresh = isWebView() && !isPWAInstalled();
+
 
   const { setHasFetched } = useDashboardStore();
 
@@ -100,6 +111,21 @@ const PreventPullToRefresh = ({ children, setRefreshKey }) => {
       container.removeEventListener('touchend', handleTouchEnd);
     };
   }, [pullDistance, enablePullToRefresh]);
+useEffect(() => {
+  const webview = isWebView();
+  const pwa = isPWAInstalled();
+
+  console.log("WebView:", webview);
+  console.log("PWA Installed:", pwa);
+
+  if (webview) {
+    alert("Running inside WebView");
+  } else if (pwa) {
+    alert("Running as PWA (installed app)");
+  } else {
+    alert("Running in normal browser");
+  }
+}, []);
 
   return (
     <RefreshContext.Provider value={isRefreshing}>

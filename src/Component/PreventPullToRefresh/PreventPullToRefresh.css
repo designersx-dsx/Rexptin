@@ -6,7 +6,7 @@
   -webkit-overflow-scrolling: touch;
   height: 100dvh;
 
-  /* 🔥 This removes Android WebView blue/black edge glow */
+  /*  This removes Android WebView blue/black edge glow */
   overscroll-behavior-y: contain;
   touch-action: pan-y;
   background-color: #fff; /* avoid transparent flicker */
