@@ -97,6 +97,8 @@ function App() {
   const toggleFlag = useNotificationStore((state) => state.toggleFlag);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
+  const [confirmPopup, setConfirmPopup] = useState(false);
+
   const [unreadCount, setUnreadCount] = useState(0); // State for unreadCount
   // const [refreshNotification,setRefreshNoitification]=useState(false)
   const navigate = useNavigate()
@@ -136,23 +138,23 @@ function App() {
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
       const alreadyShown = localStorage.getItem("installPromptShown");
-      if (alreadyShown) return;  // only block if already shown
+      const sessionHidden = sessionStorage.getItem("hideBannerThisSession");
+
+      if (alreadyShown || sessionHidden) return; // don't show again
 
       e.preventDefault();
       console.log("📱 beforeinstallprompt fired");
       setDeferredPrompt(e);
-      setShowPopup(true);  // show your popup
+      setShowPopup(true);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt
-      );
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     };
   }, []);
+
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
@@ -165,9 +167,6 @@ function App() {
     } else {
       console.log("❌ User dismissed install");
     }
-
-    // mark as shown no matter what
-    localStorage.setItem("installPromptShown", "true");
     setDeferredPrompt(null);
     setShowPopup(false);
   };
@@ -214,23 +213,21 @@ function App() {
   useEffect(() => {
     const ref = document.referrer;
     console.log('Referrer URL:', ref);
+    sessionStorage.removeItem("hideBannerThisSession")
   }, []);
 
-
-  //  const handleClose = () => {
-  //   setShowPopup(false);
-  // };
 
   return (
     <>
       {/* <ForcePortraitOnly /> */}
-        
-         
+
+
       <div className="DesktopPlusMobile">
         {showPopup && (
+          <>
+            {/* Main Banner */}
             <div
               style={{
-             
                 width: "100%",
                 background: "linear-gradient(90deg, #6524EB, #8139FF)",
                 color: "white",
@@ -242,14 +239,13 @@ function App() {
                 fontFamily: "Inter, sans-serif",
                 flexWrap: "wrap",
                 boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+                position: "relative",
               }}
             >
-              {/* Left Section: Text */}
-              <div style={{ fontSize: "15px", fontWeight: "500" }}>
+              <div style={{ fontSize: "15px", fontWeight: "500"}}>
                 Add <strong>Rexpt</strong> to your Home Screen for a better experience!
               </div>
 
-              {/* Right Section: Buttons */}
               <div
                 style={{
                   display: "flex",
@@ -275,7 +271,7 @@ function App() {
                 </button>
 
                 <button
-                  onClick={handleClose}
+                  onClick={() => setConfirmPopup(true)}
                   style={{
                     background: "transparent",
                     color: "white",
@@ -284,15 +280,98 @@ function App() {
                     cursor: "pointer",
                     lineHeight: "1",
                   }}
-                  aria-label="Close banner"
                 >
                   ✕
                 </button>
               </div>
             </div>
-          )}
+
+            {/* Confirmation Popup */}
+            {confirmPopup && (
+              <div
+                style={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  width: "100vw",
+                  height: "100vh",
+                  background: "rgba(0,0,0,0.6)",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  zIndex: 10000,
+                }}
+              >
+                <div
+                  style={{
+                    background: "white",
+                    borderRadius: "12px",
+                    padding: "20px",
+                    width: "90%",
+                    maxWidth: "320px",
+                    textAlign: "center",
+                    boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+                  }}
+                >
+                  <h3 style={{ color: "#4B1EE5", marginBottom: "10px" }}>
+                    Hide Install Banner?
+                  </h3>
+                  <p style={{ color: "#555", fontSize: "14px", marginBottom: "20px" }}>
+                    You can install Rexpt anytime later from your browser menu.
+                  </p>
+
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    {/* CANCEL = hide only for current session */}
+                    <button
+                      onClick={() => {
+                        sessionStorage.setItem("hideBannerThisSession", "true");
+                        setShowPopup(false);
+                        setConfirmPopup(false);
+                      }}
+                      style={{
+                        flex: 1,
+                        background: "#f0f0f0",
+                        color: "#333",
+                        border: "none",
+                        borderRadius: "6px",
+                        padding: "10px 0",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Cancel
+                    </button>
+
+                    {/* NEVER SHOW AGAIN = permanent hide */}
+                    <button
+                      onClick={() => {
+                        localStorage.setItem("installPromptShown", "true");
+                        setShowPopup(false);
+                        setConfirmPopup(false);
+                      }}
+                      style={{
+                        flex: 1,
+                        background: "linear-gradient(90deg, #6524EB, #8139FF)",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "6px",
+                        padding: "10px 0",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Never Show Again
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+
         <div className="ForDesktop">
-          
+
           <img src="svg/Rexpt-Logo.svg" />
           <h1>
             Launch Your <b>AI Receptionist</b> with Rexpt.in
@@ -300,7 +379,7 @@ function App() {
           <p>Launch Your AI Receptionist with Rexpt.in</p>
         </div>
         <div className="ForMobile">
-        
+
 
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
