@@ -38,28 +38,28 @@ const [value, setValue] = useState(initialValue);
   const decodeTokenData = decodeToken(token);
 
   // 🟣 Tiered price per message logic
-//   const getPricePerMessage = (qty) => {
-//     if (qty <= 100) return 0.3;
-//     if (qty <= 200) return 0.29;
-//     if (qty <= 300) return 0.28;
-//     if (qty <= 400) return 0.26;
-//     if (qty <= 500) return 0.24;
-//     if (qty <= 600) return 0.22;
-//     return 0.2;
-//   };
+  const getPricePerMessage = (qty) => {
+    if (qty <= 100) return 0.3;
+    if (qty <= 200) return 0.29;
+    if (qty <= 300) return 0.28;
+    if (qty <= 400) return 0.26;
+    if (qty <= 500) return 0.24;
+    if (qty <= 600) return 0.22;
+    return 0.2;
+  };
 
-// Extra Minutes
-const getPricePerMessage = (qty) => {
-  if (qty <= 500) return 0.02;
-  if (qty <= 2500) return 0.019;
-  if (qty <= 10000) return 0.018;
-  if (qty <= 15000) return 0.017;
-  if (qty <= 25000) return 0.016;
-  if (qty <= 40000) return 0.015;
-  if (qty <= 60000) return 0.014;
-  if (qty <= 80000) return 0.013;
-  return 0.012; // 80,001 or more
-};
+// Extra Minute
+// const getPricePerMessage = (qty) => {
+//   if (qty <= 500) return 0.02;
+//   if (qty <= 2500) return 0.019;
+//   if (qty <= 10000) return 0.018;
+//   if (qty <= 15000) return 0.017;
+//   if (qty <= 25000) return 0.016;
+//   if (qty <= 40000) return 0.015;
+//   if (qty <= 60000) return 0.014;
+//   if (qty <= 80000) return 0.013;
+//   return 0.012; // 80,001 or more
+// };
 
 
   // 🟣 Calculate price when value changes
@@ -161,7 +161,11 @@ const handlePackClick = (packValue, packLabel) => {
 
   // 🟣 Auto-highlight active pack
   useEffect(() => {
-    const nearestPack = packs.find((p) => Math.abs(p.value - value) <= 500);
+   const nearestPack = packs.find((p) =>
+  value > 10000
+    ? Math.abs(p.value - value) <= 2000  // 10k+ ke liye 2000 step
+    : Math.abs(p.value - value) <= 500   
+)// 10k se neeche 500 step
     if (nearestPack) setActivePack(nearestPack.label);
     else setActivePack(null);
   }, [value]);
