@@ -9,7 +9,7 @@ import styles from "./Step2.module.css";
 import { getRetellVoices } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
-  const [selectedGender, setSelectedGender] = useState("");
+  const [selectedGender, setSelectedGender] = useState("Female");
   const [selectedVoice, setSelectedVoice] = useState("");
   const [listVoices, setListVoices] = useState([]);
   const [filteredVoices, setFilteredVoices] = useState([]);
@@ -81,7 +81,6 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
           voice.provider == "elevenlabs" &&
           voice.gender === selectedGender?.toLocaleLowerCase()
       );
-      // console.log("Filtered voices:", filtered);
       setFilteredVoices(filtered);
       sessionStorage.setItem("agentGender", selectedGender);
     }
@@ -90,22 +89,17 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   const togglePlay = (idx) => {
     const thisAudio = audioRefs.current[idx];
     if (!thisAudio) return;
-
-    // if user taps the card that’s already playing → pause it
     if (playingIdx === idx) {
       thisAudio.pause();
       setPlayingIdx(null);
       return;
     }
 
-    // pause whichever clip is currently playing
     if (playingIdx !== null) {
       const playingAudio = audioRefs.current[playingIdx];
       playingAudio?.pause();
       playingAudio.currentTime = 0;
     }
-
-    // play the new clip
     thisAudio.play();
     setPlayingIdx(idx);
 

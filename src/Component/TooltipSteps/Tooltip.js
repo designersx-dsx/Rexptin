@@ -73,31 +73,6 @@ const Tooltip = ({ content }) => {
 
     return () => clearInterval(interval);
   }, [showTooltip]);
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     if (!iconRef.current) return;
-
-  //     const rect = iconRef.current.getBoundingClientRect();
-  //     const spaceAbove = rect.top;
-  //     const spaceBelow = window.innerHeight - rect.bottom;
-  //     if (spaceAbove < 90 && spaceBelow > 90) {
-  //       setTooltipPosition("bottom");
-  //     } else {
-  //       setTooltipPosition("top");
-  //     }
-  //   };
-
-  //   if (showTooltip) {
-  //     window.addEventListener("scroll", handleScroll, true);
-  //     // Run once on open
-  //     handleScroll();
-  //   }
-
-  //   return () => {
-  //     window.removeEventListener("scroll", handleScroll, true);
-  //   };
-  // }, [showTooltip]);
-
   const handleClickOutside = (event) => {
     if (
       tooltipRef.current &&

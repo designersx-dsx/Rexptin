@@ -1,76 +1,5 @@
-// import React from "react";
-// import styles from "./AttachmentPreviewModal.module.css";
-
-// const AttachmentPreviewModal = ({ isOpen, onClose, attachments }) => {
-//   if (!isOpen) return null;
-//   const parsedAttachments = (() => {
-//     if (typeof attachments === "string") {
-//       try {
-//         return JSON.parse(attachments);
-//       } catch (e) {
-//         console.error("Failed to parse attachments:", e);
-//         return [];
-//       }
-//     }
-//     return attachments || [];
-//   })();
-//   console.log(parsedAttachments)
-//   return (
-//     <div className={styles.modalOverlay}>
-//       <div className={styles.modal}>
-//         <div className={styles.modalHeader}>
-//           <h2 className={styles.modalTitle}>View Attachments</h2>
-//           <button className={styles.closeBtn} onClick={onClose}>
-//             X
-//           </button>
-//         </div>
-//         <div className={styles.modalBody}>
-//           {parsedAttachments && parsedAttachments.length > 0 ? (
-            
-//             <div className={styles.attachmentList}>
-//               {parsedAttachments.map((attachment, index) => (
-//                 <div key={index} className={styles.attachmentItem}>
-//                   {attachment.type === "application/pdf" ||
-//                   attachment.mimeType === "application/pdf" ||
-//                   attachment.url?.endsWith(".pdf") ? (
-//                     <embed
-//                       src={attachment.url || attachment}
-//                       type="application/pdf"
-//                       className={styles.pdfPreview}
-//                     />
-//                   ) : (
-//                     <img
-//                       src={attachment.url || attachment}
-//                       alt={`Attachment ${index + 1}`}
-//                       className={styles.imagePreview}
-//                     />
-//                   )}
-//                   <a
-//                     href={attachment.url || attachment}
-//                     target="_blank"
-//                     rel="noopener noreferrer"
-//                     className={styles.viewLink}
-//                   >
-//                     View Full
-//                   </a>
-//                 </div>
-//               ))}
-//             </div>
-//           ) : (
-//             <p className={styles.noAttachments}>No attachments available</p>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AttachmentPreviewModal;
-
-
 import React from "react";
 import styles from "./AttachmentPreviewModal.module.css";
-
 const AttachmentPreviewModal = ({ isOpen, onClose, attachments }) => {
   if (!isOpen) return null;
 
@@ -130,7 +59,7 @@ const AttachmentPreviewModal = ({ isOpen, onClose, attachments }) => {
                 const isPDF = file.type?.includes("pdf");
                 const isText = file.type?.startsWith("text/");
 
-                console.log(`File ${idx + 1}:`, { fileUrl, isImage, isPDF, isText });
+                // console.log(`File ${idx + 1}:`, { fileUrl, isImage, isPDF, isText });
 
                 return (
                   <div key={idx} className={styles.attachmentItem}>

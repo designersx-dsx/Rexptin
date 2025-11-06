@@ -152,33 +152,6 @@ const UploadProfile = ({ onClose, onUpload }) => {
 
         {/* Error */}
         {cameraError && <div className={styles.errorMessage}>{cameraError}</div>}
-
-        {/* Preview */}
-        {/* {(uploadedImage || capturedImage) && (
-          <div className={styles.imagePreview}>
-            <img
-              src={uploadedImage || capturedImage}
-              alt="Preview"
-              className={styles.previewImage}
-            />
-          </div>
-        )} */}
-        {/* {isCropping && (uploadedImage || capturedImage) && (
-          <div className={styles.cropContainer}>
-            <Cropper
-              image={uploadedImage || capturedImage}
-              crop={crop}
-              zoom={zoom}
-              aspect={1}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onCropComplete={(_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels)}
-            />
-          </div>
-        )} */}
-
-
-
         {/* Webcam or Upload */}
         <div className={styles.optionsContainer}>
           {isWebcamOpen ? (

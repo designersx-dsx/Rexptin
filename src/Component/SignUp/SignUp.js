@@ -140,8 +140,7 @@ const SignUp = () => {
         const userData = {
           name: response?.data?.user?.name || "",
           profile:
-            `${API_BASE_URL?.split("/api")[0]}${
-              response?.data?.user?.profile?.split("public")[1]
+            `${API_BASE_URL?.split("/api")[0]}${response?.data?.user?.profile?.split("public")[1]
             }` || "images/camera-icon.avif",
           subscriptionDetails: {},
         };
@@ -324,6 +323,39 @@ const SignUp = () => {
       inputRefs.current[0].focus();
     }
   }, [otpSent]);
+useEffect(() => {
+  const emailFromParams = searchParams.get("email");
+  const otpNotRequired = searchParams.has("otp-not-required");
+
+  if (emailFromParams) {
+    const decodedEmail = decodeURIComponent(emailFromParams);
+    setEmail(decodedEmail.toLowerCase());
+
+    if (otpNotRequired) {
+      setOtpSent(true);
+      setOtp(["", "", "", "", "", ""]);
+      inputRefs.current[0]?.blur();
+
+      //  Check if there’s an existing timer in localStorage
+      const storedEndTime = localStorage.getItem("otpResendEndTime");
+      let endTime;
+
+      if (storedEndTime && Date.now() < Number(storedEndTime)) {
+        // Continue from existing timer
+        endTime = Number(storedEndTime);
+      } else {
+        // Set new 5-minute timer
+        endTime = Date.now() + 300 * 1000;
+        localStorage.setItem("otpResendEndTime", endTime);
+      }
+
+      setResendEndTime(endTime);
+      setIsResendDisabled(true);
+    }
+  }
+}, [searchParams]);
+
+
   return (
     <>
       {ready && (
@@ -345,9 +377,8 @@ const SignUp = () => {
                   <img src="images/Mask.png" alt="Mask.png" />
                 </div>
                 <div
-                  className={`${styles.logimg} ${
-                    step >= 1 ? styles.animate1 : ""
-                  }`}
+                  className={`${styles.logimg} ${step >= 1 ? styles.animate1 : ""
+                    }`}
                 >
                   <img
                     className={styles.logo}
@@ -356,9 +387,8 @@ const SignUp = () => {
                   />
                 </div>
                 <div
-                  className={`${styles.Maincontent} ${
-                    step >= 2 ? styles.animate2 : ""
-                  }`}
+                  className={`${styles.Maincontent} ${step >= 2 ? styles.animate2 : ""
+                    }`}
                 >
                   <div className={styles.welcomeTitle}>
                     <h1>Log In to your Account</h1>
@@ -373,16 +403,14 @@ const SignUp = () => {
                   {!otpSent && (
                     <>
                       <div
-                        className={`${styles.labReq} ${
-                          step >= 3 ? styles.animate3 : ""
-                        }`}
+                        className={`${styles.labReq} ${step >= 3 ? styles.animate3 : ""
+                          }`}
                       >
                         <div className={styles.Dblock}>
                           <input
                             type="email"
-                            className={`${styles.emailInput} ${
-                              emailError ? styles.inputError : ""
-                            }`}
+                            className={`${styles.emailInput} ${emailError ? styles.inputError : ""
+                              }`}
                             placeholder="Johnvick@gmail.com"
                             value={email}
                             onChange={handleEmailChange}
@@ -395,9 +423,8 @@ const SignUp = () => {
                       </div>
                       <br />
                       <div
-                        className={`${styles.btnTheme} ${
-                          step >= 4 ? styles.animate4 : ""
-                        }`}
+                        className={`${styles.btnTheme} ${step >= 4 ? styles.animate4 : ""
+                          }`}
                         onClick={handleSendOTP}
                       >
                         <AnimatedButton
@@ -469,10 +496,10 @@ const SignUp = () => {
                         >
                           {isResendDisabled && resendTimer > 0
                             ? `Resend One Time Password in ${String(
-                                Math.floor(resendTimer / 60)
-                              ).padStart(2, "0")}:${String(
-                                resendTimer % 60
-                              ).padStart(2, "0")}`
+                              Math.floor(resendTimer / 60)
+                            ).padStart(2, "0")}:${String(
+                              resendTimer % 60
+                            ).padStart(2, "0")}`
                             : "Resend One Time Password"}
                         </button>
                       </div>
@@ -503,9 +530,8 @@ const SignUp = () => {
                     </>
                   )}
                   <div
-                    className={`${styles.Maincontent2} ${
-                      step >= 5 ? styles.animate5 : ""
-                    }`}
+                    className={`${styles.Maincontent2} ${step >= 5 ? styles.animate5 : ""
+                      }`}
                   >
                     <div className={styles.divider}>
                       <hr className={styles.line} />

@@ -20,7 +20,7 @@ const Step4 = forwardRef(
     ref
   ) => {
     const [agentNote, setAgentNote] = useState("");
-    const [selectedRole, setSelectedRole] = useState("");
+    const [selectedRole, setSelectedRole] = useState("General Receptionist");
     const storedWidgetState =
       typeof window !== "undefined"
         ? sessionStorage.getItem("chatWebWidget")
@@ -28,31 +28,53 @@ const Step4 = forwardRef(
     const [isChatWidgetEnabled, setIsChatWidgetEnabled] = useState(
       storedWidgetState ? storedWidgetState === "true" : true
     );
-    console.log(isChatWidgetEnabled,"isChatWidgetEnabled")
-    useEffect(() => {
-      const storedAgentRole = sessionStorage.getItem("agentRole");
-      const storedNote = sessionStorage.getItem("agentNote");
-      const storedWidgetState = sessionStorage.getItem("chatWebWidget");
-      if (storedAgentRole) {
-        setSelectedRole(storedAgentRole);
-      } else {
-        setSelectedRole("General Receptionist");
-        sessionStorage.setItem("agentRole", "General Receptionist");
-        detectRoleTypeChange?.("General Receptionist");
-      }
+    
+    // useEffect(() => {
+    //   const storedAgentRole = sessionStorage.getItem("agentRole");
+    //   const storedNote = sessionStorage.getItem("agentNote");
+    //   const storedWidgetState = sessionStorage.getItem("chatWebWidget");
+    //   if (storedAgentRole) {
+    //     setSelectedRole(storedAgentRole);
+    //   } else {
+    //     setSelectedRole("General Receptionist");
+    //     sessionStorage.setItem("agentRole", "General Receptionist");
+    //     detectRoleTypeChange?.("General Receptionist");
+    //   }
 
-      if (storedNote) {
-        setAgentNote(storedNote);
-      }
-      //  If no widget value yet, set a default once
-      if (storedWidgetState === null) {
+    //   if (storedNote) {
+    //     setAgentNote(storedNote);
+    //   }
+    //   //  If no widget value yet, set a default once
+    //   if (storedWidgetState === null) {
+    //     sessionStorage.setItem("chatWebWidget", "true");
+    //   }
+    // }, []);
+    // Persist on change
+    
+    
+    // ===== INITIAL SETUP =====
+    useEffect(() => {
+      // Always fix the agent role to "General Receptionist"
+      sessionStorage.setItem("agentRole", "General Receptionist");
+      detectRoleTypeChange?.("General Receptionist");
+
+      // Restore agent note if previously saved
+      const storedNote = sessionStorage.getItem("agentNote");
+      if (storedNote) setAgentNote(storedNote);
+
+      // Set chat widget state (default true)
+      const storedWidgetState = sessionStorage.getItem("chatWebWidget");
+      if (storedWidgetState !== null) {
+        setIsChatWidgetEnabled(storedWidgetState === "true");
+      } else {
         sessionStorage.setItem("chatWebWidget", "true");
       }
     }, []);
-    // Persist on change
-    useEffect(() => {
-      sessionStorage.setItem("agentRole", selectedRole);
-    }, [selectedRole]);
+    
+    
+    // useEffect(() => {
+    //   sessionStorage.setItem("agentRole", selectedRole);
+    // }, [selectedRole]);
     useEffect(() => {
       sessionStorage.setItem("agentNote", agentNote);
     }, [agentNote]);
@@ -60,22 +82,16 @@ const Step4 = forwardRef(
       sessionStorage.setItem("chatWebWidget", isChatWidgetEnabled);
     }, [isChatWidgetEnabled]);
     // Pass validation and note back to parent
+    // ===== VALIDATION FOR PARENT =====
     useImperativeHandle(ref, () => ({
       validate: () => {
-        if (!selectedRole?.trim()) {
-          onValidationError?.({
-            type: "failed",
-            message: "Please select a Receptionist Type!",
-          });
-          return false;
-        }
-
+        // No need to validate role since it's fixed
         return {
           isValid: true,
           agentNote: agentNote.trim(),
           chatWebWidget: isChatWidgetEnabled,
+          agentRole: "General Receptionist",
         };
-
       },
     }));
     const roles = [
@@ -90,42 +106,6 @@ const Step4 = forwardRef(
           "A LEAD Qualifier handles inbound sales queries and helps identify potential leads for your business.",
       },
     ];
-    // Block refresh and context menu
-    // useEffect(() => {
-    //   const blockKeyboardRefresh = (e) => {
-    //     if (
-    //       e.key === "F5" ||
-    //       (e.ctrlKey && e.key === "r") ||
-    //       (e.metaKey && e.key === "r")
-    //     ) {
-    //       e.preventDefault();
-    //       e.stopPropagation();
-    //     }
-    //   };
-
-    //   const blockMouseRefresh = (e) => {
-    //     if (e.button === 1 || e.button === 2) {
-    //       e.preventDefault();
-    //     }
-    //   };
-
-    //   const handleBeforeUnload = (e) => {
-    //     e.preventDefault();
-    //     e.returnValue = "";
-    //   };
-
-    //   window.addEventListener("keydown", blockKeyboardRefresh);
-    //   window.addEventListener("mousedown", blockMouseRefresh);
-    //   window.addEventListener("beforeunload", handleBeforeUnload);
-    //   window.addEventListener("contextmenu", (e) => e.preventDefault());
-
-    //   return () => {
-    //     window.removeEventListener("keydown", blockKeyboardRefresh);
-    //     window.removeEventListener("mousedown", blockMouseRefresh);
-    //     window.removeEventListener("beforeunload", handleBeforeUnload);
-    //     window.removeEventListener("contextmenu", (e) => e.preventDefault());
-    //   };
-    // }, []);
     return (
       <>
         <div>
@@ -146,7 +126,7 @@ const Step4 = forwardRef(
             </label>
           </div>
         </div>
-        <div className={`${styles.container} ${loading ? styles.blocked : ""}`}>
+        {/* <div className={`${styles.container} ${loading ? styles.blocked : ""}`}>
           {roles.map((role, index) => (
             <label
               key={index}
@@ -170,7 +150,7 @@ const Step4 = forwardRef(
                     }}
                     className={styles.radio}
                   />
-                  {/* <span className={styles.customRadio}></span> */}
+                  
                 </div>
 
               </div>
@@ -178,15 +158,15 @@ const Step4 = forwardRef(
             </label>
 
           ))}
-        </div>
+        </div> */}
 
-        {selectedRole && (
+        {/* {selectedRole && (
           <p className={styles.LastP}>
             {
               roles.find((role) => role?.title === selectedRole)?.description
             }
           </p>
-        )}
+        )} */}
       </>
 
     );

@@ -335,10 +335,29 @@
 }
 
 .introjs-tooltip-title {
+  width: 80% !important;
+  text-align: left !important;
     font-size: 18px;
-    width: unset !important;    
+    
     text-transform: uppercase !important;
 }
 .introjs-skipbutton {
      width: unset !important;    
+}
+.introjs-overlay {
+  pointer-events: none !important;
+}
+
+
+.introjs-overlay {
+  pointer-events: auto; /* default - we change to none in JS for specific steps */
+}
+
+/* If needed, force assign-number to accept events */
+#tour-assign-number {
+  pointer-events: auto !important;
+  /* z-index: 99999 ; */
+}
+.introjs-overlay{
+   pointer-events:none;
 }

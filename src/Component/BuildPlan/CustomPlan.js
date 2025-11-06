@@ -14,29 +14,56 @@ const CustomPlan = () => {
     const min = 99;
     const max = 10000;
 const handleChange = (e) => {
-    const qty = parseInt(e.target.value);
-    setPrice(qty);
+  const qty = parseInt(e.target.value);
+  setPrice(qty);
 
-    // Price logic based on quantity
-    let unitPrice = 0.41;
-    if (qty >= 51 && qty <= 100) unitPrice = 0.38;
-    else if (qty >= 101 && qty <= 150) unitPrice = 0.36;
-    else if (qty >= 151 && qty <= 200) unitPrice = 0.35;
-    else if (qty >= 201) unitPrice = 0.35;
+  let unitPrice = 0;
+  let totalBill = 0;
 
-    const totalBill = qty * unitPrice;
+  if (qty >= 1 && qty <= 100) {
+    unitPrice = 0.50;
+    totalBill = 5.00; // flat amount
+  } else if (qty >= 101 && qty <= 200) {
+    unitPrice = 0.45;
+    totalBill = qty * unitPrice;
+  } else if (qty >= 201 && qty <= 300) {
+    unitPrice = 0.42;
+    totalBill = qty * unitPrice;
+  } else if (qty >= 301 && qty <= 1500) {
+    unitPrice = 0.40;
+    totalBill = qty * unitPrice;
+  } else if (qty >= 1501 && qty <= 2000) {
+    unitPrice = 0.38;
+    totalBill = qty * unitPrice;
+  } else if (qty >= 2001 && qty <= 2500) {
+    unitPrice = 0.36;
+    totalBill = qty * unitPrice;
+  } else if (qty >= 2501 && qty <= 3000) {
+    unitPrice = 0.35;
+    totalBill = qty * unitPrice;
+  } else if (qty >= 3001 && qty <= 3500) {
+    unitPrice = 0.34;
+    totalBill = qty * unitPrice;
+  } else if (qty >= 3501) {
+    unitPrice = 0.33;
+    totalBill = qty * unitPrice;
+  }
 
-    setBill(totalBill.toFixed(2));
+  setBill(totalBill.toFixed(2));
 };
+
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
     const progressPercent = ((price - min) / (max - min)) * 100;
 
     const formatValue = (val, isTooltip = false) => {
-        if (val >= 1000) {
-            return isTooltip ? `${(val / 1000).toFixed(1)}K` : `${(val / 1000).toFixed(1)}K`;
-        }
-        return isTooltip ? `${val}` : val;
-    };
+  if (val >= 1_000_000) {
+    return isTooltip ? `${(val / 1_000_000).toFixed(1)}M/m` : `${(val / 1_000_000).toFixed(1)}M/m`;
+  } else if (val >= 1_000) {
+    return isTooltip ? `${(val / 1_000).toFixed(1)}k/m` : `${(val / 1_000).toFixed(1)}k/m`;
+  } else {
+    return isTooltip ? `${val}m` : `${val}m`;
+  }
+};
 
     useEffect(() => {
         let newPlan = "";
@@ -87,7 +114,7 @@ const handleChange = (e) => {
         successUrl: url,
         cancelUrl: `${origin}/cancel-payment`,
         userId: userId,
-        priceId: "price_1RypKj4T6s9Z2zBzesn9ijNz",
+      
       });
 
       if (res?.data?.url) {
@@ -100,10 +127,10 @@ const handleChange = (e) => {
   };
 
 const planPriceMap = {
-  STARTER: "price_1RUNGj4T6s9Z2zBzHAWaIZz3",
-  SCALER: "price_1RVXQI4T6s9Z2zBz3udYE9sO",
-  GROWTH: "price_1RVXSV4T6s9Z2zBzpoLwTIzY",
-  CORPORATE: "price_1RXgkd4T6s9Z2zBzxvVFBRMs"
+    STARTER: "price_1RgnNeSCQQfKS3WDwz8Dt201",
+    SCALER: "price_1RcCWpSCQQfKS3WDnyGZU5LA",
+    GROWTH: "price_1RcCgoSCQQfKS3WDS0uuS1xy",
+    CORPORATE: "price_1RcCoeSCQQfKS3WDZqJ62RTi"
 };
   const handlePlanCheckout = async () => {
   try {
@@ -133,15 +160,15 @@ const planPriceMap = {
         <div className={styles.containerBox}>
             <HeaderBar title="Build your own plan" />
 
-            <div className={styles.container} >
+            <div className={styles.container}>
                 <div className={styles.card}>
-                    <div className={styles.ellipseContainer}  >
+                    <div className={styles.ellipseContainer}>
                         <img className={styles.ellipse1} src='/svg/Ellipse-build1.svg' alt='Ellipse1'/>
                         <img className={styles.ellipse2} src='/svg/Ellipse-build2.svg' alt='Ellipse2'/>
                     </div>
 
                     {/* Plan Image */}
-                    <div className={`${styles.imageWrapper} ${animate ? styles.slideIn : ""}`} onClick={handlePlanCheckout} >
+                    <div className={`${styles.imageWrapper} ${animate ? styles.slideIn : ""}`} onClick={handlePlanCheckout}>
                         <img src={image} alt={plan} className={styles.planImage} />
                     </div>
                 </div>
@@ -171,11 +198,11 @@ const planPriceMap = {
                             }}
                         />
                         <div
-                            className={styles.sliderTooltip}
-                            style={{ left: `calc(${progressPercent}%)` }}
-                        >
-                            {formatValue(price, true)}m
-                        </div>
+  className={styles.sliderTooltip}
+  style={{ left: `calc(${progressPercent}%)` }}
+>
+  {formatValue(price, true)}
+</div>
                     </div>
 
                     <div className={styles.sliderLabels}>

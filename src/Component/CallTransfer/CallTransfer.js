@@ -300,7 +300,7 @@ function CallTransfer() {
 
   const prepareTransfersWithDialCode = (transfers) => {
     return transfers.map((transfer) => {
-      console.log(transfer, "transfer");
+      // console.log(transfer, "transfer");
       let rawPhone = transfer.phone.trim();
       const dialCode = transfer.dialCode;
       const countryCode = transfer.countryCode;
@@ -379,7 +379,7 @@ function CallTransfer() {
 };
 
   const handleChange = (index, field, value) => {
-    console.log(index, field, value)
+    // console.log(index, field, value)
     const updated = [...transfers];
     updated[index][field] = value;
 
@@ -387,7 +387,7 @@ function CallTransfer() {
       const countryCode = dialToCountry[value] || "us";
       updated[index]["countryCode"] = countryCode;
     }
-    console.log('updated',updated)
+    // console.log('updated',updated)
     setTransfers(updated);
   };
   const handleSubmit = async () => {
@@ -517,7 +517,7 @@ function CallTransfer() {
       setShowPopup(true);
       setPopupType("success");
       setPopupMessage("Numbers updated successfully.");
-      console.log("LLM updated successfully");
+      // console.log("LLM updated successfully");
     } catch (error) {
       setShowPopup(true);
       setPopupType("failed");
@@ -559,7 +559,7 @@ if (typeof agentGeneralTools === "string") {
     if (Array.isArray(agentGeneralTools)) {
       // Set transfers only if tools exist
       if (Array.isArray(agentGeneralTools) && agentGeneralTools.length > 0) {
-        console.log('agentGeneralTools1',agentGeneralTools,prevDynanamicVar)
+        // console.log('agentGeneralTools1',agentGeneralTools,prevDynanamicVar)
         // Optional: filter only those tools that have required fields
         const filteredTransfers = agentGeneralTools
           .filter((tool) => tool.condition && tool.phone && tool.dialCode)
@@ -694,3 +694,6 @@ if (typeof agentGeneralTools === "string") {
 }
 
 export default CallTransfer;
+// fdfdf
+// ffdfd
+// fdfd

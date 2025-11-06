@@ -342,7 +342,7 @@ function App() {
                         cursor: "pointer",
                       }}
                     >
-                      Cancel
+                      Hide for now
                     </button>
 
                     {/* NEVER SHOW AGAIN = permanent hide */}

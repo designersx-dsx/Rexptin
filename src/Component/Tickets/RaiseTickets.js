@@ -6,8 +6,7 @@ import decodeToken from "../../lib/decodeToken";
 import { useNavigate } from "react-router-dom";
 import AttachmentPreviewModal from "./AttachmentPreviewModal";
 import EditHeader from "../EditHeader/EditHeader";
-// import RaiseTicketModal from "./RaiseTicketModal";
-// import AttachmentPreviewModal from "./AttachmentPreviewModal";
+
 
 export default function RaiseTickets() {
   const [allTickets, setAllTickets] = useState([]);
@@ -24,8 +23,6 @@ const token = localStorage.getItem("token") || "";
 const decodeTokenData = decodeToken(token);
 const userId= decodeTokenData?.id || "";
 const navigate=useNavigate();
-console.log('selectedAttachments',selectedAttachments)
-
   const getStatusStyle = (status) => {
     switch (status) {
       case "Open":

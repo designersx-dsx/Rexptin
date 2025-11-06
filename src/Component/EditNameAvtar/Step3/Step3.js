@@ -22,7 +22,7 @@ const avatars = {
   ],
 };
 
-const Step3 = ({onValidationChange,originalRole,originalName,originalAvatar}) => {
+const Step3 = ({ onValidationChange, originalRole, originalName, originalAvatar }) => {
   const sliderRef = useRef(null);
   const [agentName, setAgentName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(null);
@@ -32,14 +32,13 @@ const Step3 = ({onValidationChange,originalRole,originalName,originalAvatar}) =>
   const EditingMode = localStorage.getItem("UpdationMode") === "ON";
   const [scale, setScale] = useState(1);
 
-  const [avtarChecked,setAvtarChecked]=useState('')
+  const [avtarChecked, setAvtarChecked] = useState('')
   const [agentNote, setAgentNote] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
-  const [loading,setLoading]=useState(false)
-  // console.log('gender',gender,availableAvatars)
- 
+  const [loading, setLoading] = useState(false)
+
   useEffect(() => {
-    const storedGender = sessionStorage.getItem("agentGender") ;
+    const storedGender = sessionStorage.getItem("agentGender");
     const capitalizeGender = gender.charAt(0).toUpperCase() + gender.slice(1);
     const storedAvatarImg = sessionStorage.getItem("avatar");
     const storedAgentName = sessionStorage.getItem("agentName") || localStorage.getItem("VoiceAgentName") || "";
@@ -51,7 +50,7 @@ const Step3 = ({onValidationChange,originalRole,originalName,originalAvatar}) =>
       setAgentName(storedAgentName);
     } else {
       setAgentName(localVoiceName);
-       sessionStorage.setItem("agentName", localVoiceName)
+      sessionStorage.setItem("agentName", localVoiceName)
     }
 
     if (storedAvatarImg) {
@@ -81,7 +80,7 @@ const Step3 = ({onValidationChange,originalRole,originalName,originalAvatar}) =>
     sessionStorage.setItem('avatar', avatar.img);
     setAvtarChecked(true)
 
-     const isDirty = avatar?.img !== originalAvatar 
+    const isDirty = avatar?.img !== originalAvatar
     onValidationChange?.({ isDirty });
   };
 
@@ -90,7 +89,7 @@ const Step3 = ({onValidationChange,originalRole,originalName,originalAvatar}) =>
     setAgentName(val);
     sessionStorage.setItem('agentName', val);
     if (val.trim()) setAgentNameError('');
-    const isDirty = val !== originalName 
+    const isDirty = val !== originalName
     onValidationChange?.({ isDirty });
   };
 
@@ -105,66 +104,65 @@ const Step3 = ({onValidationChange,originalRole,originalName,originalAvatar}) =>
 
   return (
     <>
-    <div className={styles.sliderContainer}>
-      {/* <h2 className={styles.heading}>{EditingMode ? 'Edit: Name and Avtar' : 'Name and Avtar'}</h2> */}
-      <Slider ref={sliderRef} {...settings}>
-        {availableAvatars?.map((avatar, index) => (
-          <div key={index} className={styles.slide} id="slideradio">
-            <label className={styles.avatarLabel}>
-              <input
-                type="checkbox"
-                name="avatar"
-                value={index}
-                checked={selectedAvatar?.img === avatar.img}
-                onChange={() => handleAvatarChange(avatar)}
-                className={styles.radioButton}
-              />
-              <img
-                src={avatar.img}
-                alt={`Avatar ${index + 1}`}
-                className={styles.avatarImage}
-              />
-            </label>
-            <div className={styles.labReq}>
-              <div className={styles.agentInputBox} id='sliderstep'>
-                <label className={styles.agentLabel}>Name Your Virtual Agent</label>
-                <div className={styles.Dblock}>
-                  <input
-                    type="text"
-                    name="agentName"
-                    onChange={handleAgentNameChange}
-                    className={styles.agentInput}
-                    placeholder="Ex- Smith, Nova"
-                    value={agentName}
-                  />
+      <div className={styles.sliderContainer}>
+        <Slider ref={sliderRef} {...settings}>
+          {availableAvatars?.map((avatar, index) => (
+            <div key={index} className={styles.slide} id="slideradio">
+              <label className={styles.avatarLabel}>
+                <input
+                  type="checkbox"
+                  name="avatar"
+                  value={index}
+                  checked={selectedAvatar?.img === avatar.img}
+                  onChange={() => handleAvatarChange(avatar)}
+                  className={styles.radioButton}
+                />
+                <img
+                  src={avatar.img}
+                  alt={`Avatar ${index + 1}`}
+                  className={styles.avatarImage}
+                />
+              </label>
+              <div className={styles.labReq}>
+                <div className={styles.agentInputBox} id='sliderstep'>
+                  <label className={styles.agentLabel}>Name Your Virtual Agent</label>
+                  <div className={styles.Dblock}>
+                    <input
+                      type="text"
+                      name="agentName"
+                      onChange={handleAgentNameChange}
+                      className={styles.agentInput}
+                      placeholder="Ex- Smith, Nova"
+                      value={agentName}
+                    />
+                  </div>
                 </div>
+                {agentNameError && (
+                  <p className={styles.agenterror}>{agentNameError}</p>
+                )}
               </div>
-              {agentNameError && (
-                <p className={styles.agenterror}>{agentNameError}</p>
-              )}
             </div>
-          </div>
-        ))}
-      
-      </Slider>
+          ))}
 
-      <div className={styles.customBtn}>
-        <div className={styles.arrowLeft} onClick={() => sliderRef.current.slickPrev()}>
-          <img src="svg/sliderleft.svg" alt="Previous" />
-        </div>
-        <div className={styles.arrowRight} onClick={() => sliderRef.current.slickNext()}>
-          <img src="svg/sliderRight.svg" alt="Next" />
+        </Slider>
+
+        <div className={styles.customBtn}>
+          <div className={styles.arrowLeft} onClick={() => sliderRef.current.slickPrev()}>
+            <img src="svg/sliderleft.svg" alt="Previous" />
+          </div>
+          <div className={styles.arrowRight} onClick={() => sliderRef.current.slickNext()}>
+            <img src="svg/sliderRight.svg" alt="Next" />
+          </div>
         </div>
       </div>
-    </div>
-    {selectedAvatar &&
-     <Step4 
-                      onValidationChange={onValidationChange}
-                      originalRole={originalRole}
+      {/* {selectedAvatar &&
+        <Step4
+          onValidationChange={onValidationChange}
+          originalRole={originalRole}
 
-     />
-     }
-     </>
+        />
+      } */}
+    </>
   );
 };
 

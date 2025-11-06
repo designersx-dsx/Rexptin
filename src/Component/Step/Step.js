@@ -133,26 +133,22 @@ const Step = () => {
   const [isAgentCreated, setIsAgentCreated] = useState(false);
 
   const [reactNativeStatus, setreactNativeStatus] = useState(false);
-  // console.log("reactNativeStatus",reactNativeStatus)
 
   useEffect(() => {
     const handleNativeMessage = (event) => {
       try {
-        // console.log("event",event.data)
         const raw = typeof event?.data === "string" ? event.data : null;
         if (!raw) return;
 
         const data = JSON.parse(raw);
-        console.log("data?.type", data?.type);
 
         if (data?.type === "IAP_STARTED") {
-          console.log("✅ Native IAP started for", data.productId);
           // flag to skip web checkout
           window.skipCheckout = true;
         }
 
         if (data?.type === "IAP_SUCCESS") {
-          console.log("🎉 Purchase success", data.receipt);
+        
           // handle success flow...
         }
 
@@ -908,7 +904,7 @@ const Step = () => {
               type: "string",
               name: "address",
               description:
-                "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
+                "Extract the user's personal address from the conversation. If the user explicitly provides their own address, include and format it for CRM or contact forms. If no personal address is mentioned, do not add or infer any business location. If the address is spoken in Hindi, translate it to English before returning.",
               examples: [
                 "123 Main St, Delhi",
                 "42 Wallaby Way, Sydney",
@@ -920,6 +916,7 @@ const Step = () => {
               name: "phone_number",
               description:
                 "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
+               
             },
 
             ...appointmentBooking(businessType),
@@ -927,6 +924,8 @@ const Step = () => {
           ],
           end_call_after_silence_ms: 30000,
           normalize_for_speech: true,
+          ambient_sound:"call-center",
+          ambient_sound_volume:1,
           webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
           // webhook_url: `https://da33c561d4a5.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
         };

@@ -3,9 +3,8 @@ import styles from '../BuildPlan/BuildPlan.module.css';
 import HeaderBar from '../HeaderBar/HeaderBar';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
 import decodeToken from "../../lib/decodeToken";
-import { useNavigate , useLocation } from 'react-router-dom';
 import axios from 'axios';
-const BuildPlan = () => {
+const CustomPlan = () => {
     const [price, setPrice] = useState(99);
     const [bill, setBill] = useState(55);
     const [plan, setPlan] = useState("STARTER");
@@ -13,70 +12,31 @@ const BuildPlan = () => {
     const [animate, setAnimate] = useState(false);
 
     const min = 99;
-    const max = 10000;
-
+    const max = 999;
 const handleChange = (e) => {
-  const qty = parseInt(e.target.value);
-  setPrice(qty);
+    const qty = parseInt(e.target.value);
+    setPrice(qty);
 
-  let unitPrice = 0;
-  let totalBill = 0;
+    // Price logic based on quantity
+    let unitPrice = 0.41;
+    if (qty >= 51 && qty <= 100) unitPrice = 0.38;
+    else if (qty >= 101 && qty <= 150) unitPrice = 0.36;
+    else if (qty >= 151 && qty <= 200) unitPrice = 0.35;
+    else if (qty >= 201) unitPrice = 0.35;
 
-  if (qty >= 1 && qty <= 100) {
-    unitPrice = 0.50;
-    totalBill = 5.00; // flat amount
-  } else if (qty >= 101 && qty <= 200) {
-    unitPrice = 0.45;
-    totalBill = qty * unitPrice;
-  } else if (qty >= 201 && qty <= 300) {
-    unitPrice = 0.42;
-    totalBill = qty * unitPrice;
-  } else if (qty >= 301 && qty <= 1500) {
-    unitPrice = 0.40;
-    totalBill = qty * unitPrice;
-  } else if (qty >= 1501 && qty <= 2000) {
-    unitPrice = 0.38;
-    totalBill = qty * unitPrice;
-  } else if (qty >= 2001 && qty <= 2500) {
-    unitPrice = 0.36;
-    totalBill = qty * unitPrice;
-  } else if (qty >= 2501 && qty <= 3000) {
-    unitPrice = 0.35;
-    totalBill = qty * unitPrice;
-  } else if (qty >= 3001 && qty <= 3500) {
-    unitPrice = 0.34;
-    totalBill = qty * unitPrice;
-  } else if (qty >= 3501) {
-    unitPrice = 0.33;
-    totalBill = qty * unitPrice;
-  }
+    const totalBill = qty * unitPrice;
 
-  setBill(totalBill.toFixed(2));
+    setBill(totalBill.toFixed(2));
 };
-
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
-  const navigate = useNavigate();
-  const location = useLocation();
-  let agentID = location?.state?.agentID;
-  let locationPath = location?.state?.locationPath
-  let plans = location?.state?.plans
-
-    let subscriptionID = location?.state?.subscriptionID
-  console.log(locationPath);
-  
-  const token = localStorage.getItem("token") || "";
-  const decodeTokenData = decodeToken(token);
     const progressPercent = ((price - min) / (max - min)) * 100;
-const formatValue = (val, isTooltip = false) => {
-  if (val >= 1_000_000) {
-    return isTooltip ? `${(val / 1_000_000).toFixed(1)}M/m` : `${(val / 1_000_000).toFixed(1)}M/m`;
-  } else if (val >= 1_000) {
-    return isTooltip ? `${(val / 1_000).toFixed(1)}k/m` : `${(val / 1_000).toFixed(1)}k/m`;
-  } else {
-    return isTooltip ? `${val}m` : `${val}m`;
-  }
-};
 
+    const formatValue = (val, isTooltip = false) => {
+        if (val >= 1000) {
+            return isTooltip ? `${(val / 1000).toFixed(1)}K` : `${(val / 1000).toFixed(1)}K`;
+        }
+        return isTooltip ? `${val}` : val;
+    };
 
     useEffect(() => {
         let newPlan = "";
@@ -106,11 +66,14 @@ const formatValue = (val, isTooltip = false) => {
             setTimeout(() => setAnimate(false), 600);
         }
     }, [price, plan]);
+    
+  const token = localStorage.getItem("token") || "";
+  const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id || "";
- const tierCheckout = async () => {
+  const tierCheckout = async () => {
     try {
-      const queryParams = new URLSearchParams();
       const origin = window.location.origin;
+      const queryParams = new URLSearchParams();
       queryParams.append("mode", "create");
       if (userId) queryParams.append("userId", userId);
 
@@ -121,16 +84,14 @@ const formatValue = (val, isTooltip = false) => {
         presetUnits: price,
         minUnits: 0,
         maxUnits: 10000,
-        successUrl:
-          window.location.origin +
-          `/thankyou/update?agentId=${agentID}&userId=${decodeTokenData?.id}`,
-        cancelUrl: `${origin}/cancel`,
+        successUrl: url,
+        cancelUrl: `${origin}/cancel-payment`,
         userId: userId,
-       
+        priceId: "price_1RypKj4T6s9Z2zBzesn9ijNz",
       });
 
       if (res?.data?.url) {
-        window.location.href = res.data.url; // Redirect to checkout
+        window.location.href = res.data.url;
       }
     } catch (error) {
       console.error("Checkout error:", error);
@@ -138,51 +99,35 @@ const formatValue = (val, isTooltip = false) => {
     }
   };
 
-  const planPriceMap = {
-    STARTER: "price_1RgnNeSCQQfKS3WDwz8Dt201",
-    SCALER: "price_1RcCWpSCQQfKS3WDnyGZU5LA",
-    GROWTH: "price_1RcCgoSCQQfKS3WDS0uuS1xy",
-    CORPORATE: "price_1RcCoeSCQQfKS3WDZqJ62RTi"
-  };
-    const handlePlanCheckout = async () => {
-    try {
-        if(locationPath === "/dashboard") {
-  const origin = window.location.origin;
-      const priceId = planPriceMap[plan]; // current plan
-      if (!priceId) throw new Error("Price ID not found for selected plan");
-  
-      const res = await axios.post(`${API_BASE}/create-checkout-session`, {
-        customerId: decodeTokenData?.customerId,
-        priceId,
-        userId,
-       
-        url: `${origin}/thankyou/update?subscriptionId=${subscriptionID}&agentId=${agentID}&userId=${userId}`,
-        cancelUrl: `${origin}/cancel-payment`,
-      });
-  
-      if (res?.data?.checkoutUrl) {
-        window.location.href = res.data.checkoutUrl;
-      }
-        }
-        else{
-            const priceId = planPriceMap[plan];
-            sessionStorage.setItem("priceId" , priceId)
-            sessionStorage.setItem("selectedPlan" ,plan )
-            sessionStorage.setItem("selectedPlanInterval" , "month" )
-            sessionStorage.setItem("price" , 100 )
-            localStorage.setItem("allPlans" , JSON.stringify(plans) )
+const planPriceMap = {
+  STARTER: "price_1RUNGj4T6s9Z2zBzHAWaIZz3",
+  SCALER: "price_1RVXQI4T6s9Z2zBz3udYE9sO",
+  GROWTH: "price_1RVXSV4T6s9Z2zBzpoLwTIzY",
+  CORPORATE: "price_1RXgkd4T6s9Z2zBzxvVFBRMs"
+};
+  const handlePlanCheckout = async () => {
+  try {
+    const origin = window.location.origin;
+    const priceId = planPriceMap[plan]; // current plan
+    if (!priceId) throw new Error("Price ID not found for selected plan");
 
-            navigate("/steps")
+    const res = await axios.post(`${API_BASE}/create-checkout-session`, {
+      customerId: decodeTokenData?.customerId,
+      priceId,
+      userId,
+     
+      url: `${origin}/steps?mode=create&userId=${userId}`,
+      cancelUrl: `${origin}/cancel-payment`,
+    });
 
-
-
-        }
-    
-    } catch (error) {
-      console.error("Checkout error:", error);
-      alert("Something went wrong during checkout. Please try again.");
+    if (res?.data?.checkoutUrl) {
+      window.location.href = res.data.checkoutUrl;
     }
-  };
+  } catch (error) {
+    console.error("Checkout error:", error);
+    alert("Something went wrong during checkout. Please try again.");
+  }
+};
 
     return (
         <div className={styles.containerBox}>
@@ -225,12 +170,12 @@ const formatValue = (val, isTooltip = false) => {
                                 background: `linear-gradient(to right, #a855f7, #6524EB ${progressPercent}%, #e7e7e7 ${progressPercent}%)`,
                             }}
                         />
-                       <div
-  className={styles.sliderTooltip}
-  style={{ left: `calc(${progressPercent}%)` }}
->
-  {formatValue(price, true)}
-</div>
+                        <div
+                            className={styles.sliderTooltip}
+                            style={{ left: `calc(${progressPercent}%)` }}
+                        >
+                            {formatValue(price, true)}m
+                        </div>
                     </div>
 
                     <div className={styles.sliderLabels}>
@@ -241,18 +186,7 @@ const formatValue = (val, isTooltip = false) => {
                         <b>Select the range</b> that fits your website traffic needs.
                     </p>
                 </div>
-                <div className={styles.PurchaseBtn}  onClick={() => {
-                if (locationPath === "/dashboard") {
-                  tierCheckout();
-                } else {
-                  navigate("/steps", {
-                    state: {
-                      plan: "tierPlan",
-                      value: price,
-                    },
-                  });
-                }
-              }}>
+                <div className={styles.PurchaseBtn}  onClick={tierCheckout}>
                     <AnimatedButton
                         label="Confirm PURCHASE"
                         position={{ position: 'relative' }}
@@ -265,4 +199,4 @@ const formatValue = (val, isTooltip = false) => {
     );
 };
 
-export default BuildPlan;
+export default CustomPlan;

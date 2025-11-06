@@ -72,9 +72,6 @@
     position: relative;
     z-index: 10; /* image above ellipses */
 }
-.imageWrapper:hover{
-    cursor: pointer;
-}
 
 .planImage {
     transition: transform 0.6s ease, opacity 0.6s ease;
