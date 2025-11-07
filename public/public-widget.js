@@ -1435,7 +1435,7 @@ function injectCSS() {
         delete document.body.dataset.rexScrollY;
         window.scrollTo(0, y);
     }
-
+// fd
     function scheduleOnlyUserAutoEnd(idleMs = 4 * 60 * 1000) {
         clearOnlyUserAutoEndTimer();
 
