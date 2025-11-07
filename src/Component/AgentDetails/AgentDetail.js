@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import styles from "./AgentDetail.module.css";
 import AgentAnalysis from "./AgentAnalysisGraph/AgentAnalysis";
 import {
+  API_BASE_URL,
   createChatAgent,
   EndWebCallUpdateAgentMinutesLeft,
   fetchAgentDetailById,
@@ -736,11 +737,11 @@ const AgentDashboard = () => {
     //   openAssignNumberModal();
     // } else {
 
-      // setSelectedAgentForAssign(agent);
-      // setIsAssignModalOpen(true);
-      navigate("/assign-number", {
-        state: { agent: agent, business: business },
-      });
+    // setSelectedAgentForAssign(agent);
+    // setIsAssignModalOpen(true);
+    navigate("/assign-number", {
+      state: { agent: agent, business: business },
+    });
     // }
     setBusinessDetails(business);
   };
@@ -1004,6 +1005,20 @@ const AgentDashboard = () => {
 
     localStorage.setItem("filterType", "single")
   }
+  const handleCopyPublicLink = (agentCode) => {
+    const link = `${process.env.REACT_APP_PUBLIC_WIDGET_DOMAIN}?agent=${agentCode}`;
+
+    navigator.clipboard.writeText(link)
+      .then(() => {
+
+        setPopupMessage(" Link copied: " + link);
+        setPopupType("success");
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+        alert("❌ Failed to copy link");
+      });
+  };
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -1335,9 +1350,9 @@ Do you want to proceed with deleting this assigned number?`
                     </span>
                   </p>
                 </div>
-{/* gg/ */}
-{/* hghgh */}
-{/* bgg */}
+                {/* gg/ */}
+                {/* hghgh */}
+                {/* bgg */}
                 <div className={styles.address}>
                   {agentData?.business?.address1 && (
                     <>
@@ -1469,6 +1484,55 @@ Do you want to proceed with deleting this assigned number?`
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
             <Divider label="Agent Options" />
             <div className={styles.managementActions}>
+                <div
+                className={styles.managementItem}
+                // onClick={() => setShowModal(true)}
+                onClick={() =>
+                  handleCopyPublicLink(agentData?.agent?.agentCode)
+                }
+
+              >
+                {/* fdfd */}
+                <div className={styles.SvgDesign}>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M18.9075 13.7036C17.7025 12.4986 15.8722 12.3081 14.4642 13.123C12.3349 14.3748 9.5527 14.0927 7.72536 12.2647C5.88086 10.4205 5.61058 7.60564 6.90038 5.46931C6.89904 5.4683 6.89702 5.46729 6.89567 5.46628C7.67353 4.06607 7.47157 2.26734 6.28241 1.07818C4.84484 -0.359392 2.51497 -0.359392 1.07707 1.07818C-0.279723 2.4353 -0.354108 4.58711 0.850878 6.0331C2.69875 8.47067 4.7277 10.8143 6.95154 13.0382C9.16562 15.2523 11.4975 17.2768 13.922 19.12C13.9246 19.1176 13.9267 19.1153 13.9287 19.1129C15.375 20.3398 17.543 20.2735 18.9078 18.9086C20.3444 17.4717 20.3444 15.1412 18.9075 13.7036Z"
+                      fill="#6524EB"
+                    />
+                    <path
+                      d="M11.6781 3.26778H12.6878V3.9349H13.6976V3.26744V1.92109V1.24219H12.6878V1.92142H11.6781C11.3065 1.92142 11.0049 2.22301 11.0049 2.5946C11.0049 2.96619 11.3065 3.26778 11.6781 3.26778Z"
+                      fill="#6524EB"
+                    />
+                    <path
+                      d="M19.4351 2.5931C19.4351 2.22151 19.1335 1.91992 18.7619 1.91992L14.3711 1.92093V3.26729L18.7619 3.26661C19.1335 3.26628 19.4351 2.96469 19.4351 2.5931Z"
+                      fill="#6524EB"
+                    />
+                    <path
+                      d="M11.6781 5.96031L16.3903 5.95964V4.61328L11.6781 4.61396C11.3065 4.61396 11.0049 4.91554 11.0049 5.28713C11.0049 5.65873 11.3065 5.96031 11.6781 5.96031Z"
+                      fill="#6524EB"
+                    />
+                    <path
+                      d="M18.7616 4.61246H18.0732V3.93457H17.0635V4.6128V5.95915V6.62728H18.0732V5.95915H18.7616C19.1332 5.95915 19.4347 5.65757 19.4347 5.28597C19.4347 4.91438 19.1332 4.61246 18.7616 4.61246Z"
+                      fill="#6524EB"
+                    />
+                    <path
+                      d="M11.6781 8.65352L13.0244 8.65318V9.32064H14.0342V8.65318V7.30683V6.62793H13.0244V7.30683L11.6781 7.30717C11.3065 7.30717 11.0049 7.60875 11.0049 7.98034C11.0049 8.35194 11.3065 8.65352 11.6781 8.65352Z"
+                      fill="#6524EB"
+                    />
+                    <path
+                      d="M18.7612 7.30469L14.707 7.3057V8.65205L18.7612 8.65138C19.1328 8.65138 19.4344 8.34979 19.4344 7.9782C19.4344 7.60661 19.1328 7.30469 18.7612 7.30469Z"
+                      fill="#6524EB"
+                    />
+                  </svg>
+                </div>
+                <p className={styles.managementText}> Copy Public URL</p>
+              </div>
               <div
                 onClick={() => {
                   if (agentStatus === true) {
@@ -1862,6 +1926,7 @@ Do you want to proceed with deleting this assigned number?`
                 </div>
                 <p className={styles.managementText}>Knowledge Files</p>
               </div>
+            
             </div>
             <hr className={styles.line} />
             <h1 className={styles.Agenttitle}>
