@@ -4,7 +4,7 @@ import {
   Routes,
   Route,
   useNavigate,
-  Navigate,
+  Navigate,useLocation
 } from "react-router-dom";
 import Start from "./Component/Start/Start";
 import SignUp from "./Component/SignUp/SignUp";
@@ -96,6 +96,7 @@ function App() {
   const [showPopup, setShowPopup] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0); 
   const navigate = useNavigate()
+
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
@@ -183,13 +184,9 @@ function App() {
                 <Route
                   path="/signup"
                   element={
-                    token ? (
-                      <SecureRoute>
-                        <Navigate to={"/dashboard"} />
-                      </SecureRoute>
-                    ) : (
+                   
                       <SignUp />
-                    )
+                  
                   }
                 />
                 <Route
