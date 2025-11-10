@@ -76,8 +76,7 @@ const getKnowledgeBaseName = async (
     : sanitize(business?.customBuisness || "oth");
 
   // 3. Prepare name parts
-  const shortBusinessName = sanitize(business?.businessName).slice(0, 10);
-  const cleanPackage = sanitize(packageValue);
+
 
 
   return `${businessCode}_${userId}_${agentCode}_#${(agentCount + 1)}`;
