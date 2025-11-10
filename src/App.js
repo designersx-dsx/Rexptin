@@ -4,7 +4,7 @@ import {
   Routes,
   Route,
   useNavigate,
-  Navigate,
+  Navigate,useLocation
 } from "react-router-dom";
 import Start from "./Component/Start/Start";
 import BuildPlan from "./Component/BuildPlan/BuildPlan";
@@ -102,6 +102,7 @@ function App() {
   // const [refreshNotification,setRefreshNoitification]=useState(false)
   
   const navigate = useNavigate()
+
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
@@ -390,13 +391,9 @@ function App() {
                 <Route
                   path="/signup"
                   element={
-                    token ? (
-                      <SecureRoute>
-                        <Navigate to={"/dashboard"} />
-                      </SecureRoute>
-                    ) : (
+                   
                       <SignUp />
-                    )
+                  
                   }
                 />
                 <Route

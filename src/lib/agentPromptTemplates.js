@@ -8,7 +8,8 @@ import {
   ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails,
   ifUserNameExistViaChatAgent,
   previousConversationFlow,
-  conversationGuidelines
+  conversationGuidelines,
+  calender_booking_google
 } from "../lib/promptHelper"
 
 export const agentPromptTemplates = {
@@ -66,7 +67,10 @@ ${commaSeparatedServices}
 3. More About Business:
 Use below information (if available) to describe the business and make your common understanding:
 ${business?.aboutBusiness}
+${calender_booking_google()}
 4. Additional Instructions
+i want you to hit this  function when user ask for the google calender event and then hit this function named book_calendar_event  if you got any error at that time just tell the user about it so that he can confirm and also ask confirmation that are you asking google calender event he say google calender event 
+
 ###Information Collection (for Appointments)
 ##Required Information Before Proceeding
 **Always collect the following information from the caller (required):**
