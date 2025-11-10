@@ -17,8 +17,8 @@ const userId = sessionStorage.getItem("userId");
 // ========== Auth APIs ==========
 
 // Get all knowledge bases
-export const LoginWithEmailOTP = async (email) => {
-  const res = await api.post("/auth/LoginWithEmailOTP", { email });
+export const LoginWithEmailOTP = async (email,environmentInfo) => {
+  const res = await api.post("/auth/LoginWithEmailOTP", { email,environmentInfo });
   return res;
 };
 

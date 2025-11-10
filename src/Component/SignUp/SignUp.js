@@ -10,6 +10,7 @@ import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
 import useUser from "../../Store/Context/UserContext";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
+import useUserDeviceInfo from "../../hooks/useUserDeviceInfo";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const SignUp = () => {
   const isUser = sessionStorage.getItem("isUser") || "";
   const [customerId, setCustomerId] = useState();
   const [renderHtml, setRenderHtml] = useState(false);
-
+  const info = useUserDeviceInfo();
   useEffect(() => {
     const emailFromParams = searchParams.get("ownerEmail");
     if (emailFromParams) {
@@ -195,7 +196,7 @@ const SignUp = () => {
     setEmailError("");
     setIsVerifyingOtp(true);
     try {
-      const response = await LoginWithEmailOTP(email);
+      const response = await LoginWithEmailOTP(email,info);
       if (response?.status === 200) {
         setVerifiedUser(response.data.verifiedStatus);
         setShowPopup(true);
@@ -354,6 +355,8 @@ useEffect(() => {
     }
   }
 }, [searchParams]);
+
+
 
 
   return (
