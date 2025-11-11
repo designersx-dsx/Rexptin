@@ -286,7 +286,7 @@ const navigate=useNavigate();
             className={styles.submitBtn}
             disabled={loading}
           >
-            {loading ? <span className={styles.loader}>Loading...</span> : "Submit"}
+            {loading ? <span className={styles.loader}>Thinking...</span> : "Submit"}
           </button>
           <button
             type="button"
