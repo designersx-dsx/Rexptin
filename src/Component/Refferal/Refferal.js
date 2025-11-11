@@ -73,13 +73,13 @@ const Refferal = ({referralCode,setShowDashboardReferral,showDashboardReferral,u
                 <h3>Earn 5% Commission & Give 5% Discount!</h3>
             </div>
             <div className={styles.card}>
-                {/* <label className={styles.checkboxLabel}>
+                <label className={styles.checkboxLabel}>
                     Show Referral link on Dashboard
                     <input type="checkbox" className={styles.customCheckbox} 
                     checked={referralStatus}
                      onChange={(e) => handleChangeStatus(e.target.checked)}
                      />
-                </label> */}
+                </label>
 
                 <div className={styles.linkSection}>
                     <p className={styles.label}>Referral Link</p>
