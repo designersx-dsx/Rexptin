@@ -2940,7 +2940,7 @@ function Dashboard() {
                                         title="Free Trial Expired"
                                         message="Your free trial for the assigned number has ended. To continue using this feature and keep your number active, you’ll need to subscribe to one of our available plans. Without a subscription, the assigned number will remain inactive, and related services may not work as expected."
                                         type="warning"
-                                        confirmText={disableLoading ? "Loading..." : "Subscribe"}
+                                        confirmText={disableLoading ? "Thinking..." : "Subscribe"}
                                         cancelText="Cancel"
                                         showCancel={true}
                                         isLoading={disableLoading}
@@ -3775,7 +3775,7 @@ function Dashboard() {
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}
       {/* Floating Button */}
-      {/* {showreferralfloating == "true" && (
+      {showreferralfloating == "true" && (
         <div
           className={styles.floating}
           onClick={async () => {
@@ -3795,10 +3795,10 @@ function Dashboard() {
             </p>
           </div>
         </div>
-      )} */}
+      )}
 
       {/* Modal */}
-      {/* <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div className={styles.Refferalinfo}>
           <div className={styles.headerPart}>
             <h3>Earn 5% Commission & Give 5% Discount!</h3>
@@ -3870,7 +3870,7 @@ function Dashboard() {
             </div>
           </div>
         </div>
-      </Modal> */}
+      </Modal>
 
       {/* <Footer /> */}
       <Footer2 />

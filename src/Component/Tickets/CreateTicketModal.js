@@ -276,7 +276,7 @@ const CreateTicketModal = ({
               disabled={loading}
             >
               {loading ? (
-                <span className={styles.loader}>Loading...</span>
+                <span className={styles.loader}>Thinking...</span>
               ) : mode === "raise" ? (
                 "Submit"
               ) : mode === "resolve" ? (

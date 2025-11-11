@@ -757,7 +757,7 @@ const cancelOldSubscription = async () => {
                     {isLoadingRequest
                       ? "Redirecting..."
                       : key === "create"
-                        ? (isAgentCreated ? "Take me to Dashboard" : "Loading...")
+                        ? (isAgentCreated ? "Take me to Dashboard" : "Thinking...")
                         : "Take me to Dashboard"}
                   </button>
 
