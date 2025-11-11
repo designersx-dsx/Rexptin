@@ -2459,7 +2459,13 @@ function injectCSS() {
        <span class="stars">${starsHTML}</span>
       <p class="reviews" style="color: blue;font-weight: 700;">${totalRatings} Google reviews</p>
     </div>
-   <div class="bottomDesc"><p>Create your AI Agent with Rexpt for efficient Business Communication.</div>
+   <div class="bottomDesc"><p>
+    Create your 
+    <a href="https://www.rexpt.us/" target="_blank" style="text-decoration: underline; color: inherit; font-weight: 600;">
+      AI Agent with Rexpt
+    </a> 
+    for efficient Business Communication.
+  </p></div>
 </div>
     `
 
@@ -2818,7 +2824,13 @@ function injectCSS() {
       <span class="reviews">${totalRatings} Google reviews</span>
       </div>
 
-       <div class="bottomDesc"><p>Create your AI Agent with Rexpt for efficient Business Communication.</div>
+       <div class="bottomDesc"><p>
+    Create your 
+    <a href="https://www.rexpt.us/" target="_blank" style="text-decoration: underline; color: inherit; font-weight: 600;">
+      AI Agent with Rexpt
+    </a> 
+    for efficient Business Communication.
+  </p></div>
     </div>
       <div class="mainDiv" >
         <div class="support-header">
@@ -4106,7 +4118,13 @@ function injectCSS() {
       <span class="reviews">${starsHTML} </span>
        <span>${totalRatings} Google reviews</span>
     </div>
-     <div class="bottomDesc"><p>Create your AI Agent with Rexpt for efficient Business Communication.</div>
+     <div class="bottomDesc"><p>
+    Create your 
+    <a href="https://www.rexpt.us/" target="_blank" style="text-decoration: underline; color: inherit; font-weight: 600;">
+      AI Agent with Rexpt
+    </a> 
+    for efficient Business Communication.
+  </p></div>
   </div>
 
                 <div class="rightBox">
