@@ -7,7 +7,6 @@ import {
   fetchLlmDetails,
   updateLlm,
 } from "../../Store/apiStore";
-import Loader from "../Loader/Loader";
 import PopUp from "../Popup/Popup";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
