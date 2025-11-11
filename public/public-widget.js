@@ -97,11 +97,8 @@ function injectCSS() {
    .popup {
     position: fixed;
     bottom: 0px;
-    /* right: 20px; */
     width: 100%;
     background-color: #fff;
-    /* border-radius: 20px; */
-    border: 2px solid #eee;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     z-index: 1001;
     display: none;
@@ -119,10 +116,7 @@ function injectCSS() {
    .popup-body {
     position: relative;
     text-align: center;
-    
     background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);
-
-    border-radius: 20px;
     display: flex;
     align-items: center;
    justify-content: center;
@@ -391,18 +385,18 @@ function injectCSS() {
         z-index: 11;
     }
         .pulse-dot {
-      position: absolute;
-        top: 9px;
-        left: 8px;
-        width: 4px;
-        height: 4px;
-        background-color: #0CDD24;
-        border-radius: 50%;
-        z-index: 12;
-    }
-    .callText{
-        text-align: start;line-height:normal}
-        .agent-intro{   text-align: center;
+           position: absolute;
+            top: 9px;
+          left: 8px;
+          width: 4px;
+          height: 4px;
+          background-color: #0CDD24;
+          border-radius: 50%;
+          z-index: 12;
+         }
+         .callText{
+          text-align: start;line-height:normal}
+          .agent-intro{   text-align: center;
           font-size: 13px;
           position: relative;
           bottom: 0;
@@ -431,9 +425,9 @@ function injectCSS() {
             text-align: justify;
             font-size: 12px;
             line-height: 15px;
-                position: absolute;
-    top: 150px;
-    left: 200px;
+            position: absolute;
+            top: 150px;
+            left: 200px;
           }
           
           .terms-content h2 {
@@ -467,39 +461,153 @@ function injectCSS() {
               color:#ffff
              }
             .chat-popup{
-             position:fixed; bottom:155px; right:20px;
-           max-width: 290px !important;
-          transition: 
-            max-width .35s ease,
-            transform .35s ease,
-            box-shadow .35s ease;
-          transform-origin: bottom right;
-             width:90%;
-             background:#fff;
-          
-             border-radius:16px;
-             border:1px solid #ECECEC;
+             position:fixed; 
+             top:0;
+             bottom:0; 
+             right:0;
+             max-width .35s ease,
+             transform .35s ease,
+             box-shadow .35s ease;
+             transform-origin: bottom right;
+             width:100%;
+             background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);
              box-shadow:0 18px 40px rgba(0,0,0,.18);
              z-index:1002; display:none; font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
             
             }
-                .chat-popup.show{display:block}
+         .chat-popup.show{   
+             display:block
+          }
             
-                          .chat-popup.expanded{
-          max-width: 500px !important;
-          transform: scale(1);
-        }
+         .chat-popup.expanded{
+             width: 100% !important;
+             transform: scale(1);
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             gap:1rem
+          }
+         .leftBox {
+              padding: 28px;
+              color: #e2e8f0;
+              border-radius: 16px;
+          }
 
-        /* Motion sensitivity */
-        @media (prefers-reduced-motion: reduce){
-          .chat-popup{
-            transition: none !important;
-            transform: none !important;
+         .company-name {
+              font-size: 24px;
+             font-weight: 800;
+             color: #ffffff;
+             margin: 0 0 4px 0;
+             line-height: 1.1;
+             letter-spacing: 0.8px;
+             text-transform: uppercase;
+          }
+
+          .company-ltd {
+            font-size: 19px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin: 0 0 24px 0;
+            letter-spacing: 0.5px;
+          }
+
+         .info-row {
+           display: flex;
+           margin-bottom: 18px;
+           font-size: 14.5px;
+           line-height: 1.6;
+          }
+
+         .info-label {
+         color: #94a3b8;
+         min-width: 78px;
+         font-weight: 600;
+         }
+
+         .info-value {
+          color: #f1f5f9;
+          flex: 1;
+         }
+
+         .info-value a {
+         color: #93c5fd;
+          text-decoration: none;
+         font-weight: 500;
+         }
+
+         .info-value a:hover {
+           text-decoration: underline;
+         }
+
+         .rating-box {
+          display: inline-flex;
+          align-items: center;
+          background: #ffffff;
+          color: blue;
+          padding: 10px 16px;
+          border-radius: 10px;
+          font-size: 20px;
+          font-weight: 700;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+          gap: 10px;
+          margin-top: 8px;
+         }
+
+         .stars {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+         }
+          .star {
+           width: 18px;
+           height: 18px;
+           fill: #fbbf24;
+         }
+
+          .half-star {
+           position: relative;
+           width: 18px;
+           height: 18px;
+         }
+
+          .half-star svg {
+          fill: #e5e7eb;
+         }
+
+         .reviews {
+          color: blue !important;
+          font-weight: 700;
+         }
+
+         .rightBox{
+             border: 1px solid #ffffff;
+             width: 100%;
+             max-width: 500px;
+             border-radius: 18px;
+         }
+             .bottomDesc{
+                 font-size: 16px;
+                  margin-top: 5rem;
+             }
+
+          /* Motion sensitivity */
+         @media (prefers-reduced-motion: reduce){
+         .chat-popup{
+             transition: none !important;
+             transform: none !important;
           }
             }
 
             /* Mobile: full width, no expand play (aapke existing rule ke saath compatible) */
             @media (max-width:650px){
+              .leftBox {
+              display:none;
+              }
+              .rightBox{
+             width:95%
+              } 
+
+
              .chat-popup.expanded{
                      height: 100%;
                       bottom: 0;
@@ -925,7 +1033,6 @@ function injectCSS() {
         @keyframes rexSpin{ to{ transform: rotate(360deg); } }
 .company-info-left {
   color: white;
-  width: 25%;
   padding: 20px 0;
 }
 
@@ -1246,13 +1353,13 @@ function injectCSS() {
         }      
 
         .right-anim{
- 
-    background: #19273c;
-    text-align: center;
-    border: 20px solid #fff;
-    border-radius: 36px;
-    align-items: center;
-    width: 20%;
+            background: #19273c;
+            text-align: center;
+           border: 1px solid #fff;
+           border-radius: 36px;
+          align-items: center;
+
+    padding: 20px;
 
 }
 
@@ -1435,7 +1542,7 @@ function injectCSS() {
         delete document.body.dataset.rexScrollY;
         window.scrollTo(0, y);
     }
-// fd
+    // fd
     function scheduleOnlyUserAutoEnd(idleMs = 4 * 60 * 1000) {
         clearOnlyUserAutoEndTimer();
 
@@ -1883,7 +1990,7 @@ function injectCSS() {
 
                 if (data?.chat_id) {
                     localStorage.setItem("chat_id", String(data.chat_id));
-                    resetInactivityTimers?.();
+                    // resetInactivityTimers?.();
                     console.log("[Rex] chat_id stored:", data.chat_id);
                 }
                 return data;
@@ -1976,7 +2083,7 @@ function injectCSS() {
                 border-radius: 50%;
                 animation: spin 1s linear infinite;
             "></div>
-            <p style="margin:0; font-size:16px;">Loading ...</p>
+            <p style="margin:0; font-size:16px;">Thinking...</p>
         </div>
     `;
             document.body.appendChild(loader);
@@ -2047,8 +2154,8 @@ function injectCSS() {
 
                     // ---- Write to localStorage as string ----
                     const isChatEnabled = Boolean(json.chatWidgetEnabled);
-                    // localStorage.setItem("isChatEnabled", isChatEnabled ? "true" : "false");
-                    localStorage.setItem("isChatEnabled", false);
+                    localStorage.setItem("isChatEnabled", isChatEnabled ? "true" : "false");
+                    // localStorage.setItem("isChatEnabled", false);
                     localStorage.setItem("call_mins_left", String(json.mins_left ?? ""));
                     localStorage.setItem("chat_mins_left", String(json.messageLeft ?? ""));
                     localStorage.setItem("addOnsMins", String(json.addOnsMins ?? ""));
@@ -2112,24 +2219,44 @@ function injectCSS() {
                 rating = parseFloat(kb.rating) || 0;
                 totalRatings = kb.totalRatings || 0;
 
-                fullStars = Math.floor(rating);
-                hasHalfStar = rating % 1 >= 0.5;
-                emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-              starsHTML = `
-  <span style="color:#ffdd00; font-weight:600; font-size:25px;">
+                const fullStars = Math.floor(rating);
+                const hasHalfStar = rating % 1 >= 0.5;
+                const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+                // Full star SVG (consistent size and viewBox)
+                const getFullStar = () => `
+<svg width="24" height="23" viewBox="0 0 24 23" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path d="M14.2178 8.792L14.3301 9.1377H22.2354L16.1338 13.5713L15.8398 13.7842L15.9521 14.1299L18.2822 21.3027L12.1807 16.8701L11.8867 16.6562L11.5928 16.8701L5.49023 21.3027L7.82129 14.1299L7.93359 13.7842L7.63965 13.5713L1.53809 9.1377H9.44336L9.55566 8.792L11.8867 1.61719L14.2178 8.792Z"
+    fill="#FFDD00" stroke="#FFDD00"/>
+</svg>`;
+
+                // Half star SVG using clipPath to show left half filled
+                const getHalfStar = (id) => `
+<svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.8311 8.79199L14.9434 9.1377H22.8486L16.7471 13.5713L16.4531 13.7842L16.5654 14.1299L18.8955 21.3027L12.7939 16.8701L12.5 16.6562L12.2061 16.8701L6.10352 21.3027L8.43457 14.1299L8.54688 13.7842L8.25293 13.5713L2.15137 9.1377H10.0566L10.1689 8.79199L12.5 1.61719L14.8311 8.79199Z" fill="white" stroke="#FFDD00"/>
+<path d="M12.5015 0L12.5 17.2746H12.5015L5.15417 22.6127L7.9606 13.9754L0.613281 8.63729H9.69506L12.5015 0Z" fill="#FFDD00"/>
+</svg>`;
+
+                // Empty star SVG (outline with white fill)
+                const getEmptyStar = () => `
+<svg width="24" height="23" viewBox="0 0 24 23" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path d="M14.2178 8.792L14.3301 9.1377H22.2354L16.1338 13.5713L15.8398 13.7842L15.9521 14.1299L18.2822 21.3027L12.1807 16.8701L11.8867 16.6562L11.5928 16.8701L5.49023 21.3027L7.82129 14.1299L7.93359 13.7842L7.63965 13.5713L1.53809 9.1377H9.44336L9.55566 8.792L11.8867 1.61719L14.2178 8.792Z"
+    fill="white" stroke="#FFDD00"/>
+</svg>`;
+
+                // Unique id per render to avoid clashes
+                const uniqueId = Math.random().toString(36).slice(2, 9);
+
+                starsHTML = `
+  <span style="color:#c4c4c4; font-weight:600; font-size:25px; margin-right:8px;">
     ${rating.toFixed(1)}
   </span>
-  <span style="color:#ffdd00; font-size:35px; display:inline-flex; align-items:center;">
-    ${'★'.repeat(fullStars)}
-    ${
-      hasHalfStar
-        ? `<i class="fas fa-star-half-alt" style="margin:0 2px; font-size:24px; color:#ffdd00;"></i>`
-        : ''
-    }
-    ${'☆'.repeat(emptyStars)}
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    ${Array(fullStars).fill(getFullStar()).join('')}
+    ${hasHalfStar ? getHalfStar(uniqueId) : ''}
+    ${Array(emptyStars).fill(getEmptyStar()).join('')}
   </span>
 `;
-
 
 
                 // Update DOM (after supportEl is created)
@@ -2294,7 +2421,6 @@ function injectCSS() {
             leftSection.innerHTML = `
                                    <div class="rex-left-info company-info-left">
     <div class="company-header">
-        <img src="/svg/widget-logo.svg" alt="Logo" class="company-logo">
         <h3 class="company-name">${businessName}</h3>
     </div>
 <br/>
@@ -2316,8 +2442,9 @@ function injectCSS() {
 <br/>
     <div class="google-rating">
        <span class="stars">${starsHTML}</span>
-      <span class="reviews">${totalRatings} Google reviews</span>
+      <p class="reviews" style="color: blue;font-weight: 700;">${totalRatings} Google reviews</p>
     </div>
+   <div class="bottomDesc"><p>Create your AI Agent with Rexpt for efficient Business Communication.</div>
 </div>
     `
 
@@ -2418,13 +2545,7 @@ function injectCSS() {
 
             buttonStack.appendChild(chatBtn);
             buttonStack.style.display = "none";
-            function composeProfileIntro() {
-                const name = localStorage.getItem("rex_user_name") || "";
-                const email = localStorage.getItem("rex_user_email") || "";
-                const phone = localStorage.getItem("rex_user_phone") || "";
-                if (!name && !email && !phone) return "";
-                return `My name is ${name}. My email is ${email} and my phone number is ${phone}.`;
-            }
+
 
             function createBotBubble() {
                 const $msgs = document.getElementById("rexMessages");
@@ -2500,6 +2621,7 @@ function injectCSS() {
                         await createChatSession(
                             localStorage.getItem("chat_agent_id") || undefined
                         );
+
                     } catch { }
                 }
                 const chatId = localStorage.getItem("chat_id") || "nochat";
@@ -3203,6 +3325,7 @@ function injectCSS() {
                     setWidgetLocked(false);
                     modal.style.display = "none";
                     // rexAgent.classList.remove("noFloat");
+
                     setWidgetLocked(false);
                     unlockBodyScroll();
                 }
@@ -3275,6 +3398,7 @@ function injectCSS() {
                 if (navigator?.mediaDevices) {
                     // ---- CLICK FOR CALL (not currently onCall) ----
                     if (!onCall) {
+
                         try {
                             // lock immediately so rapid clicks don’t re-enter
                             isCreatingCall = true;
@@ -3364,9 +3488,12 @@ function injectCSS() {
                     // ---- HANGUP BRANCH (already onCall) ----
                     try {
                         await retellWebClient.stopCall();
+
                         try {
                             localStorage.removeItem("rex_last_ui");
+                            onCall = false;
                         } catch { }
+
                         setWidgetLocked(false);
                         callBtn.classList.remove("reddiv");
                         callBtn.classList.add("greendiv");
@@ -3386,10 +3513,25 @@ function injectCSS() {
                         enableChatButton();
 
                         const data = { agentId: await getAgentIdFromScript(), callId: callId };
+                        // 2. Call Modal Band Karo
+                        if (localStorage.getItem("isChatEnabled") === "true") {
+                            modal.style.display = "none";
+                            unlockBodyScroll();
+                            // 3. CHAT UI KHOLO — DIRECT BODY APPEND
+                            localStorage.setItem("rex_last_ui", "chat");
+                            // Force create & append chat popup
+                            let chatPopup = document.getElementById("rexChatPopup");
 
-                        // modal.style.display = "none";
-                        document.getElementById("agentButton")?.classList.remove("noFloat");
-
+                            if (!chatPopup) {
+                                chatPopup = getOrCreateChatPopup(); // Yeh function already body.appendChild karta hai
+                            }
+                            // Force visibility
+                            chatPopup.style.display = "flex";
+                            chatPopup.classList.add("show");
+                            chatPopup.classList.add("expanded");
+                            // Lock scroll for chat
+                            lockBodyScroll();
+                        }
                         // ---- SOFT RELOAD WIDGET (no page refresh) ----
                         try {
                             return
@@ -3913,6 +4055,38 @@ function injectCSS() {
                 chatModalEl.className = "chat-popup";
                 chatModalEl.innerHTML = `
                 
+                   <div class="leftBox">
+    <h1 class="company-name">${businessName}</h1>
+   
+
+    <div class="info-row">
+      <span class="info-label">Address:</span>
+      <div class="info-value">
+         ${address}
+      </div>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Website:</span>
+      <div class="info-value">
+            ${url && url.trim() && url.trim().toLowerCase() !== 'na' && !url.includes('null')
+                        ? `<a href="${url}" target="_blank" class="website-link">
+         ${url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+       </a>`
+                        : `<span class="na-text">N/A</span>`
+                    }
+      </div>
+     
+    </div>
+
+    <div class="rating-box">
+      <span class="reviews">${starsHTML} </span>
+       <span>${totalRatings} Google reviews</span>
+    </div>
+     <div class="bottomDesc"><p>Create your AI Agent with Rexpt for efficient Business Communication.</div>
+  </div>
+
+                <div class="rightBox">
         <div class="attio-header">
           <div class="attio-brand" style="display:flex;align-items:center;gap:10px">
             <div class="attio-logo" style="width:36px;height:36px;border-radius:100px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#111">
@@ -3920,10 +4094,10 @@ function injectCSS() {
             </div>
             <div class="attio-title" style="line-height:1">
               <div class="t" style="font-weight:700;font-size:20px;color:#fff; text-transform:uppercase"> ${agentName.substring(
-                    0,
-                    7
-                )}</div>
-              <div class="s" style="font-size:12px;color:#D1DCED">Customer Success Agent</div>
+                        0,
+                        7
+                    )}</div>
+              <div class="s" style="font-size:12px;color:#D1DCED">${businessName}</div>
             </div>
           </div>
 
@@ -3958,7 +4132,7 @@ function injectCSS() {
         </button>
           </div>
         </div>
-
+</div>
 
 `;
 
@@ -4031,51 +4205,60 @@ function injectCSS() {
 
                         // allow retry after failure
                         callBtn.disabled = false;
+                        if (chatModalEl) chatModalEl.classList.add("show");
+                        if (mainCallModal) mainCallModal.style.display = "none";
                     } finally {
                         isCreatingCall = false; // unlock for the next attempt
                     }
                 }
                 function openCallConfirmInsideChat() {
+
                     const overlay = document.createElement("div");
                     overlay.className = "rex-confirm-overlay";
                     overlay.innerHTML = `
-    <div class="rex-confirm-box" role="dialog" aria-modal="true">
-      <div class="rex-confirm-title">Start a call?</div>
-      <div class="rex-confirm-text">Do you want to start the call?</div>
-      <div class="rex-confirm-actions">
-        <button class="rex-btn secondary" data-act="cancel">Cancel</button>
-        <button class="rex-btn danger" data-act="ok">Start call</button>
-      </div>
-    </div>
-  `;
+                    <div class="rex-confirm-box" role="dialog" aria-modal="true">
+                    <div class="rex-confirm-title">Start a call?</div>
+                    <div class="rex-confirm-text">Do you want to start the call?</div>
+                    <div class="rex-confirm-actions">
+                        <button class="rex-btn secondary" data-act="cancel">Cancel</button>
+                        <button class="rex-btn danger" data-act="ok">Start call</button>
+                    </div>
+                    </div>
+                `;
                     chatModalEl.appendChild(overlay);
 
                     const close = () => overlay.remove();
                     overlay.addEventListener("click", (e) => {
                         if (e.target === overlay) close();
                     });
-
                     const cancelBtn = overlay.querySelector('[data-act="cancel"]');
                     const okBtn = overlay.querySelector('[data-act="ok"]');
                     overlay.querySelector('[data-act="cancel"]').onclick = close;
-
                     okBtn.onclick = async () => {
-                        if (okBtn.dataset.busy === "1") return;
+                        callLabel.textContent = "Connecting...";
+                        if (cancelBtn) cancelBtn.disabled = true;
 
+                        chatModalEl.style.display = "none";
+                        chatModalEl.classList.remove("show", "expanded");
+                        // 2. Body scroll 
+                        unlockBodyScroll();
+                        const callModal = document.getElementById("agentPopup");
+                        if (callModal) {
+                            callModal.style.display = "block";
+                            lockBodyScroll();
+                            setWidgetLocked(true);
+                        }
+                        if (okBtn.dataset.busy === "1") return;
                         okBtn.dataset.busy = "1";
                         const oldOkHtml = okBtn.innerHTML;
                         okBtn.innerHTML = `<span class="rex-spinner" style="margin-right:6px"></span>Starting…`;
                         okBtn.disabled = true;
                         okBtn.setAttribute("aria-busy", "true");
-                        if (cancelBtn) cancelBtn.disabled = true;
-
                         try {
                             clearOnlyUserAutoEndTimer();
                             clearInactivityTimers?.();
 
-                            callLabel.textContent = "Ending previous chat…";
-                            callText.innerHTML = `<span class="rex-spinner"></span><p>Ending previous chat…</p>`;
-
+                            chatModalEl.classList.remove("show");
                             const hadOpenChat = !!localStorage.getItem("chat_id");
                             let endStatus = "skip";
                             if (hadOpenChat) {
@@ -4083,14 +4266,8 @@ function injectCSS() {
                             } else {
                                 console.log("[Rex] No open chat found. Skipping end/archive.");
                             }
-
-                            // console.log("[Rex] proceed to call? endStatus =", endStatus);
-
-                            chatModalEl.classList.remove("show");
-                            modal.style.display = "block";
                             setWidgetLocked(true);
                             document.getElementById("agentButton")?.classList.add("noFloat");
-
                             await startVoiceCall();
                             overlay.remove();
                         } catch (e) {
@@ -4127,11 +4304,12 @@ function injectCSS() {
                 refreshCallIconVisibility();
                 if ($callIcon) {
                     $callIcon.onclick = (e) => {
+
                         e.preventDefault();
+
                         openCallConfirmInsideChat();
                     };
                 }
-
                 const $endBtn = chatModalEl.querySelector(".attio-end");
                 // const $closeBtn = chatModalEl.querySelector(".attio-close");
 
@@ -4147,6 +4325,7 @@ function injectCSS() {
                 // }
 
                 if ($endBtn) {
+
                     $endBtn.onclick = () => {
                         endConfirm.open({
                             onOk: async () => {
@@ -4177,7 +4356,7 @@ function injectCSS() {
                                     localStorage.removeItem("chat_id");
                                     const $msgs = chatModalEl.querySelector("#rexMessages");
                                     if ($msgs) $msgs.innerHTML = "";
-                                    chatModalEl.classList.remove("show");
+
                                     // window.location.reload();
                                 } catch (e) {
                                     console.error("end-chat failed:", e);
@@ -4264,7 +4443,10 @@ function injectCSS() {
                         t3 = null;
                     }
                 }
-
+                function resetInactivityTimers() {
+                    inactivityLocked = false;
+                    scheduleInactivityTimers();
+                }
                 function scheduleInactivityTimers() {
                     clearInactivityTimers();
 
@@ -4415,10 +4597,7 @@ function injectCSS() {
                     }, FIRST_WAIT + SECOND_WAIT + THIRD_WAIT);
                 }
 
-                function resetInactivityTimers() {
-                    inactivityLocked = false;
-                    scheduleInactivityTimers();
-                }
+
 
                 async function sendMessage() {
                     const t = ($input.value || "").trim();
@@ -4452,6 +4631,8 @@ function injectCSS() {
                     showTyping();
 
                     try {
+
+                        console.log(payload, "payload")
                         const { botText } = await createChatCompletion(payload);
                         const reply = botText || "…";
 
