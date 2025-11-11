@@ -426,8 +426,8 @@ function injectCSS() {
             font-size: 12px;
             line-height: 15px;
             position: absolute;
-            top: 150px;
-            left: 200px;
+            top: 170px;
+            left: 140px;
           }
           
           .terms-content h2 {
@@ -600,6 +600,7 @@ function injectCSS() {
 
             /* Mobile: full width, no expand play (aapke existing rule ke saath compatible) */
             @media (max-width:650px){
+            
               .leftBox {
               display:none;
               }
@@ -787,6 +788,11 @@ function injectCSS() {
         
 
         }
+          .rightIcon{
+           position: absolute;
+           top: 1%;
+           right: 1%;
+          }
         .support-popup.show{ display:block }
       
         .support-header{
@@ -815,6 +821,11 @@ function injectCSS() {
        color:#ffff;
        font-size:12px;
        margin-top: 3px;
+       }
+       .iconlogo img{
+           height: 45px;
+           width: 45px;
+        
        }
 /* Move X button to bottom-right of the support popup */
 
@@ -1268,6 +1279,9 @@ function injectCSS() {
           position: unset;
           
        }
+          .rightIcon{
+          display:none
+          }
               .company-info-left{
             
               display: flex;
@@ -1329,7 +1343,7 @@ function injectCSS() {
              font-size:15px;
              
           }
-
+       
 
             }
            
@@ -1365,10 +1379,7 @@ function injectCSS() {
 
 @media (max-width:768px){
  .right-anim{
- 
-    
-    border: 15px solid #fff;
-    
+    border: 1px solid #fff;
     width: 90%;
     
 
@@ -2401,6 +2412,7 @@ function injectCSS() {
             });
             const popupHeader = createElement("div", { className: "popup-header" });
             const popupBody = createElement("div", { className: "popup-body" });
+
             const mainDiv = document.createElement("div");
             mainDiv.className = "popup-main-row";
             mainDiv.style.cssText = `
@@ -2419,6 +2431,9 @@ function injectCSS() {
             const leftSection = document.createElement("div");
             leftSection.className = "rex-left-info company-info-left";
             leftSection.innerHTML = `
+            <div class='rightIcon'>
+              <img src='/svg/rightIcon.svg' alt='rightIcon'/>
+              </div>
                                    <div class="rex-left-info company-info-left">
     <div class="company-header">
         <h3 class="company-name">${businessName}</h3>
@@ -2778,11 +2793,13 @@ function injectCSS() {
                 supportEl.id = "rexSupportPopup";
                 supportEl.className = "support-popup";
                 supportEl.innerHTML = `
+              <div class='rightIcon'>
+              <img src='/svg/rightIcon.svg' alt='rightIcon'/>
+              </div>
                 <div class="popup-wrapper">
+               
             <div class="company-info-left">
-      <div class="company-logo">
-        <img src="/svg/widget-logo.svg" alt="rexpto" />
-      </div>
+     
       <div class="company-name">${businessName}</div>
       <div class="company-address"><b>Address: </b>
        ${address}
@@ -2800,6 +2817,8 @@ function injectCSS() {
         <span class="stars">${starsHTML}</span>
       <span class="reviews">${totalRatings} Google reviews</span>
       </div>
+
+       <div class="bottomDesc"><p>Create your AI Agent with Rexpt for efficient Business Communication.</div>
     </div>
       <div class="mainDiv" >
         <div class="support-header">
@@ -2810,6 +2829,7 @@ function injectCSS() {
           <div class="s">${businessName}</div>
           <div class=addresTitle>${address}</div>
         </div>
+        <div class='iconlogo'><img src='https://rexptin.truet.net/images/favicon-final.svg' alt='icon'/></div>
       </div>
      
     </div>
@@ -4054,6 +4074,9 @@ function injectCSS() {
                 chatModalEl.id = "rexChatPopup";
                 chatModalEl.className = "chat-popup";
                 chatModalEl.innerHTML = `
+                 <div class='rightIcon'>
+              <img src='/svg/rightIcon.svg' alt='rightIcon'/>
+              </div>
                 
                    <div class="leftBox">
     <h1 class="company-name">${businessName}</h1>
@@ -4097,7 +4120,8 @@ function injectCSS() {
                         0,
                         7
                     )}</div>
-              <div class="s" style="font-size:12px;color:#D1DCED">${businessName}</div>
+              <div class="s" style="font-size:12px;color:#D1DCED; margin-top:5px;">${businessName}</div>
+              <div class="s" style="font-size:12px;color:#D1DCED; margin-top:5px;">${address}</div>
             </div>
           </div>
 
