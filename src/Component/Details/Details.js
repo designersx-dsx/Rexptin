@@ -217,6 +217,7 @@ const Details = () => {
   
           const user = res.data.user;
           console.log("✅ User Details:", user);
+           setUser({ name: user.name });
           setUserDetails(user)
          
           // store important details
