@@ -11,6 +11,7 @@ import Loader from "../Loader/Loader";
 import useUser from "../../Store/Context/UserContext";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 import useUserDeviceInfo from "../../hooks/useUserDeviceInfo";
+import useUTMParams from "../../hooks/useUTMParams";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ const SignUp = () => {
   const [customerId, setCustomerId] = useState();
   const [renderHtml, setRenderHtml] = useState(false);
   const info = useUserDeviceInfo();
+  const utm_data = useUTMParams();
   useEffect(() => {
     const emailFromParams = searchParams.get("ownerEmail");
     if (emailFromParams) {
@@ -196,7 +198,8 @@ const SignUp = () => {
     setEmailError("");
     setIsVerifyingOtp(true);
     try {
-      const response = await LoginWithEmailOTP(email,info);
+      const utmPayload = utm_data ? utm_data : null;
+      const response = await LoginWithEmailOTP(email, info, utmPayload);
       if (response?.status === 200) {
         setVerifiedUser(response.data.verifiedStatus);
         setShowPopup(true);
@@ -324,37 +327,37 @@ const SignUp = () => {
       inputRefs.current[0].focus();
     }
   }, [otpSent]);
-useEffect(() => {
-  const emailFromParams = searchParams.get("email");
-  const otpNotRequired = searchParams.has("otp-not-required");
+  useEffect(() => {
+    const emailFromParams = searchParams.get("email");
+    const otpNotRequired = searchParams.has("otp-not-required");
 
-  if (emailFromParams) {
-    const decodedEmail = decodeURIComponent(emailFromParams);
-    setEmail(decodedEmail.toLowerCase());
+    if (emailFromParams) {
+      const decodedEmail = decodeURIComponent(emailFromParams);
+      setEmail(decodedEmail.toLowerCase());
 
-    if (otpNotRequired) {
-      setOtpSent(true);
-      setOtp(["", "", "", "", "", ""]);
-      inputRefs.current[0]?.blur();
+      if (otpNotRequired) {
+        setOtpSent(true);
+        setOtp(["", "", "", "", "", ""]);
+        inputRefs.current[0]?.blur();
 
-      //  Check if there’s an existing timer in localStorage
-      const storedEndTime = localStorage.getItem("otpResendEndTime");
-      let endTime;
+        //  Check if there’s an existing timer in localStorage
+        const storedEndTime = localStorage.getItem("otpResendEndTime");
+        let endTime;
 
-      if (storedEndTime && Date.now() < Number(storedEndTime)) {
-        // Continue from existing timer
-        endTime = Number(storedEndTime);
-      } else {
-        // Set new 5-minute timer
-        endTime = Date.now() + 300 * 1000;
-        localStorage.setItem("otpResendEndTime", endTime);
+        if (storedEndTime && Date.now() < Number(storedEndTime)) {
+          // Continue from existing timer
+          endTime = Number(storedEndTime);
+        } else {
+          // Set new 5-minute timer
+          endTime = Date.now() + 300 * 1000;
+          localStorage.setItem("otpResendEndTime", endTime);
+        }
+
+        setResendEndTime(endTime);
+        setIsResendDisabled(true);
       }
-
-      setResendEndTime(endTime);
-      setIsResendDisabled(true);
     }
-  }
-}, [searchParams]);
+  }, [searchParams]);
 
 
 
