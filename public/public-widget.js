@@ -608,7 +608,7 @@ function injectCSS() {
 
          .reviews {
           color: blue !important;
-          font-weight: 700;
+          
          }
 
          .rightBox{
@@ -1111,8 +1111,7 @@ function injectCSS() {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 2rem;
-  color: #ffffffff;
-      width: max-content
+  color: #ffffffff;      
 }
 
 .company-address {
@@ -1472,6 +1471,11 @@ function injectCSS() {
     top: 50px;
     left: -122px;
           }
+}
+
+.CallSectionLeft{
+width:80%;
+height: -webkit-fill-available;
 }
 
 
@@ -2554,6 +2558,8 @@ function injectCSS() {
                 className: "popup-wrapper"
             });
 
+            
+
             const mainDiv = document.createElement("div");
             mainDiv.className = "popup-main-row";
             mainDiv.style.cssText = `
@@ -2570,18 +2576,23 @@ function injectCSS() {
                                     `;
             // === LEFT SECTION ===
             const leftSection = document.createElement("div");
-            leftSection.className = "rex-left-info company-info-left";
+            // leftSection.className = "rex-left-info company-info-left";
+             leftSection.className = "CallSectionLeft";
             leftSection.innerHTML = `
+
+            <div class="corner-ribbon"><a href="https://www.rxpt.us/" target="_blank">POWERED BY <span>rexpt</span></a></div>
            
                                    <div class="rex-left-info company-info-left">
+
+                       <div class="LeftTextTop">       
     <div class="company-header">
         <h3 class="company-name">${businessName}</h3>
     </div>
-<br/>
+
     <div class="company-details">
         <div class="info-row">
             <b>Address:</b>&nbsp;<span>${address || "N/A"}</span>
-        </div><br/>
+        </div>
         <div class="info-row website-row">
             <b>Website:</b>&nbsp; 
         ${url && url.trim() && url.trim().toLowerCase() !== 'na' && !url.includes('null')
@@ -2593,11 +2604,12 @@ function injectCSS() {
 
         </div>
     </div>
-<br/>
+
     <div class="google-rating">
        <span class="stars">${starsHTML}</span>
-      <p class="reviews" style="color: blue;font-weight: 700;">${totalRatings} Google reviews</p>
+      <p class="reviews" style="color: blue;">${totalRatings} Google reviews</p>
     </div>
+    </div>     
    <div class="bottomDesc"><p>
     Create your 
     <a href="https://www.rexpt.us/" target="_blank" style="text-decoration: underline; color: inherit; font-weight: 600;">
@@ -3723,6 +3735,7 @@ function injectCSS() {
                         };
                         // 2. Call Modal Band Karo
                         if (localStorage.getItem("isChatEnabled") === "true") {
+                        if(modal){
                             modal.style.display = "none";
                             unlockBodyScroll();
                             // 3. CHAT UI KHOLO — DIRECT BODY APPEND
@@ -3738,36 +3751,9 @@ function injectCSS() {
                             chatPopup.classList.add("show");
                             chatPopup.classList.add("expanded");
                             // Lock scroll for chat
-                            lockBodyScroll();
+                            lockBodyScroll();}
                         }
-                        // ---- SOFT RELOAD WIDGET (no page refresh) ----
-                        try {
-                            return ["agentPopup", "rexChatPopup", "rexSupportPopup"].forEach((id) => {
-                                document.getElementById(id)?.remove();
-                            });
-                            window.__REX_WIDGET_INITIALIZED__ = false;
-
-                            if (!document.getElementById("review-widget")) {
-                                const host = document.createElement("div");
-                                host.id = "review-widget";
-                                document.body.appendChild(host);
-                            }
-
-                            const reinit = () => {
-                                try {
-                                    createReviewWidget();
-                                } catch (e) {
-                                    console.warn("reinit failed", e);
-                                }
-                            };
-                            if (typeof requestAnimationFrame === "function") {
-                                requestAnimationFrame(() => requestAnimationFrame(reinit));
-                            } else {
-                                setTimeout(reinit, 0);
-                            }
-                        } catch (e) {
-                            console.warn("[Rex] widget soft reload failed:", e);
-                        }
+                  
                     } finally {
 
                         // ensure button is enabled after hangup
