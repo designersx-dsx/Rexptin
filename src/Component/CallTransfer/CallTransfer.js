@@ -14,6 +14,8 @@ import { parsePhoneNumberFromString } from "libphonenumber-js";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
+const PRESETS = ["Sales", "Billing", "Support"];
+
 const dialToCountry = {
   1: "us",
   20: "eg",
@@ -241,7 +243,7 @@ const dialCodeFromIso2 = (iso2) => {
 const countryNameToIso2 = {
   India: "in",
   Australia: "au",
-  "United States": "us",
+  "United States": "us", 
   "United Kingdom": "gb",
   Canada: "ca",
   Singapore: "sg",
@@ -286,6 +288,22 @@ const mergeTransfersByCondition = (existing, incoming) => {
   return next;
 };
 
+// --- helpers for variable key & labels ---
+const normalizeCondition = (s = "") =>
+  s.trim().replace(/\s+/g, " ").replace(/_/g, " ");
+const keyFromCondition = (s = "") =>
+  `${normalizeCondition(s).toLowerCase().replace(/\s+/g, "_")}_number`;
+const titleCase = (s = "") =>
+  normalizeCondition(s)
+    .toLowerCase()
+    .replace(/(^|\s)\S/g, (c) => c.toUpperCase());
+const inferModeFromCondition = (condition) => {
+  const c = (condition || "").trim().toLowerCase();
+  if (PRESETS.map((p) => p.toLowerCase()).includes(c)) return "preset";
+  if (!c) return "preset"; 
+  return "custom";
+};
+
 function CallTransfer() {
   const [llmId, setLlmId] = useState("");
   const [transfers, setTransfers] = useState([]);
@@ -328,7 +346,14 @@ function CallTransfer() {
 
   const createEmptyRow = () => {
     const { iso2, dial } = getBizDefaults();
-    return { condition: "", phone: "", dialCode: dial, countryCode: iso2 };
+    return {
+      condition: "",
+      phone: "",
+      dialCode: dial,
+      countryCode: iso2,
+      _mode: "preset",
+      _customName: "",
+    };
   };
 
   const updateTransfer = (index, patch) => {
@@ -342,6 +367,7 @@ function CallTransfer() {
   const prepareTransfersWithDialCode = (list) =>
     list.map((t) => ({
       ...t,
+      condition: normalizeCondition(t.condition || ""),
       phone: (t.phone || "").trim(),
       dialCode: t.dialCode,
       countryCode: t.countryCode,
@@ -349,17 +375,16 @@ function CallTransfer() {
 
   const syncSessionCache = (list) => {
     try {
-      sessionStorage.setItem("agentGeneralTools", JSON.stringify(list || []));
+      const clean = (list || []).map(({ _mode, _customName, ...rest }) => rest);
+      sessionStorage.setItem("agentGeneralTools", JSON.stringify(clean));
     } catch {}
   };
 
-  const persistTransfers = async (
-    llmIdParam,
-    transfersList,
-    cleanedPrevVars
-  ) => {
+  const persistTransfers = async (llmIdParam, transfersList, cleanedPrevVars) => {
     await updateLlm(llmIdParam, { default_dynamic_variables: cleanedPrevVars });
-    const formatted = prepareTransfersWithDialCode(transfersList);
+    const formatted = prepareTransfersWithDialCode(
+      transfersList.map(({ _mode, _customName, ...rest }) => rest)
+    );
     if (formatted.length > 0) {
       await addGeneralTools(llmIdParam, formatted);
       syncSessionCache(formatted);
@@ -377,7 +402,7 @@ function CallTransfer() {
       setPopupMessage(
         "No business selected. Missing 'SelectAgentBusinessId' in session."
       );
-      setBizLoaded(true); // prevent indefinite loading gate
+      setBizLoaded(true);
       return;
     }
     (async () => {
@@ -386,10 +411,7 @@ function CallTransfer() {
         const biz = data?.data ?? data ?? null;
         setBusinessDetails(biz);
       } catch (error) {
-        console.error(
-          "Error fetching business details:",
-          error?.response?.data || error?.message || error
-        );
+        console.error("Error fetching business details:", error?.response?.data || error?.message || error);
         setShowPopup(true);
         setPopupType("failed");
         setPopupMessage(
@@ -402,7 +424,7 @@ function CallTransfer() {
     })();
   }, []);
 
-  // 2) LLM details + hydrate transfers from defaults (sales/billing/support)
+  // 2) LLM details + hydrate transfers from ALL *_number vars
   useEffect(() => {
     const agentData = JSON.parse(sessionStorage.getItem("agentDetails"));
     setLlmId(agentData?.agent?.llmId || "");
@@ -413,21 +435,25 @@ function CallTransfer() {
         setPrevDynamicVar(vars);
 
         const incoming = [];
-        const salesT = normalizePhoneIntoTransfer("sales", vars?.sales_number);
-        if (salesT) incoming.push(salesT);
-        const billingT = normalizePhoneIntoTransfer(
-          "billing",
-          vars?.billing_number
-        );
-        if (billingT) incoming.push(billingT);
-        const supportT = normalizePhoneIntoTransfer(
-          "support",
-          vars?.support_number
-        );
-        if (supportT) incoming.push(supportT);
+        Object.entries(vars).forEach(([k, v]) => {
+          if (!k.endsWith("_number")) return;
+          const rawCond = k.replace(/_number$/, "");
+          const condition = normalizeCondition(rawCond.replace(/_/g, " "));
+          const t = normalizePhoneIntoTransfer(condition, v);
+          if (t) {
+            incoming.push(t);
+          }
+        });
 
         if (incoming.length > 0) {
-          setTransfers((prev) => mergeTransfersByCondition(prev, incoming));
+          setTransfers((prev) => {
+            const merged = mergeTransfersByCondition(prev, incoming);
+            return merged.map((r) => ({
+              ...r,
+              _mode: inferModeFromCondition(r.condition),
+              _customName: inferModeFromCondition(r.condition) === "custom" ? r.condition : "",
+            }));
+          });
         }
       })
       .catch((e) => console.error("Failed to fetch LLM details", e))
@@ -440,16 +466,13 @@ function CallTransfer() {
     if (transfers.length === 0) {
       setTransfers([createEmptyRow()]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bizLoaded, llmLoaded]);
 
   // 4) From business details, preselect country/dial ONLY for rows that still lack a phone
   useEffect(() => {
     if (!businessDetails) return;
     const rawBizPhone = businessDetails?.knowledge_base_texts?.phone || "";
-    const parsedBiz = rawBizPhone
-      ? parsePhoneNumberFromString(rawBizPhone)
-      : null;
+    const parsedBiz = rawBizPhone ? parsePhoneNumberFromString(rawBizPhone) : null;
 
     let iso2 = parsedBiz?.country ? parsedBiz.country.toLowerCase() : undefined;
     let dialCode = parsedBiz?.countryCallingCode || undefined;
@@ -499,11 +522,6 @@ function CallTransfer() {
 
   // IMMEDIATE REMOVE (no Submit needed)
   const handleRemove = async (index) => {
-    const conditionKeyMap = {
-      sales: "sales_number",
-      billing: "billing_number",
-      support: "support_number",
-    };
     const removed = transfers[index];
     const remaining = transfers.filter((_, i) => i !== index);
     const insertedEmpty = remaining.length === 0;
@@ -522,10 +540,9 @@ function CallTransfer() {
 
     try {
       const cleanedPrev = { ...prevDynanamicVar };
-      const key =
-        removed?.condition &&
-        conditionKeyMap[(removed.condition || "").toLowerCase()];
-      if (key && cleanedPrev[key]) delete cleanedPrev[key];
+      const varKey =
+        removed?.condition && keyFromCondition(removed.condition || "");
+      if (varKey && cleanedPrev[varKey]) delete cleanedPrev[varKey];
 
       await persistTransfers(llmId, remaining, cleanedPrev);
 
@@ -546,10 +563,7 @@ function CallTransfer() {
         "Failed to remove number: " +
           (err?.response?.data || err?.message || err)
       );
-      console.error(
-        "Remove failed:",
-        err?.response?.data || err?.message || err
-      );
+      console.error("Remove failed:", err?.response?.data || err?.message || err);
     } finally {
       setRemovingIndex(null);
     }
@@ -565,8 +579,8 @@ function CallTransfer() {
       }
 
       const conditionCounts = {};
-      for (const t of transfers) {
-        const cond = (t.condition || "").toLowerCase().trim();
+      for (const t0 of transfers) {
+        const cond = normalizeCondition(t0.condition || "").toLowerCase();
         if (cond) {
           conditionCounts[cond] = (conditionCounts[cond] || 0) + 1;
           if (conditionCounts[cond] > 1) {
@@ -581,15 +595,20 @@ function CallTransfer() {
       }
 
       for (const [i, t] of transfers.entries()) {
-        const condition = t.condition?.trim();
-        const phone = t.phone?.trim();
-        const dialCode = t.dialCode?.trim();
-        if (!condition) {
-          setShowPopup(true);
-          setPopupType("failed");
-          setPopupMessage(`Department is required for entry ${i + 1}.`);
-          return;
+        const finalCond =
+          t._mode === "custom"
+            ? normalizeCondition(t._customName)
+            : normalizeCondition(t.condition);
+        if (t._mode === "custom") {
+          if (!finalCond) {
+            setShowPopup(true);
+            setPopupType("failed");
+            setPopupMessage(`Custom name is required for entry ${i + 1}.`);
+            return;
+          }
         }
+        const phone = (t.phone || "").trim();
+        const dialCode = (t.dialCode || "").trim();
         if (!phone || !dialCode) {
           setShowPopup(true);
           setPopupType("failed");
@@ -598,6 +617,7 @@ function CallTransfer() {
           );
           return;
         }
+
         const parsed = parsePhoneNumberFromString(`+${phone}`);
         if (!parsed || parsed.country?.toLowerCase() !== t.countryCode) {
           setShowPopup(true);
@@ -613,9 +633,33 @@ function CallTransfer() {
 
       setLoading(true);
 
+      const finalized = transfers.map((t) => ({
+        ...t,
+        condition:
+          t._mode === "custom"
+            ? normalizeCondition(t._customName)
+            : normalizeCondition(t.condition),
+      }));
+
       const timestamp = Date.now();
-      const fullPrompt =
-        `The user might ask to be transferred to departments. If they say Sales, transfer to {{sales_number}}. If they say Billing, transfer to {{billing_number}}. If they say Support, transfer to {{support_number}}. Use the appropriate number based on the conversation.`.trim();
+      const formattedTransfers = prepareTransfersWithDialCode(
+        finalized.map(({ _mode, _customName, ...rest }) => rest)
+      );
+      const dynamicVars = {};
+      formattedTransfers.forEach((t) => {
+        const key = keyFromCondition(t.condition);
+        dynamicVars[key] = `+${t.phone}`;
+      });
+      const lines = formattedTransfers.map((t) => {
+        const label = titleCase(t.condition);
+        const key = keyFromCondition(t.condition);
+        return `If they say ${label}, transfer to {{${key}}}.`;
+      });
+      const fullPrompt = (
+        `The user might ask to be transferred to departments. ` +
+        lines.join(" ") +
+        ` Use the appropriate number based on the conversation.`
+      ).trim();
 
       const transferTool = {
         type: "transfer_call",
@@ -631,29 +675,10 @@ function CallTransfer() {
         speak_during_execution: true,
         speak_after_execution: true,
       };
-
-      const formattedTransfers = prepareTransfersWithDialCode(transfers);
-
-      const salesEntry = transfers.find(
-        (t) => (t.condition || "").toLowerCase() === "sales"
-      );
-      const billingEntry = transfers.find(
-        (t) => (t.condition || "").toLowerCase() === "billing"
-      );
-      const supportEntry = transfers.find(
-        (t) => (t.condition || "").toLowerCase() === "support"
-      );
-
-      const dynamicVars = {
-        ...(salesEntry ? { sales_number: `+${salesEntry.phone}` } : {}),
-        ...(billingEntry ? { billing_number: `+${billingEntry.phone}` } : {}),
-        ...(supportEntry ? { support_number: `+${supportEntry.phone}` } : {}),
-      };
-
       const cleanedPrev = { ...prevDynanamicVar };
-      delete cleanedPrev.sales_number;
-      delete cleanedPrev.billing_number;
-      delete cleanedPrev.support_number;
+      Object.keys(cleanedPrev).forEach((k) => {
+        if (/_number$/.test(k)) delete cleanedPrev[k];
+      });
 
       const payload = {
         general_tools: [transferTool],
@@ -676,10 +701,7 @@ function CallTransfer() {
         "Failed to update LLM: " +
           (error?.response?.data || error.message || error)
       );
-      console.error(
-        "Failed to update LLM:",
-        error?.response?.data || error.message || error
-      );
+      console.error("Failed to update LLM:", error?.response?.data || error.message || error);
     } finally {
       setLoading(false);
     }
@@ -733,84 +755,124 @@ function CallTransfer() {
             />
           </div>
 
-          {transfers.map((item, index) => (
-            <div
-              key={`${item.condition || "row"}-${index}`}
-              className={styles.card}
-              style={{
-                marginBottom:
-                  index === transfers.length - 1 ? "5rem" : undefined,
-              }}
-            >
-              <div className={styles.selectWrapper}>
-                <label className={styles.label}>
-                  Condition for Agent to follow
-                </label>
-                <select
-                  className={styles.select}
-                  value={item.condition}
-                  onChange={(e) =>
-                    updateTransfer(index, { condition: e.target.value })
-                  }
-                >
-                  <option value="">Select Department</option>
-                  <option value="sales">Sales</option>
-                  <option value="billing">Billing</option>
-                  <option value="support">Support</option>
-                </select>
-                <img
-                  src="svg/select-arrow.svg"
-                  alt="arrow"
-                  className={styles.arrowIcon}
-                />
-              </div>
+          {transfers.map((item, index) => {
+            const mode = item._mode || inferModeFromCondition(item.condition);
+            const selectedPreset = PRESETS.find(
+              (p) => p.toLowerCase() === (item.condition || "").toLowerCase()
+            );
 
-              <label className={styles.label}>Forward to</label>
-              <div className={styles.phoneInput}>
-                <PhoneInput
-                  country={item.countryCode}
-                  enableSearch
-                  value={item.phone}
-                  onChange={(val, c) => {
-                    const dialCode = c?.dialCode || item.dialCode;
-                    const countryCode = (
-                      c?.countryCode || item.countryCode
-                    ).toLowerCase();
-                    const digits = (val || "").replace(/\D/g, "");
-                    const normalized = digits.startsWith(dialCode)
-                      ? digits
-                      : dialCode + digits;
-                    updateTransfer(index, {
-                      phone: normalized,
-                      dialCode,
-                      countryCode,
-                    });
-                  }}
-                  /** existing classNames can stay */
-                  inputClass={styles.phoneNumberInput}
-                  dropdownClass={styles.phoneDropdown}
-                  /** new inline styles to unset borders */
-                  inputStyle={{
-                    border: "unset",
-                    boxShadow: "none",
-                    outline: "none",
-                  }}
-                  dropdownStyle={{ border: "unset", boxShadow: "none" }}
-                />
-              </div>
+            return (
+              <div
+                key={`${item.condition || "row"}-${index}`}
+                className={styles.card}
+                style={{
+                  marginBottom:
+                    index === transfers.length - 1 ? "5rem" : undefined,
+                }}
+              >
+                <div className={styles.selectWrapper}>
+                  <div className={styles.toplabelRow}>
+                  <label className={styles.label}>Department</label>
+                  {transfers.length > 0 && (
+                  <button
+                    onClick={() => handleRemove(index)}
+                    className={styles.removeBtn}
+                    disabled={removingIndex === index}
+                    title={removingIndex === index ? "" : "X"}
+                  >
+                    {removingIndex === index ? "" : "X"}
+                  </button>
+                )}
+                  </div>
+                  
+                  <select
+                    className={styles.select}
+                    value={mode === "custom" ? "Custom" : selectedPreset || ""}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "Custom") {
+                        updateTransfer(index, {
+                          _mode: "custom",
+                          _customName:
+                            item._customName ||
+                            (selectedPreset ? "" : item.condition),
+                          condition: "",
+                        });
+                      } else {
+                        updateTransfer(index, {
+                          _mode: "preset",
+                          condition: val,
+                          _customName: "",
+                        });
+                      }
+                    }}
+                  >
+                    <option value="">Select Department</option>
+                    {PRESETS.map((p) => (
+                      <option key={p} value={p}>
+                        {p}
+                      </option>
+                    ))}
+                    <option value="Custom">Custom</option>
+                  </select>
+                  {mode === "custom" && (
+                    <input
+                      className={styles.select}
+                      style={{ marginTop: 8 }}
+                      placeholder="Enter custom department (e.g., Partner Success)"
+                      value={item._customName || ""}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        updateTransfer(index, {
+                          _customName: v,
+                        });
+                      }}
+                    />
+                  )}
 
-              {transfers.length > 0 && (
-                <button
-                  onClick={() => handleRemove(index)}
-                  className={styles.removeBtn}
-                  disabled={removingIndex === index}
-                  title={removingIndex === index ? "Removing..." : "Remove"}
-                >
-                  {removingIndex === index ? "Removing..." : "Remove"}
-                </button>
-              )}
-            </div>
-          ))}
+                  {/* <img
+                    src="svg/select-arrow.svg"
+                    alt="arrow"
+                    className={styles.arrowIcon}
+                  /> */}
+                </div>
+
+                <label className={styles.label}>Forward to</label>
+                <div className={styles.phoneInput}>
+                  <PhoneInput
+                    country={item.countryCode}
+                    enableSearch
+                    value={item.phone}
+                    onChange={(val, c) => {
+                      const dialCode = c?.dialCode || item.dialCode;
+                      const countryCode = (
+                        c?.countryCode || item.countryCode
+                      ).toLowerCase();
+                      const digits = (val || "").replace(/\D/g, "");
+                      const normalized = digits.startsWith(dialCode)
+                        ? digits
+                        : dialCode + digits;
+                      updateTransfer(index, {
+                        phone: normalized,
+                        dialCode,
+                        countryCode,
+                      });
+                    }}
+                    inputClass={styles.phoneNumberInput}
+                    dropdownClass={styles.phoneDropdown}
+                    inputStyle={{
+                      border: "unset",
+                      boxShadow: "none",
+                      outline: "none",
+                    }}
+                    dropdownStyle={{ border: "unset", boxShadow: "none" }}
+                  />
+                </div>
+
+                
+              </div>
+            );
+          })}
 
           <div className={styles.Btn} onClick={handleSubmit}>
             <div type="submit">
