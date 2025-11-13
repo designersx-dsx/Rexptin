@@ -446,18 +446,18 @@ function injectCSS() {
           
           .terms-popup {
             
-            width: 245px;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
-            padding: 10px;
-            text-align: justify;
-            font-size: 12px;
-            line-height: 15px;
-            position: absolute;
-            top: 170px;
-            left: 140px;
+             width: 245px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    text-align: justify;
+    font-size: 12px;
+    line-height: 15px;
+    position: absolute;
+    right: 50px;
+    top: 10vh;
           }
           
           .terms-content h2 {
@@ -1111,7 +1111,8 @@ function injectCSS() {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 2rem;
-  color: #ffffffff;      
+  color: #ffffffff;
+  text-align: start;      
 }
 
 .company-address {
@@ -1470,6 +1471,15 @@ function injectCSS() {
                 position: absolute;
     top: 50px;
     left: -122px;
+          }
+    .CallSectionLeft{
+
+height: unset !important;
+}
+
+.terms-wrapper {
+            position: relative;
+            top: -20rem !important;
           }
 }
 
@@ -3546,8 +3556,8 @@ height: -webkit-fill-available;
 
             const termsWrapper = document.createElement("div");
             termsWrapper.className = "terms-wrapper";
-            termsWrapper.style.position = "absolute";
-            termsWrapper.style.top = "8.7rem";
+            termsWrapper.style.position = "relative";
+            termsWrapper.style.top = "0rem";
             termsWrapper.style.zIndex = "11";
             popupBody.appendChild(termsWrapper);
 
