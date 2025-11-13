@@ -37,6 +37,7 @@ import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import { useNotificationStore } from "../../Store/notificationStore";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import Tooltip from "../TooltipSteps/Tooltip";
+import PublicCopyUrl from "../PublicCopyUrl/PublicCopyUrl";
 
 const AgentDashboard = () => {
   const location = useLocation();
@@ -135,6 +136,7 @@ const AgentDashboard = () => {
   const unreadCount = notifications?.filter((n) => n?.status === 'unread').length;
   const [isEnabled, setIsEnabled] = useState(true);
   const [agentinfo, setAgentInfo] = useState()
+  const [openPublicUrlModal, setOpenPublicUrlModal] = useState(false)
   //chatToggleSwitch
   const chatToggleSwitch = async () => {
     const newState = !isEnabled;
@@ -634,6 +636,9 @@ const AgentDashboard = () => {
   const handleCloseWidgetModal = () => {
     setOpenWidgetModal(false);
   };
+   const handleClosePublicWidget = () => {
+    setOpenPublicUrlModal(false);
+  };
   const handleRefresh = () => {
     setHasFetched(false);
   };
@@ -1007,17 +1012,7 @@ const AgentDashboard = () => {
   }
   const handleCopyPublicLink = (agentCode) => {
     const link = `${process.env.REACT_APP_PUBLIC_WIDGET_DOMAIN}?agent=${agentCode}`;
-
-    navigator.clipboard.writeText(link)
-      .then(() => {
-
-        setPopupMessage(" Link copied: " + link);
-        setPopupType("success");
-      })
-      .catch((err) => {
-        console.error("Failed to copy: ", err);
-        alert("❌ Failed to copy link");
-      });
+    setOpenPublicUrlModal(true)
   };
   return (
     <div>
@@ -1484,7 +1479,7 @@ Do you want to proceed with deleting this assigned number?`
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
             <Divider label="Agent Options" />
             <div className={styles.managementActions}>
-                <div
+              <div
                 className={styles.managementItem}
                 // onClick={() => setShowModal(true)}
                 onClick={() =>
@@ -1926,7 +1921,7 @@ Do you want to proceed with deleting this assigned number?`
                 </div>
                 <p className={styles.managementText}>Knowledge Files</p>
               </div>
-            
+
             </div>
             <hr className={styles.line} />
             <h1 className={styles.Agenttitle}>
@@ -2271,6 +2266,12 @@ Do you want to proceed with deleting this assigned number?`
               />
             </Modal2>
           )}
+          {/* //openPublicUrlModal */}
+          {openPublicUrlModal && (
+            <Modal2 isOpen={openPublicUrlModal} onClose={handleClosePublicWidget}>
+              <PublicCopyUrl  agent={agentData?.agent}  isRefresh={()=> setRefresh((prev) => !prev)}/>
+            </Modal2>
+          )}
 
           {/* Card1 Section Modal Start */}
           <DetailModal
@@ -2306,37 +2307,6 @@ Do you want to proceed with deleting this assigned number?`
               setRefresh((prev) => !prev);
             }}
           />
-          {/* {isAssignNumberModalOpen && (
-            <div
-              className={styles.modalBackdrop}
-              onClick={closeAssignNumberModal}
-            >
-              <div
-                className={styles.modalContainer}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h2>Upgrade Required!</h2>
-                <p
-                  style={{
-                    fontSize: "1.1rem",
-                    color: "#444",
-                    margin: "16px 0",
-                  }}
-                >
-                  To get an agent number, you need to upgrade your plan. Unlock
-                  access to premium features by choosing a higher plan.
-                </p>
-                <button
-                  className={`${styles.modalButton} ${styles.submit}`}
-                  onClick={closeAssignNumberModal}
-                  style={{ width: "100%" }}
-                >
-                  Got it!
-                </button>
-              </div>
-            </div>
-          )} */}
-
           {isAssignNumberModal && (
             <CommingSoon
               show={isAssignNumberModal}

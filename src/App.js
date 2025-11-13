@@ -163,18 +163,32 @@ function App() {
     console.log('Referrer URL:', ref);
   }, []);
   //Public Widget Integration
-  const searchParams = new URLSearchParams(window.location.search);
-  const agent = searchParams.get("agent");
+  // ✅ Public Widget Integration
+  // const query = window.location.search.replace("?", ""); // remove "?"
+  // let agentCode = null;
 
-  //Check if agent param is valid 6-char alphanumeric code
-  const isValidAgent = agent && /^[A-Za-z0-9]{6}$/.test(agent);
+  // // Case 1: ?agent=XYZ123 → get 'XYZ123'
+  // if (query.includes("=")) {
+  //   const [key, value] = query.split("=");
+  //   // Check if it's ?agent=XXXXX and valid format
+  //   if (key === "agent" && /^[A-Za-z0-9]{6}$/.test(value)) {
+  //     agentCode = value;
+  //   } else {
+  //     // For ?anykey=anyvalue → use the value part
+  //     agentCode = value;
+  //   }
+  // }
+  // // Case 2: ?value → direct value without key
+  // else if (query) {
+  //   agentCode = query;
+  // }
 
-  if (isValidAgent) {
-    console.log(" Valid agent detected:", agent);
-    return <PublicWidgetPage agentCode={agent} />;
-  }
-  // vf
-  // vf
+  // // ✅ If we found an agent code, show the widget page
+  // if (agentCode) {
+  //   console.log(" Valid agent detected:", agentCode)
+  //   return <PublicWidgetPage agentCode={agentCode} />;
+  // }
+
   return (
     <>
       {/* <ForcePortraitOnly /> */}

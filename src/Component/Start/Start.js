@@ -3,8 +3,9 @@ import styles from "../Start/Start.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 import axios from "axios";
-import { token } from "../../Store/apiStore";
+import { checkAgentExistence, token } from "../../Store/apiStore";
 import useTrafficSource from "../../lib/sourceGet";
+import PublicWidgetPage from "../PublicWidgetPage/PublicWidgetPage";
 
 function Start() {
   const navigate = useNavigate();
@@ -13,8 +14,11 @@ function Start() {
   const referral = searchParams.get("referral") || "";
   const selectedPlan = searchParams.get("plan") || "";
   const isUser = searchParams.get("isUser") || "";
+  const [agentCode, setAgentCode] = useState(null);
   const businessType = searchParams.get("businessType") || "";
   const [step, setStep] = useState(0);
+  const [renderStatusPage, setRenderStatusPage] = useState(false)
+    const [isChecking, setIsChecking] = useState(true); // 👈 add this
   const handleClick = () => {
     setTimeout(() => setStep(1), 150);
     setTimeout(() => setStep(2), 250);
@@ -25,6 +29,62 @@ function Start() {
       navigate("/signup");
     }, 700);
   };
+useEffect(() => {
+    const query = window.location.search.replace("?", "");
+    let code = null;
+
+    if (query.includes("=")) {
+      const [key, value] = query.split("=");
+      if (key === "agent" && /^[A-Za-z0-9]{6}$/.test(value)) code = value;
+      else code = value;
+    } else if (query) {
+      code = query;
+    }
+
+    const checkAgent = async () => {
+      if (code) {
+        setAgentCode(code);
+        try {
+          const res = await checkAgentExistence(code);
+          console.log(res, "res");
+          setRenderStatusPage(res?.state === true);
+        } catch (err) {
+          console.error("Error checking agent:", err);
+        }
+      }
+      setIsChecking(false); //  finish check (even if error)
+    };
+    checkAgent();
+  }, []);
+  //  Detect agent code from URL
+  // useEffect(() => {
+  //   const query = window.location.search.replace("?", ""); // remove "?"
+  //   let code = null;
+
+  //   if (query.includes("=")) {
+  //     const [key, value] = query.split("=");
+
+  //     // Case 1: ?agent=XYZ123 (6-char alphanumeric)
+  //     if (key === "agent" && /^[A-Za-z0-9]{6}$/.test(value)) {
+  //       code = value;
+  //     } else {
+  //       // Case 2: ?anykey=anyvalue → use value part
+  //       code = value;
+  //     }
+  //   } else if (query) {
+  //     // Case 3: ?value → direct value without key
+  //     code = query;
+  //   }
+  //   if (code) {
+  //     console.log(" Valid agent detected:", code);
+  //     const res = checkAgentExistence(code).then((res) => {
+  //       console.log(res, "res")
+  //       setRenderStatusPage(res?.state)
+  //     })
+  //     setAgentCode(code);
+
+  //   }
+  // }, []);
   useEffect(() => {
     const handleReferral = async () => {
       const currentDomain = window.location.hostname;
@@ -33,12 +93,13 @@ function Start() {
       if (referral && isFromReferrerLink) {
         try {
           const res = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/endusers/check-code/${referral}` ,
+            `${process.env.REACT_APP_API_BASE_URL}/endusers/check-code/${referral}`,
             {
-               headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
-  },            }
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+            }
           );
 
           if (res?.data?.valid) {
@@ -59,52 +120,51 @@ function Start() {
       if (referral && !isFromReferrerLink) {
         try {
           const res = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/endusers/check-code/${referral}` , 
+            `${process.env.REACT_APP_API_BASE_URL}/endusers/check-code/${referral}`,
             {
-               headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
-  },
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
             }
           );
           if (res?.data?.valid) {
-          sessionStorage.setItem("referredBy", referral);
-          searchParams.delete("referral");
-          navigate("/signup", { replace: true });
-          updated = true;
-           }else {
+            sessionStorage.setItem("referredBy", referral);
+            searchParams.delete("referral");
+            navigate("/signup", { replace: true });
+            updated = true;
+          } else {
             console.log("Invalid referral code:", referral);
             sessionStorage.removeItem("referredBy");
-           }
+          }
 
         } catch (error) {
           console.error("Failed to validate referral:", error);
           sessionStorage.removeItem("referredBy");
         }
-        }
-        if (selectedPlan) {
-          sessionStorage.setItem("selectedPlan", selectedPlan);
-          searchParams.delete("plan");
-          updated = true;
-        }
-        if (businessType) {
-          sessionStorage.setItem("businessType", businessType);
-          searchParams.delete("businessType");
-          updated = true;
-        }
-        if(isUser==="free"){
-            sessionStorage.setItem("isUser", "true");
-              searchParams.delete("isUser");
-        }
+      }
+      if (selectedPlan) {
+        sessionStorage.setItem("selectedPlan", selectedPlan);
+        searchParams.delete("plan");
+        updated = true;
+      }
+      if (businessType) {
+        sessionStorage.setItem("businessType", businessType);
+        searchParams.delete("businessType");
+        updated = true;
+      }
+      if (isUser === "free") {
+        sessionStorage.setItem("isUser", "true");
+        searchParams.delete("isUser");
+      }
 
-        if (updated) {
-          navigate(location.pathname, { replace: true });
-        }
-      };
+      if (updated) {
+        navigate(location.pathname, { replace: true });
+      }
+    };
 
-      handleReferral();
-    }, [referral, selectedPlan, businessType, location.pathname, location.search, navigate]);
-
+    handleReferral();
+  }, [referral, selectedPlan, businessType, location.pathname, location.search, navigate]);
   useEffect(() => {
     const setVH = () => {
       const vh = window.innerHeight * 0.01;
@@ -116,6 +176,16 @@ function Start() {
 
     return () => window.removeEventListener("resize", setVH);
   }, []);
+  if (isChecking) {
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-600 text-lg">
+        {/* Checking agent link... */}
+      </div>
+    );
+  }
+  if (renderStatusPage && agentCode) {
+    return <PublicWidgetPage agentCode={agentCode} />;
+  }
   return (
     <div>
       <div className={styles.signUpContainer}>
