@@ -1495,8 +1495,8 @@ height: -webkit-fill-available;
 (function () {
     const currentSiteURL = window.location.origin;
     console.log(currentSiteURL, "currentSiteURL")
-    // const API_URL = "https://rexptin.truet.net/api/";
-    const API_URL = "http://localhost:2513/api";
+    const API_URL = "https://rexptin.truet.net/api/";
+    // const API_URL = "http://localhost:2513/api";
     const CHAT_LS_KEY = "rex_chat_history";
     let typingEl = null;
 
