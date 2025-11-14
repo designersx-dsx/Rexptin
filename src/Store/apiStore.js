@@ -1,3 +1,4 @@
+import { ExploreOffSharp } from "@mui/icons-material";
 import axios from "axios";
 // Centralized API base URL here
 export const API_BASE_URL =
@@ -16,8 +17,8 @@ const userId = sessionStorage.getItem("userId");
 
 // ========== Auth APIs ==========
 // Get all knowledge bases
-export const LoginWithEmailOTP = async (email,environmentInfo,utm_data) => {
-  const res = await api.post("/auth/LoginWithEmailOTP", { email,environmentInfo ,utm_data});
+export const LoginWithEmailOTP = async (email, environmentInfo, utm_data) => {
+  const res = await api.post("/auth/LoginWithEmailOTP", { email, environmentInfo, utm_data });
   return res;
 };
 
@@ -497,7 +498,7 @@ export const addGeneralTools = async (llmId, transfers) => {
         },
       }
     );
-  } catch (error) {}
+  } catch (error) { }
 };
 export const getBusinessDetailsByBusinessId = async (businessId) => {
   try {
@@ -967,7 +968,7 @@ export const createChatAgent = async (payload, token) => {
     return res.data;
   } catch (error) {
     console.error("Error marking tour as seen:", error.response);
-    
+
   }
 }
 export const updateAgentChatEnabled = async (agent_id, newState, token) => {
@@ -993,7 +994,7 @@ export const updateChatAgent = async (payload, token) => {
     return res.data;
   } catch (error) {
     console.error("Error marking tour as seen:", error.response);
-      }
+  }
 }
 
 
@@ -1004,11 +1005,87 @@ export const getAppointments = async (userId = null, agentId = null) => {
     if (agentId) params.agentId = agentId;
 
     const res = await api.get('/appointments', { params });
-    return res.data; 
+    return res.data;
   } catch (error) {
     console.error("Error fetching appointments:", error.response?.data || error.message);
     return { success: false, data: [] };
   }
 };
 
+export const modifyAgentFields = async (agentId, ventryUrl,token) => {
+  try {
+
+
+    const res = await  axios.patch(`${API_BASE_URL}/agent/modifyAgentFields`, {
+      agent_id: agentId,
+      ventryUrl: ventryUrl,
+    } ,{
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching :", error.response?.data || error.message);
+    return { success: false, data: error };
+  }
+}
+export const checkAgentExistence = async (agentCode) => {
+  try {
+    const res = await api.post('/agent/checkAgentExistence', {
+      agent_code: agentCode
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching agent existence:", error.response?.data || error.message);
+    return { success: false, data: error };
+  }
+};
+export const getPhoneNumberAccordingToCountry = async (token, country_code) => {
+  try {
+    // Fetch available numbers (already working)
+    const res = await fetchAvailablePhoneNumberByCountry(
+      token,
+      country_code,
+      "",
+      ""
+    );
+    const numbers = res?.data;
+    if (Array.isArray(numbers) && numbers.length > 0) {
+      //  Pick a random number
+      const randomIndex = Math.floor(Math.random() * numbers.length);
+      const selectedNumber = numbers[randomIndex]?.phone_number;
+      if (selectedNumber) {
+        console.log("Selected Phone Number:", selectedNumber);
+        //  Save to session storage
+        sessionStorage.setItem("assignedPhoneNumber", selectedNumber);
+
+        // You can also set it in React state if needed:
+      } else {
+        console.warn("No valid phone number found in the list");
+      }
+    } else {
+      console.warn("No available numbers found");
+    }
+  } catch (error) {
+    console.error("Error fetching available phone numbers:", error);
+  }
+}
+export const assignNumberToAgent=async(assignedNumber,agent_id)=>{
+  try {
+    // 1Create number order
+    const response = await createNumberOrder(assignedNumber, agent_id);
+
+    // 2 Update agent with number details
+    await updateAgent(agent_id, {
+      voip_numbers: [assignedNumber],
+      voip_numbers_created: new Date(),
+      assignNumFree: 1,
+      isNumActivated: 1,
+    });
+
+    console.log("Number assigned successfully to agent");
+  } catch (error) {
+    console.error(" Failed to assign number:", error);
+  }
+}
 export default api;

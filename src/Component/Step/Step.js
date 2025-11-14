@@ -25,8 +25,10 @@ import Loader from "../Loader/Loader";
 import decodeToken from "../../lib/decodeToken";
 import {
   API_BASE_URL,
+  assignNumberToAgent,
   createAgent,
   createChatAgent,
+  createNumberOrder,
   listAgents,
   updateAgent,
   updateAgentWidgetDomain,
@@ -95,6 +97,8 @@ const businessTypes = [
   { name: "Colleges & Universities", code: "coll_uni" },
   { name: "Training Center", code: "tra_ce" },
   { name: "Educational Institute", code: "edu_ins" },
+  { name: "Plumber", code: "plum_b" },
+  
 ];
 const Step = () => {
   const [showNoGMBModal, setShowNoGMBModal] = useState(false);
@@ -148,7 +152,7 @@ const Step = () => {
         }
 
         if (data?.type === "IAP_SUCCESS") {
-        
+
           // handle success flow...
         }
 
@@ -916,7 +920,7 @@ const Step = () => {
               name: "phone_number",
               description:
                 "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
-               
+
             },
 
             ...appointmentBooking(businessType),
@@ -924,8 +928,8 @@ const Step = () => {
           ],
           end_call_after_silence_ms: 30000,
           normalize_for_speech: true,
-          ambient_sound:"call-center",
-          ambient_sound_volume:1,
+          ambient_sound: "call-center",
+          ambient_sound_volume: 1,
           webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
           // webhook_url: `https://da33c561d4a5.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
         };
@@ -1083,7 +1087,8 @@ const Step = () => {
             const response = await createAgent(agentData);
 
             if (response.status === 200 || response.status === 201) {
-              sessionStorage.setItem("agentId", response.data.agent_id);
+              const selectedNumber =
+                sessionStorage.setItem("agentId", response.data.agent_id);
               sessionStorage.setItem("agentStatus", true);
               sessionStorage.removeItem("avatar");
               setPopupType("success");
@@ -1091,6 +1096,11 @@ const Step = () => {
                 agentId,
                 aboutBusinessForm?.businessUrl
               );
+              //AssignNumber both Agent
+              const assignedNumber = sessionStorage.getItem("assignedPhoneNumber");
+              if (assignedNumber) {
+                await assignNumberToAgent(assignedNumber, response.data.agent_id)
+              }
               if (ifChatWidgetEnabledOrNot) {
                 // alert("ok")
                 // Shared payload data for both Voice Agent and Chat Agent
@@ -1133,7 +1143,7 @@ const Step = () => {
               // if (checkPaymentDone === "true") {
               //     await callNextApiAndRedirect(agentId)
               // }
-              // fdfd
+
               setPopupMessage("Agent created successfully!");
               setIsAgentCreated(true);
               setShowPopup(true);

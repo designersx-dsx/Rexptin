@@ -277,6 +277,36 @@ function injectCSS() {
 
       100% {}
     }
+
+
+    .corner-ribbon {
+  position: absolute;
+  top: 20px;
+  right: -55px;
+  background: #6524EB; /* purple color */
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+      padding: 6px 40px;
+  width: 200px;
+  text-align: center;
+  transform: rotate(45deg);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 10;
+  letter-spacing: 0.5px;
+}
+
+.corner-ribbon span {
+  font-weight: 900;
+  font-size: 16px;  
+  color:#fff;
+}
+  .corner-ribbon a{
+  color:#fff;
+  text-decoration: none;
+
+  }
       .greendiv, .reddiv {
       position: relative;
           border-radius: 30px;
@@ -416,18 +446,18 @@ function injectCSS() {
           
           .terms-popup {
             
-            width: 245px;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
-            padding: 10px;
-            text-align: justify;
-            font-size: 12px;
-            line-height: 15px;
-            position: absolute;
-            top: 170px;
-            left: 140px;
+             width: 245px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    text-align: justify;
+    font-size: 12px;
+    line-height: 15px;
+    position: absolute;
+    right: 50px;
+    top: 10vh;
           }
           
           .terms-content h2 {
@@ -469,8 +499,7 @@ function injectCSS() {
              transform .35s ease,
              box-shadow .35s ease;
              transform-origin: bottom right;
-             width:100%;
-             background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);
+             width:100%;             
              box-shadow:0 18px 40px rgba(0,0,0,.18);
              z-index:1002; display:none; font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
             
@@ -487,10 +516,13 @@ function injectCSS() {
              justify-content: center;
              gap:1rem
           }
-         .leftBox {
-              padding: 28px;
+         .leftBox {              
               color: #e2e8f0;
               border-radius: 16px;
+              display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: -webkit-fill-available;
           }
 
          .company-name {
@@ -547,7 +579,7 @@ function injectCSS() {
           padding: 10px 16px;
           border-radius: 10px;
           font-size: 20px;
-          font-weight: 700;
+          font-weight: 400;
           box-shadow: 0 3px 10px rgba(0,0,0,0.12);
           gap: 10px;
           margin-top: 8px;
@@ -576,18 +608,18 @@ function injectCSS() {
 
          .reviews {
           color: blue !important;
-          font-weight: 700;
+          
          }
 
          .rightBox{
              border: 1px solid #ffffff;
              width: 100%;
-             max-width: 500px;
+             max-width: 375px;
              border-radius: 18px;
          }
              .bottomDesc{
-                 font-size: 16px;
-                  margin-top: 5rem;
+                 font-size: 14px;
+                  margin-bottom: 5rem;
              }
 
           /* Motion sensitivity */
@@ -613,11 +645,9 @@ function injectCSS() {
                      height: 100%;
                       bottom: 0;
               }
-            .attio-body{
-               height: 100%;
-             }
+           
               .chat-popup.expanded .attio-thread{
-              height:500px!important;
+              height:50vh!important;
               }
               .chat-popup{
                 max-width: none !important;
@@ -651,7 +681,7 @@ function injectCSS() {
               transition: height .35s ease; /* smooth expand */
             }
            .chat-popup.expanded .attio-thread{
-              height: 32dvh;
+              height: 50dvh;
             }
 
             /* Motion sensitivity */
@@ -780,19 +810,34 @@ function injectCSS() {
           bottom: 0px;
           right: 20px;
           width: 100%;
-          height: 100%;
-         background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);
+          height: 100%;         
           z-index: 1002;
           display: none;
-          font-family: Inter,system-ui,Segoe UI,Arial,sans-serif;
+        font-family: "Lato", sans-serif;
         
 
         }
-          .rightIcon{
-           position: absolute;
-           top: 1%;
-           right: 1%;
-          }
+         .rightIcon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: linear-gradient(135deg, #4318FF 0%, #875CFF 100%);
+  padding: 6px 14px;
+  border-bottom-left-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+
+
+/* Adjust icon size */
+.rightIcon img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
         .support-popup.show{ display:block }
       
         .support-header{
@@ -800,8 +845,7 @@ function injectCSS() {
           align-items:center; 
           justify-content:space-between;
           padding:14px 16px;
-         border-bottom:1px solid #eff0f2;
-         background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);
+         border-bottom:1px solid #eff0f2;         
          border-radius: 20px 20px 0px 0px;
          width: 100%;
          max-width: 600px;
@@ -816,15 +860,16 @@ function injectCSS() {
             color:#fff;
             text-transform: uppercase;
         }
-        .support-title .s{ font-size:14px; color:#ffff }
+        .support-title .s{ font-size:18px; color:#D1DCED }
          .addresTitle{
-       color:#ffff;
-       font-size:12px;
-       margin-top: 3px;
+       color:#D1DCED;
+       font-size:14px;
+       margin-top: 1px;
        }
        .iconlogo img{
            height: 45px;
            width: 45px;
+           display:none;
         
        }
 /* Move X button to bottom-right of the support popup */
@@ -852,14 +897,14 @@ function injectCSS() {
    .mainDiv{
      border:1px solid #7C7C7E;
      border-radius:18px;
-     height: 669px;
+     height: 75vh;
      position: relative;
+     max-width: 375px;
+     background-color:#19273c;
     }
         .support-body{ 
-        padding: 20px 20px 20px;
-         background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);
+        padding: 20px 20px 20px;         
          border-radius: 0px 0px 20px 20px;
-         min-height:500px ;
          width: 100%;
          max-width: 600px;
          margin-inline: auto;
@@ -969,7 +1014,7 @@ function injectCSS() {
              padding:10px 16px;
              font-weight:500;
              letter-spacing:.2px;
-             font-size:25px;
+             font-size:18px;
              cursor:pointer; 
              color:#fff;
              box-shadow:0 12px 24px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.08);
@@ -1045,6 +1090,11 @@ function injectCSS() {
 .company-info-left {
   color: white;
   padding: 20px 0;
+  width:80%;
+  display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: -webkit-fill-available;
 }
 
 .company-logo {
@@ -1060,22 +1110,24 @@ function injectCSS() {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 12px;
+  margin-bottom: 2rem;
   color: #ffffffff;
-      width: max-content
+  text-align: start;      
 }
 
 .company-address {
   font-size: 18px;
   line-height: 1.5;
-  color: #ffffffff;
-  margin-bottom: 10px;
+  color: #D1DCED;
+  margin-bottom: 2rem;
 }
-  .company-address b{font-size: 22px;}
-.company-website b{font-size: 22px;}
+  .company-address b{font-size: 18px; margin-right: 15px;}
+.company-website b{font-size: 18px; margin-right: 15px;}
 
 .company-website {
-  margin-bottom: 12px;
+  margin-bottom: 1.5rem;
+  color: #D1DCED;
+  font-size: 18px;
 }
 
 .company-website a {
@@ -1099,7 +1151,7 @@ function injectCSS() {
   font-weight: 600;
       width: max-content;
       background-color:#ffffffff;
-          padding: 7px;
+          padding: 7px 20px;
       
 }
 
@@ -1118,19 +1170,38 @@ function injectCSS() {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 50% 30%, #263b5aea 3%, #19273C 40%);
   display: flex;
   gap: 30px;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 20px;
+  padding: 70px 70px;
   max-width: 1200px;
   width: 90%;
   z-index: 1003;
+  border-radius: 18px;
+  box-shadow: rgb(0 0 0 / 10%) 0px 0px 25px 10px;
+  overflow: hidden;
+
   
 }
 
 /* Responsive: Stack on Mobile */
 @media (max-width: 768px) {
+
+.corner-ribbon {
+  
+  top: 15px;
+  right: -65px;
+  font-size:10px;
+    padding: 6px 40px;
+  width: 200px;
+  
+}
+
+.corner-ribbon span {    
+    font-size: 15px;   
+}
   .popup-wrapper {
     flex-direction: column;
     align-items: center;
@@ -1138,6 +1209,7 @@ function injectCSS() {
     width: 100%;
     gap: 20px;
     height: 100%;
+    justify-content: center;
   }
 
   .company-info-left {
@@ -1400,6 +1472,20 @@ function injectCSS() {
     top: 50px;
     left: -122px;
           }
+    .CallSectionLeft{
+
+height: unset !important;
+}
+
+.terms-wrapper {
+            position: relative;
+            top: -20rem !important;
+          }
+}
+
+.CallSectionLeft{
+width:80%;
+height: -webkit-fill-available;
 }
 
 
@@ -1413,6 +1499,7 @@ function injectCSS() {
     // const API_URL = "http://localhost:2513/api";
     const CHAT_LS_KEY = "rex_chat_history";
     let typingEl = null;
+
     function loadChatHistory() {
         try {
             const raw = localStorage.getItem(CHAT_LS_KEY);
@@ -1443,6 +1530,7 @@ function injectCSS() {
         if (!Array.isArray(hist) || hist.length === 0) return false;
         return hist.every((m) => String(m?.role).toLowerCase() === "user");
     }
+
     function lastUserTs(hist) {
         for (let i = hist.length - 1; i >= 0; i--) {
             if (String(hist[i]?.role).toLowerCase() === "user")
@@ -1482,14 +1570,16 @@ function injectCSS() {
             }
 
             const onlyUser =
-                typeof hasOnlyUserMessages === "function"
-                    ? !!hasOnlyUserMessages(hist)
-                    : false;
+                typeof hasOnlyUserMessages === "function" ?
+                    !!hasOnlyUserMessages(hist) :
+                    false;
 
             if (onlyUser || !knowledgeBaseId) {
                 // end (no archive)
                 const url = `${API_URL}/Chatbot/end-chat/${encodeURIComponent(chatId)}`;
-                const res = await fetch(url, { method: "PATCH" });
+                const res = await fetch(url, {
+                    method: "PATCH"
+                });
                 if (!res.ok) {
                     const txt = await res.text().catch(() => "");
                     throw new Error(`end-chat HTTP ${res.status}: ${txt}`);
@@ -1498,7 +1588,9 @@ function injectCSS() {
                 // archive
                 const res = await fetch(`${API_URL}/agent/end-chat-archive`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
                     body: JSON.stringify({
                         knowledge_base_id: knowledgeBaseId,
                         chat_id: chatId,
@@ -1537,6 +1629,7 @@ function injectCSS() {
             return;
         }
     }
+
     function lockBodyScroll() {
         if (document.body.classList.contains("rex-scroll-lock")) return;
         const y = window.scrollY || window.pageYOffset || 0;
@@ -1579,14 +1672,16 @@ function injectCSS() {
         return patterns.some((re) => re.test(t));
     }
 
-    async function endChatArchiveNow({ silent = false } = {}) {
+    async function endChatArchiveNow({
+        silent = false
+    } = {}) {
         if (window.__rex_end_called__) return;
         window.__rex_end_called__ = true;
 
         const CHAT_KEY =
-            typeof CHAT_LS_KEY === "string" && CHAT_LS_KEY
-                ? CHAT_LS_KEY
-                : "rex_chat_history";
+            typeof CHAT_LS_KEY === "string" && CHAT_LS_KEY ?
+                CHAT_LS_KEY :
+                "rex_chat_history";
 
         let hist = [];
         try {
@@ -1605,7 +1700,9 @@ function injectCSS() {
                 if (hist.length > 0 && knowledgeBaseId) {
                     const res = await fetch(`${API_URL}/agent/end-chat-archive`, {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
                         body: JSON.stringify({
                             knowledge_base_id: knowledgeBaseId,
                             chat_id: chatId,
@@ -1619,7 +1716,9 @@ function injectCSS() {
                 } else {
                     // simple end (no history or no KB)
                     const url = `${API_URL}/Chatbot/end-chat/${encodeURIComponent(chatId)}`;
-                    const res = await fetch(url, { method: "PATCH" });
+                    const res = await fetch(url, {
+                        method: "PATCH"
+                    });
                     // console.log("end chat (simple)", res);
                     if (!res.ok) {
                         const txt = await res.text().catch(() => "");
@@ -1741,6 +1840,7 @@ function injectCSS() {
         }
     }
     let __rex_close_timer__ = null;
+
     function clearCloseTimer() {
         if (__rex_close_timer__) {
             clearTimeout(__rex_close_timer__);
@@ -1753,11 +1853,17 @@ function injectCSS() {
             localStorage.setItem(CHAT_LS_KEY, JSON.stringify(arr));
         } catch { }
     }
+
     function saveChatMessage(role, text) {
         const arr = loadChatHistory();
-        arr.push({ role, text, ts: Date.now() });
+        arr.push({
+            role,
+            text,
+            ts: Date.now()
+        });
         saveChatHistory(arr);
     }
+
     function extractBotText(resp) {
         const msgs = resp?.raw?.messages || [];
         for (let i = msgs.length - 1; i >= 0; i--) {
@@ -1790,9 +1896,15 @@ function injectCSS() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...(agentIdHdr ? { agent_id: agentIdHdr } : {}),
+                ...(agentIdHdr ? {
+                    agent_id: agentIdHdr
+                } : {}),
             },
-            body: JSON.stringify({ chat_id: chatId, content: userText, chat_agent_id }),
+            body: JSON.stringify({
+                chat_id: chatId,
+                content: userText,
+                chat_agent_id
+            }),
         });
 
         // Parse response safely (JSON or text or empty)
@@ -1802,7 +1914,9 @@ function injectCSS() {
         } catch {
             try {
                 const txt = await res.text();
-                data = txt ? { error: txt } : null;
+                data = txt ? {
+                    error: txt
+                } : null;
             } catch {
                 data = null;
             }
@@ -1845,7 +1959,10 @@ function injectCSS() {
         }
 
         const botText = extractBotText(data) || "";
-        return { data, botText };
+        return {
+            data,
+            botText
+        };
     }
     const getAgentIdFromScript = async () => {
         const script = document.getElementById("rex-widget-script");
@@ -1889,6 +2006,7 @@ function injectCSS() {
             return localStorage.getItem("agent_id") || null;
         }
     };
+
     function buildRetellDynamicVars() {
         const take = (k) => {
             try {
@@ -1908,7 +2026,8 @@ function injectCSS() {
             user_phone: take("rex_user_phone"),
         };
         const out = {};
-        for (const [k, v] of Object.entries(vars)) if (v) out[k] = v;
+        for (const [k, v] of Object.entries(vars))
+            if (v) out[k] = v;
         return out;
     }
 
@@ -1963,7 +2082,9 @@ function injectCSS() {
             const url = `${API_URL}/Chatbot/get-chat-agent-id?agent_id=${encodeURIComponent(
                 agentId
             )}`;
-            const res = await fetch(url, { method: "GET" });
+            const res = await fetch(url, {
+                method: "GET"
+            });
 
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
@@ -1972,7 +2093,11 @@ function injectCSS() {
             if (chatAgentId) {
                 localStorage.setItem("chat_agent_id", String(chatAgentId));
                 window.dispatchEvent(
-                    new CustomEvent("chat-agent-id:ready", { detail: { chatAgentId } })
+                    new CustomEvent("chat-agent-id:ready", {
+                        detail: {
+                            chatAgentId
+                        }
+                    })
                 );
                 console.log("[Rex] chat_agent_id stored:", chatAgentId);
             } else {
@@ -1993,8 +2118,12 @@ function injectCSS() {
 
                 const res = await fetch(`${API_URL}/Chatbot/create-chat-session`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ agent_id: agentId }),
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        agent_id: agentId
+                    }),
                 });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
@@ -2012,6 +2141,7 @@ function injectCSS() {
 
         return __rex_create_session_promise;
     }
+
     function pingBeep() {
         if (window.__rex_only_call_mode__ || document.hidden) return;
         try {
@@ -2029,6 +2159,7 @@ function injectCSS() {
             o.stop(ctx.currentTime + 0.16);
         } catch { }
     }
+
     function createReviewWidget() {
         if (window.__REX_WIDGET_INITIALIZED__) {
             console.log("Rex widget already initialized.");
@@ -2069,6 +2200,7 @@ function injectCSS() {
             btn.style.pointerEvents = locked ? "none" : "auto";
             btn.setAttribute("aria-disabled", locked ? "true" : "false");
         }
+
         function isCallPopupOpen() {
             const m = document.getElementById("agentPopup");
             return !!(m && m.style.display === "block");
@@ -2111,7 +2243,9 @@ function injectCSS() {
         }
         ///Initilize Widget
         const initWidget = async () => {
-            const { RetellWebClient } = await import(
+            const {
+                RetellWebClient
+            } = await import(
                 "https://cdn.jsdelivr.net/npm/retell-client-js-sdk@2.0.7/+esm"
             );
             const retellWebClient = new RetellWebClient();
@@ -2122,6 +2256,7 @@ function injectCSS() {
                 return Number.isFinite(n) ? n : 0;
             };
             const SPECIAL_REX_AGENT = "agent_0498e1599d6ea9e13d09657f79";
+
             function enforceRexIfNoMinutes() {
                 const callLeft = toNum(localStorage.getItem("call_mins_left"));
                 const chatLeft = toNum(localStorage.getItem("chat_mins_left"));
@@ -2154,10 +2289,9 @@ function injectCSS() {
             let url = ""
             try {
                 const agentRes = await fetch(
-                    `${API_URL}/agent/fetchAgentDetailsFromRetell/${agentId}`,
-                    {
-                        method: "GET",
-                    }
+                    `${API_URL}/agent/fetchAgentDetailsFromRetell/${agentId}`, {
+                    method: "GET",
+                }
                 );
                 const text = await agentRes.text();
                 try {
@@ -2192,10 +2326,9 @@ function injectCSS() {
                     console.log("Response is not JSON");
                 }
                 const voicesRes = await fetch(
-                    `${API_URL}/agent/fetchAgentVoiceDetailsFromRetell`,
-                    {
-                        method: "POST",
-                    }
+                    `${API_URL}/agent/fetchAgentVoiceDetailsFromRetell`, {
+                    method: "POST",
+                }
                 );
                 if (voicesRes.ok) {
                     const voicesData = await voicesRes.json();
@@ -2211,11 +2344,12 @@ function injectCSS() {
 
             try {
                 const bussinessDetails = await fetch(
-                    `${API_URL}/businessDetails/getBusinessDetailsById/${userId}`,
-                    {
-                        method: "GET",
-                        headers: { "Content-Type": "application/json" },
-                    }
+                    `${API_URL}/businessDetails/getBusinessDetailsById/${userId}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                }
                 ).then(async (res) => {
                     const text = await res.text();
                     const json = JSON.parse(text);
@@ -2225,7 +2359,7 @@ function injectCSS() {
                     kb = json.knowledge_base_texts || {};
                 });
 
-
+                console.log(kb.rating, "kb")
                 // === STEP 2: UPDATE GOOGLE RATING DYNAMICALLY ===
                 rating = parseFloat(kb.rating) || 0;
                 totalRatings = kb.totalRatings || 0;
@@ -2291,12 +2425,20 @@ function injectCSS() {
             //     rexAgent.innerHTML = "";
             // }
 
-            const agentWrapper = createElement("div", { className: "agent-wrapper" });
+            const agentWrapper = createElement("div", {
+                className: "agent-wrapper"
+            });
 
-            const wrapperBlink = createElement("div", { className: "WraperBlink" });
+            const wrapperBlink = createElement("div", {
+                className: "WraperBlink"
+            });
 
-            const pulseRing = createElement("div", { className: "pulse-ring" });
-            const pulseDot = createElement("div", { className: "pulse-dot" });
+            const pulseRing = createElement("div", {
+                className: "pulse-ring"
+            });
+            const pulseDot = createElement("div", {
+                className: "pulse-dot"
+            });
 
             wrapperBlink.appendChild(pulseRing);
             wrapperBlink.appendChild(pulseDot);
@@ -2307,7 +2449,9 @@ function injectCSS() {
             });
 
             agentWrapper.appendChild(wrapperBlink);
-            const badge2 = createElement("div", { className: "badge2" });
+            const badge2 = createElement("div", {
+                className: "badge2"
+            });
             const logoImg = createElement("img", {
                 src: "https://rexptin.truet.net/images/favicon-final.svg",
                 alt: "Badge Icon",
@@ -2352,7 +2496,10 @@ function injectCSS() {
                             scrollHost.getBoundingClientRect().top +
                             scrollHost.scrollTop -
                             8; // 8px padding
-                        scrollHost.scrollTo({ top, behavior: "smooth" });
+                        scrollHost.scrollTo({
+                            top,
+                            behavior: "smooth"
+                        });
                     } catch { }
                 };
 
@@ -2401,7 +2548,10 @@ function injectCSS() {
                             scrollHost.getBoundingClientRect().top +
                             scrollHost.scrollTop -
                             8;
-                        scrollHost.scrollTo({ top, behavior: "smooth" });
+                        scrollHost.scrollTo({
+                            top,
+                            behavior: "smooth"
+                        });
                     } catch { }
                 }, 400);
             }
@@ -2410,8 +2560,15 @@ function injectCSS() {
                 id: "agentPopup",
                 className: "popup",
             });
-            const popupHeader = createElement("div", { className: "popup-header" });
-            const popupBody = createElement("div", { className: "popup-body" });
+            const popupHeader = createElement("div", {
+                className: "popup-header"
+            });
+            const popupBody = createElement("div", {
+                // className: "popup-body"
+                className: "popup-wrapper"
+            });
+
+
 
             const mainDiv = document.createElement("div");
             mainDiv.className = "popup-main-row";
@@ -2429,20 +2586,23 @@ function injectCSS() {
                                     `;
             // === LEFT SECTION ===
             const leftSection = document.createElement("div");
-            leftSection.className = "rex-left-info company-info-left";
+            // leftSection.className = "rex-left-info company-info-left";
+            leftSection.className = "CallSectionLeft";
             leftSection.innerHTML = `
-            <div class='rightIcon'>
-              <img src='/svg/rightIcon.svg' alt='rightIcon'/>
-              </div>
+
+            <div class="corner-ribbon"><a href="https://www.rxpt.us/" target="_blank">POWERED BY <span>rexpt</span></a></div>
+           
                                    <div class="rex-left-info company-info-left">
+
+                       <div class="LeftTextTop">       
     <div class="company-header">
         <h3 class="company-name">${businessName}</h3>
     </div>
-<br/>
+
     <div class="company-details">
         <div class="info-row">
             <b>Address:</b>&nbsp;<span>${address || "N/A"}</span>
-        </div><br/>
+        </div>
         <div class="info-row website-row">
             <b>Website:</b>&nbsp; 
         ${url && url.trim() && url.trim().toLowerCase() !== 'na' && !url.includes('null')
@@ -2454,11 +2614,12 @@ function injectCSS() {
 
         </div>
     </div>
-<br/>
-    <div class="google-rating">
+
+  ${totalRatings ? `<div class="google-rating">
        <span class="stars">${starsHTML}</span>
-      <p class="reviews" style="color: blue;font-weight: 700;">${totalRatings} Google reviews</p>
-    </div>
+      <p class="reviews" style="color: blue;">${totalRatings} Google reviews</p>
+    </div>`: ""}
+    </div>     
    <div class="bottomDesc"><p>
     Create your 
     <a href="https://www.rexpt.us/" target="_blank" style="text-decoration: underline; color: inherit; font-weight: 600;">
@@ -2494,7 +2655,9 @@ function injectCSS() {
             const tag = document.createElement("span");
             tag.className = "tag-label";
             tag.textContent = `${agentRole?.split(" ")[0]} RECEPTIONIST`;
-            const phoneIconWrapper = createElement("div", { className: "phoneIcon" });
+            const phoneIconWrapper = createElement("div", {
+                className: "phoneIcon"
+            });
             const phoneIcon = createElement("img", {
                 id: "phoneIcon",
                 src: "https://rexptin.vercel.app/svg/Phone-call.svg",
@@ -2519,7 +2682,9 @@ function injectCSS() {
                 id: "start-chat",
                 className: "chatdiv",
             });
-            const chatIconWrapper = createElement("div", { className: "chatIcon" });
+            const chatIconWrapper = createElement("div", {
+                className: "chatIcon"
+            });
             const chatIcon = createElement("img", {
                 id: "chatIcon",
                 src: "https://rexpt-chat-widget.vercel.app/chatWithRex.svg",
@@ -2553,7 +2718,9 @@ function injectCSS() {
             chatBtn.appendChild(chatIconWrapper);
             chatBtn.appendChild(chatText);
 
-            const buttonStack = createElement("div", { className: "button-stack" });
+            const buttonStack = createElement("div", {
+                className: "button-stack"
+            });
             const chat_mins_left = localStorage.getItem("chat_mins_left");
             const isChatEnabled = localStorage.getItem("isChatEnabled");
 
@@ -2584,13 +2751,19 @@ function injectCSS() {
                 $msgs.appendChild(div);
                 $msgs.scrollTop = $msgs.scrollHeight;
 
-                return { el: div, contentEl: content, timeEl: time };
+                return {
+                    el: div,
+                    contentEl: content,
+                    timeEl: time
+                };
             }
 
             async function streamBotTextInto(
                 bubble,
-                fullText,
-                { chunkSize = 3, delay = 18 } = {}
+                fullText, {
+                    chunkSize = 3,
+                    delay = 18
+                } = {}
             ) {
                 let i = 0;
                 while (i < fullText.length) {
@@ -2609,6 +2782,7 @@ function injectCSS() {
                     await new Promise((r) => setTimeout(r, delay));
                 }
             }
+
             function showIntroTyping() {
                 try {
                     if (document.getElementById("rexTypingIntro")) return;
@@ -2662,7 +2836,9 @@ function injectCSS() {
 
                 showIntroTyping();
                 try {
-                    const { botText } = await createChatCompletion(intro);
+                    const {
+                        botText
+                    } = await createChatCompletion(intro);
                     hideIntroTyping();
                     if (botText) {
                         // uiAppendBotMessage(botText);
@@ -2691,6 +2867,7 @@ function injectCSS() {
                 const n = Number(v);
                 return Number.isFinite(n) ? n : 0;
             }
+
             function isChatEnabledLS() {
                 return /^(true|1)$/i.test(
                     String(localStorage.getItem("isChatEnabled") ?? "")
@@ -2784,13 +2961,16 @@ function injectCSS() {
             function validateName(v = "") {
                 return /^[a-zA-Z\s'.-]{2,}$/.test(String(v).trim());
             }
+
             function validateEmail(v = "") {
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim());
             }
+
             function validatePhone(v = "") {
                 const digits = String(v).replace(/[^\d]/g, "");
                 return digits.length >= 10 && digits.length <= 15;
             }
+
             function getOrCreateSupportPopup() {
                 if (supportEl) return supportEl;
 
@@ -2799,13 +2979,14 @@ function injectCSS() {
                 supportEl.id = "rexSupportPopup";
                 supportEl.className = "support-popup";
                 supportEl.innerHTML = `
-              <div class='rightIcon'>
-              <img src='/svg/rightIcon.svg' alt='rightIcon'/>
-              </div>
+             
                 <div class="popup-wrapper">
+                <div class="corner-ribbon"><a href="https://www.rxpt.us/" target="_blank">POWERED BY <span>rexpt</span></a></div>
                
             <div class="company-info-left">
-     
+
+            <div class="LeftTextTop">
+            
       <div class="company-name">${businessName}</div>
       <div class="company-address"><b>Address: </b>
        ${address}
@@ -2819,10 +3000,13 @@ function injectCSS() {
                     }
 
       </div>
-      <div class="google-rating">
+   ${totalRatings ? ` <div class="google-rating">
         <span class="stars">${starsHTML}</span>
       <span class="reviews">${totalRatings} Google reviews</span>
+      </div>`: ""}
+
       </div>
+     
 
        <div class="bottomDesc"><p>
     Create your 
@@ -3075,7 +3259,11 @@ function injectCSS() {
 
 
                 // initWidget ends
-                let touched = { name: false, email: false, phone: false };
+                let touched = {
+                    name: false,
+                    email: false,
+                    phone: false
+                };
 
                 function setFieldError($input, $errBox, msg) {
                     const wrap = $input.closest(".field").querySelector(".input-dark");
@@ -3331,7 +3519,10 @@ function injectCSS() {
                                     host.getBoundingClientRect().top +
                                     host.scrollTop -
                                     8;
-                                host.scrollTo({ top, behavior: "smooth" });
+                                host.scrollTo({
+                                    top,
+                                    behavior: "smooth"
+                                });
                             }
                         } catch { }
                     }, 100);
@@ -3365,8 +3556,8 @@ function injectCSS() {
 
             const termsWrapper = document.createElement("div");
             termsWrapper.className = "terms-wrapper";
-            termsWrapper.style.position = "absolute";
-            termsWrapper.style.top = "8.7rem";
+            termsWrapper.style.position = "relative";
+            termsWrapper.style.top = "0rem";
             termsWrapper.style.zIndex = "11";
             popupBody.appendChild(termsWrapper);
 
@@ -3459,7 +3650,9 @@ function injectCSS() {
 
                             const res = await fetch(`${API_URL}/agent/${endpoint}`, {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
                                 body: JSON.stringify({
                                     agent_id: agentId || localStorage.getItem("agent_id"),
                                     url: currentSiteURL,
@@ -3479,7 +3672,9 @@ function injectCSS() {
                             const access_token = data.access_token;
                             callId = data.call_id;
 
-                            await retellWebClient.startCall({ accessToken: access_token });
+                            await retellWebClient.startCall({
+                                accessToken: access_token
+                            });
 
                             callContent = "Connected";
                             callLabel.textContent = callContent;
@@ -3544,55 +3739,32 @@ function injectCSS() {
                             .forEach((r) => r.remove());
                         enableChatButton();
 
-                        const data = { agentId: await getAgentIdFromScript(), callId: callId };
+                        const data = {
+                            agentId: await getAgentIdFromScript(),
+                            callId: callId
+                        };
                         // 2. Call Modal Band Karo
                         if (localStorage.getItem("isChatEnabled") === "true") {
-                            modal.style.display = "none";
-                            unlockBodyScroll();
-                            // 3. CHAT UI KHOLO — DIRECT BODY APPEND
-                            localStorage.setItem("rex_last_ui", "chat");
-                            // Force create & append chat popup
-                            let chatPopup = document.getElementById("rexChatPopup");
+                            if (modal) {
+                                modal.style.display = "none";
+                                unlockBodyScroll();
+                                // 3. CHAT UI KHOLO — DIRECT BODY APPEND
+                                localStorage.setItem("rex_last_ui", "chat");
+                                // Force create & append chat popup
+                                let chatPopup = document.getElementById("rexChatPopup");
 
-                            if (!chatPopup) {
-                                chatPopup = getOrCreateChatPopup(); // Yeh function already body.appendChild karta hai
-                            }
-                            // Force visibility
-                            chatPopup.style.display = "flex";
-                            chatPopup.classList.add("show");
-                            chatPopup.classList.add("expanded");
-                            // Lock scroll for chat
-                            lockBodyScroll();
-                        }
-                        // ---- SOFT RELOAD WIDGET (no page refresh) ----
-                        try {
-                            return
-                            ["agentPopup", "rexChatPopup", "rexSupportPopup"].forEach((id) => {
-                                document.getElementById(id)?.remove();
-                            });
-                            window.__REX_WIDGET_INITIALIZED__ = false;
-
-                            if (!document.getElementById("review-widget")) {
-                                const host = document.createElement("div");
-                                host.id = "review-widget";
-                                document.body.appendChild(host);
-                            }
-
-                            const reinit = () => {
-                                try {
-                                    createReviewWidget();
-                                } catch (e) {
-                                    console.warn("reinit failed", e);
+                                if (!chatPopup) {
+                                    chatPopup = getOrCreateChatPopup(); // Yeh function already body.appendChild karta hai
                                 }
-                            };
-                            if (typeof requestAnimationFrame === "function") {
-                                requestAnimationFrame(() => requestAnimationFrame(reinit));
-                            } else {
-                                setTimeout(reinit, 0);
+                                // Force visibility
+                                chatPopup.style.display = "flex";
+                                chatPopup.classList.add("show");
+                                chatPopup.classList.add("expanded");
+                                // Lock scroll for chat
+                                lockBodyScroll();
                             }
-                        } catch (e) {
-                            console.warn("[Rex] widget soft reload failed:", e);
                         }
+
                     } finally {
 
                         // ensure button is enabled after hangup
@@ -3612,10 +3784,12 @@ function injectCSS() {
                 const s = String(v).trim();
                 return /^[a-zA-Z\s'.-]{2,}$/.test(s);
             }
+
             function validateEmail(v = "") {
                 const s = String(v).trim();
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
             }
+
             function validatePhone(v = "") {
                 const s = String(v).trim();
                 const digits = s.replace(/[^\d]/g, "");
@@ -3629,11 +3803,21 @@ function injectCSS() {
                     phone: localStorage.getItem(LS_USER_PHONE) || "",
                 };
             }
+
             function hasCompleteProfile() {
-                const { name, email, phone } = getUserProfile();
+                const {
+                    name,
+                    email,
+                    phone
+                } = getUserProfile();
                 return validateName(name) && validateEmail(email) && validatePhone(phone);
             }
-            function saveUserProfile({ name, email, phone }) {
+
+            function saveUserProfile({
+                name,
+                email,
+                phone
+            }) {
                 setDefaultUIAfterProfile();
                 if (name) localStorage.setItem(LS_USER_NAME, String(name).trim());
                 if (email)
@@ -3645,6 +3829,7 @@ function injectCSS() {
             }
 
             let preChatModalEl = null;
+
             function getOrCreatePreChatModal() {
                 if (preChatModalEl) return preChatModalEl;
 
@@ -3700,7 +3885,11 @@ function injectCSS() {
             }
 
             function computePreStep() {
-                const { name, email, phone } = getUserProfile();
+                const {
+                    name,
+                    email,
+                    phone
+                } = getUserProfile();
                 if (!validateName(name)) return 0;
                 if (!validateEmail(email)) return 1;
                 if (!validatePhone(phone)) return 2;
@@ -3732,8 +3921,16 @@ function injectCSS() {
 
                 const el = getOrCreatePreChatModal();
 
-                const { name, email, phone } = getUserProfile();
-                _preData = { name, email, phone };
+                const {
+                    name,
+                    email,
+                    phone
+                } = getUserProfile();
+                _preData = {
+                    name,
+                    email,
+                    phone
+                };
 
                 _preStep = computePreStep();
 
@@ -3759,7 +3956,11 @@ function injectCSS() {
             }
 
             let _preStep = 0;
-            let _preData = { name: "", email: "", phone: "" };
+            let _preData = {
+                name: "",
+                email: "",
+                phone: ""
+            };
 
             function applyStepUI() {
                 const $step = preChatModalEl.querySelector("#rexPreStep");
@@ -3850,7 +4051,9 @@ function injectCSS() {
                             chatId
                         )}`;
                         // console.log("[Rex] END chat via PATCH →", url);
-                        const res = await fetch(url, { method: "PATCH" });
+                        const res = await fetch(url, {
+                            method: "PATCH"
+                        });
                         // console.log(res, "response of end chat");
                         if (!res.ok) {
                             const txt = await res.text().catch(() => "");
@@ -3869,7 +4072,9 @@ function injectCSS() {
                         // console.log("[Rex] ARCHIVE via POST →", url);
                         const res = await fetch(url, {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
                             body: JSON.stringify({
                                 knowledge_base_id: knowledgeBaseId,
                                 chat_id: chatId,
@@ -3893,13 +4098,16 @@ function injectCSS() {
                     throw e;
                 }
             }
+
             function onPreNext() {
                 const $input = preChatModalEl.querySelector("#rexPreInput");
                 const $err = preChatModalEl.querySelector("#rexPreErr");
                 const raw = ($input.value || "").trim();
 
                 _preData.phone = raw;
-                saveUserProfile({ phone: raw });
+                saveUserProfile({
+                    phone: raw
+                });
 
                 hidePreChatModal();
 
@@ -3980,7 +4188,10 @@ function injectCSS() {
                     okCb = null,
                     cancelCb = null;
 
-                function open({ onOk, onCancel } = {}) {
+                function open({
+                    onOk,
+                    onCancel
+                } = {}) {
                     okCb = onOk || null;
                     cancelCb = onCancel || null;
 
@@ -4059,6 +4270,7 @@ function injectCSS() {
                         okCb = cancelCb = null;
                     }
                 }
+
                 function escHandler(e) {
                     if (e.key === "Escape") close(false);
                 }
@@ -4074,7 +4286,9 @@ function injectCSS() {
                     okCb = cancelCb = null;
                 }
 
-                return { open };
+                return {
+                    open
+                };
             }
 
             function getOrCreateChatPopup() {
@@ -4086,11 +4300,12 @@ function injectCSS() {
                 chatModalEl.id = "rexChatPopup";
                 chatModalEl.className = "chat-popup";
                 chatModalEl.innerHTML = `
-                 <div class='rightIcon'>
-              <img src='/svg/rightIcon.svg' alt='rightIcon'/>
-              </div>
+                 <div class="popup-wrapper" >
+                 
+                <div class="corner-ribbon"><a href="https://www.rxpt.us/" target="_blank">POWERED BY <span>rexpt</span></a></div>
                 
-                   <div class="leftBox">
+                <div class="leftBox">
+                <div class="LeftTextTop">
     <h1 class="company-name">${businessName}</h1>
    
 
@@ -4114,10 +4329,11 @@ function injectCSS() {
      
     </div>
 
-    <div class="rating-box">
+${totalRatings ? ` <div class="rating-box">
       <span class="reviews">${starsHTML} </span>
        <span>${totalRatings} Google reviews</span>
-    </div>
+    </div>`: ""}
+    </div>   
      <div class="bottomDesc"><p>
     Create your 
     <a href="https://www.rexpt.us/" target="_blank" style="text-decoration: underline; color: inherit; font-weight: 600;">
@@ -4175,7 +4391,7 @@ function injectCSS() {
           </div>
         </div>
 </div>
-
+</div>
 `;
 
                 document.body.appendChild(chatModalEl);
@@ -4195,14 +4411,18 @@ function injectCSS() {
 
                     try {
                         // mic permission (keeps button disabled during prompt)
-                        await navigator.mediaDevices.getUserMedia({ audio: true });
+                        await navigator.mediaDevices.getUserMedia({
+                            audio: true
+                        });
 
                         // optional: protects against overlaps/timeouts
                         const controller = new AbortController();
 
                         const res = await fetch(`${API_URL}/agent/createPublicWidgetWebCall`, {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
                             body: JSON.stringify({
                                 agent_id: localStorage.getItem("agent_id"),
                                 url: currentSiteURL,
@@ -4217,7 +4437,9 @@ function injectCSS() {
                             throw new Error("Invalid response data");
 
                         callId = data.call_id;
-                        await retellWebClient.startCall({ accessToken: data.access_token });
+                        await retellWebClient.startCall({
+                            accessToken: data.access_token
+                        });
 
                         // === connected state ===
                         callLabel.textContent = "Connected";
@@ -4253,6 +4475,7 @@ function injectCSS() {
                         isCreatingCall = false; // unlock for the next attempt
                     }
                 }
+
                 function openCallConfirmInsideChat() {
 
                     const overlay = document.createElement("div");
@@ -4380,7 +4603,9 @@ function injectCSS() {
                                     if (chatId && knowledgeBaseId) {
                                         const res = await fetch(`${API_URL}/agent/end-chat-archive`, {
                                             method: "POST",
-                                            headers: { "Content-Type": "application/json" },
+                                            headers: {
+                                                "Content-Type": "application/json"
+                                            },
                                             body: JSON.stringify({
                                                 knowledge_base_id: knowledgeBaseId,
                                                 chat_id: chatId,
@@ -4433,6 +4658,7 @@ function injectCSS() {
                             "'": "&#39;",
                         }[m])
                     );
+
                 function appendMessage(role, text, ts) {
                     const when = ts || Date.now();
                     const timeStr = new Date(when).toLocaleTimeString([], {
@@ -4485,10 +4711,12 @@ function injectCSS() {
                         t3 = null;
                     }
                 }
+
                 function resetInactivityTimers() {
                     inactivityLocked = false;
                     scheduleInactivityTimers();
                 }
+
                 function scheduleInactivityTimers() {
                     clearInactivityTimers();
 
@@ -4529,9 +4757,9 @@ function injectCSS() {
                             try {
                                 const raw =
                                     localStorage.getItem(
-                                        typeof CHAT_LS_KEY === "string"
-                                            ? CHAT_LS_KEY
-                                            : "rex_chat_history"
+                                        typeof CHAT_LS_KEY === "string" ?
+                                            CHAT_LS_KEY :
+                                            "rex_chat_history"
                                     ) || "[]";
                                 hist = JSON.parse(raw);
                                 if (!Array.isArray(hist)) hist = [];
@@ -4551,7 +4779,9 @@ function injectCSS() {
                                     const url = `${API_URL}/Chatbot/end-chat/${encodeURIComponent(
                                         chatId
                                     )}`;
-                                    const res = await fetch(url, { method: "PATCH" });
+                                    const res = await fetch(url, {
+                                        method: "PATCH"
+                                    });
                                     if (!res.ok) {
                                         const txt = await res.text().catch(() => "");
                                         throw new Error(`end-chat HTTP ${res.status}: ${txt}`);
@@ -4559,7 +4789,9 @@ function injectCSS() {
                                 } else {
                                     const res = await fetch(`${API_URL}/agent/end-chat-archive`, {
                                         method: "POST",
-                                        headers: { "Content-Type": "application/json" },
+                                        headers: {
+                                            "Content-Type": "application/json"
+                                        },
                                         body: JSON.stringify({
                                             knowledge_base_id: knowledgeBaseId,
                                             chat_id: chatId,
@@ -4675,19 +4907,26 @@ function injectCSS() {
                     try {
 
                         console.log(payload, "payload")
-                        const { botText } = await createChatCompletion(payload);
+                        const {
+                            botText
+                        } = await createChatCompletion(payload);
                         const reply = botText || "…";
 
                         hideTyping();
 
                         const bubble = createBotBubble();
-                        await streamBotTextInto(bubble, reply, { chunkSize: 3, delay: 18 });
+                        await streamBotTextInto(bubble, reply, {
+                            chunkSize: 3,
+                            delay: 18
+                        });
                         saveChatMessage("bot", reply);
                         clearOnlyUserAutoEndTimer();
                         try {
                             if (isGoodbye(reply)) {
                                 setTimeout(async () => {
-                                    await endChatArchiveNow({ silent: true });
+                                    await endChatArchiveNow({
+                                        silent: true
+                                    });
                                 }, 2000);
                                 return;
                             }
@@ -4718,6 +4957,7 @@ function injectCSS() {
                         sendMessage();
                     }
                 });
+
                 function renderHistory() {
                     const hist = loadChatHistory();
                     hist.forEach((m) => appendMessage(m.role, m.text, m.ts || Date.now()));
@@ -4786,7 +5026,10 @@ function injectCSS() {
                             const top = callBtn.getBoundingClientRect().top -
                                 popupBody.getBoundingClientRect().top +
                                 popupBody.scrollTop - 8;
-                            popupBody.scrollTo({ top, behavior: "smooth" });
+                            popupBody.scrollTo({
+                                top,
+                                behavior: "smooth"
+                            });
                         }
                     }, 0);
                 } else {

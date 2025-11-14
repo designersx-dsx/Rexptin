@@ -37,6 +37,7 @@ import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import { useNotificationStore } from "../../Store/notificationStore";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import Tooltip from "../TooltipSteps/Tooltip";
+import PublicCopyUrl from "../PublicCopyUrl/PublicCopyUrl";
 
 const AgentDashboard = () => {
   const location = useLocation();
@@ -135,6 +136,9 @@ const AgentDashboard = () => {
   const unreadCount = notifications?.filter((n) => n?.status === 'unread').length;
   const [isEnabled, setIsEnabled] = useState(true);
   const [agentinfo, setAgentInfo] = useState()
+  const [openPublicUrlModal, setOpenPublicUrlModal] = useState(false)
+  const [copied, setCopied] = useState(false);
+ const [publicUrlEditMode,setPublicUrlEditMode]=useState(false)
   //chatToggleSwitch
   const chatToggleSwitch = async () => {
     const newState = !isEnabled;
@@ -634,6 +638,9 @@ const AgentDashboard = () => {
   const handleCloseWidgetModal = () => {
     setOpenWidgetModal(false);
   };
+  const handleClosePublicWidget = () => {
+    setOpenPublicUrlModal(false);
+  };
   const handleRefresh = () => {
     setHasFetched(false);
   };
@@ -773,84 +780,6 @@ const AgentDashboard = () => {
   const mClose = () => {
     setAssignPopUp(false)
   }
-  // const handleSamanPtra = async () => {
-
-  //   const handleCancelSubscription = async () => {
-  //     const agent_id = agentData?.agent.agent_id;
-  //     // const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
-
-  //     try {
-  //       setDisableLoading(true)
-  //       // setdeleteloading(true);
-
-  //       try {
-  //         let res = null
-  //         // assignNumberPaid === true &&
-  //         if ((agentData?.agent?.agentPlan === "free" || agentData?.agent?.agentPlan === "Pay-As-You-Go")) {
-  //           console.log("Cancel Schedule")
-  //           res = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
-  //             method: "POST",
-  //             headers: {
-  //               "Content-Type": "application/json",
-  //               Authorization: `Bearer ${token}`,
-  //             },
-  //             body: JSON.stringify({ subscriptionId: agentData?.subscription?.subscription_id }),
-  //           });
-  //           const requestData = {
-  //             customerId: agentData.subscription?.subscription_id,
-  //             agentId: agent_id,
-  //             status: "inactive",
-  //             isFree: (agentData?.agent?.agentPlan === "free") || (agentData?.agent?.agentPlan === "Pay-As-You-Go" ? true : false)
-
-  //           };
-  //           const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
-  //             method: 'POST',
-  //             headers: {
-  //               'Content-Type': 'application/json',
-  //               Authorization: `Bearer ${token}`,
-  //             },
-  //             body: JSON.stringify(requestData),
-  //           });
-  //           if (response.ok) { console.log('Agent Payg Cancelled Succesfully') }
-
-  //           else {
-  //             console.log('Failed to send the request to save the agent.')
-  //           }
-  //           console.log("assign cancel")
-  //           // await checkAssignNumber()
-  //         }
-
-  //         if (res) {
-  //           setTimeout(() => {
-  //             // fetchAndMergeCalApiKeys();
-  //           }, 1000);
-  //         }
-  //       } catch (notifyError) {
-  //         throw new Error(`Refund failed: ${notifyError.message}`);
-  //       }
-
-  //       // const updatedAgents = localAgents.filter((a) => a.agent_id !== agent_id);
-  //       // setLocalAgents(updatedAgents);
-  //       // setPopupMessage("Subscription Cancelled successfully!");
-  //       // setPopupType("success");
-  //       // fetchAndMergeCalApiKeys();
-  //       // checkAssignNumber()
-  //       // checkAgentPaygStatus(agentId)
-  //       setDisableLoading(false)
-  //     } catch (error) {
-  //       // setPopupMessage(`Failed to Cancel Subscription: ${error.message}`);
-  //       // setPopupType("failed");
-  //       setDisableLoading(false)
-  //     } finally {
-  //       // setdeleteloading(false);
-  //     }
-  //   };
-  // }
-
-
-  // helpers you already have in scope:
-  // API_BASE, token, agentData, setDisableLoading
-
   const handleSamanPtra = async () => {
     const agentPlan = agentData?.agent?.agentPlan;
     const subscriptionId = agentData?.subscription?.subscription_id;
@@ -980,9 +909,6 @@ const AgentDashboard = () => {
       setIsEnabled(agentData.agent.chatWidgetEnabled);
     }
   }, [agentData]);
-
-
-
   const handleMessagePlan = () => {
     navigate("/message-plan", {
       state: {
@@ -1005,20 +931,25 @@ const AgentDashboard = () => {
 
     localStorage.setItem("filterType", "single")
   }
-  const handleCopyPublicLink = (agentCode) => {
+  const handleCopyPublicLink = (agentCode,key) => {
+    setPublicUrlEditMode(key)
     const link = `${process.env.REACT_APP_PUBLIC_WIDGET_DOMAIN}?agent=${agentCode}`;
-
-    navigator.clipboard.writeText(link)
-      .then(() => {
-
-        setPopupMessage(" Link copied: " + link);
-        setPopupType("success");
-      })
-      .catch((err) => {
-        console.error("Failed to copy: ", err);
-        alert("❌ Failed to copy link");
-      });
+    setOpenPublicUrlModal(true)
   };
+  const defaultPublicUrl = `${process.env.REACT_APP_PUBLIC_WIDGET_DOMAIN}?agent=${agentData?.agent?.agentCode}`;
+  const ventryPublicUrl = agentData?.agent?.ventryUrl
+    ? `${process.env.REACT_APP_PUBLIC_WIDGET_DOMAIN}?${agentData?.agent?.ventryUrl}`
+    : null;
+
+  const finalUrl = ventryPublicUrl || defaultPublicUrl;
+  const handleCopy = () => {
+    navigator.clipboard.writeText(finalUrl);
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000); 
+  };
+
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -1253,6 +1184,32 @@ Do you want to proceed with deleting this assigned number?`
           {/*  */}
 
           <div className={styles.container}>
+            <div className={styles.publicUrlContainer}>
+              <h3 >
+                {finalUrl}
+              </h3>
+
+              <div className={styles.actions}>
+                {/* Copy Icon */}
+                {/* <div className={styles.copyBox} onClick={handleCopy}>
+                 <img src='/svg/copy-icon.svg' alt="copy-icon"/>
+                  <span>{copied ? "Copied!" : ""}</span>
+                </div> */}
+                <div className={styles.copyWrapper}>
+                                        <div className={styles.copyButton} onClick={handleCopy}>
+                                            <img src="/svg/copy-icon.svg" alt="Copy" />
+                                        </div>
+                                        {copied && <span className={styles.tooltip}>Copied!</span>}
+                                        </div>
+
+                {/* Edit Button */}
+                <button className={styles.editBtn} onClick={() => handleCopyPublicLink(agentData?.agent?.agentCode,true)}>
+                  Edit
+                </button>
+              </div>
+            </div>
+
+
             <div className={styles.businessInfo}>
               <div className={styles.card1}>
                 <h2>
@@ -1484,11 +1441,11 @@ Do you want to proceed with deleting this assigned number?`
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
             <Divider label="Agent Options" />
             <div className={styles.managementActions}>
-                <div
+              <div
                 className={styles.managementItem}
                 // onClick={() => setShowModal(true)}
                 onClick={() =>
-                  handleCopyPublicLink(agentData?.agent?.agentCode)
+                  handleCopyPublicLink(agentData?.agent?.agentCode,false)
                 }
 
               >
@@ -1926,7 +1883,7 @@ Do you want to proceed with deleting this assigned number?`
                 </div>
                 <p className={styles.managementText}>Knowledge Files</p>
               </div>
-            
+
             </div>
             <hr className={styles.line} />
             <h1 className={styles.Agenttitle}>
@@ -2271,6 +2228,12 @@ Do you want to proceed with deleting this assigned number?`
               />
             </Modal2>
           )}
+          {/* //openPublicUrlModal */}
+          {openPublicUrlModal && (
+            <Modal2 isOpen={openPublicUrlModal} onClose={handleClosePublicWidget}>
+              <PublicCopyUrl agent={agentData?.agent} isRefresh={() => setRefresh((prev) => !prev) } isEditMode={publicUrlEditMode} />
+            </Modal2>
+          )}
 
           {/* Card1 Section Modal Start */}
           <DetailModal
@@ -2306,37 +2269,6 @@ Do you want to proceed with deleting this assigned number?`
               setRefresh((prev) => !prev);
             }}
           />
-          {/* {isAssignNumberModalOpen && (
-            <div
-              className={styles.modalBackdrop}
-              onClick={closeAssignNumberModal}
-            >
-              <div
-                className={styles.modalContainer}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h2>Upgrade Required!</h2>
-                <p
-                  style={{
-                    fontSize: "1.1rem",
-                    color: "#444",
-                    margin: "16px 0",
-                  }}
-                >
-                  To get an agent number, you need to upgrade your plan. Unlock
-                  access to premium features by choosing a higher plan.
-                </p>
-                <button
-                  className={`${styles.modalButton} ${styles.submit}`}
-                  onClick={closeAssignNumberModal}
-                  style={{ width: "100%" }}
-                >
-                  Got it!
-                </button>
-              </div>
-            </div>
-          )} */}
-
           {isAssignNumberModal && (
             <CommingSoon
               show={isAssignNumberModal}
