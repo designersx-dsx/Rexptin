@@ -3,15 +3,15 @@ import styles from "./PublicCopyUrl.module.css";
 import { modifyAgentFields } from "../../Store/apiStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import { Pencil } from "lucide-react"; 
-const PublicCopyUrl = ({ agent, isRefresh }) => {
+const PublicCopyUrl = ({ agent, isRefresh ,isEditMode}) => {
   const { setHasFetched } = useDashboardStore();
 
   const [ventryUrl, setVentryUrl] = useState("");
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(isEditMode);
   const [message, setMessage] = useState({ type: "", text: "" });
-
+  const token=localStorage.getItem("token")
   // Base URLs
   const defaultPublicUrl = `${process.env.REACT_APP_PUBLIC_WIDGET_DOMAIN}?agent=${agent?.agentCode}`;
   const ventryPublicUrl = agent?.ventryUrl
@@ -38,7 +38,7 @@ const PublicCopyUrl = ({ agent, isRefresh }) => {
       setMessage({ type: "", text: "" });
 
       const agentId = agent?.agent_id;
-      const res = await modifyAgentFields(agentId, trimmedValue);
+      const res = await modifyAgentFields(agentId, trimmedValue,token);
 
       if (res?.success) {
         setMessage({

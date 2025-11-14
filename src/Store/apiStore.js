@@ -1012,13 +1012,15 @@ export const getAppointments = async (userId = null, agentId = null) => {
   }
 };
 
-export const modifyAgentFields = async (agentId, ventryUrl) => {
+export const modifyAgentFields = async (agentId, ventryUrl,token) => {
   try {
 
 
-    const res = await api.patch('/agent/modifyAgentFields', {
+    const res = await  axios.patch(`${API_BASE_URL}/agent/modifyAgentFields`, {
       agent_id: agentId,
       ventryUrl: ventryUrl,
+    } ,{
+      headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
   } catch (error) {

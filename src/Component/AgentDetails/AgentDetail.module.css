@@ -869,7 +869,7 @@
 .reportDiv h4 {
   font-size: 32px;
   font-weight: 600;
-   cursor: pointer;
+  cursor: pointer;
 }
 
 .hrLine {
@@ -1351,4 +1351,87 @@
     font-size: 14px;
   }
 }
-.publicUrlContainer{border: 1px  dotted;}
+
+.publicUrlContainer {
+  border: 2px dashed #a88bff;
+  margin-bottom: 1rem;
+}
+
+.publicUrlContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ede9fcab;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.publicUrlContainer h3 {
+  margin: 0;
+  font-size: 16px;
+  cursor: pointer;
+
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.actions i {
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.editBtn {
+  padding: 5px 12px;
+  background: #6564EB;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+
+
+.copyBox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  padding: 4px 8px;
+  background: #f0f0f000;
+  border-radius: 6px;
+  transition: 0.2s ease;
+}
+
+.copyBox:hover {
+  background: #e3e3e3;
+}
+
+.copyBox i {
+  font-size: 16px;
+}
+.copyWrapper {
+    position: relative;
+    display: inline-block;   cursor: pointer;
+}
+
+.tooltip {
+    position: absolute;
+    top: -28px;
+    right: 0;
+    background: #333;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    opacity: 0.9;
+    animation: fadeInOut 2s ease forwards;
+    cursor: pointer;
+}
