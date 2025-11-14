@@ -25,8 +25,10 @@ import Loader from "../Loader/Loader";
 import decodeToken from "../../lib/decodeToken";
 import {
   API_BASE_URL,
+  assignNumberToAgent,
   createAgent,
   createChatAgent,
+  createNumberOrder,
   listAgents,
   updateAgent,
   updateAgentWidgetDomain,
@@ -1183,7 +1185,8 @@ const Step = () => {
             const response = await createAgent(agentData);
 
             if (response.status === 200 || response.status === 201) {
-              sessionStorage.setItem("agentId", response.data.agent_id);
+              const selectedNumber =
+                sessionStorage.setItem("agentId", response.data.agent_id);
               sessionStorage.setItem("agentStatus", true);
               sessionStorage.removeItem("avatar");
               setPopupType("success");
@@ -1191,6 +1194,11 @@ const Step = () => {
                 agentId,
                 aboutBusinessForm?.businessUrl
               );
+              //AssignNumber both Agent
+              const assignedNumber = sessionStorage.getItem("assignedPhoneNumber");
+              if (assignedNumber) {
+                await assignNumberToAgent(assignedNumber, response.data.agent_id)
+              }
               if (ifChatWidgetEnabledOrNot) {
                 // alert("ok")
                 // Shared payload data for both Voice Agent and Chat Agent
@@ -1233,7 +1241,7 @@ const Step = () => {
               // if (checkPaymentDone === "true") {
               //     await callNextApiAndRedirect(agentId)
               // }
-              // fdfd
+
               setPopupMessage("Agent created successfully!");
               setIsAgentCreated(true);
               setShowPopup(true);
