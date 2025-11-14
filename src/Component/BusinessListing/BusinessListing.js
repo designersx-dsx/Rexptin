@@ -8,7 +8,7 @@ import React, {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "../BusinessListing/BusinessListing.module.css";
-import { API_BASE_URL } from "../../Store/apiStore";
+import { API_BASE_URL, fetchAvailablePhoneNumberByCountry, getPhoneNumberAccordingToCountry } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
 import PhoneInput from "react-phone-input-2";
@@ -422,6 +422,9 @@ const BusinessListing = forwardRef(
           }
         );
 
+        //getNumberAccording to Country
+
+
         if (stepEditingMode === "ON" && knowledge_Base_ID) {
           handleCreateAgent();
         }
@@ -434,6 +437,12 @@ const BusinessListing = forwardRef(
             setTimeout(() => {
               onStepChange?.(5);
             }, 2000);
+
+            // First attempt: Country + State + City
+            await getPhoneNumberAccordingToCountry(token,
+              businessData?.country_code || country_code,
+              "",
+              "")
           }
         } else {
           setShowPopup(true);

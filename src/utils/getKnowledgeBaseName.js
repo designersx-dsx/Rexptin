@@ -54,7 +54,8 @@ const getKnowledgeBaseName = async (
     { name: "Colleges & Universities", code: "coll" },
     { name: "Training Center", code: "tra_ce" },
     { name: "Educational Institute", code: "edu_ins" },
-    { name: "Other", code: "Other" }
+    { name: "Other", code: "Other" },
+    { name: "Plumber", code: "plum_b" },
   ];
   let agentCount = 0;
   try {
