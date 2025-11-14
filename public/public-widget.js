@@ -2356,7 +2356,7 @@ height: -webkit-fill-available;
                     businessName = json.businessName;
                     address = json.address1
                     url = json.webUrl || json.Google_urls || "NA"
-                    kb = JSON.parse(json.knowledge_base_texts) || {};
+                    kb = json.knowledge_base_texts || {};
                 });
 
                  console.log(kb.rating,"kb")
