@@ -53,6 +53,7 @@ const getDynamicAgentName = (
     { name: "Colleges & Universities", code: "coll" },
     { name: "Training Center", code: "tra_ce" },
     { name: "Educational Institute", code: "edu_ins" },
+    { name: "Plumber", code: "plum_b" },
   ];
 
   // Match business type

@@ -1495,7 +1495,7 @@ height: -webkit-fill-available;
 (function () {
     const currentSiteURL = window.location.origin;
     console.log(currentSiteURL, "currentSiteURL")
-    const API_URL = "https://rex-bk.truet.net/api/";
+    const API_URL = "https://rexptin.truet.net/api/";
     // const API_URL = "http://localhost:2513/api";
     const CHAT_LS_KEY = "rex_chat_history";
     let typingEl = null;
@@ -2359,7 +2359,7 @@ height: -webkit-fill-available;
                     kb = json.knowledge_base_texts || {};
                 });
 
-                 console.log(kb.rating,"kb")
+                console.log(kb.rating, "kb")
                 // === STEP 2: UPDATE GOOGLE RATING DYNAMICALLY ===
                 rating = parseFloat(kb.rating) || 0;
                 totalRatings = kb.totalRatings || 0;
@@ -2568,7 +2568,7 @@ height: -webkit-fill-available;
                 className: "popup-wrapper"
             });
 
-            
+
 
             const mainDiv = document.createElement("div");
             mainDiv.className = "popup-main-row";
@@ -2587,7 +2587,7 @@ height: -webkit-fill-available;
             // === LEFT SECTION ===
             const leftSection = document.createElement("div");
             // leftSection.className = "rex-left-info company-info-left";
-             leftSection.className = "CallSectionLeft";
+            leftSection.className = "CallSectionLeft";
             leftSection.innerHTML = `
 
             <div class="corner-ribbon"><a href="https://www.rxpt.us/" target="_blank">POWERED BY <span>rexpt</span></a></div>
@@ -2615,10 +2615,10 @@ height: -webkit-fill-available;
         </div>
     </div>
 
-  ${totalRatings? `<div class="google-rating">
+  ${totalRatings ? `<div class="google-rating">
        <span class="stars">${starsHTML}</span>
       <p class="reviews" style="color: blue;">${totalRatings} Google reviews</p>
-    </div>`:""}
+    </div>`: ""}
     </div>     
    <div class="bottomDesc"><p>
     Create your 
@@ -3000,10 +3000,10 @@ height: -webkit-fill-available;
                     }
 
       </div>
-   ${totalRatings? ` <div class="google-rating">
+   ${totalRatings ? ` <div class="google-rating">
         <span class="stars">${starsHTML}</span>
       <span class="reviews">${totalRatings} Google reviews</span>
-      </div>`:""}
+      </div>`: ""}
 
       </div>
      
@@ -3745,25 +3745,26 @@ height: -webkit-fill-available;
                         };
                         // 2. Call Modal Band Karo
                         if (localStorage.getItem("isChatEnabled") === "true") {
-                        if(modal){
-                            modal.style.display = "none";
-                            unlockBodyScroll();
-                            // 3. CHAT UI KHOLO — DIRECT BODY APPEND
-                            localStorage.setItem("rex_last_ui", "chat");
-                            // Force create & append chat popup
-                            let chatPopup = document.getElementById("rexChatPopup");
+                            if (modal) {
+                                modal.style.display = "none";
+                                unlockBodyScroll();
+                                // 3. CHAT UI KHOLO — DIRECT BODY APPEND
+                                localStorage.setItem("rex_last_ui", "chat");
+                                // Force create & append chat popup
+                                let chatPopup = document.getElementById("rexChatPopup");
 
-                            if (!chatPopup) {
-                                chatPopup = getOrCreateChatPopup(); // Yeh function already body.appendChild karta hai
+                                if (!chatPopup) {
+                                    chatPopup = getOrCreateChatPopup(); // Yeh function already body.appendChild karta hai
+                                }
+                                // Force visibility
+                                chatPopup.style.display = "flex";
+                                chatPopup.classList.add("show");
+                                chatPopup.classList.add("expanded");
+                                // Lock scroll for chat
+                                lockBodyScroll();
                             }
-                            // Force visibility
-                            chatPopup.style.display = "flex";
-                            chatPopup.classList.add("show");
-                            chatPopup.classList.add("expanded");
-                            // Lock scroll for chat
-                            lockBodyScroll();}
                         }
-                  
+
                     } finally {
 
                         // ensure button is enabled after hangup
@@ -4328,10 +4329,10 @@ height: -webkit-fill-available;
      
     </div>
 
-${totalRatings?` <div class="rating-box">
+${totalRatings ? ` <div class="rating-box">
       <span class="reviews">${starsHTML} </span>
        <span>${totalRatings} Google reviews</span>
-    </div>`:""}
+    </div>`: ""}
     </div>   
      <div class="bottomDesc"><p>
     Create your 

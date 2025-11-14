@@ -96,7 +96,7 @@ const PublicCopyUrl = ({ agent, isRefresh ,isEditMode}) => {
                 setVentryUrl(agent?.ventryUrl || "");
               }}
               className={`${styles.iconBtn} ${styles.editBtn}`}
-                title="Edit keyboard"
+                title="Edit Url name"
 
             >
               <Pencil size={20} strokeWidth={2} />
@@ -111,13 +111,13 @@ const PublicCopyUrl = ({ agent, isRefresh ,isEditMode}) => {
           <>
             <div className={styles.inputSection}>
               <label className={styles.label}>
-                {isEditing ? "Edit Keyword" : "Add Keyword"}
+                {isEditing ? "Edit Url name" : "Add Url name"}
               </label>
               <input
                 type="text"
                 value={ventryUrl}
                 onChange={(e) => setVentryUrl(e.target.value)}
-                placeholder="Enter Keyword"
+                placeholder="Enter Url name"
                 className={styles.input}
                 maxLength={30}
               />
@@ -133,8 +133,8 @@ const PublicCopyUrl = ({ agent, isRefresh ,isEditMode}) => {
                 {loading
                   ? "Saving..."
                   : isEditing
-                  ? "Update Ventry URL"
-                  : "Add Ventry URL"}
+                  ? "Update Vanity URL"
+                  : "Add Vanity URL"}
               </button>
 
               {isEditing && (

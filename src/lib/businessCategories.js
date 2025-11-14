@@ -762,25 +762,25 @@ export const businessTypes = [
       "E-Learning Platforms",
       "Educational Institute"
     ],
+  },
+  {
+    type: "Plumber",
+    subtype: "Water System Specialist",
+    icon: "svg/Plumber.svg",
+    subtypes: [
+      "Residential Plumbing Services",
+      "Commercial Plumbing Services",
+      "Industrial Plumbing Solutions",
+      "Pipe Installation & Maintenance",
+      "Drainage & Sewer Cleaning",
+      "Leak Detection & Repair",
+      "Bathroom & Kitchen Fittings",
+      "Water Heater Installation & Repair",
+      "Water Tank Cleaning & Maintenance",
+      "Emergency Plumbing Services",
+      "Plumber"
+    ],
   }
-  // {
-  //   type: "Plumber",
-  //   subtype: "Water System Specialist",
-  //   icon: "svg/Hair Stylist.svg",
-  //   subtypes: [
-  //     "Residential Plumbing Services",
-  //     "Commercial Plumbing Services",
-  //     "Industrial Plumbing Solutions",
-  //     "Pipe Installation & Maintenance",
-  //     "Drainage & Sewer Cleaning",
-  //     "Leak Detection & Repair",
-  //     "Bathroom & Kitchen Fittings",
-  //     "Water Heater Installation & Repair",
-  //     "Water Tank Cleaning & Maintenance",
-  //     "Emergency Plumbing Services",
-  //     "Plumber"
-  //   ],
-  // }
   ,
   {
     type: "Other",

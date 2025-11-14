@@ -35,6 +35,9 @@ const AssignNumber = () => {
     const requestVersion = useRef(0)
     const popupShownRef = useRef(false);
     const token = localStorage.getItem("token")
+    console.log(agent_id, "agent_id")
+    // const numberEditMode = location?.state?.numberEditMode || false;
+    // console.log(numberEditMode, "numberEditMode")
     const navigate = useNavigate()
     const languages = [
         {
@@ -102,6 +105,8 @@ const AssignNumber = () => {
         setAgent_id(location.state?.agent?.agent_id)
         const businessDetails = location.state?.business
         const business = location.state?.agent?.business || businessDetails;
+
+        console.log(business, "jkjkdjkfsf")
         if (business) {
             setCountryCode(business.country_code || 'US');
             setStateCode(business.state_code || '');
@@ -205,6 +210,11 @@ const AssignNumber = () => {
                 assignNumFree: 1,
                 isNumActivated: 1
             });
+            // if(numberEditMode){
+
+
+
+            // }
             setShowPopup(true)
             setPopupType("success")
             setPopupMessage("Number assigned successfully")
@@ -374,11 +384,23 @@ const AssignNumber = () => {
                 <Modal2 isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
                     <div className={styles.modalContent}>
                         <h2 className={styles.modalTitle}>Confirm Phone Number</h2>
-                        <p className={styles.assignText}>
-                            You have chosen to <br />
-                            assign{' '}
-                            <span className={styles.phoneNumber}>{selectedNumber}</span> to your:
-                        </p>
+                         <p className={styles.assignText}>
+                                You have chosen to <br />
+                                assign{' '}
+                                <span className={styles.phoneNumber}>{selectedNumber}</span> to your:
+                            </p>
+                        {/* {numberEditMode ? <p className={styles.assignText}>
+                            You already have a phone number assigned:{' '}
+                            <span className={styles.phoneNumber}>{location.state?.agent?.voip_numbers}</span>
+                            <br />
+                            We will replace it with:{' '}
+                            <span className={styles.phoneNumber}>{selectedNumber}</span>
+                        </p> :
+                            <p className={styles.assignText}>
+                                You have chosen to <br />
+                                assign{' '}
+                                <span className={styles.phoneNumber}>{selectedNumber}</span> to your:
+                            </p>} */}
                         <div className={styles.infoRow}>
                             <img src="/svg/green-check.svg" alt="check" />
                             <span>
@@ -399,7 +421,10 @@ const AssignNumber = () => {
                             </span>
                         </div>
                         <div className={styles.assignBtn}>
-                            <AnimatedButton disabled={!!voip_numbers} isLoading={loading} label="Assign Number" onClick={handleBuyNumber} position={{ position: 'relative' }} />
+                            {/* <AnimatedButton disabled={!numberEditMode && !!voip_numbers}
+                                isLoading={loading} label="Assign Number" onClick={handleBuyNumber} position={{ position: 'relative' }} /> */}
+                                  <AnimatedButton disabled={ !!voip_numbers}
+                                isLoading={loading} label="Assign Number" onClick={handleBuyNumber} position={{ position: 'relative' }} />
                         </div>
                     </div>
                 </Modal2>
