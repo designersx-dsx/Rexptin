@@ -53,6 +53,7 @@ import { useNotificationStore } from "../../Store/notificationStore";
 
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import NotificationView from "../Notifications/NotificationView";
+import { Edit } from "lucide-react";
 
 function Dashboard() {
   const { agents, totalCalls, total_chat, hasFetched, setDashboardData, setHasFetched } =
@@ -363,7 +364,7 @@ function Dashboard() {
         position: "bottom",
       },
 
-  
+
       {
         element: "#tour-footer-support",
         title: " Help & Support",
@@ -588,8 +589,6 @@ function Dashboard() {
       setShowUpgradeConfirmModal(true)
       return
     }
-
-
     // const planName = agent?.subscription?.plan_name || "Free";
     // if (planName.toLowerCase() === "free" && !assignNumberPaid) {
     //   openAssignNumberModal();
@@ -683,7 +682,9 @@ function Dashboard() {
       sessionStorage.removeItem("businessUrl");
       sessionStorage.removeItem("selectedServices");
       sessionStorage.removeItem("chatWebWidget")
-       sessionStorage.removeItem("subType")
+      sessionStorage.removeItem("subType")
+      sessionStorage.removeItem("assignedPhoneNumber")
+
     } else {
       localStorage.removeItem("UpdationMode");
       localStorage.removeItem("displayBusinessName");
@@ -786,13 +787,12 @@ function Dashboard() {
       sessionStorage.removeItem("chat_agent_id");
       sessionStorage.removeItem("chat_llm_id")
       sessionStorage.removeItem("chatWebWidget")
-            sessionStorage.removeItem("subType")
-      
+      sessionStorage.removeItem("subType")
+      sessionStorage.removeItem("assignedPhoneNumber")
 
 
     }
   }, []);
-
   useEffect(() => {
     if (!localAgents?.length || !userId) {
       setCalBookingCount(0);
@@ -2564,14 +2564,14 @@ function Dashboard() {
                 >
                   <div className={styles?.PlanPriceMain}>
                     <h3 className={styles?.PlanPrice}>
-                  
+
                       {agent?.subscription?.plan_name
-  ? agent?.subscription?.plan_name === "Add-on Services"
-    ? "Pay-As-You-Go Plan"
-    : agent?.subscription?.plan_name === "Custom Plan"
-      ? "Custom Plan"
-      : `${agent?.subscription?.plan_name} Plan`
-  : `${agent?.agentPlan || "Free"} Plan`}
+                        ? agent?.subscription?.plan_name === "Add-on Services"
+                          ? "Pay-As-You-Go Plan"
+                          : agent?.subscription?.plan_name === "Custom Plan"
+                            ? "Custom Plan"
+                            : `${agent?.subscription?.plan_name} Plan`
+                        : `${agent?.agentPlan || "Free"} Plan`}
                     </h3>
                   </div>
                   <div className={styles.Lang}>
@@ -2905,6 +2905,19 @@ function Dashboard() {
                           {assignedNumbers.length > 1 ? "s" : ""}{" "}
                           {assignedNumbers.map(formatE164USNumber).join(", ")}
                         </p>
+                        {/* <Edit
+                        
+                          onClick={(e) => {
+                            if (e.target === e.currentTarget) {
+                              e.stopPropagation();
+                              alert("ok")
+                            }
+                          }}
+                          size={16}
+                          className=""
+                        // onClick={handleEditNumber}
+                        /> */}
+
                         {agent?.agentPlan === "free" && !agent?.subscriptionId && agent?.voip_numbers_created ? (
                           (() => {
                             const created = new Date(agent.voip_numbers_created);
