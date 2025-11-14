@@ -13,7 +13,7 @@ function generateTimeSlots(start = "09:00", end = "18:30", interval = 30) {
   const slots = [];
   let [startHour, startMin] = start.split(":").map(Number);
   let [endHour, endMin] = end.split(":").map(Number);
-
+// dsdsds
   const current = new Date();
   current.setHours(startHour, startMin, 0, 0);
 
