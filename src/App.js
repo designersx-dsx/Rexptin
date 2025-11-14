@@ -78,13 +78,10 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import NotificationView from "./Component/Notifications/NotificationView";
-
 import ThankYouPage from "./Component/hubspotThankyouPage/HubspotThankyou";
-
 import OwnPlan from './Component/OwnPlan/OwnPlan'
 import CustomPlan from "./Component/BuildPlan/CustomPlan";
-import PublicWidgetPage from "./Component/PublicWidgetPage/PublicWidgetPage"
-
+import PublicWidgetPage from "./Component/PublicWidgetPage/PublicWidgetPage";
 // import Test from "./utils/Test";
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -101,11 +98,8 @@ function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [confirmPopup, setConfirmPopup] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0); // State for unreadCount
   // const [refreshNotification,setRefreshNoitification]=useState(false)
-  
   const navigate = useNavigate()
-
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
@@ -117,7 +111,6 @@ function App() {
       document.body.removeChild(script);
     };
   }, []);
-
   useEffect(() => {
     if (userID) {
       try {

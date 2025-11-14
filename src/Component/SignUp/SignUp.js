@@ -419,7 +419,7 @@ const SignUp = () => {
       }
     }
 
-  }
+  
 }, [searchParams]);
   const chatkefun = () => {
   
