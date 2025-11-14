@@ -4,10 +4,11 @@ import {
   Routes,
   Route,
   useNavigate,
-  Navigate,
-  useParams
+  useParams,
+  Navigate,useLocation
 } from "react-router-dom";
 import Start from "./Component/Start/Start";
+import BuildPlan from "./Component/BuildPlan/BuildPlan";
 import SignUp from "./Component/SignUp/SignUp";
 import Details from "./Component/Details/Details";
 import Step from "./Component/Step/Step";
@@ -79,10 +80,9 @@ import { toast } from "react-toastify";
 import NotificationView from "./Component/Notifications/NotificationView";
 import ThankYouPage from "./Component/hubspotThankyouPage/HubspotThankyou";
 import OwnPlan from './Component/OwnPlan/OwnPlan'
-// import CustomPlan from "./Component/OwnPlan/CustomPlan";
-import BuildPlan from "./Component/BuildPlan/BuildPlan";
 import CustomPlan from "./Component/BuildPlan/CustomPlan";
-import PublicWidgetPage from "./Component/PublicWidgetPage/PublicWidgetPage"
+import PublicWidgetPage from "./Component/PublicWidgetPage/PublicWidgetPage";
+// import Test from "./utils/Test";
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const token = localStorage.getItem("token");
@@ -95,6 +95,10 @@ function App() {
   const loadNotifications = useNotificationStore((state) => state.loadNotifications);
   const toggleFlag = useNotificationStore((state) => state.toggleFlag);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [confirmPopup, setConfirmPopup] = useState(false);
+  // const [refreshNotification,setRefreshNoitification]=useState(false)
   const navigate = useNavigate()
   useEffect(() => {
     const script = document.createElement("script");
@@ -107,7 +111,6 @@ function App() {
       document.body.removeChild(script);
     };
   }, []);
-
   useEffect(() => {
     if (userID) {
       try {
@@ -117,19 +120,68 @@ function App() {
       }
     }
   }, [userID, navigate]);
-
+// custa
   useEffect(() => {
     if (userID) {
       getUserNotifications(userID)
         .then((resp) => {
+          console.log("user notifications ", resp);
           loadNotifications(resp?.notifications || []);
         })
         .catch((err) => console.log("error while fetching user Notifications", err));
     }
   }, [userID, token]);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+          const token = localStorage.getItem("token");
+
+      const alreadyShown = localStorage.getItem("installPromptShown");
+      const sessionHidden = sessionStorage.getItem("hideBannerThisSession");
+
+        if ( token ||alreadyShown || sessionHidden) return;
+
+
+      e.preventDefault();
+      console.log("📱 beforeinstallprompt fired");
+      setDeferredPrompt(e);
+      setShowPopup(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    };
+  }, []);
+
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === "accepted") {
+      console.log("✅ User accepted install");
+    } else {
+      console.log("❌ User dismissed install");
+    }
+    setDeferredPrompt(null);
+    setShowPopup(false);
+  };
+
+
+  const handleClose = () => {
+    localStorage.setItem("installPromptShown", "true"); // save flag
+    setShowPopup(false);
+  };
+
   useEffect(() => {
     const count = notifications?.filter((n) => n?.status === "unread")?.length;
     setUnreadCount(count);
+    // console.log("Notifications:", notifications);
+    // console.log("Unread Count:", count);
   }, [notifications]);
 
   useEffect(() => {
@@ -143,11 +195,11 @@ function App() {
 
     socket.on("connect", () => {
       console.log("🟢 Connected:", socket.id);
-      socket.emit("register", userID);
+      socket.emit("register", userID); // register user
     });
+
     // 📩 Listen for notification
     socket.on("notification", (msg) => {
-      // console.log('new notification')
     });
 
     socket.on("disconnect", () => {
@@ -161,6 +213,7 @@ function App() {
   useEffect(() => {
     const ref = document.referrer;
     console.log('Referrer URL:', ref);
+    sessionStorage.removeItem("hideBannerThisSession")
   }, []);
   //Public Widget Integration
   // ✅ Public Widget Integration
@@ -192,8 +245,158 @@ function App() {
   return (
     <>
       {/* <ForcePortraitOnly /> */}
+
+
       <div className="DesktopPlusMobile">
+        {showPopup && (
+          <>
+            {/* Main Banner */}
+            <div
+              style={{
+                width: "100%",
+                background: "linear-gradient(90deg, #6524EB, #8139FF)",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "10px 16px",
+                zIndex: 9999,
+                fontFamily: "Inter, sans-serif",
+                flexWrap: "wrap",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+                position: "relative",
+              }}
+            >
+              <div style={{ fontSize: "15px", fontWeight: "500"}}>
+                Add <strong>Rexpt</strong> to your Home Screen for a better experience!
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginTop: "6px",
+                }}
+              >
+                <button
+                  onClick={handleInstall}
+                  style={{
+                    background: "white",
+                    color: "#6524EB",
+                    border: "none",
+                    borderRadius: "6px",
+                    padding: "6px 14px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                  }}
+                >
+                  Install
+                </button>
+
+                <button
+                  onClick={() => setConfirmPopup(true)}
+                  style={{
+                    background: "transparent",
+                    color: "white",
+                    border: "none",
+                    fontSize: "18px",
+                    cursor: "pointer",
+                    lineHeight: "1",
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Confirmation Popup */}
+            {confirmPopup && (
+              <div
+                style={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  width: "100vw",
+                  height: "100vh",
+                  background: "rgba(0,0,0,0.6)",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  zIndex: 10000,
+                }}
+              >
+                <div
+                  style={{
+                    background: "white",
+                    borderRadius: "12px",
+                    padding: "20px",
+                    width: "90%",
+                    maxWidth: "320px",
+                    textAlign: "center",
+                    boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+                  }}
+                >
+                  <h3 style={{ color: "#4B1EE5", marginBottom: "10px" }}>
+                    Hide Install Banner?
+                  </h3>
+                  <p style={{ color: "#555", fontSize: "14px", marginBottom: "20px" }}>
+                    You can install Rexpt anytime later from your browser menu.
+                  </p>
+
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    {/* CANCEL = hide only for current session */}
+                    <button
+                      onClick={() => {
+                        sessionStorage.setItem("hideBannerThisSession", "true");
+                        setShowPopup(false);
+                        setConfirmPopup(false);
+                      }}
+                      style={{
+                        flex: 1,
+                        background: "#f0f0f0",
+                        color: "#333",
+                        border: "none",
+                        borderRadius: "6px",
+                        padding: "10px 0",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Hide for now
+                    </button>
+
+                    {/* NEVER SHOW AGAIN = permanent hide */}
+                    <button
+                      onClick={() => {
+                        localStorage.setItem("installPromptShown", "true");
+                        setShowPopup(false);
+                        setConfirmPopup(false);
+                      }}
+                      style={{
+                        flex: 1,
+                        background: "linear-gradient(90deg, #6524EB, #8139FF)",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "6px",
+                        padding: "10px 0",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Never Show Again
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+
         <div className="ForDesktop">
+
           <img src="svg/Rexpt-Logo.svg" />
           <h1>
             Launch Your <b>AI Receptionist</b> with Rexpt.in
@@ -201,8 +404,7 @@ function App() {
           <p>Launch Your AI Receptionist with Rexpt.in</p>
         </div>
         <div className="ForMobile">
-
-          <PreventPullToRefresh setRefreshKey={setRefreshKey}>
+          {/* <PreventPullToRefresh setRefreshKey={setRefreshKey}> */}
             {/* <BrowserRouter> */}
             <div className="App" key={refreshKey}>
               {/* <RoutePersistence /> */}
@@ -210,13 +412,9 @@ function App() {
                 <Route
                   path="/signup"
                   element={
-                    token ? (
-                      <SecureRoute>
-                        <Navigate to={"/dashboard"} />
-                      </SecureRoute>
-                    ) : (
+                   
                       <SignUp />
-                    )
+                  
                   }
                 />
                 <Route
@@ -288,6 +486,14 @@ function App() {
                   }
                 />
                 <Route
+                  path="/build-own-plan"
+                  element={
+                    <SecureRoute>
+                      <CustomPlan />
+                    </SecureRoute>
+                  }
+                />
+                <Route
                   path="/plan"
                   element={
                     <SecureRoute>
@@ -308,6 +514,10 @@ function App() {
                       <AssignNumber />
                     </SecureRoute>
                   }
+                />
+                <Route
+                  path="/build-plan"
+                  element={<BuildPlan />}
                 />
                 <Route
                   path="/details"
@@ -644,7 +854,7 @@ function App() {
               </Routes>
             </div>
             {/* </BrowserRouter> */}
-          </PreventPullToRefresh>
+          {/* </PreventPullToRefresh> */}
         </div>
       </div>
       <ToastContainer position="top-right" autoClose={3000} />
