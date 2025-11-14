@@ -961,7 +961,6 @@ function injectCSS() {
 `;
     document.head.appendChild(style);
 }
-
 const currentSiteURL = window.location.origin;
 const API_URL = "https://rexptin.truet.net/api/";
 // const API_URL = "http://localhost:2512/api";
@@ -1355,37 +1354,10 @@ function extractBotText(resp) {
     if (/"transcript"|\"call_id\"|\"latest\"|^Agent:|^User:/m.test(t)) return "";
     return t;
 }
-
-// async function createChatCompletion(userText) {
-//   let chatId = localStorage.getItem("chat_id");
-//   const agentIdHdr =
-//     localStorage.getItem("chat_agent_id") || getAgentIdFromScript();
-//   const chat_agent_id = localStorage.getItem("chat_agent_id");
-
-//   if (!chatId) {
-//     await createChatSession(localStorage.getItem("chat_agent_id") || undefined);
-//     chatId = localStorage.getItem("chat_id");
-//     if (!chatId) throw new Error("chat_id missing; cannot send message");
-//   }
-
-//   const res = await fetch(`${API_URL}/Chatbot/create-chat-completion`, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//       ...(agentIdHdr ? { agent_id: agentIdHdr } : {}),
-//     },
-//     body: JSON.stringify({ chat_id: chatId, content: userText, chat_agent_id }),
-//   });
-
-//   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-//   const data = await res.json();
-//   const botText = extractBotText(data) || "";
-//   return { data, botText };
-// }
 async function createChatCompletion(userText) {
     let chatId = localStorage.getItem("chat_id");
     const agentIdHdr =
-        localStorage.getItem("chat_agent_id") ||await getAgentIdFromScript();
+        localStorage.getItem("chat_agent_id") || await getAgentIdFromScript();
     const chat_agent_id = localStorage.getItem("chat_agent_id");
 
     if (!chatId) {
@@ -1456,6 +1428,8 @@ async function createChatCompletion(userText) {
     return { data, botText };
 }
 const getAgentIdFromScript = async () => {
+    let agentCode = window.REX_AGENT_CODE;
+
     const script = document.getElementById("rex-widget-script");
     if (!script) {
         console.warn("Script with ID 'rex-widget-script' not found");
@@ -1466,11 +1440,9 @@ const getAgentIdFromScript = async () => {
     try {
         const url = new URL(rawSrc, window.location.href);
         let agentId =
-            url.searchParams.get("agentId") ||
+            url.searchParams.get("agent") ||
             script.getAttribute("data-agent-id") ||
             localStorage.getItem("agent_id");
-
-        const agentCode = agentId?.replace("agentId=", "");
         // console.log(agentCode)
         const response = await fetch(`${API_URL}/agent/fetchAgentIdByAgentCode/agentdetais?agent_code=${agentCode}`, {
             method: "GET", // you can switch to GET if backend expects query params
@@ -1518,7 +1490,7 @@ function buildRetellDynamicVars() {
 
 async function shouldLoadWidget() {
     try {
-        const agentId =await getAgentIdFromScript();
+        const agentId = await getAgentIdFromScript();
         if (!agentId) return false;
 
         const response = await fetch(
@@ -1560,7 +1532,7 @@ if (document.readyState === "loading") {
 }
 async function primeChatAgentId() {
     try {
-        const agentId =await getAgentIdFromScript();
+        const agentId = await getAgentIdFromScript();
         if (!agentId) return;
 
         const url = `${API_URL}/Chatbot/get-chat-agent-id?agent_id=${encodeURIComponent(
@@ -1682,7 +1654,7 @@ function createReviewWidget() {
             "https://cdn.jsdelivr.net/npm/retell-client-js-sdk@2.0.7/+esm"
         );
         const retellWebClient = new RetellWebClient();
-        const agentId =await getAgentIdFromScript();
+        const agentId = await getAgentIdFromScript();
 
         // put this near your helpers
         const toNum = (v) => {
@@ -1827,68 +1799,6 @@ function createReviewWidget() {
         agentWrapper.appendChild(rexImg);
         agentWrapper.appendChild(badge2);
         rexAgent.appendChild(agentWrapper);
-
-        // function playPrechatGreeting(
-        //   rootEl = document.getElementById("rexSupportPopup")
-        // ) {
-        //   if (!rootEl) return;
-        //   const $msg = rootEl.querySelector("#pcGreetingMsg");
-        //   const $dots = rootEl.querySelector("#pcTyping");
-        //   const $form =
-        //     rootEl.querySelector("#pcFormWrap") ||
-        //     rootEl.querySelector(".big-card");
-        //   const $action = rootEl.querySelector(".ChatCallBtn");
-        //   if (!$msg || !$dots || !$form || !$action) return;
-
-        //   const LINES = [
-        //     `Hello! Welcome to ${businessName} `,
-        //     `Could you please share a few details before we continue?`,
-        //   ];
-
-        //   // --- same page session me 2nd+ open par: static (no typing)
-        //   if (window.__pc_greeting_played) {
-        //     $dots.style.display = "none";
-        //     $msg.textContent = LINES.join("");
-        //     $form.classList.add("show", "fade-in");
-        //     $action.classList.add("show", "fade-in");
-
-        //     return;
-        //   }
-
-        //   // --- first open in this page session: show typing, then mark played
-        //   const typeText = (el, text, speed = 10) =>
-        //     new Promise((res) => {
-        //       let i = 0;
-        //       const step = () => {
-        //         if (i < text.length) {
-        //           el.appendChild(document.createTextNode(text[i++]));
-        //           setTimeout(step, speed);
-        //         } else {
-        //           res();
-        //         }
-        //       };
-        //       step();
-        //     });
-
-        //   $dots.style.display = "inline-flex";
-        //   setTimeout(async () => {
-        //     $dots.style.display = "none";
-        //     $msg.textContent = "";
-
-        //     for (let i = 0; i < LINES.length; i++) {
-        //       await typeText($msg, LINES[i], 10);
-        //       await new Promise((r) => setTimeout(r, 150));
-        //     }
-
-        //     // mark for this page session only (reload -> resets)
-        //     window.__pc_greeting_played = true;
-
-        //     await new Promise((r) => setTimeout(r, 300));
-        //     $form.classList.add("show", "fade-in");
-        //     $action.classList.add("show", "fade-in");
-        //   }, 400);
-        // }
-
         function playPrechatGreeting(
             rootEl = document.getElementById("rexSupportPopup")
         ) {
@@ -2257,7 +2167,7 @@ function createReviewWidget() {
             localStorage.setItem("rex_last_ui", "chat");
             modal.style.display = "none";
             rexAgent.classList.remove("noFloat");
-            ensureUserProfileThen(async() => {
+            ensureUserProfileThen(async () => {
                 const cp = getOrCreateChatPopup();
                 cp.classList.add("show");
                 cp.classList.remove("expanded");
@@ -2268,7 +2178,7 @@ function createReviewWidget() {
 
                 if (window.ChatLily?.mount) {
                     window.ChatLily.mount("#rexChatPopupMount", {
-                        agentId:await getAgentIdFromScript(),
+                        agentId: await getAgentIdFromScript(),
                         source: "popup_button",
                     });
                 }
@@ -2288,7 +2198,7 @@ function createReviewWidget() {
             if (chatId) return chatId;
 
             const agentId =
-                localStorage.getItem("chat_agent_id") ||await getAgentIdFromScript();
+                localStorage.getItem("chat_agent_id") || await getAgentIdFromScript();
             const data = await createChatSession(agentId);
             chatId = data?.chat_id;
             if (!chatId) throw new Error("Failed to create chat session");
@@ -3207,7 +3117,7 @@ function createReviewWidget() {
 
             let agentId = localStorage.getItem("agent_id");
             if (!agentId && typeof await getAgentIdFromScript === "function") {
-                agentId =await getAgentIdFromScript() || "";
+                agentId = await getAgentIdFromScript() || "";
                 if (agentId) localStorage.setItem("agent_id", agentId);
             }
 
@@ -3328,7 +3238,7 @@ function createReviewWidget() {
                         .forEach((r) => r.remove());
                     enableChatButton();
 
-                    const data = { agentId:await getAgentIdFromScript(), callId: callId };
+                    const data = { agentId: await getAgentIdFromScript(), callId: callId };
 
                     modal.style.display = "none";
                     document.getElementById("agentButton")?.classList.remove("noFloat");

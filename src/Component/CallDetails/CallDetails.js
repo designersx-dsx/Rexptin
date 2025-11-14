@@ -230,7 +230,7 @@ const CallDetails = () => {
                     agents.find((a) => a.agent_id === callData.agent_id)
                       ?.agentName
                   ) || "Unknown Agent"
-                  : "Loading..."}
+                  : "Thinking..."}
               </strong>
             </div>
 
@@ -396,7 +396,7 @@ const CallDetails = () => {
                           agents.find((a) => a.agent_id === callData.agent_id)
                             ?.agentName
                         ) || "Unknown Agent"
-                        : "Loading..."}
+                        : "Thinking..."}
                     </span>
                   </div>
                 </div>
@@ -450,7 +450,7 @@ const CallDetails = () => {
                                   (a) => a.agent_id === callData.agent_id
                                 )?.agentName
                               ) || "Unknown Agent"
-                              : "Loading..."}
+                              : "Thinking..."}
                           </span>
                         </div>
                       </div>

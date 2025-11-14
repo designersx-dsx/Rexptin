@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   useNavigate,
+  useParams,
   Navigate,useLocation
 } from "react-router-dom";
 import Start from "./Component/Start/Start";
@@ -82,6 +83,7 @@ import ThankYouPage from "./Component/hubspotThankyouPage/HubspotThankyou";
 
 import OwnPlan from './Component/OwnPlan/OwnPlan'
 import CustomPlan from "./Component/BuildPlan/CustomPlan";
+import PublicWidgetPage from "./Component/PublicWidgetPage/PublicWidgetPage"
 
 // import Test from "./utils/Test";
 function App() {
@@ -95,6 +97,7 @@ function App() {
   const addNotification = useNotificationStore((state) => state.addNotification);
   const loadNotifications = useNotificationStore((state) => state.loadNotifications);
   const toggleFlag = useNotificationStore((state) => state.toggleFlag);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [confirmPopup, setConfirmPopup] = useState(false);
@@ -219,6 +222,19 @@ function App() {
     console.log('Referrer URL:', ref);
     sessionStorage.removeItem("hideBannerThisSession")
   }, []);
+  //Public Widget Integration
+  const searchParams = new URLSearchParams(window.location.search);
+  const agent = searchParams.get("agent");
+
+  //Check if agent param is valid 6-char alphanumeric code
+  const isValidAgent = agent && /^[A-Za-z0-9]{6}$/.test(agent);
+
+  if (isValidAgent) {
+    console.log(" Valid agent detected:", agent);
+    return <PublicWidgetPage agentCode={agent} />;
+  }
+  // vf
+  // vf
 
 
   return (
@@ -414,6 +430,18 @@ function App() {
                   element={
                     <SecureRoute>
                       <Dashboard />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/build-plan"
+                  element={<SecureRoute><BuildPlan /> </SecureRoute>}
+                />
+                <Route
+                  path="/build-own-plan"
+                  element={
+                    <SecureRoute>
+                      <CustomPlan />
                     </SecureRoute>
                   }
                 />

@@ -15,10 +15,9 @@ const api = axios.create({
 const userId = sessionStorage.getItem("userId");
 
 // ========== Auth APIs ==========
-
 // Get all knowledge bases
-export const LoginWithEmailOTP = async (email) => {
-  const res = await api.post("/auth/LoginWithEmailOTP", { email });
+export const LoginWithEmailOTP = async (email,environmentInfo,utm_data) => {
+  const res = await api.post("/auth/LoginWithEmailOTP", { email,environmentInfo ,utm_data});
   return res;
 };
 

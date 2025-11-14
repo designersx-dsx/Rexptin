@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import styles from "../../Component/CallTransfer/CallTransfer.module.css";
 import HeaderBar from "../HeaderBar/HeaderBar";
-import axios from "axios";
 import {
   addGeneralTools,
   fetchLlmDetails,
   updateLlm,
+  getBusinessDetailsByBusinessId,
 } from "../../Store/apiStore";
-import Loader from "../Loader/Loader";
+import Loader2 from "../Loader2/Loader2";
 import PopUp from "../Popup/Popup";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 const dialToCountry = {
   1: "us",
@@ -125,65 +127,6 @@ const dialToCountry = {
   94: "lk",
   95: "mm",
   98: "ir",
-  211: "ss",
-  212: "ma",
-  213: "dz",
-  216: "tn",
-  218: "ly",
-  220: "gm",
-  221: "sn",
-  222: "mr",
-  223: "ml",
-  224: "gn",
-  225: "ci",
-  226: "bf",
-  227: "ne",
-  228: "tg",
-  229: "bj",
-  230: "mu",
-  231: "lr",
-  232: "sl",
-  233: "gh",
-  234: "ng",
-  235: "td",
-  236: "cf",
-  237: "cm",
-  238: "cv",
-  239: "st",
-  240: "gq",
-  241: "ga",
-  242: "cg",
-  243: "cd",
-  244: "ao",
-  245: "gw",
-  246: "io",
-  247: "ac",
-  248: "sc",
-  249: "sd",
-  250: "rw",
-  251: "et",
-  252: "so",
-  253: "dj",
-  254: "ke",
-  255: "tz",
-  256: "ug",
-  257: "bi",
-  258: "mz",
-  260: "zm",
-  261: "mg",
-  262: "re",
-  263: "zw",
-  264: "na",
-  265: "mw",
-  266: "ls",
-  267: "bw",
-  268: "sz",
-  269: "km",
-  290: "sh",
-  291: "er",
-  297: "aw",
-  298: "fo",
-  299: "gl",
   350: "gi",
   351: "pt",
   352: "lu",
@@ -286,116 +229,344 @@ const dialToCountry = {
   996: "kg",
   998: "uz",
 };
+
+const dialCodeFromIso2 = (iso2) => {
+  if (!iso2) return undefined;
+  const entry = Object.entries(dialToCountry).find(
+    ([, cc]) => cc === iso2.toLowerCase()
+  );
+  return entry ? String(entry[0]) : undefined;
+};
+
+const countryNameToIso2 = {
+  India: "in",
+  Australia: "au",
+  "United States": "us",
+  "United Kingdom": "gb",
+  Canada: "ca",
+  Singapore: "sg",
+  "New Zealand": "nz",
+  Germany: "de",
+  France: "fr",
+  Italy: "it",
+  Spain: "es",
+};
+
+const normalizePhoneIntoTransfer = (condition, raw) => {
+  if (!raw) return null;
+  const clean = String(raw).replace(/[^\d+]/g, "");
+  const input = clean.startsWith("+") ? clean : `+${clean}`;
+  const parsed = parsePhoneNumberFromString(input);
+  if (!parsed || !parsed.isValid()) return null;
+  const dial = parsed.countryCallingCode;
+  const iso2 =
+    parsed.country?.toLowerCase() || (dial && dialToCountry[dial]) || "us";
+  const digits = parsed.number.replace("+", "");
+  return { condition, phone: digits, dialCode: dial, countryCode: iso2 };
+};
+
+const mergeTransfersByCondition = (existing, incoming) => {
+  const next = [...existing];
+  incoming.forEach((t) => {
+    const idx = next.findIndex(
+      (x) =>
+        x.condition && x.condition.toLowerCase() === t.condition.toLowerCase()
+    );
+    if (idx >= 0) {
+      next[idx] = {
+        ...next[idx],
+        phone: next[idx].phone || t.phone,
+        dialCode: next[idx].dialCode || t.dialCode,
+        countryCode: next[idx].countryCode || t.countryCode,
+      };
+    } else {
+      next.push(t);
+    }
+  });
+  return next;
+};
+
 function CallTransfer() {
   const [llmId, setLlmId] = useState("");
-  const [transfers, setTransfers] = useState([
-    { condition: "", phone: "", dialCode: "91", countryCode: "in" },
-  ]);
+  const [transfers, setTransfers] = useState([]);
+
+  // Loading gates
+  const [bizLoaded, setBizLoaded] = useState(false);
+  const [llmLoaded, setLlmLoaded] = useState(false);
+
   const [loading, setLoading] = useState(false);
+  const [businessDetails, setBusinessDetails] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
-  const [prevDynanamicVar,setPrevDynamicVar]=useState({})
+  const [prevDynanamicVar, setPrevDynamicVar] = useState({});
+  const [removingIndex, setRemovingIndex] = useState(null);
 
+  const getBizDefaults = () => {
+    if (!businessDetails) return { iso2: "us", dial: "1" };
+    const raw = businessDetails?.knowledge_base_texts?.phone || "";
+    const parsed = raw ? parsePhoneNumberFromString(raw) : null;
+    let iso2 = parsed?.country ? parsed.country.toLowerCase() : undefined;
+    let dial = parsed?.countryCallingCode || undefined;
 
-  const prepareTransfersWithDialCode = (transfers) => {
-    return transfers.map((transfer) => {
-      // console.log(transfer, "transfer");
-      let rawPhone = transfer.phone.trim();
-      const dialCode = transfer.dialCode;
-      const countryCode = transfer.countryCode;
-      return {
-        ...transfer,
-        phone: rawPhone,
-        dialCode,
-        countryCode,
-      };
+    if (!iso2) {
+      const cc = (businessDetails?.country_code || "").trim();
+      if (cc.length === 2) iso2 = cc.toLowerCase();
+    }
+    if (!dial && iso2) dial = dialCodeFromIso2(iso2);
+
+    if (!iso2) {
+      const byName =
+        businessDetails?.country && countryNameToIso2[businessDetails.country];
+      if (byName) {
+        iso2 = byName;
+        if (!dial) dial = dialCodeFromIso2(byName);
+      }
+    }
+    return { iso2: iso2 || "us", dial: (dial || "1").replace(/\D/g, "") };
+  };
+
+  const createEmptyRow = () => {
+    const { iso2, dial } = getBizDefaults();
+    return { condition: "", phone: "", dialCode: dial, countryCode: iso2 };
+  };
+
+  const updateTransfer = (index, patch) => {
+    setTransfers((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], ...patch };
+      return next;
     });
   };
 
+  const prepareTransfersWithDialCode = (list) =>
+    list.map((t) => ({
+      ...t,
+      phone: (t.phone || "").trim(),
+      dialCode: t.dialCode,
+      countryCode: t.countryCode,
+    }));
+
+  const syncSessionCache = (list) => {
+    try {
+      sessionStorage.setItem("agentGeneralTools", JSON.stringify(list || []));
+    } catch {}
+  };
+
+  const persistTransfers = async (
+    llmIdParam,
+    transfersList,
+    cleanedPrevVars
+  ) => {
+    await updateLlm(llmIdParam, { default_dynamic_variables: cleanedPrevVars });
+    const formatted = prepareTransfersWithDialCode(transfersList);
+    if (formatted.length > 0) {
+      await addGeneralTools(llmIdParam, formatted);
+      syncSessionCache(formatted);
+    } else {
+      syncSessionCache([]);
+    }
+  };
+
+  // 1) Business details
   useEffect(() => {
-    const fetchCountryCode = async () => {
+    const bizId = sessionStorage.getItem("SelectAgentBusinessId");
+    if (!bizId) {
+      setShowPopup(true);
+      setPopupType("failed");
+      setPopupMessage(
+        "No business selected. Missing 'SelectAgentBusinessId' in session."
+      );
+      setBizLoaded(true); // prevent indefinite loading gate
+      return;
+    }
+    (async () => {
       try {
-        // const res = await axios.get("https://ipwho.is/");
-        const res = await axios.get("https://ipinfo.io/json");
-        const data = res?.data;
-        if (data && data.country ) {
-          setTransfers((prev) =>
-            prev.map((t, i) =>
-              i === 0
-                ? {
-                    ...t,
-                    dialCode: data?.phone_code?.replace("+", ""),
-                    countryCode: data?.country?.toLowerCase(),
-                  }
-                : t
-            )
-          );
-        }
-      } catch (err) {
-        console.error("Failed to fetch IP location:", err);
+        const data = await getBusinessDetailsByBusinessId(bizId);
+        const biz = data?.data ?? data ?? null;
+        setBusinessDetails(biz);
+      } catch (error) {
+        console.error(
+          "Error fetching business details:",
+          error?.response?.data || error?.message || error
+        );
+        setShowPopup(true);
+        setPopupType("failed");
+        setPopupMessage(
+          "Failed to fetch business details. " +
+            (error?.response?.data || error?.message || "")
+        );
+      } finally {
+        setBizLoaded(true);
       }
-    };
-    fetchCountryCode();
+    })();
   }, []);
 
-  const handleAdd = () => {
-    setTransfers([
-      ...transfers,
-      { condition: "", phone: "", dialCode: "91", countryCode: "in" },
-    ]);
-  };
+  // 2) LLM details + hydrate transfers from defaults (sales/billing/support)
+  useEffect(() => {
+    const agentData = JSON.parse(sessionStorage.getItem("agentDetails"));
+    setLlmId(agentData?.agent?.llmId || "");
 
-  // const handleRemove = (index) => {
-  //   const updated = [...transfers];
-  //   updated.splice(index, 1);
-  //   setTransfers(updated);
-  // };
-  const handleRemove = (index) => {
-  // remove from transfers
-  const updatedTransfers = [...transfers];
-  const [removed] = updatedTransfers.splice(index, 1);
-  setTransfers(updatedTransfers);
+    fetchLlmDetails(agentData?.agent?.llmId)
+      .then((res) => {
+        const vars = res?.data?.data?.default_dynamic_variables || {};
+        setPrevDynamicVar(vars);
 
-  // remove from prevDynamicVar
-  if (removed) {
-    setPrevDynamicVar((prev) => {
-      const updatedVars = { ...prev };
+        const incoming = [];
+        const salesT = normalizePhoneIntoTransfer("sales", vars?.sales_number);
+        if (salesT) incoming.push(salesT);
+        const billingT = normalizePhoneIntoTransfer(
+          "billing",
+          vars?.billing_number
+        );
+        if (billingT) incoming.push(billingT);
+        const supportT = normalizePhoneIntoTransfer(
+          "support",
+          vars?.support_number
+        );
+        if (supportT) incoming.push(supportT);
 
-      const conditionKeyMap = {
-        sales: "sales_number",
-        billing: "billing_number",
-        support: "support_number",
-      };
+        if (incoming.length > 0) {
+          setTransfers((prev) => mergeTransfersByCondition(prev, incoming));
+        }
+      })
+      .catch((e) => console.error("Failed to fetch LLM details", e))
+      .finally(() => setLlmLoaded(true));
+  }, []);
 
-      const keyToRemove = conditionKeyMap[removed.condition?.toLowerCase()];
-      if (keyToRemove && updatedVars[keyToRemove]) {
-        delete updatedVars[keyToRemove];
-      }
-
-      return updatedVars;
-    });
-  }
-};
-
-  const handleChange = (index, field, value) => {
-    // console.log(index, field, value)
-    const updated = [...transfers];
-    updated[index][field] = value;
-
-    if (field === "dialCode") {
-      const countryCode = dialToCountry[value] || "us";
-      updated[index]["countryCode"] = countryCode;
+  // 3) After BOTH loads: if there are no numbers, create ONE blank row with business defaults
+  useEffect(() => {
+    if (!bizLoaded || !llmLoaded) return;
+    if (transfers.length === 0) {
+      setTransfers([createEmptyRow()]);
     }
-    // console.log('updated',updated)
-    setTransfers(updated);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bizLoaded, llmLoaded]);
+
+  // 4) From business details, preselect country/dial ONLY for rows that still lack a phone
+  useEffect(() => {
+    if (!businessDetails) return;
+    const rawBizPhone = businessDetails?.knowledge_base_texts?.phone || "";
+    const parsedBiz = rawBizPhone
+      ? parsePhoneNumberFromString(rawBizPhone)
+      : null;
+
+    let iso2 = parsedBiz?.country ? parsedBiz.country.toLowerCase() : undefined;
+    let dialCode = parsedBiz?.countryCallingCode || undefined;
+
+    if (!iso2) {
+      const cc = (businessDetails?.country_code || "").trim();
+      if (cc.length === 2) iso2 = cc.toLowerCase();
+    }
+    if (!dialCode && iso2) dialCode = dialCodeFromIso2(iso2);
+
+    if (!iso2) {
+      const byName =
+        businessDetails?.country && countryNameToIso2[businessDetails.country];
+      if (byName) {
+        iso2 = byName;
+        if (!dialCode) dialCode = dialCodeFromIso2(byName);
+      }
+    }
+
+    if (iso2 || dialCode) {
+      setTransfers((prev) =>
+        prev.map((t) =>
+          t.phone
+            ? t
+            : {
+                ...t,
+                countryCode: (iso2 || t.countryCode || "us").toLowerCase(),
+                dialCode: (dialCode || t.dialCode || "1").replace(/\D/g, ""),
+              }
+        )
+      );
+    }
+  }, [businessDetails]);
+
+  const handleAdd = () => {
+    const hasBlank = transfers.some(
+      (t) => !(t.condition || "").trim() && !(t.phone || "").trim()
+    );
+    if (hasBlank) {
+      setShowPopup(true);
+      setPopupType("failed");
+      setPopupMessage("Finish the current empty row before adding another.");
+      return;
+    }
+    setTransfers((prev) => [...prev, createEmptyRow()]);
   };
+
+  // IMMEDIATE REMOVE (no Submit needed)
+  const handleRemove = async (index) => {
+    const conditionKeyMap = {
+      sales: "sales_number",
+      billing: "billing_number",
+      support: "support_number",
+    };
+    const removed = transfers[index];
+    const remaining = transfers.filter((_, i) => i !== index);
+    const insertedEmpty = remaining.length === 0;
+
+    setRemovingIndex(index);
+    setTransfers(insertedEmpty ? [createEmptyRow()] : remaining);
+
+    const hadData =
+      (removed?.condition && removed.condition.trim()) ||
+      (removed?.phone && removed.phone.trim());
+
+    if (!hadData) {
+      setRemovingIndex(null);
+      return;
+    }
+
+    try {
+      const cleanedPrev = { ...prevDynanamicVar };
+      const key =
+        removed?.condition &&
+        conditionKeyMap[(removed.condition || "").toLowerCase()];
+      if (key && cleanedPrev[key]) delete cleanedPrev[key];
+
+      await persistTransfers(llmId, remaining, cleanedPrev);
+
+      setPrevDynamicVar(cleanedPrev);
+      setShowPopup(true);
+      setPopupType("success");
+      setPopupMessage("Number removed.");
+    } catch (err) {
+      setTransfers((prev) => {
+        if (insertedEmpty) return [removed];
+        const back = [...prev];
+        back.splice(index, 0, removed);
+        return back;
+      });
+      setShowPopup(true);
+      setPopupType("failed");
+      setPopupMessage(
+        "Failed to remove number: " +
+          (err?.response?.data || err?.message || err)
+      );
+      console.error(
+        "Remove failed:",
+        err?.response?.data || err?.message || err
+      );
+    } finally {
+      setRemovingIndex(null);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
-      // Check for duplicate conditions
+      if (transfers.length === 0) {
+        setShowPopup(true);
+        setPopupType("failed");
+        setPopupMessage("Please add at least one department number.");
+        return;
+      }
+
       const conditionCounts = {};
-      for (const transfer of transfers) {
-        const cond = transfer.condition.toLowerCase().trim();
+      for (const t of transfers) {
+        const cond = (t.condition || "").toLowerCase().trim();
         if (cond) {
           conditionCounts[cond] = (conditionCounts[cond] || 0) + 1;
           if (conditionCounts[cond] > 1) {
@@ -409,59 +580,47 @@ function CallTransfer() {
         }
       }
 
-      //  Add this validation block here
-      for (const [index, transfer] of transfers.entries()) {
-        const condition = transfer.condition?.trim();
-        const phone = transfer.phone?.trim();
-        const dialCode = transfer.dialCode?.trim();
-        // console.log(dialCode,phone)
+      for (const [i, t] of transfers.entries()) {
+        const condition = t.condition?.trim();
+        const phone = t.phone?.trim();
+        const dialCode = t.dialCode?.trim();
         if (!condition) {
           setShowPopup(true);
           setPopupType("failed");
-          setPopupMessage(`Department is required for entry ${index + 1}.`);
+          setPopupMessage(`Department is required for entry ${i + 1}.`);
           return;
         }
-
         if (!phone || !dialCode) {
           setShowPopup(true);
           setPopupType("failed");
           setPopupMessage(
-            `Phone number and dial code are required for entry ${index + 1}.`
+            `Phone number and dial code are required for entry ${i + 1}.`
           );
           return;
         }
-        const fullNumber = `+${transfer.dialCode}${transfer.phone}`;
-        const phoneNumber = parsePhoneNumberFromString(fullNumber);
-        // console.log(fullNumber,phoneNumber)
-        if (
-          !phoneNumber ||
-          phoneNumber.country?.toLowerCase() !== transfer.countryCode
-        ) {
+        const parsed = parsePhoneNumberFromString(`+${phone}`);
+        if (!parsed || parsed.country?.toLowerCase() !== t.countryCode) {
           setShowPopup(true);
           setPopupType("failed");
           setPopupMessage(
-            `Invalid phone number for entry ${
-              index + 1
-            }. Ensure the number matches the country code +${
-              transfer.dialCode
-            } (${transfer.countryCode.toUpperCase()}).`
+            `Invalid phone number for entry ${i + 1}. Ensure it matches +${
+              t.dialCode
+            } (${t.countryCode.toUpperCase()}).`
           );
           return;
         }
       }
 
       setLoading(true);
-      sessionStorage.removeItem("agentGeneralTools");
+
       const timestamp = Date.now();
       const fullPrompt =
-        `The user might ask to be transferred to departments.If they say Sales, transfer to {{sales_number}}.If they say Billing, transfer to {{billing_number}}.If they say Support, transfer to {{support_number}}.Use the appropriate number based on the conversation.`.trim();
+        `The user might ask to be transferred to departments. If they say Sales, transfer to {{sales_number}}. If they say Billing, transfer to {{billing_number}}. If they say Support, transfer to {{support_number}}. Use the appropriate number based on the conversation.`.trim();
+
       const transferTool = {
         type: "transfer_call",
         name: `transfer_on_inferred_${timestamp}`,
-        transfer_destination: {
-          type: "inferred",
-          prompt: fullPrompt,
-        },
+        transfer_destination: { type: "inferred", prompt: fullPrompt },
         transfer_option: {
           type: "cold_transfer",
           public_handoff_option: {
@@ -472,58 +631,50 @@ function CallTransfer() {
         speak_during_execution: true,
         speak_after_execution: true,
       };
+
       const formattedTransfers = prepareTransfersWithDialCode(transfers);
 
-      // Generate dynamic variables from formattedTransfers
       const salesEntry = transfers.find(
-        (t) => t.condition.toLowerCase() === "sales"
+        (t) => (t.condition || "").toLowerCase() === "sales"
       );
       const billingEntry = transfers.find(
-        (t) => t.condition.toLowerCase() === "billing"
+        (t) => (t.condition || "").toLowerCase() === "billing"
       );
       const supportEntry = transfers.find(
-        (t) => t.condition.toLowerCase() === "support"
+        (t) => (t.condition || "").toLowerCase() === "support"
       );
 
       const dynamicVars = {
-        sales_number: salesEntry
-          ? `+${salesEntry.dialCode}${salesEntry.phone}`
-          : "",
-        billing_number: billingEntry
-          ? `+${billingEntry.dialCode}${billingEntry.phone}`
-          : "",
-        support_number: supportEntry
-          ? `+${supportEntry.dialCode}${supportEntry.phone}`
-          : "",
+        ...(salesEntry ? { sales_number: `+${salesEntry.phone}` } : {}),
+        ...(billingEntry ? { billing_number: `+${billingEntry.phone}` } : {}),
+        ...(supportEntry ? { support_number: `+${supportEntry.phone}` } : {}),
       };
 
-      // Remove any empty numbers
-      Object.keys(dynamicVars).forEach((key) => {
-        if (!dynamicVars[key]) delete dynamicVars[key];
-      });
+      const cleanedPrev = { ...prevDynanamicVar };
+      delete cleanedPrev.sales_number;
+      delete cleanedPrev.billing_number;
+      delete cleanedPrev.support_number;
 
-      // Final payload
       const payload = {
         general_tools: [transferTool],
-        default_dynamic_variables: {
-            ...prevDynanamicVar,  // pehle purane values
-            ...dynamicVars,     // phir naye values overwrite karein agar same key ho
-          },
+        default_dynamic_variables: { ...cleanedPrev, ...dynamicVars },
       };
 
-      // Call your API to update the LLM config
       await updateLlm(llmId, payload);
       await addGeneralTools(llmId, formattedTransfers);
+      syncSessionCache(formattedTransfers);
+
+      setPrevDynamicVar({ ...cleanedPrev, ...dynamicVars });
+
       setShowPopup(true);
       setPopupType("success");
       setPopupMessage("Numbers updated successfully.");
-      // console.log("LLM updated successfully");
     } catch (error) {
       setShowPopup(true);
       setPopupType("failed");
       setPopupMessage(
-        "Failed to update LLM:",
-        error?.response?.data || error.message || error
+        "Failed to update LLM: " +
+          (error?.response?.data || error.message || error)
       );
       console.error(
         "Failed to update LLM:",
@@ -533,155 +684,144 @@ function CallTransfer() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    const agentData = JSON.parse(sessionStorage.getItem("agentDetails"));
-    let agentGeneralTools = JSON.parse(
-      sessionStorage.getItem("agentGeneralTools")
-    );
-    setLlmId(agentData?.agent?.llmId || "");
-    fetchLlmDetails(agentData?.agent?.llmId).then((res) => {
-  const vars = res?.data?.data?.default_dynamic_variables || {};
-  setPrevDynamicVar(vars);
-    });
 
-    let tools = agentGeneralTools;
-
-if (typeof agentGeneralTools === "string") {
-  try {
-    agentGeneralTools = JSON.parse(tools);
-  } catch (e) {
-    console.error("Invalid JSON for agentGeneralTools", e);
-    agentGeneralTools = [];
-  }
-}
-// console.log("agentGeneralTools raw:", agentGeneralTools, Array.isArray(agentGeneralTools));
-
-    if (Array.isArray(agentGeneralTools)) {
-      // Set transfers only if tools exist
-      if (Array.isArray(agentGeneralTools) && agentGeneralTools.length > 0) {
-        // console.log('agentGeneralTools1',agentGeneralTools,prevDynanamicVar)
-        // Optional: filter only those tools that have required fields
-        const filteredTransfers = agentGeneralTools
-          .filter((tool) => tool.condition && tool.phone && tool.dialCode)
-          .map((tool) => ({
-            condition: tool.condition,
-            phone: tool.phone,
-            dialCode: tool.dialCode,
-            countryCode: tool.countryCode || "",
-          }));
-        // console.log('agentGeneralTools2',agentGeneralTools)
-
-        setTransfers(filteredTransfers);
-      }
-    }
-  }, []);
-  // console.log('transfers',transfers)
-      console.log('default_dynamic_variables',prevDynanamicVar)
+  const initializing = !bizLoaded || !llmLoaded;
 
   return (
     <>
-    <div className={styles.CallTransferMainDiv}>
-
-
-      <HeaderBar title="Dynamic Call Transfer" />
-      <div className={styles.CallTransferMain}>
-        <div className={styles.headrPart}>
-          <h2>Call Transfer Conditions</h2>
-          <img
-            src="svg/Add-icon.svg"
-            alt="Add-icon"
-            onClick={handleAdd}
-            style={{ cursor: "pointer" }}
-          />
+      {initializing && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(255,255,255,0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10000,
+          }}
+        >
+          <Loader2 />
         </div>
+      )}
 
-        {transfers.map((item, index) => (
-          <div key={index} className={styles.card} style={{
-      marginBottom: index === transfers.length - 1 ? "5rem" : undefined
-    }}>
-            <div className={styles.selectWrapper}>
-              <label className={styles.label}>
-                Condition for Agent to follow
-              </label>
-              <select
-                className={styles.select}
-                value={item.condition}
-                onChange={(e) =>
-                  handleChange(index, "condition", e.target.value)
-                }
-              >
-                <option value="">Select Department</option>
-                <option value="sales">Sales</option>
-                <option value="billing">Billing</option>
-                <option value="support">Support</option>
-              </select>
-              <img
-                src="svg/select-arrow.svg"
-                alt="arrow"
-                className={styles.arrowIcon}
-              />
-            </div>
+      <div
+        className={styles.CallTransferMainDiv}
+        style={{ opacity: initializing ? 0.4 : 1 }}
+      >
+        <HeaderBar title="Dynamic Call Transfer" />
+        <div className={styles.CallTransferMain}>
+          <div className={styles.headrPart}>
+            <h2>Call Transfer Conditions</h2>
+            <img
+              src="svg/Add-icon.svg"
+              alt="Add-icon"
+              onClick={handleAdd}
+              style={{
+                cursor: "pointer",
+                opacity: transfers.some(
+                  (t) => !(t.condition || "").trim() && !(t.phone || "").trim()
+                )
+                  ? 0.5
+                  : 1,
+                pointerEvents: transfers.some(
+                  (t) => !(t.condition || "").trim() && !(t.phone || "").trim()
+                )
+                  ? "none"
+                  : "auto",
+              }}
+            />
+          </div>
 
-            <label className={styles.label}>Forward to</label>
-            <div className={styles.phoneInput}>
-              <div className={styles.countryCode}>
+          {transfers.map((item, index) => (
+            <div
+              key={`${item.condition || "row"}-${index}`}
+              className={styles.card}
+              style={{
+                marginBottom:
+                  index === transfers.length - 1 ? "5rem" : undefined,
+              }}
+            >
+              <div className={styles.selectWrapper}>
+                <label className={styles.label}>
+                  Condition for Agent to follow
+                </label>
+                <select
+                  className={styles.select}
+                  value={item.condition}
+                  onChange={(e) =>
+                    updateTransfer(index, { condition: e.target.value })
+                  }
+                >
+                  <option value="">Select Department</option>
+                  <option value="sales">Sales</option>
+                  <option value="billing">Billing</option>
+                  <option value="support">Support</option>
+                </select>
                 <img
-                  src={`https://flagcdn.com/24x18/${item.countryCode}.png`}
-                  alt="flag"
-                  onError={(e) => (e.target.style.display = "none")}
-                />
-                <input
-                  type="text"
-                  value={item.dialCode}
-                  maxLength={4}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "");
-                    const updated = [...transfers];
-                    updated[index].dialCode = value;
-                    updated[index].countryCode =
-                      dialToCountry[value] || updated[index].countryCode;
-                    setTransfers(updated);
-                  }}
-                  className={styles.dialCodeInput}
-                  placeholder="Code"
+                  src="svg/select-arrow.svg"
+                  alt="arrow"
+                  className={styles.arrowIcon}
                 />
               </div>
-              <input
-                type="tel"
-                className={styles.phoneNumberInput}
-                placeholder="985 XXX 88XX"
-                value={item.phone}
-                maxLength={15}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (/^\d{0,15}$/.test(value)) {
-                    handleChange(index, "phone", value);
-                  }
-                }}
-              />
+
+              <label className={styles.label}>Forward to</label>
+              <div className={styles.phoneInput}>
+                <PhoneInput
+                  country={item.countryCode}
+                  enableSearch
+                  value={item.phone}
+                  onChange={(val, c) => {
+                    const dialCode = c?.dialCode || item.dialCode;
+                    const countryCode = (
+                      c?.countryCode || item.countryCode
+                    ).toLowerCase();
+                    const digits = (val || "").replace(/\D/g, "");
+                    const normalized = digits.startsWith(dialCode)
+                      ? digits
+                      : dialCode + digits;
+                    updateTransfer(index, {
+                      phone: normalized,
+                      dialCode,
+                      countryCode,
+                    });
+                  }}
+                  /** existing classNames can stay */
+                  inputClass={styles.phoneNumberInput}
+                  dropdownClass={styles.phoneDropdown}
+                  /** new inline styles to unset borders */
+                  inputStyle={{
+                    border: "unset",
+                    boxShadow: "none",
+                    outline: "none",
+                  }}
+                  dropdownStyle={{ border: "unset", boxShadow: "none" }}
+                />
+              </div>
+
+              {transfers.length > 0 && (
+                <button
+                  onClick={() => handleRemove(index)}
+                  className={styles.removeBtn}
+                  disabled={removingIndex === index}
+                  title={removingIndex === index ? "Removing..." : "Remove"}
+                >
+                  {removingIndex === index ? "Removing..." : "Remove"}
+                </button>
+              )}
             </div>
+          ))}
 
-            {transfers.length > 1 && (
-              <button
-                onClick={() => handleRemove(index)}
-                className={styles.removeBtn}
-              >
-                Remove
-              </button>
-            )}
-          </div>
-        ))}
-
-        <div className={styles.Btn} onClick={handleSubmit}>
-          <div type="submit">
-            <div className={styles.btnTheme}>
-              {/* <p>{loading ? <Loader size={20} /> : "Submit"}</p> */}
-              <AnimatedButton isLoading={loading} label="Submit" />
+          <div className={styles.Btn} onClick={handleSubmit}>
+            <div type="submit">
+              <div className={styles.btnTheme}>
+                <AnimatedButton isLoading={loading} label="Submit" />
+              </div>
             </div>
           </div>
         </div>
       </div>
-          </div>
+
       {showPopup && (
         <PopUp
           type={popupType}
@@ -694,6 +834,3 @@ if (typeof agentGeneralTools === "string") {
 }
 
 export default CallTransfer;
-// fdfdf
-// ffdfd
-// fdfd
