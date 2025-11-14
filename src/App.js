@@ -70,7 +70,7 @@ import Fileinfo from "./Component/AgentDetails/FileInfo/Fileinfo";
 import ForcePortraitOnly from "./utils/ForcePortraitOnly";
 import decodeToken from "./lib/decodeToken";
 import { initNotificationSocket } from "./utils/initNotificationSocket";
-import { getUserNotifications } from "./Store/apiStore";
+import { checkAgentExistence, getUserNotifications } from "./Store/apiStore";
 import { io } from "socket.io-client";
 import { useNotificationStore } from "./Store/notificationStore";
 import { ToastContainer } from "react-toastify";
@@ -96,6 +96,9 @@ function App() {
   const toggleFlag = useNotificationStore((state) => state.toggleFlag);
   const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate()
+  const [agentCode, setAgentCode] = useState(null);
+  const [renderStatusPage, setRenderStatusPage] = useState(false)
+  const [isChecking, setIsChecking] = useState(true)
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
@@ -163,32 +166,43 @@ function App() {
     console.log('Referrer URL:', ref);
   }, []);
   //Public Widget Integration
-  // ✅ Public Widget Integration
-  // const query = window.location.search.replace("?", ""); // remove "?"
-  // let agentCode = null;
+  useEffect(() => {
+    const query = window.location.search.replace("?", "");
+    let code = null;
 
-  // // Case 1: ?agent=XYZ123 → get 'XYZ123'
-  // if (query.includes("=")) {
-  //   const [key, value] = query.split("=");
-  //   // Check if it's ?agent=XXXXX and valid format
-  //   if (key === "agent" && /^[A-Za-z0-9]{6}$/.test(value)) {
-  //     agentCode = value;
-  //   } else {
-  //     // For ?anykey=anyvalue → use the value part
-  //     agentCode = value;
-  //   }
-  // }
-  // // Case 2: ?value → direct value without key
-  // else if (query) {
-  //   agentCode = query;
-  // }
+    if (query.includes("=")) {
+      const [key, value] = query.split("=");
+      if (key === "agent" && /^[A-Za-z0-9]{6}$/.test(value)) code = value;
+      else code = value;
+    } else if (query) {
+      code = query;
+    }
 
-  // // ✅ If we found an agent code, show the widget page
-  // if (agentCode) {
-  //   console.log(" Valid agent detected:", agentCode)
-  //   return <PublicWidgetPage agentCode={agentCode} />;
-  // }
-
+    const checkAgent = async () => {
+      if (code) {
+        setAgentCode(code);
+        try {
+          const res = await checkAgentExistence(code);
+          console.log(res, "res");
+          setRenderStatusPage(res?.state === true);
+        } catch (err) {
+          console.error("Error checking agent:", err);
+        }
+      }
+      setIsChecking(false); //  finish check (even if error)
+    };
+    checkAgent();
+  }, []);
+  if (isChecking) {
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-600 text-lg">
+        {/* Checking agent link... */}
+      </div>
+    );
+  }
+  if (renderStatusPage && agentCode) {
+    return <PublicWidgetPage agentCode={agentCode} />;
+  }
   return (
     <>
       {/* <ForcePortraitOnly /> */}

@@ -18,7 +18,7 @@ function Start() {
   const businessType = searchParams.get("businessType") || "";
   const [step, setStep] = useState(0);
   const [renderStatusPage, setRenderStatusPage] = useState(false)
-    const [isChecking, setIsChecking] = useState(true); // 👈 add this
+    const [isChecking, setIsChecking] = useState(true)
   const handleClick = () => {
     setTimeout(() => setStep(1), 150);
     setTimeout(() => setStep(2), 250);
@@ -29,33 +29,7 @@ function Start() {
       navigate("/signup");
     }, 700);
   };
-useEffect(() => {
-    const query = window.location.search.replace("?", "");
-    let code = null;
 
-    if (query.includes("=")) {
-      const [key, value] = query.split("=");
-      if (key === "agent" && /^[A-Za-z0-9]{6}$/.test(value)) code = value;
-      else code = value;
-    } else if (query) {
-      code = query;
-    }
-
-    const checkAgent = async () => {
-      if (code) {
-        setAgentCode(code);
-        try {
-          const res = await checkAgentExistence(code);
-          console.log(res, "res");
-          setRenderStatusPage(res?.state === true);
-        } catch (err) {
-          console.error("Error checking agent:", err);
-        }
-      }
-      setIsChecking(false); //  finish check (even if error)
-    };
-    checkAgent();
-  }, []);
   //  Detect agent code from URL
   // useEffect(() => {
   //   const query = window.location.search.replace("?", ""); // remove "?"
@@ -176,16 +150,6 @@ useEffect(() => {
 
     return () => window.removeEventListener("resize", setVH);
   }, []);
-  if (isChecking) {
-    return (
-      <div className="flex items-center justify-center h-screen text-gray-600 text-lg">
-        {/* Checking agent link... */}
-      </div>
-    );
-  }
-  if (renderStatusPage && agentCode) {
-    return <PublicWidgetPage agentCode={agentCode} />;
-  }
   return (
     <div>
       <div className={styles.signUpContainer}>

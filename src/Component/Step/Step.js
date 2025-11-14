@@ -1096,9 +1096,9 @@ const Step = () => {
               );
               //AssignNumber both Agent
               const assignedNumber = sessionStorage.getItem("assignedPhoneNumber");
-              if (assignedNumber) {
-                await assignNumberToAgent(assignedNumber, response.data.agent_id)
-              }
+              // if (assignedNumber) {
+              //   await assignNumberToAgent(assignedNumber, response.data.agent_id)
+              // }
               if (ifChatWidgetEnabledOrNot) {
                 // alert("ok")
                 // Shared payload data for both Voice Agent and Chat Agent

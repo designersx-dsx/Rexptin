@@ -1495,7 +1495,7 @@ height: -webkit-fill-available;
 (function () {
     const currentSiteURL = window.location.origin;
     console.log(currentSiteURL, "currentSiteURL")
-    const API_URL = "https://rexptin.truet.net/api/";
+    const API_URL = "https://rex-bk.truet.net/api/";
     // const API_URL = "http://localhost:2513/api";
     const CHAT_LS_KEY = "rex_chat_history";
     let typingEl = null;
@@ -2356,10 +2356,10 @@ height: -webkit-fill-available;
                     businessName = json.businessName;
                     address = json.address1
                     url = json.webUrl || json.Google_urls || "NA"
-                    kb = json.knowledge_base_texts || {};
+                    kb = JSON.parse(json.knowledge_base_texts) || {};
                 });
 
-
+                 console.log(kb.rating,"kb")
                 // === STEP 2: UPDATE GOOGLE RATING DYNAMICALLY ===
                 rating = parseFloat(kb.rating) || 0;
                 totalRatings = kb.totalRatings || 0;
@@ -2615,10 +2615,10 @@ height: -webkit-fill-available;
         </div>
     </div>
 
-    <div class="google-rating">
+  ${totalRatings? `<div class="google-rating">
        <span class="stars">${starsHTML}</span>
       <p class="reviews" style="color: blue;">${totalRatings} Google reviews</p>
-    </div>
+    </div>`:""}
     </div>     
    <div class="bottomDesc"><p>
     Create your 
@@ -3000,10 +3000,10 @@ height: -webkit-fill-available;
                     }
 
       </div>
-      <div class="google-rating">
+   ${totalRatings? ` <div class="google-rating">
         <span class="stars">${starsHTML}</span>
       <span class="reviews">${totalRatings} Google reviews</span>
-      </div>
+      </div>`:""}
 
       </div>
      
@@ -4328,10 +4328,10 @@ height: -webkit-fill-available;
      
     </div>
 
-    <div class="rating-box">
+${totalRatings?` <div class="rating-box">
       <span class="reviews">${starsHTML} </span>
        <span>${totalRatings} Google reviews</span>
-    </div>
+    </div>`:""}
     </div>   
      <div class="bottomDesc"><p>
     Create your 
