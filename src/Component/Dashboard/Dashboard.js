@@ -2905,11 +2905,18 @@ function Dashboard() {
                           {assignedNumbers.length > 1 ? "s" : ""}{" "}
                           {assignedNumbers.map(formatE164USNumber).join(", ")}
                         </p>
-                        <Edit
+                        {/* <Edit
+                        
+                          onClick={(e) => {
+                            if (e.target === e.currentTarget) {
+                              e.stopPropagation();
+                              alert("ok")
+                            }
+                          }}
                           size={16}
-                          className="inline-block ml-2 text-gray-500 cursor-pointer hover:text-blue-600"
-                          // onClick={handleEditNumber}
-                        />
+                          className=""
+                        // onClick={handleEditNumber}
+                        /> */}
 
                         {agent?.agentPlan === "free" && !agent?.subscriptionId && agent?.voip_numbers_created ? (
                           (() => {

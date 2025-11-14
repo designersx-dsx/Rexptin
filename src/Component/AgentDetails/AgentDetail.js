@@ -1246,8 +1246,14 @@ Do you want to proceed with deleting this assigned number?`
             onConfirm={handleSamanPtra}
           />
           {/*  */}
-
+ 
           <div className={styles.container}>
+         {/*  <div className={styles.publicUrlContainer}>
+            
+            
+            
+            </div>
+            */ } 
             <div className={styles.businessInfo}>
               <div className={styles.card1}>
                 <h2>
