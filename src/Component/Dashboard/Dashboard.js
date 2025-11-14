@@ -2050,10 +2050,26 @@ function Dashboard() {
       console.error(error);
     }
   };
-  const handleConnectCal = (agent) => {
-    navigate("/connect-calender");
-    sessionStorage.setItem("agentDetails", JSON.stringify(agent));
-  };
+  // const handleConnectCal = (agent) => {
+  //   navigate("/connect-calender");
+  //   sessionStorage.setItem("agentDetails", JSON.stringify(agent));
+  // };
+
+  const connectGoogleCalendar = async () => {
+  try {
+    let userId = userIdFromToken
+    const res = await axios.post(`${API_BASE_URL}/connect`, {
+      userId,
+    });
+    if (res.data.url) {
+      // Redirect user to Google consent screen
+      window.location.href = res.data.url;
+    }
+  } catch (err) {
+    console.error("Error connecting Google Calendar:", err);
+    alert("Failed to connect Google Calendar");
+  }
+};
   const handleCalConnectWithConfirm = async () => {
     try {
       await createCalEvent(); // event creation logic
@@ -2074,7 +2090,7 @@ function Dashboard() {
     setPopupMessage3("");
     // console.log(isConfirming, "isConfirming");
     if (isConfirming) {
-      handleConnectCal(agentDetailsForCal);
+      // handleConnectCal(agentDetailsForCal);
     }
   };
   const checkRecentPageLocation = location.state?.currentLocation;
@@ -2863,7 +2879,7 @@ function Dashboard() {
                             if (agent?.isDeactivated === 1) {
                               handleInactiveAgentAlert();
                             } else {
-                              handleConnectCal(agent);
+                           connectGoogleCalendar()
                             }
                           }}
                         />
@@ -2886,7 +2902,7 @@ function Dashboard() {
                               ) {
                                 handleConnectCalApiAlready(agent);
                               } else {
-                                handleConnectCal(agent);
+                             connectGoogleCalendar()
                               }
                             }
                           }}
