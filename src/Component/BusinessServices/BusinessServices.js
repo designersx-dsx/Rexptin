@@ -334,6 +334,21 @@ const BusinessServices = forwardRef(
         }, 300);
       }
     };
+const cardRef = useRef(null);
+
+useEffect(() => {
+  if (showInput && cardRef.current) {
+    setTimeout(() => {
+      cardRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 150); // thoda delay taaki DOM render complete ho jaye
+  }
+}, [showInput]);
+
+
+
     return (
       <div className={styles.container} id="servies">
         <div className={styles.searchBox}>
@@ -408,13 +423,14 @@ const BusinessServices = forwardRef(
                 setShowInput(checked);
                 sessionStorage.setItem("showInput", JSON.stringify(checked));
               }}
+              onFocus={handleFocus}
             />
             <label htmlFor="add-more-services">Add More Services</label>
           </div>
 
           {/* Input + Add button (only when checkbox is checked) */}
           {showInput && (
-            <div className={styles.card}>
+            <div className={styles.card} ref={cardRef}>
               <label className={styles.label}>Service Name</label>
               <div className={styles.phoneInput}>
                 <input
