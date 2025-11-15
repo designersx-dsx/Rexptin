@@ -12,6 +12,9 @@ import getKnowledgeBaseName from "../../utils/getKnowledgeBaseName";
 import { API_BASE_URL, getAgentFiles } from "../../Store/apiStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import { red } from "@mui/material/colors";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
 const EditBusinessDetail = () => {
   const agentnm = sessionStorage.getItem("agentName");
   const [businessName, setBusinessName] = useState("");
@@ -549,22 +552,24 @@ const EditBusinessDetail = () => {
 
         <div className={styles.inputSection}>
           <label className={styles.label}>Phone Number</label>
-          <input
-            type="text"
-            className={styles.input}
-            placeholder="+1 88XX 77X X55"
+          <PhoneInput
+            country={selectedCountry}
             value={phoneNumber}
-            maxLength={15}
-            minLength={8}
-            onChange={(e) => {
-              const raw = e.target.value;
-              const cleaned = raw.replace(/[^0-9+\s]/g, "");
-              handleInputChange("phone", cleaned);
+            onChange={(phone, countryData) => {
+              const fullPhone = phone.startsWith("+") ? phone : `+${phone}`;
+              setPhoneNumber(fullPhone);
+              setSelectedCountry(countryData?.countryCode || "us");
+              handleInputChange("phone", fullPhone);
             }}
-            // onChange={(e) => {handleInputChange("phone", e.target.value)}
+            inputStyle={{
+              width: "100%",
+              height: "40px",
+              paddingLeft: "45px",
+              borderRadius: "5px",
+            }}
+            placeholder="+1 (123)456-7890"
           />
         </div>
-
         <div className={styles.inputSection}>
           <label className={styles.label}>Address</label>
           {/* <input

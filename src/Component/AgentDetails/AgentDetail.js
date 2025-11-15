@@ -9,6 +9,7 @@ import {
   getUserAgentMergedDataForAgentUpdate,
   updateAgentChatEnabled,
 } from "../../Store/apiStore";
+import Popup from "../Popup/Popup";
 
 import { useLocation, useNavigate } from "react-router-dom";
 import decodeToken from "../../lib/decodeToken";
@@ -88,7 +89,8 @@ const AgentDashboard = () => {
   // console.log("agentData", agentData)
   const [isModalOpen, setModalOpen] = useState();
   const [openCard, setOpenCard] = useState(null);
-
+  const [logoutPopupMessage, setLogoutPopupMessage] = useState("");
+  const [logoutPopupType, setLogoutPopupType] = useState("confirm");
   const { setHasFetched } = useDashboardStore();
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -445,14 +447,19 @@ const AgentDashboard = () => {
   const handleAssignNumberUpdated = () => {
     getAgentDetailsAndBookings();
   };
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("agents");
-    sessionStorage.clear();
-    // window.location.href = "/signup";
-    navigate("/signup", { replace: true });
-  };
+ const handleLogout = () => {
+  setLogoutPopupType("confirm");
+  setLogoutPopupMessage("Are you sure you want to logout?");
+};
+  const handleLogoutConfirm = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("agents");
+  localStorage.clear();
+  sessionStorage.clear();
+  // window.location.replace("/signup");
+  navigate("/signup", { replace: true });
+};
   const handleBackClick = () => {
     navigate("/dashboard");
   };
@@ -2269,6 +2276,46 @@ Do you want to proceed with deleting this assigned number?`
               setRefresh((prev) => !prev);
             }}
           />
+          {logoutPopupMessage && (
+  <Popup
+    type={logoutPopupType}
+    message={logoutPopupMessage}
+    onClose={() => setLogoutPopupMessage("")}
+    onConfirm={handleLogoutConfirm}
+  />
+)}
+
+          {/* {isAssignNumberModalOpen && (
+            <div
+              className={styles.modalBackdrop}
+              onClick={closeAssignNumberModal}
+            >
+              <div
+                className={styles.modalContainer}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2>Upgrade Required!</h2>
+                <p
+                  style={{
+                    fontSize: "1.1rem",
+                    color: "#444",
+                    margin: "16px 0",
+                  }}
+                >
+                  To get an agent number, you need to upgrade your plan. Unlock
+                  access to premium features by choosing a higher plan.
+                </p>
+                <button
+                  className={`${styles.modalButton} ${styles.submit}`}
+                  onClick={closeAssignNumberModal}
+                  style={{ width: "100%" }}
+                >
+                  Got it!
+                </button>
+              </div>
+            </div>
+          )} */}
+
           {isAssignNumberModal && (
             <CommingSoon
               show={isAssignNumberModal}

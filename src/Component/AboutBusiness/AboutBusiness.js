@@ -87,6 +87,12 @@ const AboutBusiness = forwardRef(
     const setHasFetched = true;
     const typingTimeoutRef = useRef(null);
     const inputRefWebSiteUrl = useRef(null);
+    const noBusinessWebsiteRef = useRef(noBusinessWebsite);
+
+    useEffect(() => {
+      noBusinessWebsiteRef.current = noBusinessWebsite;
+    }, [noBusinessWebsite]);
+
     const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "AboutBusiness",
       setLoading,
@@ -201,7 +207,7 @@ const AboutBusiness = forwardRef(
     };
 
     const maybeAutofillWebsite = (place) => {
-      if (noBusinessWebsite) return;
+      if (noBusinessWebsiteRef.current) return;
 
       const normalized = normalizeWebsite(place?.website);
       const isNewPlace = prevPlaceIdRef.current !== place?.place_id;
@@ -212,7 +218,6 @@ const AboutBusiness = forwardRef(
         businessUrl === lastAutoFilledUrlRef.current;
 
       if (shouldOverwrite) {
-        // clear any pending debounce to avoid stale verify
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
         if (normalized) {
@@ -220,7 +225,6 @@ const AboutBusiness = forwardRef(
           lastAutoFilledUrlRef.current = normalized;
           handleUrlVerification(normalized);
         } else {
-          // new place has no website → clear
           setBusinessUrl("");
           setIsVerified(null);
           setBusinessUrlError("");
@@ -458,30 +462,48 @@ const AboutBusiness = forwardRef(
       const savedData = JSON.parse(
         sessionStorage.getItem("aboutBusinessForm") || "{}"
       );
-      if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
+
+      // 1️⃣ Restore checkbox states first
+      if (typeof savedData.noGoogleListing === "boolean") {
+        setNoGoogleListing(savedData.noGoogleListing);
+      }
+      if (typeof savedData.noBusinessWebsite === "boolean") {
+        setNoBusinessWebsite(savedData.noBusinessWebsite);
+      }
+
+      // 2️⃣ Only restore website URL if user *does* have a website
+      if (!savedData.noBusinessWebsite && savedData.businessUrl) {
+        setBusinessUrl(savedData.businessUrl);
+      }
+
       if (localStorage.getItem("UpdationMode") == "ON") {
-        if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
+        if (!savedData.noBusinessWebsite && savedData.businessUrl) {
+          setBusinessUrl(savedData.businessUrl);
+        }
 
         if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
         if (savedData.note) setNote(savedData.note);
         if (savedData.googleListing) {
           setGoogleListing(savedData.googleListing);
         }
-        // rebuild File objects
+
         if (Array.isArray(savedData.files) && savedData.files.length) {
           const rebuiltFiles = savedData.files.map((d, i) =>
             dataURLtoFile(d, `file${i + 1}`)
           );
           setFiles(rebuiltFiles);
         }
-        if (typeof savedData.noGoogleListing === "boolean") {
-          setNoGoogleListing(savedData.noGoogleListing);
-        }
-        if (typeof savedData.noBusinessWebsite === "boolean") {
-          setNoBusinessWebsite(savedData.noBusinessWebsite);
-        }
       }
     }, []);
+
+    useEffect(() => {
+      if (noBusinessWebsite) {
+        setBusinessUrl("");
+        setIsVerified(false);
+        setBusinessUrlError("");
+        sessionStorage.removeItem("businessUrl");
+      }
+    }, [noBusinessWebsite]);
 
     useEffect(() => {
       const aboutBusinessForm = JSON.parse(
