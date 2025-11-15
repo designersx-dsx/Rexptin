@@ -551,7 +551,12 @@ export const updateShowReferralFloatingStatus = async (userId, status) => {
 export const getUserReferralCodeForDashboard = async (userId) => {
   try {
     const response = await api.get(
-      `/endusers/getUserReferralCodeForDashboard?userId=${userId}`
+      `/endusers/getUserReferralCodeForDashboard?userId=${userId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
     );
     return response.data;
   } catch (error) {
