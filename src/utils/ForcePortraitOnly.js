@@ -1,34 +1,44 @@
 import React, { useEffect, useState } from "react";
 
+const MOBILE_MAX_WIDTH = 1024; // px – adjust if your breakpoint is different
+
 const ForcePortraitOnly = () => {
   const [isLandscape, setIsLandscape] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
 
-  const checkOrientation = () => {
-    // Prefer matchMedia, fallback to width/height
+  const updateState = () => {
+    if (typeof window === "undefined") return;
+
+    // Detect mobile by viewport width (you can tweak this)
+    const mobileByWidth = window.innerWidth <= MOBILE_MAX_WIDTH;
+
+    // Detect orientation
     const landscapeByMedia =
       window.matchMedia &&
       window.matchMedia("(orientation: landscape)").matches;
 
     const landscapeBySize = window.innerWidth > window.innerHeight;
 
+    setIsMobile(mobileByWidth);
     setIsLandscape(landscapeByMedia || landscapeBySize);
   };
 
   useEffect(() => {
     // Initial check
-    checkOrientation();
+    updateState();
 
     // Update on resize / orientation change
-    window.addEventListener("resize", checkOrientation);
-    window.addEventListener("orientationchange", checkOrientation);
+    window.addEventListener("resize", updateState);
+    window.addEventListener("orientationchange", updateState);
 
     return () => {
-      window.removeEventListener("resize", checkOrientation);
-      window.removeEventListener("orientationchange", checkOrientation);
+      window.removeEventListener("resize", updateState);
+      window.removeEventListener("orientationchange", updateState);
     };
   }, []);
 
-  if (!isLandscape) return null;
+  // ✅ Only block when it's a *mobile* viewport AND in landscape
+  if (!isMobile || !isLandscape) return null;
 
   return (
     <div
@@ -59,12 +69,14 @@ const ForcePortraitOnly = () => {
         strokeWidth="2"
         style={{ marginBottom: "10px" }}
       >
-        {/* <path d="M4 12h16M12 4v16" /> */}
+        {/* simple icon */}
         <path d="M8 16c0-2.2 1.8-4 4-4s4 1.8 4 4" />
       </svg>
       Please rotate your device to portrait mode to continue.
       <br />
-      <small>Turn off your phone’s rotation lock if this screen stays stuck.</small>
+      <small>
+        Turn off your phone’s rotation lock if this screen stays stuck.
+      </small>
     </div>
   );
 };
