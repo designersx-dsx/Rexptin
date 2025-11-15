@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import styles from './CallTest.module.css';
 import Loader from "../Loader/Loader";
 import Loader2 from "../Loader2/Loader2";
-
+// fd
 const CallTest = ({
   onStartCall,
   onEndCall,
@@ -52,7 +52,7 @@ const CallTest = ({
     }
     onEndCall && onEndCall();
   };
-
+// ghg
   return (
     <div className={styles.container}>
       <audio ref={ringRef} preload="auto" loop playsInline>

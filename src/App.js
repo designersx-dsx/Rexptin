@@ -70,7 +70,7 @@ import Fileinfo from "./Component/AgentDetails/FileInfo/Fileinfo";
 import ForcePortraitOnly from "./utils/ForcePortraitOnly";
 import decodeToken from "./lib/decodeToken";
 import { initNotificationSocket } from "./utils/initNotificationSocket";
-import { getUserNotifications } from "./Store/apiStore";
+import { checkAgentExistence, getUserNotifications } from "./Store/apiStore";
 import { io } from "socket.io-client";
 import { useNotificationStore } from "./Store/notificationStore";
 import { ToastContainer } from "react-toastify";
@@ -96,6 +96,9 @@ function App() {
   const toggleFlag = useNotificationStore((state) => state.toggleFlag);
   const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate()
+  const [agentCode, setAgentCode] = useState(null);
+  const [renderStatusPage, setRenderStatusPage] = useState(false)
+  const [isChecking, setIsChecking] = useState(true)
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
@@ -163,18 +166,43 @@ function App() {
     console.log('Referrer URL:', ref);
   }, []);
   //Public Widget Integration
-  const searchParams = new URLSearchParams(window.location.search);
-  const agent = searchParams.get("agent");
+  useEffect(() => {
+    const query = window.location.search.replace("?", "");
+    let code = null;
 
-  //Check if agent param is valid 6-char alphanumeric code
-  const isValidAgent = agent && /^[A-Za-z0-9]{6}$/.test(agent);
+    if (query.includes("=")) {
+      const [key, value] = query.split("=");
+      if (key === "agent" && /^[A-Za-z0-9]{6}$/.test(value)) code = value;
+      else code = value;
+    } else if (query) {
+      code = query;
+    }
 
-  if (isValidAgent) {
-    console.log(" Valid agent detected:", agent);
-    return <PublicWidgetPage agentCode={agent} />;
+    const checkAgent = async () => {
+      if (code) {
+        setAgentCode(code);
+        try {
+          const res = await checkAgentExistence(code);
+          console.log(res, "res");
+          setRenderStatusPage(res?.state === true);
+        } catch (err) {
+          console.error("Error checking agent:", err);
+        }
+      }
+      setIsChecking(false); //  finish check (even if error)
+    };
+    checkAgent();
+  }, []);
+  if (isChecking) {
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-600 text-lg">
+        {/* Checking agent link... */}
+      </div>
+    );
   }
-  // vf
-  // vf
+  if (renderStatusPage && agentCode) {
+    return <PublicWidgetPage agentCode={agentCode} />;
+  }
   return (
     <>
       {/* <ForcePortraitOnly /> */}
@@ -638,3 +666,5 @@ function App() {
   );
 }
 export default App;
+
+// modal close 

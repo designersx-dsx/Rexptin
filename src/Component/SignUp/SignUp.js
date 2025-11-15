@@ -42,10 +42,10 @@ const SignUp = () => {
   const info = useUserDeviceInfo();
   const utm_data = useUTMParams();
   useEffect(() => {
-    const emailFromParams = searchParams.get("ownerEmail");
-    if (emailFromParams) {
-      const decodedEmail = decodeURIComponent(emailFromParams);
-      setEmail(decodedEmail.toLowerCase());
+    const tokenFromParams = searchParams.get("token");
+    if (tokenFromParams) {
+      localStorage.setItem("token", tokenFromParams);
+      console.log("✅ Token saved to localStorage:", tokenFromParams);
     }
   }, [searchParams]);
 

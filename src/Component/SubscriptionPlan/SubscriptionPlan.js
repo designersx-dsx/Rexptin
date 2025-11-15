@@ -643,7 +643,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                         </div>
 
 
-                                        
+
 
                                         <ul className={styles.featuresList}>
                                             <div
