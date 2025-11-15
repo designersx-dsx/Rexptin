@@ -473,11 +473,28 @@ const SignUp = () => {
                                 ""
                               );
                             }}
+                            onFocus={(e) => {
+                              if (window.innerWidth <= 768) {
+                                setTimeout(() => {
+                                  const rect = e.target.getBoundingClientRect();
+                                  const targetPosition =
+                                    window.scrollY + rect.top - window.innerHeight * 0.35;
+                                  window.scrollTo({
+                                    top: targetPosition,
+                                    behavior: "smooth",
+                                  });
+                                }, 250);
+                              }
+                            }}
                             inputMode="numeric"
                             type="tel"
                           />
                         ))}
                       </div>
+
+
+
+
                       <p className={styles.SpamMessage}>
                         Please check your spam folder if you don’t find it in
                         your main inbox.

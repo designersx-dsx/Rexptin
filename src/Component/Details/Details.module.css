@@ -129,6 +129,7 @@
 .pageWrapper {
     position: absolute;
     top: 0;
+    
 }
 
 @keyframes smoothZoomFadeIn {

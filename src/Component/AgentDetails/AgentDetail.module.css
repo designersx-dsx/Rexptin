@@ -176,7 +176,8 @@
 }
 
 .container {
-  padding: 1rem;
+  padding-bottom: 1rem;
+  padding-inline: 1rem;
   margin: auto;
   color: #333;
   overflow: auto;
@@ -1385,12 +1386,7 @@
 }
 
 .editBtn {
-  padding: 5px 12px;
-  background: #6564EB;
-  color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 20px;
   cursor: pointer;
 }
 
