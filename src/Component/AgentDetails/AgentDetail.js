@@ -1191,6 +1191,7 @@ Do you want to proceed with deleting this assigned number?`
           {/*  */}
 
           <div className={styles.container}>
+            <Divider label="Your Public Agent Url " />
             <div className={styles.publicUrlContainer}>
               <h3 >
                 {finalUrl}
@@ -1211,7 +1212,7 @@ Do you want to proceed with deleting this assigned number?`
 
                 {/* Edit Button */}
                 <button className={styles.editBtn} onClick={() => handleCopyPublicLink(agentData?.agent?.agentCode,true)}>
-                  Edit
+                 <img src="/svg/edit-svg2.svg" alt="edit-svg2"/>
                 </button>
               </div>
             </div>
