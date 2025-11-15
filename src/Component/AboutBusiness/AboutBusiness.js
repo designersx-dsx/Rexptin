@@ -684,22 +684,22 @@ const AboutBusiness = forwardRef(
       },
     }));
 
-    //check is this webview or not
-    const isAndroidApp = () =>
-      /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
-    const isIOSApp = () =>
-      /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
-    const handleFocus = (e) => {
-      if (isAndroidApp() || isIOSApp()) {
-        setTimeout(() => {
-          // Method 1: Smooth scroll to element
-          e.target.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-        }, 300);
-      }
-    };
+  const SCROLL_OFFSET = 80; 
+
+const handleFocus = (e) => {
+  const el = e.target;
+  setTimeout(() => {
+    const rect = el.getBoundingClientRect();
+    const absoluteTop = rect.top + window.scrollY;
+
+    window.scrollTo({
+      top: absoluteTop - SCROLL_OFFSET, 
+      behavior: "smooth",
+    });
+  }, 200);
+};
+
+
 
     const handleViewSelectedUrl = (e) => {
       e.preventDefault();
