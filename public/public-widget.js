@@ -551,7 +551,7 @@ function injectCSS() {
           }
 
          .info-label {
-         color: #94a3b8;
+         color: #D1DCED;
          min-width: 78px;
          font-weight: 600;
          }
@@ -562,7 +562,7 @@ function injectCSS() {
          }
 
          .info-value a {
-         color: #93c5fd;
+         color: #D1DCED;
           text-decoration: none;
          font-weight: 500;
          }
@@ -620,6 +620,7 @@ function injectCSS() {
              .bottomDesc{
                  font-size: 14px;
                   margin-bottom: 5rem;
+                  color: #D1DCED;
              }
 
           /* Motion sensitivity */
@@ -637,7 +638,9 @@ function injectCSS() {
               display:none;
               }
               .rightBox{
-             width:95%
+             width:100%;
+             height:100vh;
+             max-width:unset;
               } 
 
 
@@ -647,7 +650,7 @@ function injectCSS() {
               }
            
               .chat-popup.expanded .attio-thread{
-              height:50vh!important;
+              height:68vh!important;
               }
               .chat-popup{
                 max-width: none !important;
@@ -851,7 +854,11 @@ function injectCSS() {
          max-width: 600px;
          margin-inline: auto;
         }
-        .support-brand{ display:flex; align-items:center; gap:5px }
+        .support-brand{ display:flex; align-items:center; gap:10px; }
+
+        .support-logo img{
+        width:70px;
+        }
         .support-logo{ width:70px; height:70px; border-radius:100px; border:5px solid #c4c4c423; overflow:hidden;
           display:flex; align-items:center; justify-content:center; background:#111; }
         .support-title .t{
@@ -1014,7 +1021,7 @@ function injectCSS() {
              padding:10px 16px;
              font-weight:500;
              letter-spacing:.2px;
-             font-size:18px;
+             font-size:15px;
              cursor:pointer; 
              color:#fff;
              box-shadow:0 12px 24px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.08);
@@ -1186,8 +1193,54 @@ function injectCSS() {
   
 }
 
+.PoweredByMobile{
+display:none;
+}
+
+.company-details a{
+color:#D1DCED;
+}
+
+@media (max-width: 1024px) {
+.popup-wrapper {
+   
+    padding: 40px 40px;
+   
+}
+
+.company-info-left {
+   
+    width: 40%;
+    
+}
+
+.google-rating {
+   
+    display: grid;
+}
+
+
+}
+
 /* Responsive: Stack on Mobile */
 @media (max-width: 768px) {
+
+.leftBox {
+              display:none;
+              }
+
+.PoweredByMobile{
+display:block;
+color:#D1DCED;
+font-size:12px;
+text-align:center;
+margin-block: 1rem;
+}
+
+.PoweredByMobile a{
+text-decoration: underline;
+color:#D1DCED;
+}
 
 .corner-ribbon {
   
@@ -1196,6 +1249,7 @@ function injectCSS() {
   font-size:10px;
     padding: 6px 40px;
   width: 200px;
+  display:none;
   
 }
 
@@ -1274,7 +1328,7 @@ function injectCSS() {
     display: flex;
     flex-direction: row;
     gap: 4px;
-    width: max-content
+    
 }
 
 .info-row strong {
@@ -1339,10 +1393,19 @@ function injectCSS() {
     display: flex;
     flex-direction: row;
     gap: 4px;
-    width: max-content
+    color: #D1DCED;
+    
 }
 
         @media (max-width:650px){
+
+        .mainDiv{
+        max-width: unset;
+        }
+
+        .iconlogo img {    
+     display: block;
+}
         .mainDiv{
           border:none;
           top:unset;
@@ -1364,7 +1427,7 @@ function injectCSS() {
                transform: translate(0%, 0);
                pointer-events: auto;
                position: absolute;
-               bottom: 10%;
+               bottom: 0%;
                width: 100%;
                left: 0;
         }
@@ -1420,6 +1483,18 @@ function injectCSS() {
             }
            
          @media (max-width:450px){
+
+         .support-logo{
+         overflow:unset;
+         }
+
+         .support-logo img{
+    height: 60px;
+    width: 60px;
+    display: flex;
+    align-items: center;
+    border-radius: 100px;
+    }
         .input-dark input {
            font-size: 14px;
          }
@@ -1489,14 +1564,16 @@ height: -webkit-fill-available;
 }
 
 
+
+
 `;
     document.head.appendChild(style);
 }
 (function () {
     const currentSiteURL = window.location.origin;
     console.log(currentSiteURL, "currentSiteURL")
-    const API_URL = "https://rexptin.truet.net/api/";
-    // const API_URL = "http://localhost:2513/api";
+    // const API_URL = "https://rexptin.truet.net/api/";
+    const API_URL = "http://localhost:2513/api";
     const CHAT_LS_KEY = "rex_chat_history";
     let typingEl = null;
 
@@ -2304,6 +2381,7 @@ height: -webkit-fill-available;
                     localStorage.setItem("call_mins_left", String(json.mins_left ?? ""));
                     localStorage.setItem("chat_mins_left", String(json.messageLeft ?? ""));
                     localStorage.setItem("addOnsMins", String(json.addOnsMins ?? ""));
+                    localStorage.setItem("knowledge_base_id", String(json.knowledgeBaseId))
 
                     enforceRexIfNoMinutes();
 
@@ -2320,8 +2398,8 @@ height: -webkit-fill-available;
                     // mins_left = 90;
                     messageLeft = json.messageLeft;
                     // messageLeft = 90;
-                    const kbId = json.knowledgeBaseId || json.knowledgeBaseId;
-                    if (kbId) localStorage.setItem("knowledge_base_id", String(kbId));
+                    const kbId = json.knowledgeBaseId;
+                    // if (kbId) localStorage.setItem("knowledge_base_id", String(kbId));
                 } catch (e) {
                     console.log("Response is not JSON");
                 }
@@ -2931,7 +3009,7 @@ height: -webkit-fill-available;
             // });
             const agentIntro = document.createElement("p");
             agentIntro.className = "agent-intro";
-            agentIntro.innerHTML = `By Clicking Call ${agentName} You agree to <b class="terms-text">Terms of Use</b>`;
+            agentIntro.innerHTML = `By Clicking Call ${agentName} You agree to <b class="terms-text">Terms of Use</b> <div class="PoweredByMobile"><a href="https://www.rexpt.us" target="_blank" rel="noopener noreferrer">Powered by Rexpt</a></div>`;
             modal.appendChild(popupHeader);
             modal.appendChild(popupBody);
             popupBody.appendChild(leftSection);
@@ -3019,13 +3097,13 @@ height: -webkit-fill-available;
       <div class="mainDiv" >
         <div class="support-header">
       <div class="support-brand">
-        <div class="support-logo">    <img src="https://rexptin.vercel.app/${avatar}"  alt="" style="width:100%;height:100%"/></div>
+        <div class="support-logo">    <img src="https://rexptin.vercel.app/${avatar}"  alt="Avatar" /></div>
         <div class="support-title">
           <div class="t">${agentName || "Support"}</div>
           <div class="s">${businessName}</div>
           <div class=addresTitle>${address}</div>
         </div>
-        <div class='iconlogo'><img src='https://rexptin.truet.net/images/favicon-final.svg' alt='icon'/></div>
+        <div class='iconlogo'><img src='https://rexptin.truet.net/images/favicon-final.svg'  alt='icon'/></div>
       </div>
      
     </div>
@@ -3098,6 +3176,7 @@ height: -webkit-fill-available;
         </button>
 
         </div>
+        <div class="PoweredByMobile"><a href="https://www.rexpt.us" target="_blank" rel="noopener noreferrer">Powered by Rexpt</a></div>
       </div>
       
     </div>
@@ -3158,7 +3237,7 @@ height: -webkit-fill-available;
                     $call.style.width = "";
                     $call.setAttribute("aria-disabled", "true");
                 }
-
+// gfggf
                 // --- apply rules ---
                 if (allZero) {
                     // (4) sab zero => special rex agent lock + sirf disabled call button (aapka existing UX)
@@ -3185,7 +3264,7 @@ height: -webkit-fill-available;
                     // single/double layout
                     const showChat = hasChatEntitlement;
                     const showCall = hasCallEntitlement;
-
+// 
                     if (showChat && !showCall) {
                         if ($chat) {
                             // $chat.style.flex = "1 1 100%";
@@ -3220,7 +3299,7 @@ height: -webkit-fill-available;
                     const raw = String(s || "").trim();
 
                     if (!/^\+/.test(raw)) return false;
-
+// bv
                     if (el && el.__iti && window.intlTelInputUtils) {
                         try {
                             if (!el.__iti.isValidNumber()) return false;
@@ -4360,6 +4439,7 @@ ${totalRatings ? ` <div class="rating-box">
           </div>
 
             <div style="display:flex;align-items:center;gap:6px">
+              <button class="attio-end">End chat</button>
         <!-- NEW: Call icon button -->
         <button class="attio-call btn secondary" id="rexCallIconBtn" aria-label="Start call">
           
@@ -4370,7 +4450,7 @@ ${totalRatings ? ` <div class="rating-box">
 
         
 
-      <!--  <button class="attio-end">End chat</button> -->
+    
        
       </div>
         </div>
@@ -4389,6 +4469,8 @@ ${totalRatings ? ` <div class="rating-box">
 
         </button>
           </div>
+
+          <div class="PoweredByMobile"><a href="https://www.rexpt.us" target="_blank" rel="noopener noreferrer">Powered by Rexpt</a></div>
         </div>
 </div>
 </div>

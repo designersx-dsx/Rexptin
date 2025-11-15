@@ -140,7 +140,7 @@ const AgentDashboard = () => {
   const [agentinfo, setAgentInfo] = useState()
   const [openPublicUrlModal, setOpenPublicUrlModal] = useState(false)
   const [copied, setCopied] = useState(false);
- const [publicUrlEditMode,setPublicUrlEditMode]=useState(false)
+  const [publicUrlEditMode, setPublicUrlEditMode] = useState(false)
   //chatToggleSwitch
   const chatToggleSwitch = async () => {
     const newState = !isEnabled;
@@ -447,19 +447,19 @@ const AgentDashboard = () => {
   const handleAssignNumberUpdated = () => {
     getAgentDetailsAndBookings();
   };
- const handleLogout = () => {
-  setLogoutPopupType("confirm");
-  setLogoutPopupMessage("Are you sure you want to logout?");
-};
+  const handleLogout = () => {
+    setLogoutPopupType("confirm");
+    setLogoutPopupMessage("Are you sure you want to logout?");
+  };
   const handleLogoutConfirm = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("userId");
-  localStorage.removeItem("agents");
-  localStorage.clear();
-  sessionStorage.clear();
-  // window.location.replace("/signup");
-  navigate("/signup", { replace: true });
-};
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("agents");
+    localStorage.clear();
+    sessionStorage.clear();
+    // window.location.replace("/signup");
+    navigate("/signup", { replace: true });
+  };
   const handleBackClick = () => {
     navigate("/dashboard");
   };
@@ -938,23 +938,22 @@ const AgentDashboard = () => {
 
     localStorage.setItem("filterType", "single")
   }
-  const handleCopyPublicLink = (agentCode,key) => {
+  const handleCopyPublicLink = (agentCode, key) => {
     setPublicUrlEditMode(key)
-    const link = `${process.env.REACT_APP_PUBLIC_WIDGET_DOMAIN}?agent=${agentCode}`;
+    const link = `${process.env.REACT_APP_PUBLIC_WIDGET_DOMAIN}/${agentData?.agent?.ventryUrl}`;
     setOpenPublicUrlModal(true)
   };
-  const defaultPublicUrl = `${process.env.REACT_APP_PUBLIC_WIDGET_DOMAIN}?agent=${agentData?.agent?.agentCode}`;
+  const defaultPublicUrl = `${process.env.REACT_APP_PUBLIC_WIDGET_DOMAIN}/${agentData?.agent?.ventryUrl}`;
   const ventryPublicUrl = agentData?.agent?.ventryUrl
-    ? `${process.env.REACT_APP_PUBLIC_WIDGET_DOMAIN}?${agentData?.agent?.ventryUrl}`
+    ? `${process.env.REACT_APP_PUBLIC_WIDGET_DOMAIN}/${agentData?.agent?.ventryUrl}`
     : null;
-
   const finalUrl = ventryPublicUrl || defaultPublicUrl;
   const handleCopy = () => {
     navigator.clipboard.writeText(finalUrl);
     setCopied(true);
     setTimeout(() => {
       setCopied(false);
-    }, 2000); 
+    }, 2000);
   };
 
   return (
@@ -1192,30 +1191,39 @@ Do you want to proceed with deleting this assigned number?`
 
           <div className={styles.container}>
             <Divider label="Your Public Agent Url " />
-            <div className={styles.publicUrlContainer}>
-              <h3 >
-                {finalUrl}
-              </h3>
+            <div
+              className={styles.publicUrlContainer}
+              onClick={() => handleCopy(finalUrl)} // Entire box click copies URL
+            >
+              <h3>{finalUrl}</h3>
 
               <div className={styles.actions}>
-                {/* Copy Icon */}
-                {/* <div className={styles.copyBox} onClick={handleCopy}>
-                 <img src='/svg/copy-icon.svg' alt="copy-icon"/>
-                  <span>{copied ? "Copied!" : ""}</span>
-                </div> */}
                 <div className={styles.copyWrapper}>
-                                        <div className={styles.copyButton} onClick={handleCopy}>
-                                            <img src="/svg/copy-icon.svg" alt="Copy" />
-                                        </div>
-                                        {copied && <span className={styles.tooltip}>Copied!</span>}
-                                        </div>
+                  <div
+                    className={styles.copyButton}
+                    onClick={(e) => {
+                      e.stopPropagation(); // prevent parent click
+                      handleCopy(finalUrl);
+                    }}
+                  >
+                    <img src="/svg/copy-icon.svg" alt="Copy" />
+                  </div>
+                  {copied && <span className={styles.tooltip}>Copied!</span>}
+                </div>
 
                 {/* Edit Button */}
-                <button className={styles.editBtn} onClick={() => handleCopyPublicLink(agentData?.agent?.agentCode,true)}>
-                 <img src="/svg/edit-svg2.svg" alt="edit-svg2"/>
+                <button
+                  className={styles.editBtn}
+                  onClick={(e) => {
+                    e.stopPropagation(); // prevent parent click
+                    handleCopyPublicLink(agentData?.agent?.agentCode, true);
+                  }}
+                >
+                  <img src="/svg/edit-svg2.svg" alt="edit-svg2" />
                 </button>
               </div>
             </div>
+
 
 
             <div className={styles.businessInfo}>
@@ -1453,7 +1461,7 @@ Do you want to proceed with deleting this assigned number?`
                 className={styles.managementItem}
                 // onClick={() => setShowModal(true)}
                 onClick={() =>
-                  handleCopyPublicLink(agentData?.agent?.agentCode,false)
+                  handleCopyPublicLink(agentData?.agent?.agentCode, false)
                 }
 
               >
@@ -2239,7 +2247,7 @@ Do you want to proceed with deleting this assigned number?`
           {/* //openPublicUrlModal */}
           {openPublicUrlModal && (
             <Modal2 isOpen={openPublicUrlModal} onClose={handleClosePublicWidget}>
-              <PublicCopyUrl agent={agentData?.agent} isRefresh={() => setRefresh((prev) => !prev) } isEditMode={publicUrlEditMode} />
+              <PublicCopyUrl agent={agentData?.agent} isRefresh={() => setRefresh((prev) => !prev)} isEditMode={publicUrlEditMode} />
             </Modal2>
           )}
 
@@ -2278,13 +2286,13 @@ Do you want to proceed with deleting this assigned number?`
             }}
           />
           {logoutPopupMessage && (
-  <Popup
-    type={logoutPopupType}
-    message={logoutPopupMessage}
-    onClose={() => setLogoutPopupMessage("")}
-    onConfirm={handleLogoutConfirm}
-  />
-)}
+            <Popup
+              type={logoutPopupType}
+              message={logoutPopupMessage}
+              onClose={() => setLogoutPopupMessage("")}
+              onConfirm={handleLogoutConfirm}
+            />
+          )}
 
           {/* {isAssignNumberModalOpen && (
             <div
