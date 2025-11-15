@@ -189,6 +189,7 @@ function Dashboard() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [agentToCancel, setAgentToCancel] = useState(null);
   const [showDashboardReferral, setShowDashboardReferral] = useState("");
+  
   const [showreferralfloating, setShowreferralfloating] = useState(
     localStorage.getItem("showreferralfloating") || "true"
   );
@@ -2357,7 +2358,9 @@ function Dashboard() {
   //     });
   //   }
   // }
-
+useEffect(()=>{
+getUserReferralCode()
+},[])
   return (
     <div>
       {activeSubs ? (

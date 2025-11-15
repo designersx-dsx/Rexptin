@@ -57,6 +57,11 @@ const EditPublic = () => {
   const typingTimeoutRef = useRef(null);
   const inputRefWebSiteUrl = useRef(null);
   const shouldFocusBackRef = useRef(false);
+  const noBusinessWebsiteRef = useRef(noBusinessWebsite);
+
+  useEffect(() => {
+    noBusinessWebsiteRef.current = noBusinessWebsite;
+  }, [noBusinessWebsite]);
 
   const companyKeywords = [
     "about",
@@ -112,7 +117,8 @@ const EditPublic = () => {
 
   // Autofill website from Google Place (same behaviour as AboutBusiness)
   const maybeAutofillWebsite = (place) => {
-    if (noBusinessWebsite) return;
+    // ❗ Never autofill if user said they don't have a website
+    if (noBusinessWebsiteRef.current) return;
 
     const normalized = normalizeWebsite(place?.website);
     const isNewPlace = prevPlaceIdRef.current !== place?.place_id;
@@ -339,8 +345,14 @@ const EditPublic = () => {
   };
 
   const handleUrlVerification = async (url) => {
+    if (noBusinessWebsiteRef.current) return;
     setUrlVerificationInProgress(true);
     const result = await validateWebsite(url);
+    if (noBusinessWebsiteRef.current) {
+      setUrlVerificationInProgress(false);
+      return;
+    }
+
     if (result.valid) {
       setIsVerified(true);
       setBusinessUrlError("");
@@ -376,7 +388,6 @@ const EditPublic = () => {
       setIsVerified(false);
       setBusinessUrlError("Invalid URL");
       localStorage.setItem("isVerified", false);
-      // Focus back to input like AboutBusiness if user typed something invalid
       if (url?.trim()) shouldFocusBackRef.current = true;
     }
     setUrlVerificationInProgress(false);
@@ -453,6 +464,7 @@ const EditPublic = () => {
       const savedData = JSON.parse(
         sessionStorage.getItem("aboutBusinessForm") || "{}"
       );
+
       setOriginalForm({
         googleListing: savedData.googleListing || "",
         businessUrl: savedData.businessUrl || "",
@@ -468,7 +480,9 @@ const EditPublic = () => {
         siteMapUrls: JSON.parse(sessionStorage.getItem("scrapedUrls") || "[]"),
       });
 
-      if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
+      if (!savedData.noBusinessWebsite && savedData.businessUrl) {
+        setBusinessUrl(savedData.businessUrl);
+      }
       if (savedData.googleListing) setGoogleListing(savedData.googleListing);
 
       if (typeof savedData.noGoogleListing === "boolean")
@@ -480,12 +494,23 @@ const EditPublic = () => {
         sessionStorage.getItem("aboutBusinessForm") || "{}"
       );
       if (savedData) {
-        if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
+        if (!savedData.noBusinessWebsite && savedData.businessUrl) {
+          setBusinessUrl(savedData.businessUrl);
+        }
         if (typeof savedData.noBusinessWebsite === "boolean")
           setNoBusinessWebsite(savedData.noBusinessWebsite);
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (noBusinessWebsite) {
+      setBusinessUrl("");
+      setIsVerified(false);
+      setBusinessUrlError("");
+      sessionStorage.removeItem("businessUrl");
+    }
+  }, [noBusinessWebsite]);
 
   useEffect(() => {
     const aboutBusinessForm = JSON.parse(
@@ -694,6 +719,56 @@ const EditPublic = () => {
       setSelectedUrls(checkedUrls);
     }
   }, [showSiteMapUrls]);
+  // Confirm clearing Google My Business listing (same behaviour as AboutBusiness)
+  const handleConfirmNoGMB = () => {
+    setShowPopup(false);
+
+    // 1. Update local state
+    setNoGoogleListing(true);
+    setGoogleListing("");
+    setDisplayBusinessName("");
+
+    setcurrentForm((prev) => ({
+      ...prev,
+      isGoogleListing: 0,
+      googleListing: "",
+      displayBusinessName: "",
+    }));
+
+    // 2. Update aboutBusinessForm in sessionStorage
+    const form = JSON.parse(
+      sessionStorage.getItem("aboutBusinessForm") || "{}"
+    );
+    form.isGoogleListing = 0;
+    form.noGoogleListing = true;
+    form.googleListing = "";
+    form.displayBusinessName = "";
+    sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
+
+    // 3. Remove saved listing from sessionStorage keys
+    sessionStorage.removeItem("googleListing");
+    sessionStorage.removeItem("displayBusinessName");
+
+    // 4. Optional: also clear GMB-related fields from placeDetailsExtract
+    const placeDetailsExtract = JSON.parse(
+      sessionStorage.getItem("placeDetailsExtract") || "{}"
+    );
+    const clearedGoogleData = {
+      name: "",
+      address: "",
+      phone: "",
+      internationalPhone: "",
+      website: "",
+      rating: "",
+      totalRatings: "",
+      hours: [],
+      businessStatus: "",
+      categories: [],
+      businessName: "",
+    };
+    const updatedPlace = { ...placeDetailsExtract, ...clearedGoogleData };
+    sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedPlace));
+  };
 
   return (
     <>
@@ -730,41 +805,34 @@ const EditPublic = () => {
             checked={noGoogleListing}
             onChange={(e) => {
               const checked = e.target.checked;
-              setNoGoogleListing(checked);
-              setcurrentForm((prev) => ({
-                ...prev,
-                isGoogleListing: checked ? 0 : 1,
-              }));
-
-              const form = JSON.parse(
-                sessionStorage.getItem("aboutBusinessForm") || "{}"
-              );
-              form.isGoogleListing = checked ? 0 : 1;
 
               if (checked) {
-                setGoogleListing("");
-                setDisplayBusinessName("");
-                sessionStorage.removeItem("googleListing");
-                sessionStorage.removeItem("displayBusinessName");
-                form.googleListing = "";
-                form.displayBusinessName = "";
-              } else {
-                const prevGoogleListing =
-                  sessionStorage.getItem("googleListing");
-                const prevDisplayName = sessionStorage.getItem(
-                  "displayBusinessName"
+                // Show confirm popup instead of directly clearing
+                setPopupType("confirm");
+                setPopupMessage(
+                  "Are you sure you don't have a Google My Business listing? " +
+                    "This will clear the existing listing details for this agent. " +
+                    "You can always add it again later."
                 );
-                if (prevGoogleListing) {
-                  setGoogleListing(prevGoogleListing);
-                  form.googleListing = prevGoogleListing;
-                }
-                if (prevDisplayName) {
-                  setDisplayBusinessName(prevDisplayName);
-                  form.displayBusinessName = prevDisplayName;
-                }
-              }
+                setShowPopup(true);
+              } else {
+                // User unchecked → re-enable GMB input (no restore of old data)
+                setNoGoogleListing(false);
+                setcurrentForm((prev) => ({
+                  ...prev,
+                  isGoogleListing: 1,
+                }));
 
-              sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
+                const form = JSON.parse(
+                  sessionStorage.getItem("aboutBusinessForm") || "{}"
+                );
+                form.isGoogleListing = 1;
+                form.noGoogleListing = false;
+                sessionStorage.setItem(
+                  "aboutBusinessForm",
+                  JSON.stringify(form)
+                );
+              }
             }}
           />
           <span className={styles.customCheckbox}></span>I do not have Google My
@@ -859,10 +927,11 @@ const EditPublic = () => {
         {showPopup && (
           <PopUp
             type={popupType}
+            message={popupMessage}
             onClose={() => {
               setShowPopup(false);
             }}
-            message={popupMessage}
+            onConfirm={popupType === "confirm" ? handleConfirmNoGMB : undefined}
           />
         )}
 

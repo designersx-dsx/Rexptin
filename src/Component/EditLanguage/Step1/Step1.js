@@ -254,6 +254,13 @@ const Step1 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
             percentage: "—",
             stats: "—",
         },
+        {
+    name: "Arabic",
+    locale: "ar-SA",
+    flag: "/images/ar-SA.png",
+    percentage: "—",
+    stats: "—",
+},
 
         /* Universal / Mixed set */
         {
