@@ -216,7 +216,7 @@ function App() {
           <p>Launch Your AI Receptionist with Rexpt.in</p>
         </div>
         <div className="ForMobile">
-          <ForcePortraitOnly />
+          {/* <ForcePortraitOnly /> */}
 
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
