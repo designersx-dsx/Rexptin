@@ -6,6 +6,7 @@ import {
   LoginWithEmailOTP,
   verifyEmailOTP,
 } from "../../Store/apiStore";
+import { useLayoutEffect } from 'react';
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
 import useUser from "../../Store/Context/UserContext";
@@ -42,12 +43,17 @@ const SignUp = () => {
   const info = useUserDeviceInfo();
   const utm_data = useUTMParams();
   useEffect(() => {
+    const verifiedDetails = searchParams.get("verifiedDetails")
     const tokenFromParams = searchParams.get("token");
-    if (tokenFromParams) {
+    
       localStorage.setItem("token", tokenFromParams);
+      localStorage.setItem("onboardComplete", verifiedDetails);
       console.log("✅ Token saved to localStorage:", tokenFromParams);
-    }
+  
   }, [searchParams]);
+
+
+  // Run once on mount, before any effects
 
   useEffect(() => {
     if (!resendEndTime) return;
