@@ -243,7 +243,7 @@ const dialCodeFromIso2 = (iso2) => {
 const countryNameToIso2 = {
   India: "in",
   Australia: "au",
-  "United States": "us", 
+  "United States": "us",
   "United Kingdom": "gb",
   Canada: "ca",
   Singapore: "sg",
@@ -300,7 +300,7 @@ const titleCase = (s = "") =>
 const inferModeFromCondition = (condition) => {
   const c = (condition || "").trim().toLowerCase();
   if (PRESETS.map((p) => p.toLowerCase()).includes(c)) return "preset";
-  if (!c) return "preset"; 
+  if (!c) return "preset";
   return "custom";
 };
 
@@ -380,7 +380,11 @@ function CallTransfer() {
     } catch {}
   };
 
-  const persistTransfers = async (llmIdParam, transfersList, cleanedPrevVars) => {
+  const persistTransfers = async (
+    llmIdParam,
+    transfersList,
+    cleanedPrevVars
+  ) => {
     await updateLlm(llmIdParam, { default_dynamic_variables: cleanedPrevVars });
     const formatted = prepareTransfersWithDialCode(
       transfersList.map(({ _mode, _customName, ...rest }) => rest)
@@ -411,7 +415,10 @@ function CallTransfer() {
         const biz = data?.data ?? data ?? null;
         setBusinessDetails(biz);
       } catch (error) {
-        console.error("Error fetching business details:", error?.response?.data || error?.message || error);
+        console.error(
+          "Error fetching business details:",
+          error?.response?.data || error?.message || error
+        );
         setShowPopup(true);
         setPopupType("failed");
         setPopupMessage(
@@ -451,7 +458,10 @@ function CallTransfer() {
             return merged.map((r) => ({
               ...r,
               _mode: inferModeFromCondition(r.condition),
-              _customName: inferModeFromCondition(r.condition) === "custom" ? r.condition : "",
+              _customName:
+                inferModeFromCondition(r.condition) === "custom"
+                  ? r.condition
+                  : "",
             }));
           });
         }
@@ -472,7 +482,9 @@ function CallTransfer() {
   useEffect(() => {
     if (!businessDetails) return;
     const rawBizPhone = businessDetails?.knowledge_base_texts?.phone || "";
-    const parsedBiz = rawBizPhone ? parsePhoneNumberFromString(rawBizPhone) : null;
+    const parsedBiz = rawBizPhone
+      ? parsePhoneNumberFromString(rawBizPhone)
+      : null;
 
     let iso2 = parsedBiz?.country ? parsedBiz.country.toLowerCase() : undefined;
     let dialCode = parsedBiz?.countryCallingCode || undefined;
@@ -563,7 +575,10 @@ function CallTransfer() {
         "Failed to remove number: " +
           (err?.response?.data || err?.message || err)
       );
-      console.error("Remove failed:", err?.response?.data || err?.message || err);
+      console.error(
+        "Remove failed:",
+        err?.response?.data || err?.message || err
+      );
     } finally {
       setRemovingIndex(null);
     }
@@ -579,34 +594,37 @@ function CallTransfer() {
       }
 
       const conditionCounts = {};
-      for (const t0 of transfers) {
-        const cond = normalizeCondition(t0.condition || "").toLowerCase();
-        if (cond) {
-          conditionCounts[cond] = (conditionCounts[cond] || 0) + 1;
-          if (conditionCounts[cond] > 1) {
-            setShowPopup(true);
-            setPopupType("failed");
-            setPopupMessage(
-              `You cannot add multiple entries for the same department: '${cond}'.`
-            );
-            return;
-          }
-        }
-      }
 
+      // 1) Validate each row: department + phone + number validity
       for (const [i, t] of transfers.entries()) {
         const finalCond =
           t._mode === "custom"
             ? normalizeCondition(t._customName)
             : normalizeCondition(t.condition);
-        if (t._mode === "custom") {
-          if (!finalCond) {
-            setShowPopup(true);
-            setPopupType("failed");
-            setPopupMessage(`Custom name is required for entry ${i + 1}.`);
-            return;
-          }
+
+        // --- department is mandatory for EVERY row ---
+        if (!finalCond) {
+          setShowPopup(true);
+          setPopupType("failed");
+          setPopupMessage(
+            `Department is required for entry ${
+              i + 1
+            }. Please select a department or add a custom department.`
+          );
+          return;
         }
+
+        const condKey = finalCond.toLowerCase();
+        conditionCounts[condKey] = (conditionCounts[condKey] || 0) + 1;
+        if (conditionCounts[condKey] > 1) {
+          setShowPopup(true);
+          setPopupType("failed");
+          setPopupMessage(
+            `You cannot add multiple entries for the same department: '${finalCond}'.`
+          );
+          return;
+        }
+
         const phone = (t.phone || "").trim();
         const dialCode = (t.dialCode || "").trim();
         if (!phone || !dialCode) {
@@ -633,6 +651,7 @@ function CallTransfer() {
 
       setLoading(true);
 
+      // 2) Normalize conditions once and carry them forward
       const finalized = transfers.map((t) => ({
         ...t,
         condition:
@@ -645,16 +664,21 @@ function CallTransfer() {
       const formattedTransfers = prepareTransfersWithDialCode(
         finalized.map(({ _mode, _customName, ...rest }) => rest)
       );
+
+      // 3) Build dynamic variables from final conditions
       const dynamicVars = {};
       formattedTransfers.forEach((t) => {
+        if (!t.condition) return; // safety guard
         const key = keyFromCondition(t.condition);
         dynamicVars[key] = `+${t.phone}`;
       });
+
       const lines = formattedTransfers.map((t) => {
         const label = titleCase(t.condition);
         const key = keyFromCondition(t.condition);
         return `If they say ${label}, transfer to {{${key}}}.`;
       });
+
       const fullPrompt = (
         `The user might ask to be transferred to departments. ` +
         lines.join(" ") +
@@ -675,6 +699,8 @@ function CallTransfer() {
         speak_during_execution: true,
         speak_after_execution: true,
       };
+
+      // Remove old *_number vars first
       const cleanedPrev = { ...prevDynanamicVar };
       Object.keys(cleanedPrev).forEach((k) => {
         if (/_number$/.test(k)) delete cleanedPrev[k];
@@ -701,7 +727,10 @@ function CallTransfer() {
         "Failed to update LLM: " +
           (error?.response?.data || error.message || error)
       );
-      console.error("Failed to update LLM:", error?.response?.data || error.message || error);
+      console.error(
+        "Failed to update LLM:",
+        error?.response?.data || error.message || error
+      );
     } finally {
       setLoading(false);
     }
@@ -772,19 +801,19 @@ function CallTransfer() {
               >
                 <div className={styles.selectWrapper}>
                   <div className={styles.toplabelRow}>
-                  <label className={styles.label}>Department</label>
-                  {transfers.length > 0 && (
-                  <button
-                    onClick={() => handleRemove(index)}
-                    className={styles.removeBtn}
-                    disabled={removingIndex === index}
-                    title={removingIndex === index ? "" : "X"}
-                  >
-                    {removingIndex === index ? "" : "X"}
-                  </button>
-                )}
+                    <label className={styles.label}>Department</label>
+                    {transfers.length > 0 && (
+                      <button
+                        onClick={() => handleRemove(index)}
+                        className={styles.removeBtn}
+                        disabled={removingIndex === index}
+                        title={removingIndex === index ? "" : "X"}
+                      >
+                        {removingIndex === index ? "" : "X"}
+                      </button>
+                    )}
                   </div>
-                  
+
                   <select
                     className={styles.select}
                     value={mode === "custom" ? "Custom" : selectedPreset || ""}
@@ -868,8 +897,6 @@ function CallTransfer() {
                     dropdownStyle={{ border: "unset", boxShadow: "none" }}
                   />
                 </div>
-
-                
               </div>
             );
           })}

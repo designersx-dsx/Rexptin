@@ -87,6 +87,12 @@ const AboutBusiness = forwardRef(
     const setHasFetched = true;
     const typingTimeoutRef = useRef(null);
     const inputRefWebSiteUrl = useRef(null);
+    const noBusinessWebsiteRef = useRef(noBusinessWebsite);
+    const listRef = useRef(null);
+    useEffect(() => {
+      noBusinessWebsiteRef.current = noBusinessWebsite;
+    }, [noBusinessWebsite]);
+
     const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "AboutBusiness",
       setLoading,
@@ -201,7 +207,7 @@ const AboutBusiness = forwardRef(
     };
 
     const maybeAutofillWebsite = (place) => {
-      if (noBusinessWebsite) return;
+      if (noBusinessWebsiteRef.current) return;
 
       const normalized = normalizeWebsite(place?.website);
       const isNewPlace = prevPlaceIdRef.current !== place?.place_id;
@@ -212,7 +218,6 @@ const AboutBusiness = forwardRef(
         businessUrl === lastAutoFilledUrlRef.current;
 
       if (shouldOverwrite) {
-        // clear any pending debounce to avoid stale verify
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
         if (normalized) {
@@ -220,7 +225,6 @@ const AboutBusiness = forwardRef(
           lastAutoFilledUrlRef.current = normalized;
           handleUrlVerification(normalized);
         } else {
-          // new place has no website → clear
           setBusinessUrl("");
           setIsVerified(null);
           setBusinessUrlError("");
@@ -425,6 +429,7 @@ const AboutBusiness = forwardRef(
     };
 
     const handleInputChange = (e) => {
+      scrollListIntoView()
       lastAutoFilledUrlRef.current = "";
       let v = e.target.value.trim();
       v = v.replace(/^https?:\/\//i, "");
@@ -458,30 +463,48 @@ const AboutBusiness = forwardRef(
       const savedData = JSON.parse(
         sessionStorage.getItem("aboutBusinessForm") || "{}"
       );
-      if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
+
+      // 1️⃣ Restore checkbox states first
+      if (typeof savedData.noGoogleListing === "boolean") {
+        setNoGoogleListing(savedData.noGoogleListing);
+      }
+      if (typeof savedData.noBusinessWebsite === "boolean") {
+        setNoBusinessWebsite(savedData.noBusinessWebsite);
+      }
+
+      // 2️⃣ Only restore website URL if user *does* have a website
+      if (!savedData.noBusinessWebsite && savedData.businessUrl) {
+        setBusinessUrl(savedData.businessUrl);
+      }
+
       if (localStorage.getItem("UpdationMode") == "ON") {
-        if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
+        if (!savedData.noBusinessWebsite && savedData.businessUrl) {
+          setBusinessUrl(savedData.businessUrl);
+        }
 
         if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
         if (savedData.note) setNote(savedData.note);
         if (savedData.googleListing) {
           setGoogleListing(savedData.googleListing);
         }
-        // rebuild File objects
+
         if (Array.isArray(savedData.files) && savedData.files.length) {
           const rebuiltFiles = savedData.files.map((d, i) =>
             dataURLtoFile(d, `file${i + 1}`)
           );
           setFiles(rebuiltFiles);
         }
-        if (typeof savedData.noGoogleListing === "boolean") {
-          setNoGoogleListing(savedData.noGoogleListing);
-        }
-        if (typeof savedData.noBusinessWebsite === "boolean") {
-          setNoBusinessWebsite(savedData.noBusinessWebsite);
-        }
       }
     }, []);
+
+    useEffect(() => {
+      if (noBusinessWebsite) {
+        setBusinessUrl("");
+        setIsVerified(false);
+        setBusinessUrlError("");
+        sessionStorage.removeItem("businessUrl");
+      }
+    }, [noBusinessWebsite]);
 
     useEffect(() => {
       const aboutBusinessForm = JSON.parse(
@@ -662,22 +685,22 @@ const AboutBusiness = forwardRef(
       },
     }));
 
-    //check is this webview or not
-    const isAndroidApp = () =>
-      /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
-    const isIOSApp = () =>
-      /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
+    const SCROLL_OFFSET = 80;
+
     const handleFocus = (e) => {
-      if (isAndroidApp() || isIOSApp()) {
-        setTimeout(() => {
-          // Method 1: Smooth scroll to element
-          e.target.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-        }, 300);
-      }
+      const el = e.target;
+      setTimeout(() => {
+        const rect = el.getBoundingClientRect();
+        const absoluteTop = rect.top + window.scrollY;
+
+        window.scrollTo({
+          top: absoluteTop - SCROLL_OFFSET,
+          behavior: "smooth",
+        });
+      }, 200);
     };
+
+
 
     const handleViewSelectedUrl = (e) => {
       e.preventDefault();
@@ -721,20 +744,22 @@ const AboutBusiness = forwardRef(
         handleUrlVerification(normalized);
       }
     }, [placeDetails, noBusinessWebsite]);
-
+    const scrollListIntoView = () => {
+      if (listRef.current) {
+        listRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }
+    };
     return (
       <>
         <div>
           <div className={styles.container}>
             <div className={styles.header}>
-              {/* <h1>
-              {EditingMode
-                ? "Edit: Your business Listing"
-                : "Your business Listing"}
-            </h1> */}
             </div>
-            <form className={styles.formContainer}>
-              <div className={styles.form}>
+            <form className={styles.formContainer} ref={listRef}>
+              <div className={styles.form} >
                 <div>
                   <div className={styles.formGroup}>
                     <label htmlFor="google-autocomplete">
@@ -750,7 +775,16 @@ const AboutBusiness = forwardRef(
                       // onChange={(e) => setGoogleListing(e.target.value)}
                       onChange={(e) => {
                         setDisplayBusinessName(e.target.value);
+                        setTimeout(scrollListIntoView, 300);
                       }}
+                      onFocus={((e) => {
+                        setTimeout(scrollListIntoView, 300);
+                      })
+                      }
+                      onClick={() => {
+                        setTimeout(scrollListIntoView, 300);
+                      }}
+
                       required
                       disabled={noGoogleListing}
                     />
@@ -780,7 +814,7 @@ const AboutBusiness = forwardRef(
                           );
                         }
                       }}
-                      onFocus={handleFocus}
+
                     />
                     <label htmlFor="no-google-listing">
                       I do not have Google My Business Listing
@@ -832,8 +866,15 @@ const AboutBusiness = forwardRef(
                           disabled={
                             noBusinessWebsite || urlVerificationInProgress
                           }
+
                           onInput={handleInputChange}
-                          onFocus={handleFocus}
+                          onFocus={((e) => {
+                            setTimeout(scrollListIntoView, 300);
+                          })
+                          }
+                          onClick={() => {
+                            setTimeout(scrollListIntoView, 300);
+                          }}
                         />
                         <div className={styles.verifyStatus}>
                           {urlVerificationInProgress ? (
@@ -892,7 +933,7 @@ const AboutBusiness = forwardRef(
                     <label
                       htmlFor="no-business-website"
                       className={styles.iHaveNot}
-                      // disabled={urlVerificationInProgress}
+                    // disabled={urlVerificationInProgress}
                     >
                       I do not have a business website
                     </label>

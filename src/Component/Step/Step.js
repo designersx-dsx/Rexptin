@@ -97,6 +97,8 @@ const businessTypes = [
   { name: "Colleges & Universities", code: "coll_uni" },
   { name: "Training Center", code: "tra_ce" },
   { name: "Educational Institute", code: "edu_ins" },
+  { name: "Plumber", code: "plum_b" },
+  
 ];
 const Step = () => {
   const [showNoGMBModal, setShowNoGMBModal] = useState(false);
@@ -1196,9 +1198,9 @@ const Step = () => {
               );
               //AssignNumber both Agent
               const assignedNumber = sessionStorage.getItem("assignedPhoneNumber");
-              // if (assignedNumber) {
-              //   await assignNumberToAgent(assignedNumber, response.data.agent_id)
-              // }
+              if (assignedNumber) {
+                await assignNumberToAgent(assignedNumber, response.data.agent_id)
+              }
               if (ifChatWidgetEnabledOrNot) {
                 // alert("ok")
                 // Shared payload data for both Voice Agent and Chat Agent

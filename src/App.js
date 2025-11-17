@@ -103,6 +103,7 @@ function App() {
   const [agentCode, setAgentCode] = useState(null);
   const [renderStatusPage, setRenderStatusPage] = useState(false)
   const [isChecking, setIsChecking] = useState(true)
+  
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
@@ -418,7 +419,9 @@ function App() {
           <p>Launch Your AI Receptionist with Rexpt.in</p>
         </div>
         <div className="ForMobile">
-          {/* <PreventPullToRefresh setRefreshKey={setRefreshKey}> */}
+          {/* <ForcePortraitOnly /> */}
+
+          <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
             <div className="App" key={refreshKey}>
               {/* <RoutePersistence /> */}
@@ -876,3 +879,5 @@ function App() {
   );
 }
 export default App;
+
+// modal close 

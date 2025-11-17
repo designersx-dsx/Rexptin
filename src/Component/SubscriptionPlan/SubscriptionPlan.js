@@ -131,7 +131,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
             const countryCurrencyMap = {
 
 
-                // IN: "inr",
+                IN: "inr",
 
                 US: "usd",
                 CA: "cad",
@@ -643,7 +643,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                         </div>
 
 
-                                        
+
 
                                         <ul className={styles.featuresList}>
                                             <div

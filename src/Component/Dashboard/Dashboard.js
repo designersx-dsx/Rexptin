@@ -189,6 +189,7 @@ function Dashboard() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [agentToCancel, setAgentToCancel] = useState(null);
   const [showDashboardReferral, setShowDashboardReferral] = useState("");
+  
   const [showreferralfloating, setShowreferralfloating] = useState(
     localStorage.getItem("showreferralfloating") || "true"
   );
@@ -2364,8 +2365,18 @@ function Dashboard() {
     }
   };
   const currentPlan1 = pendingUpgradeAgent?.agentPlan ?? agentDetails?.agentPlan; // fallback
-
-
+  // const handleEditNumber = (agent, e) => {
+  //   console.log(agent, "agentagent")
+  //   if (e.target === e.currentTarget) {
+  //     e.stopPropagation();
+  //     navigate("/assign-number", {
+  //       state: { agent: agent,numberEditMode:true },
+  //     });
+  //   }
+  // }
+useEffect(()=>{
+getUserReferralCode()
+},[])
   return (
     <div>
       {activeSubs ? (
@@ -2921,19 +2932,14 @@ function Dashboard() {
                           {assignedNumbers.length > 1 ? "s" : ""}{" "}
                           {assignedNumbers.map(formatE164USNumber).join(", ")}
                         </p>
-                        {/* <Edit
-                        
-                          onClick={(e) => {
-                            if (e.target === e.currentTarget) {
-                              e.stopPropagation();
-                              alert("ok")
-                            }
-                          }}
-                          size={16}
-                          className=""
-                        // onClick={handleEditNumber}
-                        /> */}
 
+                        {/* {agent.voip_number_edit_mode && assignedNumbers.length > 0 && (
+                          <Edit
+                            size={25}
+                            className="editNumberIcon"
+                            onClick={(e) => { handleEditNumber(agent, e); }}
+                          />
+                        )} */}
                         {agent?.agentPlan === "free" && !agent?.subscriptionId && agent?.voip_numbers_created ? (
                           (() => {
                             const created = new Date(agent.voip_numbers_created);
@@ -3017,7 +3023,6 @@ function Dashboard() {
                             );
                           })()
                         ) : null}
-
                       </div>
                     ) : (
                       <div

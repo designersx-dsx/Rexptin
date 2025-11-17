@@ -223,17 +223,17 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
 
       <h2 className={styles.sectionTitle}>Agent Gender</h2> */}
         <div className={styles.genderContainer}>
-          {["Male", "Female"].map((gender) => (
+          {["Female", "Male"].map((gender) => (
             <label
               key={gender}
               className={`${styles.genderCard} ${selectedGender === gender ? styles.active : ""
                 }`}
             >
               <span className={styles.icon}>
-                {gender === "Male" ? (
-                  <img src="svg/male-icon.svg" alt="Male Icon" />
+                {gender === "Female" ? (
+                   <img src="svg/female-icon.svg" alt="Female Icon" />
                 ) : (
-                  <img src="svg/female-icon.svg" alt="Female Icon" />
+                   <img src="svg/male-icon.svg" alt="Male Icon" />
                 )}
               </span>
               <span>{gender}</span>

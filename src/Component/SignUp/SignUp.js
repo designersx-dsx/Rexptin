@@ -44,6 +44,7 @@ const SignUp = () => {
   const [renderHtml, setRenderHtml] = useState(false);
   const info = useUserDeviceInfo();
   const utm_data = useUTMParams();
+  const listRef = useRef(null);
   const [userDetails , setUserDetails] = useState()
    const location = useLocation();
   useEffect(() => {
@@ -103,10 +104,10 @@ const SignUp = () => {
     }
   }, []);
   useEffect(() => {
-    const emailFromParams = searchParams.get("ownerEmail");
-    if (emailFromParams) {
-      const decodedEmail = decodeURIComponent(emailFromParams);
-      setEmail(decodedEmail.toLowerCase());
+    const tokenFromParams = searchParams.get("token");
+    if (tokenFromParams) {
+      localStorage.setItem("token", tokenFromParams);
+      console.log("✅ Token saved to localStorage:", tokenFromParams);
     }
   }, [searchParams]);
 
@@ -418,9 +419,17 @@ const SignUp = () => {
         setIsResendDisabled(true);
       }
     }
+  }, [searchParams]);
+  const scrollListIntoView = () => {
+    if (listRef.current) {
+      listRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+  };
 
-  
-}, [searchParams]);
+
   const chatkefun = () => {
   
     window.location.href = `${process.env.REACT_APP_API_BASE_URL}/auth/google`;
@@ -516,6 +525,7 @@ const SignUp = () => {
                   )}
 
                   {/* OTP Input Fields & Continue Button */}
+
                   {otpSent && (
                     <>
                       {email && (
@@ -527,7 +537,7 @@ const SignUp = () => {
                         Enter the code sent to your email
                       </p>
 
-                      <div className={styles.otpContainer}>
+                      <div className={styles.otpContainer} >
                         {[...Array(6)].map((_, i) => (
                           <input
                             key={i}
@@ -545,11 +555,19 @@ const SignUp = () => {
                                 ""
                               );
                             }}
+
+                            onClick={() => {
+                              setTimeout(scrollListIntoView, 300);
+                            }}
                             inputMode="numeric"
                             type="tel"
                           />
                         ))}
                       </div>
+
+
+
+
                       <p className={styles.SpamMessage}>
                         Please check your spam folder if you don’t find it in
                         your main inbox.
@@ -607,7 +625,7 @@ const SignUp = () => {
                       </div>
                     </>
                   )}
-                  <div
+                  <div ref={listRef}
                     className={`${styles.Maincontent2} ${step >= 5 ? styles.animate5 : ""
                       }`}
                   >
