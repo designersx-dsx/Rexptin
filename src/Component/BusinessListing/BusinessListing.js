@@ -54,7 +54,7 @@ const BusinessListing = forwardRef(
     const [postal_code, setPostal_code] = useState("");
     const [country_code, setCountry_code] = useState("");
     const [state_code, setState_code] = useState("");
-
+    const listRef = useRef(null);
     const setHasFetched = true;
     const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "BusinessListing",
@@ -643,12 +643,21 @@ const BusinessListing = forwardRef(
         }, 300);
       }
     };
+    const scrollListIntoView = () => {
+      if (listRef.current) {
+        listRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      }
+    };
+
     return (
       <div className={styles.container}>
         <form className={styles.formContainer} onSubmit={handleSubmit}>
-          <div className={styles.form}>
+          <div className={styles.form} ref={listRef}>
             <div className={styles.labReq}>
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup} >
                 <label>
                   Business Name <span className={styles.requiredStar1}>*</span>
                 </label>
@@ -664,11 +673,22 @@ const BusinessListing = forwardRef(
                         ""
                       );
                     handleInputChange("businessName", noNumbersOrEmojis);
+                    setTimeout(scrollListIntoView, 300);
                   }}
                   placeholder="Your Business Name"
                   required
                   maxLength={50}
-                  onFocus={handleFocus}
+                  onFocus={((e) => {
+                    handleFocus(e)
+                    setTimeout(scrollListIntoView, 300);
+
+                  })
+
+                  }
+                  onClick={() => {
+                    setTimeout(scrollListIntoView, 100);
+                  }}
+
                 />{" "}
               </div>
 
@@ -695,7 +715,11 @@ const BusinessListing = forwardRef(
                   }}
                   placeholder="+1 (123)456-7890"
                   required
-                  onFocus={handleFocus}
+                  onFocus={
+                    handleFocus}
+                  onClick={() => {
+                    setTimeout(scrollListIntoView, 300);
+                  }}
                 />
               </div>
 
@@ -720,6 +744,9 @@ const BusinessListing = forwardRef(
                   required
                   maxLength={300}
                   onFocus={handleFocus}
+                  onClick={() => {
+                    setTimeout(scrollListIntoView, 300);
+                  }}
                 />
               </div>
 
@@ -731,6 +758,9 @@ const BusinessListing = forwardRef(
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder="Business Email Address"
                   onFocus={handleFocus}
+                // onClick={() => {
+                //   setTimeout(scrollListIntoView, 300);
+                // }}
                 />
               </div>
 
@@ -745,6 +775,7 @@ const BusinessListing = forwardRef(
                   placeholder="Describe"
                   maxLength={200}
                   onFocus={handleFocus}
+
                 />
               </div>
 

@@ -88,7 +88,7 @@ const AboutBusiness = forwardRef(
     const typingTimeoutRef = useRef(null);
     const inputRefWebSiteUrl = useRef(null);
     const noBusinessWebsiteRef = useRef(noBusinessWebsite);
-
+    const listRef = useRef(null);
     useEffect(() => {
       noBusinessWebsiteRef.current = noBusinessWebsite;
     }, [noBusinessWebsite]);
@@ -429,6 +429,7 @@ const AboutBusiness = forwardRef(
     };
 
     const handleInputChange = (e) => {
+      scrollListIntoView()
       lastAutoFilledUrlRef.current = "";
       let v = e.target.value.trim();
       v = v.replace(/^https?:\/\//i, "");
@@ -684,20 +685,20 @@ const AboutBusiness = forwardRef(
       },
     }));
 
-  const SCROLL_OFFSET = 80; 
+    const SCROLL_OFFSET = 80;
 
-const handleFocus = (e) => {
-  const el = e.target;
-  setTimeout(() => {
-    const rect = el.getBoundingClientRect();
-    const absoluteTop = rect.top + window.scrollY;
+    const handleFocus = (e) => {
+      const el = e.target;
+      setTimeout(() => {
+        const rect = el.getBoundingClientRect();
+        const absoluteTop = rect.top + window.scrollY;
 
-    window.scrollTo({
-      top: absoluteTop - SCROLL_OFFSET, 
-      behavior: "smooth",
-    });
-  }, 200);
-};
+        window.scrollTo({
+          top: absoluteTop - SCROLL_OFFSET,
+          behavior: "smooth",
+        });
+      }, 200);
+    };
 
 
 
@@ -743,20 +744,22 @@ const handleFocus = (e) => {
         handleUrlVerification(normalized);
       }
     }, [placeDetails, noBusinessWebsite]);
-
+    const scrollListIntoView = () => {
+      if (listRef.current) {
+        listRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }
+    };
     return (
       <>
         <div>
           <div className={styles.container}>
             <div className={styles.header}>
-              {/* <h1>
-              {EditingMode
-                ? "Edit: Your business Listing"
-                : "Your business Listing"}
-            </h1> */}
             </div>
-            <form className={styles.formContainer}>
-              <div className={styles.form}>
+            <form className={styles.formContainer} ref={listRef}>
+              <div className={styles.form} >
                 <div>
                   <div className={styles.formGroup}>
                     <label htmlFor="google-autocomplete">
@@ -772,7 +775,16 @@ const handleFocus = (e) => {
                       // onChange={(e) => setGoogleListing(e.target.value)}
                       onChange={(e) => {
                         setDisplayBusinessName(e.target.value);
+                        setTimeout(scrollListIntoView, 300);
                       }}
+                      onFocus={((e) => {
+                        setTimeout(scrollListIntoView, 300);
+                      })
+                      }
+                      onClick={() => {
+                        setTimeout(scrollListIntoView, 300);
+                      }}
+
                       required
                       disabled={noGoogleListing}
                     />
@@ -802,7 +814,7 @@ const handleFocus = (e) => {
                           );
                         }
                       }}
-                      onFocus={handleFocus}
+
                     />
                     <label htmlFor="no-google-listing">
                       I do not have Google My Business Listing
@@ -854,8 +866,15 @@ const handleFocus = (e) => {
                           disabled={
                             noBusinessWebsite || urlVerificationInProgress
                           }
+
                           onInput={handleInputChange}
-                          onFocus={handleFocus}
+                          onFocus={((e) => {
+                            setTimeout(scrollListIntoView, 300);
+                          })
+                          }
+                          onClick={() => {
+                            setTimeout(scrollListIntoView, 300);
+                          }}
                         />
                         <div className={styles.verifyStatus}>
                           {urlVerificationInProgress ? (
@@ -914,7 +933,7 @@ const handleFocus = (e) => {
                     <label
                       htmlFor="no-business-website"
                       className={styles.iHaveNot}
-                      // disabled={urlVerificationInProgress}
+                    // disabled={urlVerificationInProgress}
                     >
                       I do not have a business website
                     </label>
