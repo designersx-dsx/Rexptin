@@ -32,15 +32,24 @@ function Start() {
   useEffect(() => {
     // Save token from URL if present
     const tokenFromParams = searchParams.get("token");
+     const verifiedDetails = searchParams.get("verifiedDetails")
     if (tokenFromParams) {
       localStorage.setItem("token", tokenFromParams);
+         localStorage.setItem("onboardComplete", verifiedDetails);
       window.history.replaceState({}, '', window.location.pathname);
     }
 
     // Redirect logic
     const hasToken = localStorage.getItem("token");
+   
     if (hasToken) {
-      navigate("/dashboard", { replace: true }); // User with token → Dashboard
+      if(verifiedDetails===false){
+        navigate('/details')
+      }
+      else{
+            navigate("/dashboard", { replace: true });
+      }
+      // User with token → Dashboard
     } else {
       navigate("/signup", { replace: true }); // No token → Signup
     }
