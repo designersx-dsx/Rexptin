@@ -29,6 +29,22 @@ function Start() {
       navigate("/signup");
     }, 700);
   };
+  useEffect(() => {
+    // Save token from URL if present
+    const tokenFromParams = searchParams.get("token");
+    if (tokenFromParams) {
+      localStorage.setItem("token", tokenFromParams);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+
+    // Redirect logic
+    const hasToken = localStorage.getItem("token");
+    if (hasToken) {
+      navigate("/dashboard", { replace: true }); // User with token → Dashboard
+    } else {
+      navigate("/signup", { replace: true }); // No token → Signup
+    }
+  }, [navigate, searchParams]);
 
   //  Detect agent code from URL
   // useEffect(() => {
