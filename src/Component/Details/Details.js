@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "../Details/Details.module.css";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams , useLocation} from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import axios from "axios";
 import { API_BASE_URL, sendEmailToOwner } from "../../Store/apiStore";
@@ -35,6 +35,10 @@ const Details = () => {
   const referredByName = sessionStorage.getItem("referredByName") || "";
   const listRef = useRef(null);
   const phoneInputRef = useRef(null);
+  const [userDetails , setUserDetails] = useState()
+
+    const location = useLocation();
+ 
   const handleFlagClick = () => {
     const container = phoneInputRef.current;
     if (container) {
@@ -212,6 +216,39 @@ const Details = () => {
       });
     }
   };
+
+ 
+  const fetchUserDetails = async () => {
+        try {
+         
+          const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/auth/getUserDetails`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+  
+          const user = res.data.user;
+          console.log("✅ User Details:", user);
+           setUser({ name: user.name });
+          setUserDetails(user)
+         
+          // store important details
+        
+         
+        } catch (err) {
+          console.error("❌ Error fetching user details:", err);
+        
+        } finally {
+         
+        }
+      };
+      useEffect(()=>{
+        fetchUserDetails()
+      }, [])
+      useEffect(() => {
+  if (userDetails?.name) {
+    setName(userDetails.name);  // ✅ Pre-fill name when user details load
+  }
+}, [userDetails]);
+
 
   return (
     <>

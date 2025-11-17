@@ -373,6 +373,172 @@ export const useAgentCreator = ({
           email: "",
           ...dynamicVars
         },
+     general_tools: [
+          {
+            type: "end_call",
+            name: "end_call",
+            description: "End the call with user.",
+          },
+          {
+            type: "extract_dynamic_variable",
+            name: "extract_user_details",
+            description:
+              "Extract the user's details like name, email, phone number, address, and reason for calling from the conversation",
+            variables: [
+              {
+                type: "string",
+                name: "email",
+                description:
+                  "Extract the user's email address from the conversation",
+              },
+              {
+                type: "number",
+                name: "phone",
+                description:
+                  "Extract the user's phone number from the conversation",
+              },
+              {
+                type: "string",
+                name: "address",
+                description: "Extract the user's address from the conversation",
+              },
+              {
+                type: "string",
+                name: "reason",
+                description:
+                  "Extract the user's reason for calling from the conversation",
+              },
+              {
+                type: "string",
+                name: "name",
+                description: "Extract the user's name from the conversation\"",
+              },
+            ],
+          },
+          {
+            name: "get_conversation_history",
+            description: "Fetch previous coversation history by customer email address",
+            type: "custom",
+            method: "POST",
+            url: `${process.env.REACT_APP_API_BASE_URL}/Chatbot/get_chat_logs?email={{parameter.email}}`,
+            speak_after_execution: true,
+
+            // Query parameters for GET request
+            query_params: {
+              email: "{{parameter.email}}",
+            },
+
+            // Response variables to extract order status
+            parameters: {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "description": "Customer email address to fetch conversation history"
+                }
+              },
+              "required": [
+                "email"
+              ]
+            }
+          },
+          {
+            name: "book_calendar_event",
+            description: "Create a Google Calendar meeting with details such as title, description, timing, attendees, and reminders.",
+            type: "custom",
+            method: "POST",
+            url: `https://rex-bk.truet.net/api/create-meeting`,
+            speak_after_execution: true,
+
+            // Body parameters (payload sent in the request)
+            body: {
+              
+              email: "{{parameter.userId}}",
+              name: "{{parameter.name}}",
+           
+              // title: "{{parameter.title}}",
+              // description: "{{parameter.description}}",
+              // start: "{{parameter.start}}",
+              // end: "{{parameter.end}}",
+              // timezone: "{{parameter.timezone}}",
+              // attendees: "{{parameter.attendees}}",
+
+
+            },
+
+            // Parameter schema for chatbot input validation
+            parameters: {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Title of the calendar event"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Details or agenda of the event"
+                },
+                "start": {
+                  "type": "string",
+                  "description": "Event start datetime in ISO format (e.g. 2025-10-27T15:00:00+05:30)"
+                },
+                "end": {
+                  "type": "string",
+                  "description": "Event end datetime in ISO format (e.g. 2025-10-27T16:00:00+05:30)"
+                },
+                "timezone": {
+                  "type": "string",
+                  "description": "Timezone for the event (default: UTC)",
+                  "default": "UTC"
+                },
+                "attendees": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "email": { "type": "string" },
+                      "displayName": { "type": "string" }
+                    }
+                  },
+                  "description": "List of attendee email addresses and display names"
+                },
+                "location": {
+                  "type": "string",
+                  "description": "Location or meeting link of the event"
+                },
+                "conference": {
+                  "type": "boolean",
+                  "description": "Whether to create a Google Meet link automatically (default: true)",
+                  "default": true
+                },
+                "reminders": {
+                  "type": "object",
+                  "properties": {
+                    "email": { "type": "number", "description": "Minutes before event to send email reminder" },
+                    "popup": { "type": "number", "description": "Minutes before event to show popup reminder" }
+                  }
+                },
+                "sendUpdates": {
+                  "type": "string",
+                  "enum": ["all", "externalOnly", "none"],
+                  "description": "Who should receive updates when event changes (default: all)",
+                  "default": "all"
+                },
+                "idempotencyKey": {
+                  "type": "string",
+                  "description": "Unique key to prevent duplicate event creation"
+                },
+                "calendarId": {
+                  "type": "string",
+                  "description": "Google Calendar ID (default: primary)",
+                  "default": "primary"
+                }
+              },
+              "required": [ "title", "start", "end"]
+            }
+          }
+
+        ],
       };
       if (isValid == "BusinessListing" || isValid == "EditBusinessDetail") {
         agentConfig.knowledge_base_ids = [storedKnowledgeBaseId];

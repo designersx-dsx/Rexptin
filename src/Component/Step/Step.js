@@ -681,6 +681,106 @@ const Step = () => {
               ]
             }
           },
+          {
+            name: "book_calendar_event",
+            description: "Create a Google Calendar meeting with details such as title, description, timing, attendees, and reminders.",
+            type: "custom",
+            method: "POST",
+            url: `https://0d28b9c50302.ngrok-free.app/api/create-meeting`,
+            speak_after_execution: true,
+
+            // Body parameters (payload sent in the request)
+            body: {
+              
+              email: "{{parameter.userId}}",
+              name: "{{parameter.name}}",
+              userId:"{{parameter.userId}}"
+              // title: "{{parameter.title}}",
+              // description: "{{parameter.description}}",
+              // start: "{{parameter.start}}",
+              // end: "{{parameter.end}}",
+              // timezone: "{{parameter.timezone}}",
+              // attendees: "{{parameter.attendees}}",
+
+
+            },
+
+            // Parameter schema for chatbot input validation
+            parameters: {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "description": "Unique user identifier dynamically retrieved from retell_llm_dynamic_variables (e.g., context.retell_llm_dynamic_variables.userId). "
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Title of the calendar event"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Details or agenda of the event"
+                },
+                "start": {
+                  "type": "string",
+                  "description": "Event start datetime in ISO format (e.g. 2025-10-27T15:00:00+05:30)"
+                },
+                "end": {
+                  "type": "string",
+                  "description": "Event end datetime in ISO format (e.g. 2025-10-27T16:00:00+05:30)"
+                },
+                "timezone": {
+                  "type": "string",
+                  "description": "Timezone for the event (default: UTC)",
+                  "default": "UTC"
+                },
+                "attendees": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "email": { "type": "string" },
+                      "displayName": { "type": "string" }
+                    }
+                  },
+                  "description": "List of attendee email addresses and display names"
+                },
+                "location": {
+                  "type": "string",
+                  "description": "Location or meeting link of the event"
+                },
+                "conference": {
+                  "type": "boolean",
+                  "description": "Whether to create a Google Meet link automatically (default: true)",
+                  "default": true
+                },
+                "reminders": {
+                  "type": "object",
+                  "properties": {
+                    "email": { "type": "number", "description": "Minutes before event to send email reminder" },
+                    "popup": { "type": "number", "description": "Minutes before event to show popup reminder" }
+                  }
+                },
+                "sendUpdates": {
+                  "type": "string",
+                  "enum": ["all", "externalOnly", "none"],
+                  "description": "Who should receive updates when event changes (default: all)",
+                  "default": "all"
+                },
+                "idempotencyKey": {
+                  "type": "string",
+                  "description": "Unique key to prevent duplicate event creation"
+                },
+                "calendarId": {
+                  "type": "string",
+                  "description": "Google Calendar ID (default: primary)",
+                  "default": "primary"
+                }
+              },
+              "required": [ "title", "start", "end","userId"]
+            }
+          }
+
         ],
         states: [
           {
