@@ -871,7 +871,7 @@ function App() {
               </Routes>
             </div>
             {/* </BrowserRouter> */}
-          {/* </PreventPullToRefresh> */}
+          </PreventPullToRefresh>
         </div>
       </div>
       <ToastContainer position="top-right" autoClose={3000} />
