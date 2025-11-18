@@ -721,10 +721,10 @@ function createReviewWidget() {
 
         const popupHeader = createElement("div", { className: "popup-header" });
         const poweredBy = createElement("a", {
-          href: "https://www.rexpt.us/",
+          href: "https://www.rxpt.ai",
           target: "_blank",
           rel: "noopener noreferrer",
-          innerHTML: "Powered by rexpt.us",
+          innerHTML: "Powered by rxpt.ai",
         });
         const popupBody = createElement("div", { className: "popup-body" });
         const imageWrapper = document.createElement("div");
