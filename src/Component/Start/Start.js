@@ -6,7 +6,8 @@ import axios from "axios";
 import { checkAgentExistence, token } from "../../Store/apiStore";
 import useTrafficSource from "../../lib/sourceGet";
 import PublicWidgetPage from "../PublicWidgetPage/PublicWidgetPage";
-
+import decodeToken from "../../lib/decodeToken";
+import useUser from "../../Store/Context/UserContext";
 function Start() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,6 +18,7 @@ function Start() {
   const [agentCode, setAgentCode] = useState(null);
   const businessType = searchParams.get("businessType") || "";
   const [step, setStep] = useState(0);
+   const { user, setUser } = useUser();
   const [renderStatusPage, setRenderStatusPage] = useState(false)
     const [isChecking, setIsChecking] = useState(true)
   const handleClick = () => {
@@ -29,31 +31,42 @@ function Start() {
       navigate("/signup");
     }, 700);
   };
-  useEffect(() => {
-    // Save token from URL if present
-    const tokenFromParams = searchParams.get("token");
-     const verifiedDetails = searchParams.get("verifiedDetails")
-    if (tokenFromParams) {
-      localStorage.setItem("token", tokenFromParams);
-         localStorage.setItem("onboardComplete", verifiedDetails);
-      window.history.replaceState({}, '', window.location.pathname);
-    }
+useEffect(() => {
+  const tokenFromParams = searchParams.get("token");
+  const verifiedDetailsParam = searchParams.get("verifiedDetails");
 
-    // Redirect logic
-    const hasToken = localStorage.getItem("token");
-   
-    if (hasToken) {
-      if(verifiedDetails===false){
-        navigate('/details')
-      }
-      else{
-            navigate("/dashboard", { replace: true });
-      }
-      // User with token → Dashboard
-    } else {
-      navigate("/signup", { replace: true }); // No token → Signup
-    }
-  }, [navigate, searchParams]);
+  // Convert "true"/"false" string to boolean
+  const verifiedDetails = verifiedDetailsParam === "true";
+
+  let decodeTokenData = null;
+
+  if (tokenFromParams) {
+    decodeTokenData = decodeToken(tokenFromParams);
+    localStorage.setItem("token", tokenFromParams);
+    localStorage.setItem("onboardComplete", verifiedDetailsParam);
+
+    // remove params from URL WITHOUT triggering effect again
+    window.history.replaceState({}, "", window.location.pathname);
+  }
+
+  const hasToken = localStorage.getItem("token");
+
+  if (!hasToken) return;
+
+  // run only once after token is set
+  if (!verifiedDetails) {
+    navigate("/details", { replace: true });
+    return;
+  }
+
+  // Avoid infinite loop by updating user only once
+  if (decodeTokenData) {
+    setUser({ name: decodeTokenData?.name });
+  }
+
+  navigate("/dashboard", { replace: true });
+}, []); // <--- RUN ONLY ONCE
+
 
   //  Detect agent code from URL
   // useEffect(() => {
