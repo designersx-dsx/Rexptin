@@ -103,7 +103,7 @@ function App() {
   const [agentCode, setAgentCode] = useState(null);
   const [renderStatusPage, setRenderStatusPage] = useState(false)
   const [isChecking, setIsChecking] = useState(true)
-  
+
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
@@ -219,44 +219,6 @@ function App() {
     console.log('Referrer URL:', ref);
     sessionStorage.removeItem("hideBannerThisSession")
   }, []);
-  //Public Widget Integration
-  useEffect(() => {
-    const query = window.location.search.replace("?", "");
-    let code = null;
-
-    if (query.includes("=")) {
-      const [key, value] = query.split("=");
-      if (key === "agent" && /^[A-Za-z0-9]{6}$/.test(value)) code = value;
-      else code = value;
-    } else if (query) {
-      code = query;
-    }
-
-    const checkAgent = async () => {
-      if (code) {
-        setAgentCode(code);
-        try {
-          const res = await checkAgentExistence(code);
-          console.log(res, "res");
-          setRenderStatusPage(res?.state === true);
-        } catch (err) {
-          console.error("Error checking agent:", err);
-        }
-      }
-      setIsChecking(false); //  finish check (even if error)
-    };
-    checkAgent();
-  }, []);
-  if (isChecking) {
-    return (
-      <div className="flex items-center justify-center h-screen text-gray-600 text-lg">
-        {/* Checking agent link... */}
-      </div>
-    );
-  }
-  if (renderStatusPage && agentCode) {
-    return <PublicWidgetPage agentCode={agentCode} />;
-  }
   return (
     <>
       {/* <ForcePortraitOnly /> */}
