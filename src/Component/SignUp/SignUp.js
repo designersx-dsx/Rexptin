@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "../SignUp/SignUp.module.css";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams , Navigate } from "react-router-dom";
 import {
   API_BASE_URL,
   LoginWithEmailOTP,
+  token,
   verifyEmailOTP,
 } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
@@ -13,6 +14,8 @@ import AnimatedButton from "../AnimatedButton/AnimatedButton";
 import useUserDeviceInfo from "../../hooks/useUserDeviceInfo";
 import useUTMParams from "../../hooks/useUTMParams";
 
+import SecureRoute from "../../Pages/SecureRoute";
+import axios from "axios";
 const SignUp = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -42,6 +45,64 @@ const SignUp = () => {
   const info = useUserDeviceInfo();
   const utm_data = useUTMParams();
   const listRef = useRef(null);
+  const [userDetails , setUserDetails] = useState()
+   const location = useLocation();
+  useEffect(() => {
+   
+
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    const customerId = params.get("customerId");
+    const userId = params.get("userId");
+ const fetchUserDetails = async (token) => {
+      try {
+        const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/auth/getUserDetails`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const user = res.data.user;
+        console.log("✅ User Details:", user);
+        setUserDetails(user)
+        // store important details
+      
+        localStorage.setItem("onboardComplete", user.verifyDetails);
+
+        // redirect based on verifyDetails
+        if (user.verifyDetails) {
+          navigate("/dashboard", { replace: true });
+        } else {
+          navigate("/details", { replace: true });
+        }
+      } catch (err) {
+        console.error("❌ Error fetching user details:", err);
+        // fallback to signup
+        navigate("/signup", { replace: true });
+      } finally {
+        setLoading(false);
+      }
+    };
+    console.log({ token, customerId, userId });
+
+    if (token) {
+      setLoading(true);
+
+      // Save essentials
+      localStorage.setItem("token", token);
+      localStorage.setItem("customerId", customerId || "");
+      localStorage.setItem("userId", userId || "");
+      sessionStorage.clear();
+
+      // Fetch actual user details and redirect
+      fetchUserDetails(token);
+    } else {
+      const storedToken = localStorage.getItem("token");
+      if (!storedToken) {
+        navigate("/signup", { replace: true });
+      } else {
+        fetchUserDetails(storedToken);
+      }
+    }
+  }, []);
   useEffect(() => {
     const tokenFromParams = searchParams.get("token");
     if (tokenFromParams) {
@@ -367,9 +428,24 @@ const SignUp = () => {
       });
     }
   };
+
+
+  const chatkefun = () => {
+  
+    window.location.href = `${process.env.REACT_APP_API_BASE_URL}/auth/google`;
+  };
+
+
   return (
     <>
-      {ready && (
+    {
+                    token ? (
+                      <SecureRoute>
+                        <Navigate to={"/dashboard"} />
+                      </SecureRoute>
+                    ) : (
+                      <>
+                        {ready && (
         <div className={styles.signUpContainer}>
           <>
             <div className={styles.signUpContainer}>
@@ -559,7 +635,7 @@ const SignUp = () => {
                       <hr className={styles.line} />
                     </div>
 
-                    <div className={styles.socialMedia}>
+                    <div className={styles.socialMedia} onClick={chatkefun}>
                       <img src="svg/Coming-Soon.svg" />
                     </div>
                     <p className={styles.PrivaceTerms}>
@@ -597,6 +673,12 @@ const SignUp = () => {
           </>
         </div>
       )}
+             </>       )
+                  }
+    
+ 
+     
+      
     </>
   );
 };

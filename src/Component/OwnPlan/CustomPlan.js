@@ -76,7 +76,7 @@ const CustomPlan = () => {
           `/thankyou/update?agentId=${agentID}&userId=${decodeTokenData?.id}`,
         cancelUrl: `${origin}/cancel`,
         userId: userId,
-        priceId: "price_1RypKj4T6s9Z2zBzesn9ijNz",
+       
       });
 
       if (res?.data?.url) {
