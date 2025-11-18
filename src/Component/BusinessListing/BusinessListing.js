@@ -56,6 +56,7 @@ const BusinessListing = forwardRef(
     const [state_code, setState_code] = useState("");
     const listRef = useRef(null);
     const setHasFetched = true;
+    const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
     const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "BusinessListing",
       setLoading,
@@ -679,14 +680,26 @@ const BusinessListing = forwardRef(
                   required
                   maxLength={50}
                   onFocus={((e) => {
-                    handleFocus(e)
-                    setTimeout(scrollListIntoView, 300);
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+
 
                   })
 
                   }
-                  onClick={() => {
-                    setTimeout(scrollListIntoView, 100);
+                  onClick={(e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
                   }}
 
                 />{" "}
@@ -715,11 +728,29 @@ const BusinessListing = forwardRef(
                   }}
                   placeholder="+1 (123)456-7890"
                   required
-                  onFocus={
-                    handleFocus}
-                  onClick={() => {
-                    setTimeout(scrollListIntoView, 300);
+                   onFocus={((e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+
+
+                  })
+
+                  }
+                  onClick={(e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
                   }}
+
                 />
               </div>
 
@@ -743,10 +774,29 @@ const BusinessListing = forwardRef(
                   placeholder="Business Address"
                   required
                   maxLength={300}
-                  onFocus={handleFocus}
-                  onClick={() => {
-                    setTimeout(scrollListIntoView, 300);
+                    onFocus={((e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+
+
+                  })
+
+                  }
+                  onClick={(e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
                   }}
+
                 />
               </div>
 
@@ -757,10 +807,29 @@ const BusinessListing = forwardRef(
                   value={email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder="Business Email Address"
-                  onFocus={handleFocus}
-                // onClick={() => {
-                //   setTimeout(scrollListIntoView, 300);
-                // }}
+                   onFocus={((e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+
+
+                  })
+
+                  }
+                  onClick={(e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+                  }}
+
                 />
               </div>
 
@@ -774,7 +843,29 @@ const BusinessListing = forwardRef(
                   }
                   placeholder="Describe"
                   maxLength={200}
-                  onFocus={handleFocus}
+                   onFocus={((e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+
+
+                  })
+
+                  }
+                  onClick={(e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+                  }}
+
 
                 />
               </div>

@@ -33,7 +33,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   const EditingMode = localStorage.getItem("UpdationMode") === "ON";
   const [scale, setScale] = useState(1);
   const [isEditingName, setIsEditingName] = useState(false);
-
+  const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
   useEffect(() => {
     const storedGender = sessionStorage.getItem("agentGender") || "Male";
     const storedAvatarImg = sessionStorage.getItem("avatar");
@@ -171,7 +171,18 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 checked={selectedAvatar?.img === avatar.img}
                 onChange={() => handleAvatarChange(avatar)}
                 className={styles.radioButton}
-                onFocus={handleFocus}
+                onFocus={((e) => {
+                  if (isIphone) {
+                    // handleIOSFocus(e);
+                  } else {
+                    handleFocus(e)
+                    // setTimeout(scrollListIntoView, 300);
+                  }
+
+
+                })
+
+                }
               />
               <img
                 src={avatar.img}
@@ -197,12 +208,23 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 value={agentName}
                 // readOnly={!isEditingName}
                 // aria-readonly={!isEditingName}
-                onFocus={handleFocus}
+                onFocus={((e) => {
+                  if (isIphone) {
+                    // handleIOSFocus(e);
+                  } else {
+                    handleFocus(e)
+                    // setTimeout(scrollListIntoView, 300);
+                  }
+
+
+                })
+
+                }
                 // onBlur={handleFinishEditing}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
-                    e.currentTarget.blur(); 
+                    e.currentTarget.blur();
                   }
                 }}
                 autoComplete="off"
