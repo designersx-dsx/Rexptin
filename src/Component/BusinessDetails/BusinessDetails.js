@@ -30,6 +30,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
   const EditingMode = localStorage.getItem('UpdationMode')
   const setHasFetched = true
   const listRef = useRef(null);
+   const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "BusinessDetails",
     setLoading,

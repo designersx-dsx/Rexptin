@@ -486,7 +486,7 @@ const SignUp = () => {
                   </div>
                 </div>
 
-                <div className={styles.container}>
+                <div className={styles.container} ref={listRef}>
                   {!otpSent && (
                     <>
                       <div
@@ -625,7 +625,7 @@ const SignUp = () => {
                       </div>
                     </>
                   )}
-                  <div ref={listRef}
+                  <div 
                     className={`${styles.Maincontent2} ${step >= 5 ? styles.animate5 : ""
                       }`}
                   >
