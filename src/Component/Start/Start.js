@@ -70,12 +70,12 @@ useEffect(() => {
   navigate("/dashboard", { replace: true });
 }, []); 
 
-// useEffect(()=>{
-// let token = localStorage.getItem("token")
-// if(token){
-//   navigate("/dashboard")
-// }
-// } , [])
+useEffect(()=>{
+let token = localStorage.getItem("token")
+if(token){
+  navigate("/dashboard")
+}
+} , [])
   //  Detect agent code from URL
   // useEffect(() => {
   //   const query = window.location.search.replace("?", ""); // remove "?"
