@@ -1099,7 +1099,7 @@ const Step = () => {
               //AssignNumber both Agent
               const assignedNumber = sessionStorage.getItem("assignedPhoneNumber");
               if (assignedNumber) {
-                await assignNumberToAgent(assignedNumber, response.data.agent_id)
+                // await assignNumberToAgent(assignedNumber, response.data.agent_id)
               }
               if (ifChatWidgetEnabledOrNot) {
                 // alert("ok")

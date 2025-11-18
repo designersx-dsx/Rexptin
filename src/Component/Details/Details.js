@@ -35,6 +35,7 @@ const Details = () => {
   const referredByName = sessionStorage.getItem("referredByName") || "";
   const listRef = useRef(null);
   const phoneInputRef = useRef(null);
+  const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
   const handleFlagClick = () => {
     const container = phoneInputRef.current;
     if (container) {
@@ -204,6 +205,8 @@ const Details = () => {
       return "Invalid phone number.";
     }
   };
+
+
   const scrollListIntoView = () => {
     if (listRef.current) {
       listRef.current.scrollIntoView({
@@ -226,7 +229,7 @@ const Details = () => {
             <img src="images/Ellipse 11.png" alt="Ellipse 11" />
           </div>
         </div>
-        <div className={styles.pageWrapper} ref={listRef}>
+        <div className={styles.pageWrapper} >
           <div className={`${styles.mask} ${styles.maskZoomFadeIn}`}>
             <img src="images/Mask.png" alt="Mask" />
           </div>
@@ -256,7 +259,7 @@ const Details = () => {
             className={`${styles.container} ${styles.animateStep} ${step >= 3 ? styles.animateStep3 : ""
               }`}
           >
-            <div className={styles.labReq}>
+            <div className={styles.labReq} >
               <div className={styles.Dblock}>
                 <label className={styles.label}>Name</label>
                 <input
@@ -268,17 +271,26 @@ const Details = () => {
                   value={name}
                   onChange={handleNameChange}
                   onFocus={((e) => {
-                    setTimeout(scrollListIntoView, 300);
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      setTimeout(scrollListIntoView, 300);
+                    }
+
                   })
                   }
                   onClick={() => {
-                    setTimeout(scrollListIntoView, 300);
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      setTimeout(scrollListIntoView, 300);
+                    }
                   }}
                 />
               </div>
               {nameError && <p className={styles.inlineError}>{nameError}</p>}
             </div>
-            <div className={styles.labReq}  >
+            <div className={styles.labReq} ref={listRef}  >
               <div className={styles.Dblock}>
                 <label className={styles.label}>Phone Number (Optional)</label>
                 <PhoneInput
