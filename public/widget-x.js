@@ -410,7 +410,7 @@ function injectCSS() {
    .close-button {
      position: absolute;
    top: 100%;
-   right: 10.8px;
+   right: 5.8px;
    font-size: 34px;
    color: #BCBCBC;
    background: transparent;
@@ -463,7 +463,7 @@ function injectCSS() {
           color: #ffff;}
           .terms-text {
             cursor: pointer;
-            font-weight: 800;
+            font-weight: 600;
             text-decoration: underline;
           },
           .terms-wrapper {
@@ -720,12 +720,12 @@ function createReviewWidget() {
         modal.style.display = "none";
 
         const popupHeader = createElement("div", { className: "popup-header" });
-        // const poweredBy = createElement("a", {
-        //   href: "https://www.rexpt.us/",
-        //   target: "_blank",
-        //   rel: "noopener noreferrer",
-        //   innerHTML: "Powered by rexpt.us",
-        // });
+        const poweredBy = createElement("a", {
+          href: "https://www.rexpt.us/",
+          target: "_blank",
+          rel: "noopener noreferrer",
+          innerHTML: "Powered by rexpt.us",
+        });
         const popupBody = createElement("div", { className: "popup-body" });
         const imageWrapper = document.createElement("div");
         imageWrapper.className = "pulse-ring-wrapper";
@@ -782,7 +782,7 @@ function createReviewWidget() {
         popupBody.appendChild(agentImg);
         popupBody.appendChild(callBtn);
         popupBody.appendChild(closeButton);
-        // popupHeader.appendChild(poweredBy);
+        popupHeader.appendChild(poweredBy);
         modal.appendChild(popupHeader);
         modal.appendChild(popupBody);
         document.body.appendChild(modal);
@@ -797,7 +797,7 @@ function createReviewWidget() {
         popupBody.appendChild(callBtn);
         popupBody.appendChild(agentIntro);
         popupBody.appendChild(closeButton);
-        // popupHeader.appendChild(poweredBy);
+        popupHeader.appendChild(poweredBy);
         modal.appendChild(popupHeader);
         modal.appendChild(popupBody);
         document.body.appendChild(modal);
