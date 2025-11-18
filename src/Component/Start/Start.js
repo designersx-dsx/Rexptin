@@ -41,6 +41,9 @@ useEffect(() => {
   let decodeTokenData = null;
 
   if (tokenFromParams) {
+    localStorage.clear()
+    sessionStorage.clear()
+    
     decodeTokenData = decodeToken(tokenFromParams);
     localStorage.setItem("token", tokenFromParams);
     localStorage.setItem("onboardComplete", verifiedDetailsParam);
@@ -65,9 +68,14 @@ useEffect(() => {
   }
 
   navigate("/dashboard", { replace: true });
-}, []); // <--- RUN ONLY ONCE
+}, []); 
 
-
+useEffect(()=>{
+let token = localStorage.getItem("token")
+if(token){
+  navigate("/dashboard")
+}
+} , [])
   //  Detect agent code from URL
   // useEffect(() => {
   //   const query = window.location.search.replace("?", ""); // remove "?"
