@@ -60,6 +60,7 @@ const BusinessServices = forwardRef(
     const listRef = useRef(null);
     const defaultServices = selectedBusiness?.services || [];
     const allServices = [...defaultServices, ...customServices];
+    const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
     const flatServices = allServices.flatMap((item) => {
       if (typeof item === "string") return [item];
       if (typeof item === "object" && Array.isArray(item.services)) {
@@ -430,7 +431,22 @@ const BusinessServices = forwardRef(
                 setShowInput(checked);
                 sessionStorage.setItem("showInput", JSON.stringify(checked));
               }}
-              onFocus={handleFocus}
+
+
+              onFocus={((e) => {
+
+                if (isIphone) {
+                  // handleIOSFocus(e);
+                } else {
+                  handleFocus(e)
+
+                }
+
+
+              })
+
+              }
+
             />
             <label htmlFor="add-more-services">Add More Services</label>
           </div>
@@ -446,7 +462,17 @@ const BusinessServices = forwardRef(
                   placeholder="Enter Your Service Name"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  onFocus={handleFocus}
+                  onFocus={((e) => {
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      handleFocus(e)
+                    }
+
+
+                  })
+
+                  }
                 />
                 <button
                   type="button"
