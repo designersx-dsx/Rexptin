@@ -119,11 +119,11 @@ useEffect(() => {
   console.log("PWA Installed:", pwa);
 
   if (webview) {
-    alert("Running inside WebView");
+    // alert("Running inside WebView");
   } else if (pwa) {
-    alert("Running as PWA (installed app)");
+    // alert("Running as PWA (installed app)");
   } else {
-    alert("Running in normal browser");
+    // alert("Running in normal browser");
   }
 }, []);
 
