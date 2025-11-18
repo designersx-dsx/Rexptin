@@ -214,6 +214,18 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   //     window.removeEventListener("contextmenu", (e) => e.preventDefault());
   //   };
   // }, []);
+
+
+  useEffect(() => {
+    setSelectedVoice({});
+    setPlayingIdx(null);
+    audioRefs.current.forEach((a) => {
+      if (a) {
+        a.pause();
+        a.currentTime = 0;
+      }
+    });
+  }, [selectedGender]);
   return (
     <>
       <div className={styles.container}>
