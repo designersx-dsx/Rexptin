@@ -167,7 +167,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0px 12px 10px 12px;
-  z-index: 1111;
+  z-index: 11111!important;
   background-color: #ffffff;
 }
 
