@@ -215,15 +215,15 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   //   };
   // }, []);
   useEffect(() => {
-  setSelectedVoice({});
-  setPlayingIdx(null);
-  audioRefs.current.forEach((a) => {
-    if (a) {
-      a.pause();
-      a.currentTime = 0;
-    }
-  });
-}, [selectedGender]);
+    setSelectedVoice({});
+    setPlayingIdx(null);
+    audioRefs.current.forEach((a) => {
+      if (a) {
+        a.pause();
+        a.currentTime = 0;
+      }
+    });
+  }, [selectedGender]);
 
   return (
     <>
@@ -242,9 +242,9 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
             >
               <span className={styles.icon}>
                 {gender === "Female" ? (
-                   <img src="svg/female-icon.svg" alt="Female Icon" />
+                  <img src="svg/female-icon.svg" alt="Female Icon" />
                 ) : (
-                   <img src="svg/male-icon.svg" alt="Male Icon" />
+                  <img src="svg/male-icon.svg" alt="Male Icon" />
                 )}
               </span>
               <span>{gender}</span>
