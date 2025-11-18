@@ -30,7 +30,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
   const EditingMode = localStorage.getItem('UpdationMode')
   const setHasFetched = true
   const listRef = useRef(null);
-   const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
+  const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "BusinessDetails",
     setLoading,
@@ -390,7 +390,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
   return (
     <div className={styles.container}>
       {/* <h1 className={styles.title}>{EditingMode ? ' Edit: Business Details' : 'Business Details'}</h1> */}
-      <div className={styles.searchBox} ref={listRef}>
+      <div className={styles.searchBox} >
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />
         </span>
@@ -414,7 +414,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
           }}
         />
       </div>
-      <div className={styles.ListDiv} >
+      <div className={styles.ListDiv} ref={listRef}>
         <div className={styles.optionList}>
           {filteredBusinessTypes(searchTerm).length > 0 ? (
             filteredBusinessTypes(searchTerm).map((item, index) => (
