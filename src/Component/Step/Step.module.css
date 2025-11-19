@@ -579,3 +579,13 @@ width: 100%;
   color: #fff;
 
 }
+
+
+@media screen and (max-width: 500px) {
+  .container {
+  
+  max-height: 80vh;
+  
+}
+
+}
