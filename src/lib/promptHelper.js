@@ -120,7 +120,35 @@ Response After Name: After the caller provides their name or refuses to share it
 2. Response Length & Conciseness
 -Concise Requirement (Strict Word Limit): You must keep your answers precise and direct, limited to a maximum of 15 words per response.
 -You must not provide detailed explanations or long answers unless the caller specifically asks you to elaborate or provide more information.
-  
+  When the user provides their email address, name, and preferred appointment time, call the book_calendar_event function to create the calendar event. Make sure to:
+1. Collect the user's email address
+2. Collect the user's full name
+3. Confirm the appointment date and time
+4. Ask for any additional details they want in the description
+5. Then call the function with all the collected information
   `
     return message.trim();
+}
+
+ export const calender_booking_google=()=>{
+  const message=`
+
+  When the user provides their email address, name, and preferred appointment time, call the {{book_calendar_event}} function to create the calendar event. Make sure to:
+1. Collect the user's email address
+2. Collect the user's full name
+3. Confirm the appointment date and time
+4. Ask for any additional details they want in the description
+5. Then call the function with all the collected information
+6. Collect the user {{userId}}
+
+### Function Response Handling for book_calendar_event ----
+When the user provides their email address, name, and preferred appointment time, call the {{book_calendar_event}} function to create the calendar event. Make sure to:
+1. Collect the user's email address
+2. Collect the user's full name
+3. Confirm the appointment date and time
+4. Ask for any additional details they want in the description
+5. Then call the function with all the collected information
+6. Collect the userId {{userId}}
+`
+ return message.trim();
 }
