@@ -2,7 +2,7 @@
   padding-block: 0px 20px;
   padding-inline: 20px;
   overflow: auto;
-  max-height: 90dvh;
+  /* max-height: 90dvh; */
   scrollbar-width: thin;
   position: relative;
   /* scrollbar-color: rgb(255, 255, 255) transparent; */
@@ -584,7 +584,7 @@ width: 100%;
 @media screen and (max-width: 500px) {
   .container {
   
-  max-height: 80vh;
+  /* max-height: 80vh; */
   
 }
 
