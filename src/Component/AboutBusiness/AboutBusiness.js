@@ -758,10 +758,10 @@ const AboutBusiness = forwardRef(
           <div className={styles.container}>
             <div className={styles.header}>
             </div>
-            <form className={styles.formContainer}>
+            <form className={styles.formContainer} ref={listRef}>
               <div className={styles.form} >
                 <div>
-                  <div className={styles.formGroup}  ref={listRef}>
+                  <div className={styles.formGroup}>
                     <label htmlFor="google-autocomplete">
                       Google My Business
                       <span className={styles.requiredStar1}>*</span>

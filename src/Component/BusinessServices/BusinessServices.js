@@ -361,9 +361,7 @@ const BusinessServices = forwardRef(
               setTimeout(scrollListIntoView, 300);
             }}
             onFocus={((e) => {
-
               setTimeout(scrollListIntoView, 300);
-
             })
             }
             onClick={() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./EditBusinessDetail.module.css";
 import EditHeader from "../EditHeader/EditHeader";
 import SectionHeader from "../SectionHeader/SectionHeader";
@@ -46,6 +46,10 @@ const EditBusinessDetail = () => {
   const [isDirty, setIsDirty] = useState(false);
   const location = useLocation();
   const { isChanged } = location.state || {};
+  const listRef = useRef(null);
+    const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
+    const isAndroidApp = () => /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
+    const isIOSApp = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditBusinessDetail",
     setLoading,
@@ -56,11 +60,11 @@ const EditBusinessDetail = () => {
     setHasFetched,
   });
 
-  useEffect(()=>{
-    if(isChanged){
+  useEffect(() => {
+    if (isChanged) {
       setIsDirty(isChanged)
     }
-  },[isChanged])
+  }, [isChanged])
 
   useEffect(() => {
     const storedDetails = sessionStorage.getItem("placeDetailsExtract");
@@ -72,7 +76,7 @@ const EditBusinessDetail = () => {
       setEmail(details?.email || "");
       setAboutBusiness(details?.aboutBusiness || details?.aboutBussiness || "");
 
-     setOriginalData({
+      setOriginalData({
         businessName: details?.businessName || "",
         phoneNumber: details.internationalPhone || details?.phone || "",
         address: details?.address || "",
@@ -116,16 +120,16 @@ const EditBusinessDetail = () => {
       default:
         break;
     }
-    
-      const isChanged =
-    (field === "businessName" && value !== originalData.businessName) ||
-    (field === "phone" && value !== originalData.phoneNumber) ||
-    (field === "internationalPhone" && value !== originalData.phoneNumber) ||
-    (field === "address" && value !== originalData.address) ||
-    (field === "email" && value !== originalData.email) ||
-    (field === "aboutBussiness" && value !== originalData.aboutBussiness);
 
-  setIsDirty(isChanged);
+    const isChanged =
+      (field === "businessName" && value !== originalData.businessName) ||
+      (field === "phone" && value !== originalData.phoneNumber) ||
+      (field === "internationalPhone" && value !== originalData.phoneNumber) ||
+      (field === "address" && value !== originalData.address) ||
+      (field === "email" && value !== originalData.email) ||
+      (field === "aboutBussiness" && value !== originalData.aboutBussiness);
+
+    setIsDirty(isChanged);
   };
   const formatLabel = (str) =>
     str
@@ -227,8 +231,7 @@ const EditBusinessDetail = () => {
       const readableDetails = Object?.entries(placeDetailsForKBT)
         .map(
           ([key, value]) =>
-            `${formatLabel(key)}: ${
-              Array.isArray(value) ? value.join(", ") : value || "N/A"
+            `${formatLabel(key)}: ${Array.isArray(value) ? value.join(", ") : value || "N/A"
             }`
         )
         .join("\n");
@@ -283,7 +286,7 @@ const EditBusinessDetail = () => {
         if (rawUrl) mergedUrls.push(rawUrl);
       }
       if (googleListing) {
-        mergedUrls.push(googleListing); 
+        mergedUrls.push(googleListing);
       }
 
       // const mergedUrls = rawUrl ? [rawUrl] : [];
@@ -448,21 +451,21 @@ const EditBusinessDetail = () => {
       if (place.formatted_address) {
         const addressComponents = place.address_components || [];
         setAddress(place.formatted_address);
-        const extracted=extractAndStoreAddressComponents(place);
-      
-        const changed =
-      businessName !== originalData.businessName ||
-      phoneNumber !== originalData.phoneNumber ||
-      email !== originalData.email ||
-      aboutBussiness !== originalData.aboutBussiness ||
-      place.formatted_address !== originalData.address ||
-      extracted.street_number !== originalData.street_number ||
-      extracted.city !== originalData.city ||
-      extracted.state !== originalData.state ||
-      extracted.postal_code !== originalData.postal_code ||
-      extracted.country !== originalData.country;
+        const extracted = extractAndStoreAddressComponents(place);
 
-    setIsDirty(changed);
+        const changed =
+          businessName !== originalData.businessName ||
+          phoneNumber !== originalData.phoneNumber ||
+          email !== originalData.email ||
+          aboutBussiness !== originalData.aboutBussiness ||
+          place.formatted_address !== originalData.address ||
+          extracted.street_number !== originalData.street_number ||
+          extracted.city !== originalData.city ||
+          extracted.state !== originalData.state ||
+          extracted.postal_code !== originalData.postal_code ||
+          extracted.country !== originalData.country;
+
+        setIsDirty(changed);
       }
     });
   };
@@ -527,6 +530,25 @@ const EditBusinessDetail = () => {
       }
     }, 300);
   }, []);
+  const scrollListIntoView = () => {
+    if (listRef.current) {
+      listRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  };
+   const handleFocus = (e) => {
+      if (isAndroidApp() || isIOSApp()) {
+        setTimeout(() => {
+          // Method 1: Smooth scroll to element
+          e.target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }, 300);
+      }
+    };
   return (
     <>
       <EditHeader title="Edit Agent " agentName={agentnm} />
@@ -539,14 +561,36 @@ const EditBusinessDetail = () => {
       </div>
 
       <div className={styles.container}>
-        <div className={styles.inputSection}>
-          <label className={styles.label}>Business Name</label>
+        <div className={styles.inputSection} >
+          <label className={styles.label} ref={listRef}>Business Name</label>
           <input
             type="text"
             className={styles.input}
             placeholder="Your Business Name"
             value={businessName}
             onChange={(e) => handleInputChange("businessName", e.target.value)}
+            onFocus={((e) => {
+
+              if (isIphone) {
+                // handleIOSFocus(e);
+              } else {
+                handleFocus(e)
+                setTimeout(scrollListIntoView, 300);
+              }
+
+
+            })
+
+            }
+            onClick={(e) => {
+
+              if (isIphone) {
+                // handleIOSFocus(e);
+              } else {
+                handleFocus(e)
+                setTimeout(scrollListIntoView, 300);
+              }
+            }}
           />
         </div>
 
@@ -634,7 +678,7 @@ const EditBusinessDetail = () => {
         </div>
 
         <div className={styles.stickyWrapper} onClick={handleSubmit}>
-          <AnimatedButton label="Save" isLoading={loading} disabled={!isDirty}/>
+          <AnimatedButton label="Save" isLoading={loading} disabled={!isDirty} />
         </div>
         {showPopup && (
           <PopUp
@@ -643,7 +687,7 @@ const EditBusinessDetail = () => {
               setShowPopup(false);
             }}
             message={popupMessage}
-            onConfirm={() => {}}
+            onConfirm={() => { }}
           />
         )}
       </div>

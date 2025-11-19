@@ -656,9 +656,9 @@ const BusinessListing = forwardRef(
     return (
       <div className={styles.container}>
         <form className={styles.formContainer} onSubmit={handleSubmit}>
-          <div className={styles.form} ref={listRef}>
+          <div className={styles.form} >
             <div className={styles.labReq}>
-              <div className={styles.formGroup} >
+              <div className={styles.formGroup} ref={listRef}>
                 <label>
                   Business Name <span className={styles.requiredStar1}>*</span>
                 </label>
@@ -851,10 +851,7 @@ const BusinessListing = forwardRef(
                       handleFocus(e)
                       setTimeout(scrollListIntoView, 300);
                     }
-
-
                   })
-
                   }
                   onClick={(e) => {
 
@@ -869,17 +866,6 @@ const BusinessListing = forwardRef(
 
                 />
               </div>
-
-              {/* <div className={styles.fixedBtn}>
-            <button
-              type="submit"
-              className={styles.btnTheme}
-              disabled={loading}       style={{ pointerEvents: loading ? "none" : "auto", opacity: loading ? 0.6 : 1 }}
-            >
-              <img alt="" src="svg/svg-theme.svg" />
-              <p  className="subBtn">{loading ? <>Saving &nbsp; <Loader size={18} /></> : "Submit"}</p>
-            </button>
-          </div> */}
             </div>
           </div>
         </form>
