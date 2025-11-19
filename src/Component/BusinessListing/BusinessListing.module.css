@@ -17,17 +17,19 @@
   width: 100%;
   display: grid;
   gap: 15px;
-  
+
 }
 
 .Dblock {
   display: grid;
 }
+
 .inputFlex {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 .header h1 {
   font-size: 40px;
   font-weight: 700;
@@ -57,6 +59,7 @@
 .formGroup textarea {
   font-family: "Lato", sans-serif;
   height: unset !important;
+  width: 100% !important;
 }
 
 .formGroup label {
@@ -101,7 +104,9 @@
   margin: 0;
   font-weight: 500;
   font-size: 19px;
-  display: flex;align-items: center;justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .skipButton {
@@ -114,6 +119,7 @@
   color: #bebebe;
   font-size: 14px;
 }
+
 .fixedBtn {
   position: fixed;
   bottom: 20px;
@@ -126,6 +132,7 @@
 .filesAllowed {
   font-size: 12px;
 }
+
 .verifyButton {
   position: absolute;
   right: 20px;
@@ -143,6 +150,7 @@
   .btnTheme {
     font-size: 12px;
   }
+
   .verifyStatus {
     position: absolute;
     right: 20px;
@@ -154,9 +162,11 @@
 
     cursor: pointer;
   }
+
   .container {
     max-width: 500px;
   }
+
   .fixedBtn {
     position: unset;
   }
@@ -173,6 +183,7 @@
     font-size: 36px;
   }
 }
+
 .requiredStar {
   position: absolute;
   color: red;
@@ -180,6 +191,7 @@
   /* right: 205px; */
   top: 15%;
 }
+
 .requiredStar1 {
   position: absolute;
   color: red;
