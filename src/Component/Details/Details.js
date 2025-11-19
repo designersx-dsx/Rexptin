@@ -33,9 +33,9 @@ const Details = () => {
   const [country, setCountry] = useState("us");
   const referralCode = sessionStorage.getItem("referredBy") || "";
   const referredByName = sessionStorage.getItem("referredByName") || "";
-
+  const listRef = useRef(null);
   const phoneInputRef = useRef(null);
-
+  const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
   const handleFlagClick = () => {
     const container = phoneInputRef.current;
     if (container) {
@@ -206,6 +206,16 @@ const Details = () => {
     }
   };
 
+
+  const scrollListIntoView = () => {
+    if (listRef.current) {
+      listRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+  };
+
   return (
     <>
       <div className={styles.signUpContainer}>
@@ -219,15 +229,14 @@ const Details = () => {
             <img src="images/Ellipse 11.png" alt="Ellipse 11" />
           </div>
         </div>
-        <div className={styles.pageWrapper}>
+        <div className={styles.pageWrapper} >
           <div className={`${styles.mask} ${styles.maskZoomFadeIn}`}>
             <img src="images/Mask.png" alt="Mask" />
           </div>
           <div className={styles.logimg2}>
             <div
-              className={`${styles.logimg} ${styles.animateStep} ${
-                step >= 1 ? styles.animateStep1 : ""
-              }`}
+              className={`${styles.logimg} ${styles.animateStep} ${step >= 1 ? styles.animateStep1 : ""
+                }`}
             >
               <img
                 className={styles.logo}
@@ -238,9 +247,8 @@ const Details = () => {
           </div>
 
           <div
-            className={`${styles.Maincontent} ${styles.animateStep} ${
-              step >= 2 ? styles.animateStep2 : ""
-            }`}
+            className={`${styles.Maincontent} ${styles.animateStep} ${step >= 2 ? styles.animateStep2 : ""
+              }`}
           >
             <div className={styles.welcomeTitle}>
               <h1>Personal Details</h1>
@@ -248,27 +256,41 @@ const Details = () => {
           </div>
 
           <div
-            className={`${styles.container} ${styles.animateStep} ${
-              step >= 3 ? styles.animateStep3 : ""
-            }`}
+            className={`${styles.container} ${styles.animateStep} ${step >= 3 ? styles.animateStep3 : ""
+              }`}
           >
-            <div className={styles.labReq}>
+            <div className={styles.labReq} >
               <div className={styles.Dblock}>
                 <label className={styles.label}>Name</label>
                 <input
                   type="text"
-                  className={`${styles.input} ${
-                    nameError ? styles.inputError : ""
-                  }`}
+                  className={`${styles.input} ${nameError ? styles.inputError : ""
+                    }`}
                   placeholder="Your name"
                   maxLength={150}
                   value={name}
                   onChange={handleNameChange}
+                  onFocus={((e) => {
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      setTimeout(scrollListIntoView, 300);
+                    }
+
+                  })
+                  }
+                  onClick={() => {
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      setTimeout(scrollListIntoView, 300);
+                    }
+                  }}
                 />
               </div>
               {nameError && <p className={styles.inlineError}>{nameError}</p>}
             </div>
-            <div className={styles.labReq}>
+            <div className={styles.labReq} ref={listRef}  >
               <div className={styles.Dblock}>
                 <label className={styles.label}>Phone Number (Optional)</label>
                 <PhoneInput
@@ -285,9 +307,8 @@ const Details = () => {
                     }
                   }}
                   onClickFlag={handleFlagClick}
-                  inputClass={`${styles.input} ${
-                    phoneError ? styles.inputError : ""
-                  }`}
+                  inputClass={`${styles.input} ${phoneError ? styles.inputError : ""
+                    }`}
                 />
               </div>
               {phoneError && <p className={styles.inlineError}>{phoneError}</p>}
@@ -295,9 +316,8 @@ const Details = () => {
           </div>
 
           <div
-            className={`${styles.Btn} ${styles.animateStep} ${
-              step >= 4 ? styles.animateStep4 : ""
-            }`}
+            className={`${styles.Btn} ${styles.animateStep} ${step >= 4 ? styles.animateStep4 : ""
+              }`}
             onClick={handleLoginClick}
           >
             <div type="submit">

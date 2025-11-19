@@ -2,7 +2,7 @@
   padding-block: 0px 20px;
   padding-inline: 20px;
   overflow: auto;
-  max-height: 90dvh;
+  /* max-height: 90dvh; */
   scrollbar-width: thin;
   position: relative;
   /* scrollbar-color: rgb(255, 255, 255) transparent; */
@@ -167,7 +167,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0px 12px 10px 12px;
-  z-index: 1111;
+  z-index: 11111!important;
   background-color: #ffffff;
 }
 
@@ -577,5 +577,15 @@ width: 100%;
   line-height: 20px;
   padding: 15px;
   color: #fff;
+
+}
+
+
+@media screen and (max-width: 500px) {
+  .container {
+  
+  /* max-height: 80vh; */
+  
+}
 
 }

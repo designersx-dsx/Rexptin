@@ -42,6 +42,7 @@ const SignUp = () => {
   const [renderHtml, setRenderHtml] = useState(false);
   const info = useUserDeviceInfo();
   const utm_data = useUTMParams();
+  const listRef = useRef(null);
   useEffect(() => {
     const verifiedDetails = searchParams.get("verifiedDetails")
     const tokenFromParams = searchParams.get("token");
@@ -364,10 +365,14 @@ const SignUp = () => {
       }
     }
   }, [searchParams]);
-
-
-
-
+  const scrollListIntoView = () => {
+    if (listRef.current) {
+      listRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+  };
   return (
     <>
       {ready && (
@@ -411,7 +416,7 @@ const SignUp = () => {
                   </div>
                 </div>
 
-                <div className={styles.container}>
+                <div className={styles.container} ref={listRef}>
                   {!otpSent && (
                     <>
                       <div
@@ -450,6 +455,7 @@ const SignUp = () => {
                   )}
 
                   {/* OTP Input Fields & Continue Button */}
+
                   {otpSent && (
                     <>
                       {email && (
@@ -461,7 +467,7 @@ const SignUp = () => {
                         Enter the code sent to your email
                       </p>
 
-                      <div className={styles.otpContainer}>
+                      <div className={styles.otpContainer} >
                         {[...Array(6)].map((_, i) => (
                           <input
                             key={i}
@@ -479,18 +485,9 @@ const SignUp = () => {
                                 ""
                               );
                             }}
-                            onFocus={(e) => {
-                              if (window.innerWidth <= 768) {
-                                setTimeout(() => {
-                                  const rect = e.target.getBoundingClientRect();
-                                  const targetPosition =
-                                    window.scrollY + rect.top - window.innerHeight * 0.35;
-                                  window.scrollTo({
-                                    top: targetPosition,
-                                    behavior: "smooth",
-                                  });
-                                }, 250);
-                              }
+
+                            onClick={() => {
+                              setTimeout(scrollListIntoView, 300);
                             }}
                             inputMode="numeric"
                             type="tel"
@@ -558,7 +555,7 @@ const SignUp = () => {
                       </div>
                     </>
                   )}
-                  <div
+                  <div 
                     className={`${styles.Maincontent2} ${step >= 5 ? styles.animate5 : ""
                       }`}
                   >

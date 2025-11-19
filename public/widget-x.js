@@ -503,7 +503,7 @@ function injectCSS() {
     document.head.appendChild(style);
 }
 const currentSiteURL = window.location.origin;
-const API_URL = "https://rexptin.truet.net/api/";
+const API_URL = "https://rex-bk.truet.net/api/";
 // const API_URL = "http://localhost:2513/api";
 const getAgentIdFromScript = async () => {
     const currentScript = document.getElementById("rex-widget-script");

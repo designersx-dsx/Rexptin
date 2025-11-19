@@ -14,7 +14,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import Loader from "../Loader/Loader";
-import {businessServices} from "../../lib/businessServices"
+import { businessServices } from "../../lib/businessServices"
 const BusinessServices = forwardRef(
   (
     {
@@ -53,15 +53,14 @@ const BusinessServices = forwardRef(
     const [isSubmitting, setIsSubmitting] = useState(false);
     const scrollToBottomRef = useRef(null);
     const [searchTerm, setSearchTerm] = useState("");
-    // const selectedBusiness = businessServices?.find(
-    //   (biz) => biz?.type === businessType
-    // );
     const selectedBusiness =
       businessServices.find((biz) => biz?.type === businessType) ||
       (businessType === "Other" &&
         businessServices?.find((biz) => biz?.type === "Other Local Business"));
+    const listRef = useRef(null);
     const defaultServices = selectedBusiness?.services || [];
     const allServices = [...defaultServices, ...customServices];
+    const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
     const flatServices = allServices.flatMap((item) => {
       if (typeof item === "string") return [item];
       if (typeof item === "object" && Array.isArray(item.services)) {
@@ -105,23 +104,22 @@ const BusinessServices = forwardRef(
         selectedService,
         email,
       };
-   
+
       sessionStorage.setItem(
         "businessDetails",
         JSON.stringify(finalBusinessDetails)
       );
-     
+
       sessionStorage.setItem(
         "selectedServices",
         JSON.stringify(selectedService)
       );
-          const subType= sessionStorage.getItem("subType")
+      const subType = sessionStorage.getItem("subType")
       try {
         setLoading(true);
         const API_URL = checkIfBusinessIdExist
-          ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${
-              decodeToken(localStorage.getItem("token")).id
-            }?businessId=${sessionStorage.getItem("bId")}`
+          ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id
+          }?businessId=${sessionStorage.getItem("bId")}`
           : `${API_BASE_URL}/businessDetails/create`;
         const response = await axios({
           method: checkIfBusinessIdExist ? "PATCH" : "POST",
@@ -135,7 +133,7 @@ const BusinessServices = forwardRef(
             buisnessEmail: email,
             buisnessService: selectedService,
             customServices: [],
-            subType:subType
+            subType: subType
           },
         });
 
@@ -216,14 +214,6 @@ const BusinessServices = forwardRef(
     const businesServices = JSON.parse(
       sessionStorage.getItem("businesServices")
     );
-
-
-    // const servicesType = Object?.values(businesServices)?.filter(
-    //   (val) => typeof val === "string" && val !== "" && val !== "email"
-    // );
-    // console.log("Test",businesServices)
-// lkjklj
-
     const handleAddService = () => {
       if (inputValue.trim()) {
         const newServiceName = inputValue.trim();
@@ -323,6 +313,7 @@ const BusinessServices = forwardRef(
       /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
     const isIOSApp = () =>
       /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
+
     const handleFocus = (e) => {
       if (isAndroidApp() || isIOSApp()) {
         setTimeout(() => {
@@ -334,23 +325,28 @@ const BusinessServices = forwardRef(
         }, 300);
       }
     };
-const cardRef = useRef(null);
+    const cardRef = useRef(null);
 
-useEffect(() => {
-  if (showInput && cardRef.current) {
-    setTimeout(() => {
-      cardRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 150); // thoda delay taaki DOM render complete ho jaye
-  }
-}, [showInput]);
-
-
-
+    useEffect(() => {
+      if (showInput && cardRef.current) {
+        setTimeout(() => {
+          cardRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 150); // thoda delay taaki DOM render complete ho jaye
+      }
+    }, [showInput]);
+    const scrollListIntoView = () => {
+      if (listRef.current) {
+        listRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }
+    };
     return (
-      <div className={styles.container} id="servies">
+      <div className={styles.container} id="servies" ref={listRef} >
         <div className={styles.searchBox}>
           <span className={styles.searchIcon}>
             <img src="svg/Search-Icon.svg" alt="Search icon" />
@@ -360,10 +356,20 @@ useEffect(() => {
             placeholder="Quick find Business services"
             className={styles.searchInput}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setTimeout(scrollListIntoView, 300);
+            }}
+            onFocus={((e) => {
+              setTimeout(scrollListIntoView, 300);
+            })
+            }
+            onClick={() => {
+              setTimeout(scrollListIntoView, 300);
+            }}
           />
         </div>
-        <div className={styles.ListDiv}>
+        <div className={styles.ListDiv}  >
           <div className={styles.optionList}>
             {filteredServices.length > 0 ? (
               filteredServices
@@ -423,7 +429,22 @@ useEffect(() => {
                 setShowInput(checked);
                 sessionStorage.setItem("showInput", JSON.stringify(checked));
               }}
-              onFocus={handleFocus}
+
+
+              onFocus={((e) => {
+
+                if (isIphone) {
+                  // handleIOSFocus(e);
+                } else {
+                  handleFocus(e)
+
+                }
+
+
+              })
+
+              }
+
             />
             <label htmlFor="add-more-services">Add More Services</label>
           </div>
@@ -439,7 +460,17 @@ useEffect(() => {
                   placeholder="Enter Your Service Name"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  onFocus={handleFocus}
+                  onFocus={((e) => {
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      handleFocus(e)
+                    }
+
+
+                  })
+
+                  }
                 />
                 <button
                   type="button"

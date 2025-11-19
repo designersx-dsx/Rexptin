@@ -226,6 +226,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
       }
     });
   }, [selectedGender]);
+
   return (
     <>
       <div className={styles.container}>
@@ -243,9 +244,9 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
             >
               <span className={styles.icon}>
                 {gender === "Female" ? (
-                   <img src="svg/female-icon.svg" alt="Female Icon" />
+                  <img src="svg/female-icon.svg" alt="Female Icon" />
                 ) : (
-                   <img src="svg/male-icon.svg" alt="Male Icon" />
+                  <img src="svg/male-icon.svg" alt="Male Icon" />
                 )}
               </span>
               <span>{gender}</span>

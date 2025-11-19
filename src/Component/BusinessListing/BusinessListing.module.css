@@ -17,6 +17,9 @@
   width: 100%;
   display: grid;
   gap: 15px;
+  margin-bottom: 3rem;
+
+  
 
 }
 
@@ -178,6 +181,14 @@
   }
 }
 
+@media (max-width: 500px) {
+  .labReq {  
+  margin-bottom: 3rem;
+
+}
+}
+
+
 @media (max-width: 375px) {
   .header h1 {
     font-size: 36px;
@@ -198,4 +209,9 @@
   font-weight: bold;
   /* right: 78px; */
   /* top: 28%; */
+
 }
+.aboutMyBusiness {
+    margin-bottom: 1rem;
+  }
+

@@ -98,7 +98,7 @@ const businessTypes = [
   { name: "Training Center", code: "tra_ce" },
   { name: "Educational Institute", code: "edu_ins" },
   { name: "Plumber", code: "plum_b" },
-  
+
 ];
 const Step = () => {
   const [showNoGMBModal, setShowNoGMBModal] = useState(false);
@@ -1099,7 +1099,7 @@ const Step = () => {
               //AssignNumber both Agent
               const assignedNumber = sessionStorage.getItem("assignedPhoneNumber");
               if (assignedNumber) {
-                await assignNumberToAgent(assignedNumber, response.data.agent_id)
+                // await assignNumberToAgent(assignedNumber, response.data.agent_id)
               }
               if (ifChatWidgetEnabledOrNot) {
                 // alert("ok")

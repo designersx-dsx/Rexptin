@@ -54,8 +54,9 @@ const BusinessListing = forwardRef(
     const [postal_code, setPostal_code] = useState("");
     const [country_code, setCountry_code] = useState("");
     const [state_code, setState_code] = useState("");
-
+    const listRef = useRef(null);
     const setHasFetched = true;
+    const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
     const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "BusinessListing",
       setLoading,
@@ -643,12 +644,21 @@ const BusinessListing = forwardRef(
         }, 300);
       }
     };
+    const scrollListIntoView = () => {
+      if (listRef.current) {
+        listRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      }
+    };
+
     return (
-      <div className={styles.container}>
-        <form className={styles.formContainer} onSubmit={handleSubmit}>
-          <div className={styles.form}>
+      <div className={styles.container} ref={listRef}>
+        <form className={styles.formContainer} onSubmit={handleSubmit} >
+          <div className={styles.form} >
             <div className={styles.labReq}>
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup} >
                 <label>
                   Business Name <span className={styles.requiredStar1}>*</span>
                 </label>
@@ -664,11 +674,34 @@ const BusinessListing = forwardRef(
                         ""
                       );
                     handleInputChange("businessName", noNumbersOrEmojis);
+                    setTimeout(scrollListIntoView, 300);
                   }}
                   placeholder="Your Business Name"
                   required
                   maxLength={50}
-                  onFocus={handleFocus}
+                  onFocus={((e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      // handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+
+
+                  })
+
+                  }
+                  onClick={(e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      // handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+                  }}
+
                 />{" "}
               </div>
 
@@ -695,7 +728,29 @@ const BusinessListing = forwardRef(
                   }}
                   placeholder="+1 (123)456-7890"
                   required
-                  onFocus={handleFocus}
+                  onFocus={((e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      // handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+
+
+                  })
+
+                  }
+                  onClick={(e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      // handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+                  }}
+
                 />
               </div>
 
@@ -719,7 +774,29 @@ const BusinessListing = forwardRef(
                   placeholder="Business Address"
                   required
                   maxLength={300}
-                  onFocus={handleFocus}
+                  onFocus={((e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      // handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+
+
+                  })
+
+                  }
+                  onClick={(e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      // handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+                  }}
+
                 />
               </div>
 
@@ -730,7 +807,29 @@ const BusinessListing = forwardRef(
                   value={email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder="Business Email Address"
-                  onFocus={handleFocus}
+                  onFocus={((e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      // handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+
+
+                  })
+
+                  }
+                  onClick={(e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      // handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+                  }}
+
                 />
               </div>
 
@@ -744,20 +843,29 @@ const BusinessListing = forwardRef(
                   }
                   placeholder="Describe"
                   maxLength={200}
-                  onFocus={handleFocus}
+                  onFocus={((e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      // handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+                  })
+                  }
+                  onClick={(e) => {
+
+                    if (isIphone) {
+                      // handleIOSFocus(e);
+                    } else {
+                      // handleFocus(e)
+                      setTimeout(scrollListIntoView, 300);
+                    }
+                  }}
+
+
                 />
               </div>
-
-              {/* <div className={styles.fixedBtn}>
-            <button
-              type="submit"
-              className={styles.btnTheme}
-              disabled={loading}       style={{ pointerEvents: loading ? "none" : "auto", opacity: loading ? 0.6 : 1 }}
-            >
-              <img alt="" src="svg/svg-theme.svg" />
-              <p  className="subBtn">{loading ? <>Saving &nbsp; <Loader size={18} /></> : "Submit"}</p>
-            </button>
-          </div> */}
             </div>
           </div>
         </form>

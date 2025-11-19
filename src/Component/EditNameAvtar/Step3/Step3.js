@@ -36,7 +36,8 @@ const Step3 = ({ onValidationChange, originalRole, originalName, originalAvatar 
   const [agentNote, setAgentNote] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
   const [loading, setLoading] = useState(false)
-
+  const listRef = useRef(null);
+  const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
   useEffect(() => {
     const storedGender = sessionStorage.getItem("agentGender");
     const capitalizeGender = gender.charAt(0).toUpperCase() + gender.slice(1);
@@ -101,7 +102,14 @@ const Step3 = ({ onValidationChange, originalRole, originalName, originalAvatar 
     slidesToScroll: 1,
     arrows: false,
   };
-
+  const scrollListIntoView = () => {
+    if (listRef.current) {
+      listRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  };
   return (
     <>
       <div className={styles.sliderContainer}>
@@ -134,6 +142,22 @@ const Step3 = ({ onValidationChange, originalRole, originalName, originalAvatar 
                       className={styles.agentInput}
                       placeholder="Ex- Smith, Nova"
                       value={agentName}
+                      onFocus={((e) => {
+                        if (isIphone) {
+                          // handleIOSFocus(e);
+                        } else {
+                          setTimeout(scrollListIntoView, 300);
+                        }
+
+                      })
+                      }
+                      onClick={() => {
+                        if (isIphone) {
+                          // handleIOSFocus(e);
+                        } else {
+                          setTimeout(scrollListIntoView, 300);
+                        }
+                      }}
                     />
                   </div>
                 </div>

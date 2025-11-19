@@ -58,7 +58,7 @@ const EditPublic = () => {
   const inputRefWebSiteUrl = useRef(null);
   const shouldFocusBackRef = useRef(false);
   const noBusinessWebsiteRef = useRef(noBusinessWebsite);
-
+  const listRef = useRef(null);
   useEffect(() => {
     noBusinessWebsiteRef.current = noBusinessWebsite;
   }, [noBusinessWebsite]);
@@ -769,7 +769,14 @@ const EditPublic = () => {
     const updatedPlace = { ...placeDetailsExtract, ...clearedGoogleData };
     sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedPlace));
   };
-
+  const scrollListIntoView = () => {
+    if (listRef.current) {
+      listRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  };
   return (
     <>
       <EditHeader title="Edit Agent " agentName={agentnm} />
@@ -780,7 +787,7 @@ const EditPublic = () => {
         />
       </div>
 
-      <div className={styles.container}>
+      <div className={styles.container}  ref={listRef}>
         <div className={styles.inputSection}>
           <label className={styles.label}>Google My Business</label>
           <input
@@ -795,6 +802,15 @@ const EditPublic = () => {
                 ...prev,
                 displayBusinessName: e.target.value,
               }));
+            }}
+
+
+            onFocus={((e) => {
+              setTimeout(scrollListIntoView, 300);
+            })
+            }
+            onClick={() => {
+              setTimeout(scrollListIntoView, 300);
             }}
             disabled={noGoogleListing}
           />
@@ -811,8 +827,8 @@ const EditPublic = () => {
                 setPopupType("confirm");
                 setPopupMessage(
                   "Are you sure you don't have a Google My Business listing? " +
-                    "This will clear the existing listing details for this agent. " +
-                    "You can always add it again later."
+                  "This will clear the existing listing details for this agent. " +
+                  "You can always add it again later."
                 );
                 setShowPopup(true);
               } else {

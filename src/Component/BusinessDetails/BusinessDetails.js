@@ -29,6 +29,8 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
   const stepEditingMode = localStorage.getItem('UpdationModeStepWise')
   const EditingMode = localStorage.getItem('UpdationMode')
   const setHasFetched = true
+  const listRef = useRef(null);
+  const isIphone = /iPhone|iPod/i.test(navigator.userAgent);
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "BusinessDetails",
     setLoading,
@@ -135,11 +137,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
-  // const filteredBusinessTypes = businessTypes.filter(
-  //   (item) =>
-  //     item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     item.subtype.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
+
   const filteredBusinessTypes = (searchTerm) => {
     if (!searchTerm) {
       // Agar search empty hai, to sirf selected show karna hai
@@ -381,10 +379,18 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
     if (savedBusinessType) setBusinessType(savedBusinessType);
     if (savedSubType) setSubType(savedSubType);
   }, []);
+  const scrollListIntoView = () => {
+    if (listRef.current) {
+      listRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  };
   return (
     <div className={styles.container}>
       {/* <h1 className={styles.title}>{EditingMode ? ' Edit: Business Details' : 'Business Details'}</h1> */}
-      <div className={styles.searchBox}>
+      <div className={styles.searchBox}  ref={listRef} >
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />
         </span>
@@ -393,7 +399,16 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
           placeholder="Quick find Business type"
           className={styles.searchInput}
           value={searchTerm}
-          onChange={handleSearchChange}
+          onChange={(e) => {
+            handleSearchChange(e);
+          }}
+          onFocus={((e) => {
+            setTimeout(scrollListIntoView, 300);
+          })
+          }
+          onClick={() => {
+            setTimeout(scrollListIntoView, 300);
+          }}
         />
       </div>
       <div className={styles.ListDiv}>
@@ -430,40 +445,6 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
             <p className={styles.noItemFound}>Lets Find Your Business</p>
           )}
 
-          {/* {filteredBusinessTypes.length > 0 ? (
-            [...filteredBusinessTypes]
-              .sort((a, b) => a.type.localeCompare(b.type))
-              .map((item, index) => (
-                <label className={styles.option} key={index}>
-                  <div className={styles.forflex}>
-                    <div className={styles.icon}>
-                      <img
-                        src={item.icon}
-                        alt={`${item.type} icon`}
-                        className={styles.iconImg}
-                      />
-                    </div>
-                    <div className={styles.strongDiv}>
-                      <strong>{item.type}</strong>
-                      <p className={styles.subType}>{item.subtype}</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <input
-                      type="radio"
-                      name="businessType"
-                      value={item.type}
-                      checked={businessType === item.type}
-                      onChange={handleBusinessTypeChange}
-                    />
-                  </div>
-                </label>
-              ))
-          ) : (
-            <p className={styles.noItemFound}>No item found</p>
-          )} */}
-
         </div>
       </div>
 
@@ -493,65 +474,6 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
           </div>
         </div>
       )}
-      {/* business size –- now a dropdown */}
-      {/* <div className={styles.inputGroup}>
-        <label>Business Size (Number of Emp.)</label>
-        <select
-          value={businessSize}
-          onChange={handleBusinessSizeChange}
-          className={`${styles.selectInput} ${businessSizeError ? styles.inputError : ""
-            }`}
-        >
-          <option value="" disabled className={styles.selectOption}>
-            {'Select Business Size'}
-          </option>
-          <option value='1 to 10 employees' className={`${styles.selectOption}`} >
-            {'1 to 10 employees'}
-          </option>
-          <option value='10 to 50 employees' className={`${styles.selectOption}`}>
-            {'10 to 50 employees'}
-          </option>
-          <option value='50 to 100 employees' className={`${styles.selectOption}`}>
-            {'50 to 100 employees'}
-          </option>
-          <option value='100 to 250 employees' className={`${styles.selectOption}`}>
-            {'100 to 250 employees'}
-          </option>
-          <option value='250 to 500 employees' className={`${styles.selectOption}`}>
-            {'250 to 500  employees'}
-          </option>
-          <option value='500 to 1000 employees' className={`${styles.selectOption}`}>
-            {'500 to 1000 employees'}
-          </option>
-          <option value='1000+ employees' className={`${styles.selectOption}`}>
-            {'1000+ employees'}
-          </option>
-        </select>
-        {businessSizeSubmitted && businessSizeError && (
-          <p className={styles.inlineError}>{businessSizeError}</p>
-        )}
-      </div> */}
-      {/* {stepEditingMode != 'ON' ?
-        <div onClick={handleLoginClick}>
-          <div type="submit">
-            <div className={styles.btnTheme}>
-              <img src="svg/svg-theme.svg" alt="" />
-              <p>Continue</p>
-            </div>
-          </div>
-        </div>
-        :
-        <div onClick={handleSaveEdit}>
-          <div type="submit">
-            <div className={styles.btnTheme} style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}>
-              <img src="svg/svg-theme.svg" alt="" />
-              <p>{Loading ? <>Saving &nbsp; <Loader size={20} /></> : 'Save Edits'}</p>
-            </div>
-          </div>
-        </div>
-      } */}
-
-
       {showPopup && (
         <PopUp
           type={popupType}

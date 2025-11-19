@@ -53,6 +53,8 @@
   border: 1px solid #E0E5F2;
   padding: 10px;
   border-radius: 10px;
+  position: relative;
+    z-index: 1;
 }
 
 .optionList {
@@ -60,7 +62,8 @@
   flex-direction: column;
   gap: 15px;
   /* max-height: 200px; */
-  max-height: 45dvh;
+  /* max-height: 45dvh; */
+  max-height: 35dvh;
   overflow: auto;
   padding-right: 10px;
 }
