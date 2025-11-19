@@ -98,7 +98,7 @@ const businessTypes = [
   { name: "Training Center", code: "tra_ce" },
   { name: "Educational Institute", code: "edu_ins" },
   { name: "Plumber", code: "plum_b" },
-  
+
 ];
 const Step = () => {
   const [showNoGMBModal, setShowNoGMBModal] = useState(false);
