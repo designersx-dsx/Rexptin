@@ -390,7 +390,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
   return (
     <div className={styles.container}>
       {/* <h1 className={styles.title}>{EditingMode ? ' Edit: Business Details' : 'Business Details'}</h1> */}
-      <div className={styles.searchBox} >
+      <div className={styles.searchBox}  ref={listRef} >
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />
         </span>
@@ -399,12 +399,9 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
           placeholder="Quick find Business type"
           className={styles.searchInput}
           value={searchTerm}
-
           onChange={(e) => {
             handleSearchChange(e);
-            // setTimeout(scrollListIntoView, 300);
           }}
-
           onFocus={((e) => {
             setTimeout(scrollListIntoView, 300);
           })
@@ -414,7 +411,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
           }}
         />
       </div>
-      <div className={styles.ListDiv} ref={listRef}>
+      <div className={styles.ListDiv}>
         <div className={styles.optionList}>
           {filteredBusinessTypes(searchTerm).length > 0 ? (
             filteredBusinessTypes(searchTerm).map((item, index) => (

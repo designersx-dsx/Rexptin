@@ -2,16 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import EditHeader from '../EditHeader/EditHeader';
 import styles from '../EditBusinessType/EditBusinessType.module.css';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
-
 import Tooltip from '../TooltipSteps/Tooltip';
-
 import decodeToken from '../../lib/decodeToken';
 import PopUp from '../Popup/Popup';
 import { useAgentCreator } from '../../hooks/useAgentCreator';
 import { useNavigate } from 'react-router-dom';
 import { useDashboardStore } from '../../Store/agentZustandStore';
 import { businessTypes } from "../../lib/businessCategories"
-
 const EditBusinessType = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('');
@@ -42,6 +39,7 @@ const EditBusinessType = () => {
   const [isChanged, setIsChanged] = useState(false);
   const [initialDetails, setInitialDetails] = useState(null);
   const subType1 = sessionStorage.getItem("subType");
+  const listRef = useRef(null);
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditBusinessType",
     setLoading,
@@ -110,7 +108,7 @@ const EditBusinessType = () => {
 
       if (stored && stored !== "undefined" && stored !== "null") {
         const businessDetails = JSON.parse(stored);
-        
+
         setInitialDetails(businessDetails);
         if (businessDetails) {
           setBusinessType(businessDetails?.businessType || "");
@@ -284,6 +282,14 @@ const EditBusinessType = () => {
   useEffect(() => {
     setSubType(subType1)
   }, [])
+  const scrollListIntoView = () => {
+    if (listRef.current) {
+      listRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  };
   return (
     <>
       <EditHeader title='Edit Agent ' agentName={agentnm} />
@@ -291,12 +297,9 @@ const EditBusinessType = () => {
         <div className={styles.headerWrapper}>
           <h2 className={styles.heading}>Select Category</h2>
           <p className={styles.subheading}>Select category     best describes your business type</p>
-
         </div>
-
-
         <div className={styles.section}>
-          <div className={styles.searchBox}>
+          <div className={styles.searchBox} ref={listRef}>
             <span className={styles.searchIcon}>
               <img src='svg/Search-Icon.svg' alt='Search icon' />
             </span>
@@ -306,6 +309,13 @@ const EditBusinessType = () => {
               className={styles.searchInput}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onFocus={((e) => {
+                setTimeout(scrollListIntoView, 300);
+              })
+              }
+              onClick={() => {
+                setTimeout(scrollListIntoView, 300);
+              }}
             />
           </div>
 
