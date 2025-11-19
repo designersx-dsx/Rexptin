@@ -654,11 +654,11 @@ const BusinessListing = forwardRef(
     };
 
     return (
-      <div className={styles.container}>
-        <form className={styles.formContainer} onSubmit={handleSubmit}>
+      <div className={styles.container} ref={listRef}>
+        <form className={styles.formContainer} onSubmit={handleSubmit} >
           <div className={styles.form} >
             <div className={styles.labReq}>
-              <div className={styles.formGroup} ref={listRef}>
+              <div className={styles.formGroup} >
                 <label>
                   Business Name <span className={styles.requiredStar1}>*</span>
                 </label>
@@ -684,7 +684,7 @@ const BusinessListing = forwardRef(
                     if (isIphone) {
                       // handleIOSFocus(e);
                     } else {
-                      handleFocus(e)
+                      // handleFocus(e)
                       setTimeout(scrollListIntoView, 300);
                     }
 
@@ -697,7 +697,7 @@ const BusinessListing = forwardRef(
                     if (isIphone) {
                       // handleIOSFocus(e);
                     } else {
-                      handleFocus(e)
+                      // handleFocus(e)
                       setTimeout(scrollListIntoView, 300);
                     }
                   }}
@@ -728,12 +728,12 @@ const BusinessListing = forwardRef(
                   }}
                   placeholder="+1 (123)456-7890"
                   required
-                   onFocus={((e) => {
+                  onFocus={((e) => {
 
                     if (isIphone) {
                       // handleIOSFocus(e);
                     } else {
-                      handleFocus(e)
+                      // handleFocus(e)
                       setTimeout(scrollListIntoView, 300);
                     }
 
@@ -746,7 +746,7 @@ const BusinessListing = forwardRef(
                     if (isIphone) {
                       // handleIOSFocus(e);
                     } else {
-                      handleFocus(e)
+                      // handleFocus(e)
                       setTimeout(scrollListIntoView, 300);
                     }
                   }}
@@ -774,12 +774,12 @@ const BusinessListing = forwardRef(
                   placeholder="Business Address"
                   required
                   maxLength={300}
-                    onFocus={((e) => {
+                  onFocus={((e) => {
 
                     if (isIphone) {
                       // handleIOSFocus(e);
                     } else {
-                      handleFocus(e)
+                      // handleFocus(e)
                       setTimeout(scrollListIntoView, 300);
                     }
 
@@ -792,7 +792,7 @@ const BusinessListing = forwardRef(
                     if (isIphone) {
                       // handleIOSFocus(e);
                     } else {
-                      handleFocus(e)
+                      // handleFocus(e)
                       setTimeout(scrollListIntoView, 300);
                     }
                   }}
@@ -807,12 +807,12 @@ const BusinessListing = forwardRef(
                   value={email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder="Business Email Address"
-                   onFocus={((e) => {
+                  onFocus={((e) => {
 
                     if (isIphone) {
                       // handleIOSFocus(e);
                     } else {
-                      handleFocus(e)
+                      // handleFocus(e)
                       setTimeout(scrollListIntoView, 300);
                     }
 
@@ -825,7 +825,7 @@ const BusinessListing = forwardRef(
                     if (isIphone) {
                       // handleIOSFocus(e);
                     } else {
-                      handleFocus(e)
+                      // handleFocus(e)
                       setTimeout(scrollListIntoView, 300);
                     }
                   }}
@@ -843,12 +843,12 @@ const BusinessListing = forwardRef(
                   }
                   placeholder="Describe"
                   maxLength={200}
-                   onFocus={((e) => {
+                  onFocus={((e) => {
 
                     if (isIphone) {
                       // handleIOSFocus(e);
                     } else {
-                      handleFocus(e)
+                      // handleFocus(e)
                       setTimeout(scrollListIntoView, 300);
                     }
                   })
@@ -858,7 +858,7 @@ const BusinessListing = forwardRef(
                     if (isIphone) {
                       // handleIOSFocus(e);
                     } else {
-                      handleFocus(e)
+                      // handleFocus(e)
                       setTimeout(scrollListIntoView, 300);
                     }
                   }}
