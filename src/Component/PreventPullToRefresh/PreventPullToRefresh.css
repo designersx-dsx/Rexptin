@@ -2,7 +2,7 @@
   overflow-y: auto;
   scroll-behavior: smooth;
   overscroll-behavior: contain;
-  height: 100dvh;
+  height: 100vh;
 }
 
 .refresh-indicator {
@@ -66,5 +66,11 @@
 
   100% {
     transform: rotate(360deg);
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .custom-refresh-wrapper {
+    height: unset;
   }
 }

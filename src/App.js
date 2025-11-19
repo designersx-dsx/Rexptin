@@ -200,14 +200,9 @@ function App() {
                 <Route
                   path="/"
                   element={
-                    token ? (
-                      <SecureRoute>
-                        {" "}
-                        <Navigate to={lastRoute || "/dashboard"} />
-                      </SecureRoute>
-                    ) : (
+                   
                       <Start />
-                    )
+                   
                   }
                 />
                 <Route

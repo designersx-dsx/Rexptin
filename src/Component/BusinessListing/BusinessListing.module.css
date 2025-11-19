@@ -62,6 +62,7 @@
 .formGroup textarea {
   font-family: "Lato", sans-serif;
   height: unset !important;
+  width: 100% !important;
 }
 
 .formGroup label {
@@ -208,6 +209,7 @@
   font-weight: bold;
   /* right: 78px; */
   /* top: 28%; */
+
 }
 .aboutMyBusiness {
     margin-bottom: 1rem;
