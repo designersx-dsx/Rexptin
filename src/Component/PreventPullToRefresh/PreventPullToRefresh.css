@@ -2,12 +2,12 @@
 .custom-refresh-wrapper {
   overflow-y: auto;
   scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  height: 100vh;
   overscroll-behavior: none; /* prevent browser pull effect */
   -webkit-overflow-scrolling: touch;
   height: 100dvh;
-
   /*  This removes Android WebView blue/black edge glow */
-  overscroll-behavior-y: contain;
   touch-action: pan-y;
   background-color: #fff; /* avoid transparent flicker */
 }
@@ -74,5 +74,11 @@
 
   100% {
     transform: rotate(360deg);
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .custom-refresh-wrapper {
+    height: unset;
   }
 }

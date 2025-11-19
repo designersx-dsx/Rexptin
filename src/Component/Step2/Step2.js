@@ -214,6 +214,8 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   //     window.removeEventListener("contextmenu", (e) => e.preventDefault());
   //   };
   // }, []);
+
+
   useEffect(() => {
     setSelectedVoice({});
     setPlayingIdx(null);
